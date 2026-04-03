@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -17,14 +16,13 @@ namespace ProjectAstra.Core
         [SerializeField] private GameState _initialState = GameState.TitleScreen;
 
         private GameState _currentState;
-        private bool _transitionProcessedThisFrame;
-        private GameState _returnContext;
+        private GameState _menuReturnState;
 
-        private readonly Dictionary<GameState, Action> _entryHooks = new();
-        private readonly Dictionary<GameState, Action> _exitHooks = new();
+        // Prevents multiple transitions in one frame — first request wins, rest are discarded
+        private bool _oneTransitionPerFrameGate;
 
         public GameState CurrentState => _currentState;
-        public GameState ReturnContext => _returnContext;
+        public GameState MenuReturnState => _menuReturnState;
 
         private void Awake()
         {
@@ -43,14 +41,14 @@ namespace ProjectAstra.Core
 
         private void LateUpdate()
         {
-            _transitionProcessedThisFrame = false;
+            _oneTransitionPerFrameGate = false;
         }
 
         public bool RequestTransition(GameState target, string requester = null)
         {
             string requesterName = requester ?? "unknown";
 
-            if (_transitionProcessedThisFrame)
+            if (_oneTransitionPerFrameGate)
             {
                 Debug.LogWarning(
                     $"[GameStateManager] Transition to {target} discarded — " +
@@ -68,11 +66,11 @@ namespace ProjectAstra.Core
 
             if (target == GameState.SaveMenu || target == GameState.SettingsMenu)
             {
-                _returnContext = _currentState;
+                _menuReturnState = _currentState;
             }
 
             ExecuteTransition(target);
-            _transitionProcessedThisFrame = true;
+            _oneTransitionPerFrameGate = true;
             return true;
         }
 
@@ -86,7 +84,7 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            return RequestTransition(_returnContext, requester);
+            return RequestTransition(_menuReturnState, requester);
         }
 
         // Bypasses transition table — only for crash recovery or null-state fallback
@@ -96,45 +94,10 @@ namespace ProjectAstra.Core
             ExecuteTransition(state);
         }
 
-        public void RegisterEntryHook(GameState state, Action hook)
-        {
-            if (!_entryHooks.ContainsKey(state))
-                _entryHooks[state] = hook;
-            else
-                _entryHooks[state] += hook;
-        }
-
-        public void RegisterExitHook(GameState state, Action hook)
-        {
-            if (!_exitHooks.ContainsKey(state))
-                _exitHooks[state] = hook;
-            else
-                _exitHooks[state] += hook;
-        }
-
-        public void UnregisterEntryHook(GameState state, Action hook)
-        {
-            if (_entryHooks.ContainsKey(state))
-                _entryHooks[state] -= hook;
-        }
-
-        public void UnregisterExitHook(GameState state, Action hook)
-        {
-            if (_exitHooks.ContainsKey(state))
-                _exitHooks[state] -= hook;
-        }
-
         private void ExecuteTransition(GameState target)
         {
             var previous = _currentState;
-
-            if (_exitHooks.TryGetValue(previous, out var exitHook))
-                exitHook?.Invoke();
-
             _currentState = target;
-
-            if (_entryHooks.TryGetValue(target, out var entryHook))
-                entryHook?.Invoke();
 
             _stateChangedChannel?.Raise(new GameStateEventChannel.StateChangeArgs
             {
@@ -153,14 +116,12 @@ namespace ProjectAstra.Core
             Instance = this;
             _transitionTable.Initialize();
             _currentState = _initialState;
-            _transitionProcessedThisFrame = false;
-            _entryHooks.Clear();
-            _exitHooks.Clear();
+            _oneTransitionPerFrameGate = false;
         }
 
         internal void ResetFrameGate()
         {
-            _transitionProcessedThisFrame = false;
+            _oneTransitionPerFrameGate = false;
         }
     }
 }

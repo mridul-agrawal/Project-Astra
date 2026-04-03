@@ -130,57 +130,6 @@ namespace ProjectAstra.Core.Tests
         }
 
         [Test]
-        public void EntryHook_FiredOnTransition()
-        {
-            bool hookFired = false;
-            _manager.RegisterEntryHook(GameState.MainMenu, () => hookFired = true);
-
-            _manager.RequestTransition(GameState.MainMenu, "test");
-
-            Assert.IsTrue(hookFired);
-        }
-
-        [Test]
-        public void ExitHook_FiredOnTransition()
-        {
-            bool hookFired = false;
-            _manager.RegisterExitHook(GameState.TitleScreen, () => hookFired = true);
-
-            _manager.RequestTransition(GameState.MainMenu, "test");
-
-            Assert.IsTrue(hookFired);
-        }
-
-        [Test]
-        public void ExitHook_FiresBeforeEntryHook()
-        {
-            int order = 0;
-            int exitOrder = -1;
-            int entryOrder = -1;
-
-            _manager.RegisterExitHook(GameState.TitleScreen, () => exitOrder = order++);
-            _manager.RegisterEntryHook(GameState.MainMenu, () => entryOrder = order++);
-
-            _manager.RequestTransition(GameState.MainMenu, "test");
-
-            Assert.AreEqual(0, exitOrder, "Exit hook should fire first");
-            Assert.AreEqual(1, entryOrder, "Entry hook should fire second");
-        }
-
-        [Test]
-        public void UnregisteredHook_DoesNotFire()
-        {
-            int fireCount = 0;
-            Action hook = () => fireCount++;
-            _manager.RegisterEntryHook(GameState.MainMenu, hook);
-            _manager.UnregisterEntryHook(GameState.MainMenu, hook);
-
-            _manager.RequestTransition(GameState.MainMenu, "test");
-
-            Assert.AreEqual(0, fireCount);
-        }
-
-        [Test]
         public void StateChangedEvent_ContainsCorrectPreviousAndNewState()
         {
             GameStateEventChannel.StateChangeArgs? received = null;
@@ -194,7 +143,19 @@ namespace ProjectAstra.Core.Tests
         }
 
         [Test]
-        public void SaveMenu_StoresReturnContext()
+        public void StateChangedEvent_DoesNotFireOnIllegalTransition()
+        {
+            GameStateEventChannel.StateChangeArgs? received = null;
+            _channel.Register(args => received = args);
+
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition"));
+            _manager.RequestTransition(GameState.BattleMap, "test");
+
+            Assert.IsNull(received);
+        }
+
+        [Test]
+        public void SaveMenu_StoresMenuReturnState()
         {
             _manager.RequestTransition(GameState.MainMenu, "test");
             _manager.ResetFrameGate();
@@ -205,11 +166,11 @@ namespace ProjectAstra.Core.Tests
 
             _manager.RequestTransition(GameState.SaveMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, _manager.ReturnContext);
+            Assert.AreEqual(GameState.BattleMapPaused, _manager.MenuReturnState);
         }
 
         [Test]
-        public void SettingsMenu_StoresReturnContext()
+        public void SettingsMenu_StoresMenuReturnState()
         {
             _manager.RequestTransition(GameState.MainMenu, "test");
             _manager.ResetFrameGate();
@@ -220,7 +181,7 @@ namespace ProjectAstra.Core.Tests
 
             _manager.RequestTransition(GameState.SettingsMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, _manager.ReturnContext);
+            Assert.AreEqual(GameState.BattleMapPaused, _manager.MenuReturnState);
         }
 
         [Test]
@@ -252,21 +213,6 @@ namespace ProjectAstra.Core.Tests
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
             _manager.ForceState(GameState.BattleMap, "test recovery");
             Assert.AreEqual(GameState.BattleMap, _manager.CurrentState);
-        }
-
-        [Test]
-        public void ForceState_FiresHooks()
-        {
-            bool exitFired = false;
-            bool entryFired = false;
-            _manager.RegisterExitHook(GameState.TitleScreen, () => exitFired = true);
-            _manager.RegisterEntryHook(GameState.BattleMap, () => entryFired = true);
-
-            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(GameState.BattleMap, "test");
-
-            Assert.IsTrue(exitFired);
-            Assert.IsTrue(entryFired);
         }
 
         [Test]
