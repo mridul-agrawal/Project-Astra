@@ -1,11 +1,14 @@
 {
-    "name": "ProjectAstra.Core",
-    "rootNamespace": "ProjectAstra.Core",
+    "name": "ProjectAstra.Core.Editor",
+    "rootNamespace": "ProjectAstra.Core.Editor",
     "references": [
+        "ProjectAstra.Core",
         "Unity.TextMeshPro",
         "Unity.InputSystem"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

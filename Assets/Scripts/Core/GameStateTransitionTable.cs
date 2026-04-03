@@ -80,6 +80,7 @@ namespace ProjectAstra.Core
 
                 new TransitionEntry(GameState.SaveMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SaveMenu, GameState.ChapterClear),
+                new TransitionEntry(GameState.SaveMenu, GameState.GameOver),
                 new TransitionEntry(GameState.SaveMenu, GameState.MainMenu),
 
                 new TransitionEntry(GameState.SettingsMenu, GameState.BattleMapPaused),
