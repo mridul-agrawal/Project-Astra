@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
@@ -18,7 +17,12 @@ namespace ProjectAstra.Core
         private BattlePhaseManager _battlePhaseManager;
         private bool _hasAllies = true;
         private TextMeshProUGUI _phaseLabel;
+
         private readonly List<Button> _navigationButtons = new();
+        private int _selectedIndex = -1;
+
+        private static readonly Color NormalColor = new(0.2f, 0.2f, 0.2f, 0.9f);
+        private static readonly Color SelectedColor = new(0.4f, 0.4f, 0.6f, 1f);
 
         private void Awake()
         {
@@ -57,6 +61,7 @@ namespace ProjectAstra.Core
 
             ClearContainer(root.ButtonContainer);
             _navigationButtons.Clear();
+            _selectedIndex = -1;
 
             var currentState = GameStateManager.Instance.CurrentState;
 
@@ -71,32 +76,36 @@ namespace ProjectAstra.Core
             else
                 CreateTransitionButtons(root.ButtonContainer, currentState);
 
-            SetupButtonNavigation();
+            if (_navigationButtons.Count > 0)
+                SelectButton(0);
         }
 
-        private void SetupButtonNavigation()
-        {
-            if (_navigationButtons.Count == 0) return;
-
-            for (int i = 0; i < _navigationButtons.Count; i++)
-            {
-                var nav = new Navigation { mode = Navigation.Mode.Explicit };
-                nav.selectOnUp = _navigationButtons[i > 0 ? i - 1 : _navigationButtons.Count - 1];
-                nav.selectOnDown = _navigationButtons[i < _navigationButtons.Count - 1 ? i + 1 : 0];
-                _navigationButtons[i].navigation = nav;
-            }
-
-            // Auto-select the first button for keyboard navigation
-            EventSystem.current?.SetSelectedGameObject(_navigationButtons[0].gameObject);
-        }
-
-        #region Contextual Input Actions
+        #region Input-Driven Navigation
 
         private void SubscribeToInputActions()
         {
             if (InputManager.Instance == null) return;
-            InputManager.Instance.OnPause += HandlePause;
+
+            InputManager.Instance.OnCursorMove += HandleCursorMove;
+            InputManager.Instance.OnConfirm += HandleConfirm;
             InputManager.Instance.OnCancel += HandleCancel;
+            InputManager.Instance.OnPause += HandlePause;
+        }
+
+        private void HandleCursorMove(Vector2Int direction)
+        {
+            if (_navigationButtons.Count == 0) return;
+
+            if (direction.y > 0) // Up
+                SelectButton(_selectedIndex <= 0 ? _navigationButtons.Count - 1 : _selectedIndex - 1);
+            else if (direction.y < 0) // Down
+                SelectButton(_selectedIndex >= _navigationButtons.Count - 1 ? 0 : _selectedIndex + 1);
+        }
+
+        private void HandleConfirm()
+        {
+            if (_selectedIndex >= 0 && _selectedIndex < _navigationButtons.Count)
+                _navigationButtons[_selectedIndex].onClick.Invoke();
         }
 
         private void HandlePause()
@@ -114,6 +123,23 @@ namespace ProjectAstra.Core
                 GameStateManager.Instance.RequestTransition(GameState.BattleMap, "InputAction");
             else if (state == GameState.SaveMenu || state == GameState.SettingsMenu)
                 GameStateManager.Instance.ReturnFromContextMenu("InputAction");
+        }
+
+        private void SelectButton(int index)
+        {
+            if (_selectedIndex >= 0 && _selectedIndex < _navigationButtons.Count)
+                SetButtonColor(_navigationButtons[_selectedIndex], NormalColor);
+
+            _selectedIndex = index;
+
+            if (_selectedIndex >= 0 && _selectedIndex < _navigationButtons.Count)
+                SetButtonColor(_navigationButtons[_selectedIndex], SelectedColor);
+        }
+
+        private static void SetButtonColor(Button button, Color color)
+        {
+            var image = button.GetComponent<Image>();
+            if (image != null) image.color = color;
         }
 
         #endregion
@@ -173,7 +199,7 @@ namespace ProjectAstra.Core
                 buttonGo.transform.SetParent(container, false);
                 buttonGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 50);
                 var img = buttonGo.AddComponent<Image>();
-                img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+                img.color = NormalColor;
                 button = buttonGo.AddComponent<Button>();
                 button.onClick.AddListener(onClick);
                 buttonGo.AddComponent<LayoutElement>().preferredHeight = 50;

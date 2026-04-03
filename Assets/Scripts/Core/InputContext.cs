@@ -41,7 +41,8 @@ namespace ProjectAstra.Core
 
             { GameState.MainMenu, CursorAndMenuActions },
 
-            { GameState.Cutscene, new HashSet<string> { SkipDialogue, HoldAdvanceDialogue } },
+            { GameState.Cutscene, new HashSet<string>
+                { CursorUp, CursorDown, CursorLeft, CursorRight, Confirm, Cancel, SkipDialogue, HoldAdvanceDialogue } },
 
             { GameState.PreBattlePrep, new HashSet<string>
                 { CursorUp, CursorDown, CursorLeft, CursorRight, Confirm, Cancel, Pause } },
@@ -50,9 +51,11 @@ namespace ProjectAstra.Core
 
             { GameState.BattleMapPaused, CursorAndMenuActions },
 
-            { GameState.CombatAnimation, new HashSet<string> { SkipAnimation } },
+            { GameState.CombatAnimation, new HashSet<string>
+                { CursorUp, CursorDown, CursorLeft, CursorRight, Confirm, Cancel, SkipAnimation } },
 
-            { GameState.Dialogue, new HashSet<string> { SkipDialogue, HoldAdvanceDialogue } },
+            { GameState.Dialogue, new HashSet<string>
+                { CursorUp, CursorDown, CursorLeft, CursorRight, Confirm, Cancel, SkipDialogue, HoldAdvanceDialogue } },
 
             { GameState.ChapterClear, CursorAndMenuActions },
 
