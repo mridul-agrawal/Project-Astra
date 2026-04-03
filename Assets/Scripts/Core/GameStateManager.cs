@@ -46,10 +46,6 @@ namespace ProjectAstra.Core
             _transitionProcessedThisFrame = false;
         }
 
-        /// <summary>
-        /// The single interface for requesting state transitions.
-        /// Returns true if the transition was executed, false if rejected.
-        /// </summary>
         public bool RequestTransition(GameState target, string requester = null)
         {
             string requesterName = requester ?? "unknown";
@@ -80,10 +76,6 @@ namespace ProjectAstra.Core
             return true;
         }
 
-        /// <summary>
-        /// Convenience method for returning from SaveMenu or SettingsMenu
-        /// to the state that opened them.
-        /// </summary>
         public bool ReturnFromContextMenu(string requester = null)
         {
             if (_currentState != GameState.SaveMenu && _currentState != GameState.SettingsMenu)
@@ -97,10 +89,7 @@ namespace ProjectAstra.Core
             return RequestTransition(_returnContext, requester);
         }
 
-        /// <summary>
-        /// Emergency recovery method. Bypasses the transition table.
-        /// Use only for error recovery (e.g., crash recovery on load, null state fallback).
-        /// </summary>
+        // Bypasses transition table — only for crash recovery or null-state fallback
         public void ForceState(GameState state, string reason)
         {
             Debug.LogError($"[GameStateManager] FORCED state change to {state}. Reason: {reason}");
@@ -154,9 +143,7 @@ namespace ProjectAstra.Core
             });
         }
 
-        /// <summary>
-        /// Internal initializer for EditMode tests where Awake() does not run.
-        /// </summary>
+        // Awake() does not run in EditMode tests, so this provides manual init
         internal void Initialize(GameStateTransitionTable transitionTable, GameStateEventChannel eventChannel, GameState initialState)
         {
             _transitionTable = transitionTable;
@@ -171,9 +158,6 @@ namespace ProjectAstra.Core
             _exitHooks.Clear();
         }
 
-        /// <summary>
-        /// Resets the per-frame transition gate. For testing only.
-        /// </summary>
         internal void ResetFrameGate()
         {
             _transitionProcessedThisFrame = false;

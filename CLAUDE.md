@@ -69,3 +69,4 @@ Always consult these documents before implementing a system to ensure alignment 
 - The input actions asset (`Assets/InputSystem_Actions.inputactions`) currently has default Unity template bindings — these need to be replaced with tactical RPG-specific actions (CURSOR_MOVE, CONFIRM, CANCEL, INFO, MENU, etc.) per the design spec.
 - All gameplay values (movement costs, terrain bonuses, stat formulas) must go in ScriptableObjects or data files, never hardcoded in MonoBehaviours.
 - State transitions must be validated — add guard checks that reject and log invalid transitions rather than silently allowing them.
+- Comment code only where genuinely ambiguous or misinterpretable. Comments must be short (1 line max). Comment the "why" not the "what". Never comment obvious code.

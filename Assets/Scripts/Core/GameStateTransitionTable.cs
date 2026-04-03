@@ -46,22 +46,17 @@ namespace ProjectAstra.Core
         {
             return new[]
             {
-                // From TitleScreen
                 new TransitionEntry(GameState.TitleScreen, GameState.MainMenu),
 
-                // From MainMenu
                 new TransitionEntry(GameState.MainMenu, GameState.Cutscene),
                 new TransitionEntry(GameState.MainMenu, GameState.PreBattlePrep),
                 new TransitionEntry(GameState.MainMenu, GameState.BattleMap),
 
-                // From Cutscene
                 new TransitionEntry(GameState.Cutscene, GameState.PreBattlePrep),
                 new TransitionEntry(GameState.Cutscene, GameState.BattleMap),
 
-                // From PreBattlePrep
                 new TransitionEntry(GameState.PreBattlePrep, GameState.BattleMap),
 
-                // From BattleMap
                 new TransitionEntry(GameState.BattleMap, GameState.Cutscene),
                 new TransitionEntry(GameState.BattleMap, GameState.CombatAnimation),
                 new TransitionEntry(GameState.BattleMap, GameState.Dialogue),
@@ -69,31 +64,24 @@ namespace ProjectAstra.Core
                 new TransitionEntry(GameState.BattleMap, GameState.ChapterClear),
                 new TransitionEntry(GameState.BattleMap, GameState.GameOver),
 
-                // From BattleMapPaused
                 new TransitionEntry(GameState.BattleMapPaused, GameState.BattleMap),
                 new TransitionEntry(GameState.BattleMapPaused, GameState.SaveMenu),
                 new TransitionEntry(GameState.BattleMapPaused, GameState.SettingsMenu),
 
-                // From CombatAnimation
                 new TransitionEntry(GameState.CombatAnimation, GameState.BattleMap),
 
-                // From Dialogue
                 new TransitionEntry(GameState.Dialogue, GameState.BattleMap),
 
-                // From ChapterClear
                 new TransitionEntry(GameState.ChapterClear, GameState.Cutscene),
                 new TransitionEntry(GameState.ChapterClear, GameState.SaveMenu),
 
-                // From GameOver
                 new TransitionEntry(GameState.GameOver, GameState.MainMenu),
                 new TransitionEntry(GameState.GameOver, GameState.SaveMenu),
 
-                // From SaveMenu
                 new TransitionEntry(GameState.SaveMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SaveMenu, GameState.ChapterClear),
                 new TransitionEntry(GameState.SaveMenu, GameState.MainMenu),
 
-                // From SettingsMenu
                 new TransitionEntry(GameState.SettingsMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SettingsMenu, GameState.MainMenu),
             };

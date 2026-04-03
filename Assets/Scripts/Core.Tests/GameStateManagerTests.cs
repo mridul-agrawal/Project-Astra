@@ -44,15 +44,11 @@ namespace ProjectAstra.Core.Tests
             UnityEngine.Object.DestroyImmediate(_channel);
         }
 
-        // --- Initial state ---
-
         [Test]
         public void InitialState_IsTitleScreen()
         {
             Assert.AreEqual(GameState.TitleScreen, _manager.CurrentState);
         }
-
-        // --- All 27 valid transitions (parameterized) ---
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]
         [TestCase(GameState.MainMenu, GameState.Cutscene)]
@@ -93,8 +89,6 @@ namespace ProjectAstra.Core.Tests
             Assert.AreEqual(target, _manager.CurrentState);
         }
 
-        // --- Illegal transitions ---
-
         [TestCase(GameState.TitleScreen, GameState.BattleMap)]
         [TestCase(GameState.Dialogue, GameState.GameOver)]
         [TestCase(GameState.CombatAnimation, GameState.ChapterClear)]
@@ -111,8 +105,6 @@ namespace ProjectAstra.Core.Tests
             Assert.IsFalse(result, $"Transition {startState} -> {target} should be rejected");
             Assert.AreEqual(startState, _manager.CurrentState, "State should remain unchanged");
         }
-
-        // --- Per-frame gate ---
 
         [Test]
         public void SecondTransitionSameFrame_IsDiscarded()
@@ -136,8 +128,6 @@ namespace ProjectAstra.Core.Tests
             Assert.IsTrue(result);
             Assert.AreEqual(GameState.Cutscene, _manager.CurrentState);
         }
-
-        // --- Entry/Exit hooks ---
 
         [Test]
         public void EntryHook_FiredOnTransition()
@@ -190,8 +180,6 @@ namespace ProjectAstra.Core.Tests
             Assert.AreEqual(0, fireCount);
         }
 
-        // --- Event channel ---
-
         [Test]
         public void StateChangedEvent_ContainsCorrectPreviousAndNewState()
         {
@@ -204,8 +192,6 @@ namespace ProjectAstra.Core.Tests
             Assert.AreEqual(GameState.TitleScreen, received.Value.PreviousState);
             Assert.AreEqual(GameState.MainMenu, received.Value.NewState);
         }
-
-        // --- Context tracking ---
 
         [Test]
         public void SaveMenu_StoresReturnContext()
@@ -259,8 +245,6 @@ namespace ProjectAstra.Core.Tests
             bool result = _manager.ReturnFromContextMenu("test");
             Assert.IsFalse(result);
         }
-
-        // --- ForceState ---
 
         [Test]
         public void ForceState_BypassesTransitionTable()

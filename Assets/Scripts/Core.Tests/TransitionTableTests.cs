@@ -14,7 +14,6 @@ namespace ProjectAstra.Core.Tests
         public void SetUp()
         {
             _table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
-            // Use reflection to set the private _validTransitions field with defaults
             var field = typeof(GameStateTransitionTable).GetField("_validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
@@ -39,8 +38,6 @@ namespace ProjectAstra.Core.Tests
         {
             Assert.AreEqual(27, _table.TransitionCount);
         }
-
-        // --- All 27 valid transitions ---
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]
         [TestCase(GameState.MainMenu, GameState.Cutscene)]
@@ -75,8 +72,6 @@ namespace ProjectAstra.Core.Tests
                 $"Expected transition {from} -> {to} to be valid");
         }
 
-        // --- Self-transitions should all be invalid ---
-
         [Test]
         public void SelfTransitions_AreAllInvalid()
         {
@@ -86,8 +81,6 @@ namespace ProjectAstra.Core.Tests
                     $"Self-transition {state} -> {state} should be invalid");
             }
         }
-
-        // --- Sample illegal transitions ---
 
         [TestCase(GameState.TitleScreen, GameState.BattleMap)]
         [TestCase(GameState.TitleScreen, GameState.GameOver)]

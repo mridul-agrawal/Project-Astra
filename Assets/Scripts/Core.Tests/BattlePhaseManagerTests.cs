@@ -60,7 +60,7 @@ namespace ProjectAstra.Core.Tests
         public void Reset_ReturnsToPlayerPhase()
         {
             var manager = new BattlePhaseManager(hasAllies: false);
-            manager.AdvancePhase(); // now EnemyPhase
+            manager.AdvancePhase();
 
             manager.Reset();
 
@@ -72,9 +72,9 @@ namespace ProjectAstra.Core.Tests
         {
             var manager = new BattlePhaseManager(hasAllies: false);
 
-            manager.AdvancePhase(); // EnemyPhase
+            manager.AdvancePhase();
             manager.SetHasAllies(true);
-            manager.AdvancePhase(); // AlliedPhase (now has allies)
+            manager.AdvancePhase();
 
             Assert.AreEqual(BattlePhase.AlliedPhase, manager.CurrentPhase);
         }
