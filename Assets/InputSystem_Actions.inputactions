@@ -174,12 +174,10 @@
                 { "name": "", "id": "b0050001", "path": "<Keyboard>/z", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Confirm", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0050002", "path": "<Keyboard>/enter", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Confirm", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0050003", "path": "<Gamepad>/buttonSouth", "interactions": "", "processors": "", "groups": "Gamepad", "action": "Confirm", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0050004", "path": "<Mouse>/leftButton", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Confirm", "isComposite": false, "isPartOfComposite": false },
 
                 { "name": "", "id": "b0060001", "path": "<Keyboard>/x", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0060002", "path": "<Keyboard>/backspace", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0060003", "path": "<Gamepad>/buttonEast", "interactions": "", "processors": "", "groups": "Gamepad", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0060004", "path": "<Mouse>/rightButton", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "Cancel", "isComposite": false, "isPartOfComposite": false },
 
                 { "name": "", "id": "b0070001", "path": "<Keyboard>/leftShift", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "FastCursor", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0070002", "path": "<Gamepad>/leftShoulder", "interactions": "", "processors": "", "groups": "Gamepad", "action": "FastCursor", "isComposite": false, "isPartOfComposite": false },

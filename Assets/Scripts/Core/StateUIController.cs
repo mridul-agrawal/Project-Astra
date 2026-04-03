@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 
@@ -16,10 +18,12 @@ namespace ProjectAstra.Core
         private BattlePhaseManager _battlePhaseManager;
         private bool _hasAllies = true;
         private TextMeshProUGUI _phaseLabel;
+        private readonly List<Button> _navigationButtons = new();
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+            Cursor.visible = false;
             _buttonPrefab = Resources.Load<GameObject>("UI/NavigationButton");
         }
 
@@ -35,6 +39,7 @@ namespace ProjectAstra.Core
 
         private void Start()
         {
+            SubscribeToInputActions();
             StartCoroutine(PopulateUI());
         }
 
@@ -43,7 +48,6 @@ namespace ProjectAstra.Core
             StartCoroutine(PopulateUI());
         }
 
-        // Wait one frame for scene/overlay to finish loading
         private IEnumerator PopulateUI()
         {
             yield return null;
@@ -52,6 +56,7 @@ namespace ProjectAstra.Core
             if (root == null || root.ButtonContainer == null) yield break;
 
             ClearContainer(root.ButtonContainer);
+            _navigationButtons.Clear();
 
             var currentState = GameStateManager.Instance.CurrentState;
 
@@ -65,7 +70,55 @@ namespace ProjectAstra.Core
                     GameStateManager.Instance.ReturnFromContextMenu("SceneUI"));
             else
                 CreateTransitionButtons(root.ButtonContainer, currentState);
+
+            SetupButtonNavigation();
         }
+
+        private void SetupButtonNavigation()
+        {
+            if (_navigationButtons.Count == 0) return;
+
+            for (int i = 0; i < _navigationButtons.Count; i++)
+            {
+                var nav = new Navigation { mode = Navigation.Mode.Explicit };
+                nav.selectOnUp = _navigationButtons[i > 0 ? i - 1 : _navigationButtons.Count - 1];
+                nav.selectOnDown = _navigationButtons[i < _navigationButtons.Count - 1 ? i + 1 : 0];
+                _navigationButtons[i].navigation = nav;
+            }
+
+            // Auto-select the first button for keyboard navigation
+            EventSystem.current?.SetSelectedGameObject(_navigationButtons[0].gameObject);
+        }
+
+        #region Contextual Input Actions
+
+        private void SubscribeToInputActions()
+        {
+            if (InputManager.Instance == null) return;
+            InputManager.Instance.OnPause += HandlePause;
+            InputManager.Instance.OnCancel += HandleCancel;
+        }
+
+        private void HandlePause()
+        {
+            var state = GameStateManager.Instance.CurrentState;
+            if (state == GameState.BattleMap)
+                GameStateManager.Instance.RequestTransition(GameState.BattleMapPaused, "InputAction");
+        }
+
+        private void HandleCancel()
+        {
+            var state = GameStateManager.Instance.CurrentState;
+
+            if (state == GameState.BattleMapPaused)
+                GameStateManager.Instance.RequestTransition(GameState.BattleMap, "InputAction");
+            else if (state == GameState.SaveMenu || state == GameState.SettingsMenu)
+                GameStateManager.Instance.ReturnFromContextMenu("InputAction");
+        }
+
+        #endregion
+
+        #region Button/UI Creation
 
         private void CreateTransitionButtons(Transform container, GameState currentState)
         {
@@ -103,39 +156,44 @@ namespace ProjectAstra.Core
 
         private void CreateButton(Transform container, string label, UnityEngine.Events.UnityAction onClick)
         {
+            Button button;
+
             if (_buttonPrefab != null)
             {
                 var instance = Instantiate(_buttonPrefab, container);
                 instance.name = label;
                 var tmp = instance.GetComponentInChildren<TextMeshProUGUI>();
                 if (tmp != null) tmp.text = label;
-                var button = instance.GetComponent<Button>();
+                button = instance.GetComponent<Button>();
                 if (button != null) button.onClick.AddListener(onClick);
-                return;
+            }
+            else
+            {
+                var buttonGo = new GameObject(label, typeof(RectTransform));
+                buttonGo.transform.SetParent(container, false);
+                buttonGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 50);
+                var img = buttonGo.AddComponent<Image>();
+                img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+                button = buttonGo.AddComponent<Button>();
+                button.onClick.AddListener(onClick);
+                buttonGo.AddComponent<LayoutElement>().preferredHeight = 50;
+
+                var textGo = new GameObject("Label", typeof(RectTransform));
+                textGo.transform.SetParent(buttonGo.transform, false);
+                var text = textGo.AddComponent<TextMeshProUGUI>();
+                text.text = label;
+                text.fontSize = 22;
+                text.alignment = TextAlignmentOptions.Center;
+                text.color = Color.white;
+                var textRect = textGo.GetComponent<RectTransform>();
+                textRect.anchorMin = Vector2.zero;
+                textRect.anchorMax = Vector2.one;
+                textRect.offsetMin = Vector2.zero;
+                textRect.offsetMax = Vector2.zero;
             }
 
-            // Fallback: create button from code if prefab missing
-            var buttonGo = new GameObject(label, typeof(RectTransform));
-            buttonGo.transform.SetParent(container, false);
-            buttonGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 50);
-            var img = buttonGo.AddComponent<Image>();
-            img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
-            var btn = buttonGo.AddComponent<Button>();
-            btn.onClick.AddListener(onClick);
-            buttonGo.AddComponent<LayoutElement>().preferredHeight = 50;
-
-            var textGo = new GameObject("Label", typeof(RectTransform));
-            textGo.transform.SetParent(buttonGo.transform, false);
-            var text = textGo.AddComponent<TextMeshProUGUI>();
-            text.text = label;
-            text.fontSize = 22;
-            text.alignment = TextAlignmentOptions.Center;
-            text.color = Color.white;
-            var textRect = textGo.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
+            if (button != null)
+                _navigationButtons.Add(button);
         }
 
         private TextMeshProUGUI CreateLabel(Transform container, string text)
@@ -209,6 +267,8 @@ namespace ProjectAstra.Core
             spacer.transform.SetParent(container, false);
             spacer.AddComponent<LayoutElement>().preferredHeight = height;
         }
+
+        #endregion
 
         private static void ClearContainer(Transform container)
         {
