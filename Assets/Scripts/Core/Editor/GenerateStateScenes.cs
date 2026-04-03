@@ -231,11 +231,6 @@ namespace ProjectAstra.Core.Editor
                 gsm = gsmGo.AddComponent<GameStateManager>();
             }
 
-            // Remove DebugNavigator if present
-            var debugNav = gsm.GetComponent<GameStateDebugNavigator>();
-            if (debugNav != null)
-                UnityEngine.Object.DestroyImmediate(debugNav);
-
             // Find or create EventSystem
             var eventSystem = UnityEngine.Object.FindFirstObjectByType<EventSystem>();
             if (eventSystem == null)
