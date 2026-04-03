@@ -9,13 +9,6 @@ namespace ProjectAstra.Core
     {
         [SerializeField] private GameStateEventChannel _stateChangedChannel;
 
-        [Header("Overlay Prefabs")]
-        [SerializeField] private GameObject _battleMapPausedOverlay;
-        [SerializeField] private GameObject _combatAnimationOverlay;
-        [SerializeField] private GameObject _dialogueOverlay;
-        [SerializeField] private GameObject _saveMenuOverlay;
-        [SerializeField] private GameObject _settingsMenuOverlay;
-
         private string _currentBaseScene;
         private GameObject _activeOverlay;
 
@@ -28,22 +21,10 @@ namespace ProjectAstra.Core
             GameState.SettingsMenu
         };
 
-        private static readonly Dictionary<GameState, string> SceneNames = new()
-        {
-            { GameState.TitleScreen,   "TitleScreen" },
-            { GameState.MainMenu,      "MainMenu" },
-            { GameState.Cutscene,      "Cutscene" },
-            { GameState.PreBattlePrep, "PreBattlePrep" },
-            { GameState.BattleMap,     "BattleMap" },
-            { GameState.ChapterClear,  "ChapterClear" },
-            { GameState.GameOver,      "GameOver" },
-        };
-
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
 
-            // EventSystem must survive scene loads or UI input stops working
             var eventSystem = FindFirstObjectByType<EventSystem>();
             if (eventSystem != null)
                 DontDestroyOnLoad(eventSystem.gameObject);
@@ -54,10 +35,10 @@ namespace ProjectAstra.Core
             _stateChangedChannel.Register(OnStateChanged);
 
             var initialState = GameStateManager.Instance.CurrentState;
-            if (SceneNames.TryGetValue(initialState, out string sceneName))
+            if (!IsOverlayState(initialState))
             {
-                _currentBaseScene = sceneName;
-                SceneManager.LoadScene(sceneName);
+                _currentBaseScene = initialState.ToString();
+                SceneManager.LoadScene(_currentBaseScene);
             }
         }
 
@@ -73,26 +54,23 @@ namespace ProjectAstra.Core
 
             if (IsOverlayState(args.NewState))
             {
-                InstantiateOverlay(args.NewState);
+                var prefab = Resources.Load<GameObject>($"Overlays/{args.NewState}");
+                if (prefab != null)
+                    _activeOverlay = Instantiate(prefab);
+                else
+                    Debug.LogError($"[SceneLoader] Overlay prefab not found: Resources/Overlays/{args.NewState}");
             }
             else
             {
                 DestroyActiveOverlay();
 
-                if (SceneNames.TryGetValue(args.NewState, out string sceneName)
-                    && sceneName != _currentBaseScene)
+                string sceneName = args.NewState.ToString();
+                if (sceneName != _currentBaseScene)
                 {
                     _currentBaseScene = sceneName;
                     SceneManager.LoadScene(sceneName);
                 }
             }
-        }
-
-        private void InstantiateOverlay(GameState state)
-        {
-            var prefab = GetOverlayPrefab(state);
-            if (prefab != null)
-                _activeOverlay = Instantiate(prefab);
         }
 
         private void DestroyActiveOverlay()
@@ -102,19 +80,6 @@ namespace ProjectAstra.Core
                 Destroy(_activeOverlay);
                 _activeOverlay = null;
             }
-        }
-
-        private GameObject GetOverlayPrefab(GameState state)
-        {
-            return state switch
-            {
-                GameState.BattleMapPaused  => _battleMapPausedOverlay,
-                GameState.CombatAnimation  => _combatAnimationOverlay,
-                GameState.Dialogue         => _dialogueOverlay,
-                GameState.SaveMenu         => _saveMenuOverlay,
-                GameState.SettingsMenu     => _settingsMenuOverlay,
-                _ => null
-            };
         }
 
         private static bool IsOverlayState(GameState state) => OverlayStates.Contains(state);

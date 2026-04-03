@@ -50,80 +50,93 @@ namespace ProjectAstra.Core.Editor
         {
             if (!EditorUtility.DisplayDialog(
                 "Generate State Scenes",
-                "This will create 7 game scenes, 5 overlay prefabs, and update build settings. Continue?",
+                "This will create 7 game scenes, 5 overlay prefabs, a navigation button prefab, and update build settings. Continue?",
                 "Generate", "Cancel"))
                 return;
 
-            var transitionTable = LoadTransitionTable();
-            if (transitionTable == null)
-            {
-                Debug.LogError("Could not find TransitionTable asset in Assets/ScriptableObjects/Core/");
-                return;
-            }
-
             EnsureDirectories();
+            CreateNavigationButtonPrefab();
 
             foreach (var state in SceneStates)
-                CreateSceneForState(state, transitionTable);
+                CreateSceneForState(state);
 
             foreach (var state in OverlayStates)
-                CreateOverlayPrefab(state, transitionTable);
+                CreateOverlayPrefab(state);
 
-            SetupBootScene(transitionTable);
+            SetupBootScene();
             UpdateBuildSettings();
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GenerateStateScenes] Done! 7 scenes + 5 overlays created. Build settings updated.");
+            Debug.Log("[GenerateStateScenes] Done! 7 scenes + 5 overlays + button prefab created.");
         }
 
         private static void EnsureDirectories()
         {
-            if (!AssetDatabase.IsValidFolder("Assets/Scenes"))
-                AssetDatabase.CreateFolder("Assets", "Scenes");
-            if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
-                AssetDatabase.CreateFolder("Assets", "Prefabs");
-            if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Core"))
-                AssetDatabase.CreateFolder("Assets/Prefabs", "Core");
-            if (!AssetDatabase.IsValidFolder("Assets/Prefabs/Core/Overlays"))
-                AssetDatabase.CreateFolder("Assets/Prefabs/Core", "Overlays");
+            EnsureFolder("Assets/Scenes");
+            EnsureFolder("Assets/Resources");
+            EnsureFolder("Assets/Resources/UI");
+            EnsureFolder("Assets/Resources/Overlays");
         }
 
-        private static GameStateTransitionTable LoadTransitionTable()
+        private static void EnsureFolder(string path)
         {
-            var guids = AssetDatabase.FindAssets("t:GameStateTransitionTable", new[] { "Assets/ScriptableObjects" });
-            if (guids.Length == 0) return null;
-            return AssetDatabase.LoadAssetAtPath<GameStateTransitionTable>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            if (AssetDatabase.IsValidFolder(path)) return;
+            var parent = Path.GetDirectoryName(path).Replace('\\', '/');
+            var folder = Path.GetFileName(path);
+            AssetDatabase.CreateFolder(parent, folder);
         }
 
-        private static GameStateEventChannel LoadEventChannel()
+        private static void CreateNavigationButtonPrefab()
         {
-            var guids = AssetDatabase.FindAssets("t:GameStateEventChannel", new[] { "Assets/ScriptableObjects" });
-            if (guids.Length == 0) return null;
-            return AssetDatabase.LoadAssetAtPath<GameStateEventChannel>(AssetDatabase.GUIDToAssetPath(guids[0]));
+            var buttonGo = new GameObject("NavigationButton", typeof(RectTransform));
+
+            var image = buttonGo.AddComponent<Image>();
+            image.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+
+            var button = buttonGo.AddComponent<Button>();
+            var colors = button.colors;
+            colors.highlightedColor = new Color(0.35f, 0.35f, 0.35f);
+            colors.pressedColor = new Color(0.15f, 0.15f, 0.15f);
+            button.colors = colors;
+
+            var layout = buttonGo.AddComponent<LayoutElement>();
+            layout.preferredHeight = 50;
+
+            var textGo = new GameObject("Label", typeof(RectTransform));
+            textGo.transform.SetParent(buttonGo.transform, false);
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = "Button";
+            tmp.fontSize = 22;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = Color.white;
+            StretchFull(textGo.GetComponent<RectTransform>());
+
+            PrefabUtility.SaveAsPrefabAsset(buttonGo, "Assets/Resources/UI/NavigationButton.prefab");
+            UnityEngine.Object.DestroyImmediate(buttonGo);
         }
 
-        private static void CreateSceneForState(GameState state, GameStateTransitionTable transitionTable)
+        private static void CreateSceneForState(GameState state)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            string sceneName = state.ToString();
 
             CreateSceneCamera();
             var canvas = CreateCanvas(0);
             CreateBackground(canvas.transform, StateColors[state]);
-            CreateTitle(canvas.transform, FormatName(sceneName));
+            CreateTitle(canvas.transform, FormatName(state.ToString()));
             CreateNavigationLabel(canvas.transform);
             var buttonContainer = CreateButtonContainer(canvas.transform);
-            CreateStateController(state, transitionTable, buttonContainer.transform);
 
-            string path = $"Assets/Scenes/{sceneName}.unity";
-            EditorSceneManager.SaveScene(scene, path);
+            var uiRoot = canvas.gameObject.AddComponent<SceneUIRoot>();
+            SetField(uiRoot, "_buttonContainer", buttonContainer.transform);
+
+            EditorSceneManager.SaveScene(scene, $"Assets/Scenes/{state}.unity");
         }
 
-        private static void CreateOverlayPrefab(GameState state, GameStateTransitionTable transitionTable)
+        private static void CreateOverlayPrefab(GameState state)
         {
-            var rootGo = new GameObject($"{state}Overlay");
+            var rootGo = new GameObject(state.ToString());
 
             var canvas = rootGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -136,18 +149,16 @@ namespace ProjectAstra.Core.Editor
 
             rootGo.AddComponent<GraphicRaycaster>();
 
-            // Semi-transparent dark background
+            // Dim background
             var dimGo = new GameObject("DimBackground", typeof(RectTransform));
             dimGo.transform.SetParent(rootGo.transform, false);
-            var dimImage = dimGo.AddComponent<Image>();
-            dimImage.color = new Color(0f, 0f, 0f, 0.6f);
+            dimGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
             StretchFull(dimGo.GetComponent<RectTransform>());
 
-            // Centered panel
+            // Panel
             var panelGo = new GameObject("Panel", typeof(RectTransform));
             panelGo.transform.SetParent(rootGo.transform, false);
-            var panelImage = panelGo.AddComponent<Image>();
-            panelImage.color = StateColors[state];
+            panelGo.AddComponent<Image>().color = StateColors[state];
             var panelRect = panelGo.GetComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0.25f, 0.15f);
             panelRect.anchorMax = new Vector2(0.75f, 0.85f);
@@ -159,11 +170,11 @@ namespace ProjectAstra.Core.Editor
             panelLayout.spacing = 8;
             panelLayout.childAlignment = TextAnchor.UpperCenter;
             panelLayout.childControlWidth = true;
-            panelLayout.childControlHeight = false;
+            panelLayout.childControlHeight = true;
             panelLayout.childForceExpandWidth = true;
             panelLayout.childForceExpandHeight = false;
 
-            // Title inside panel
+            // Title
             var titleGo = new GameObject("Title", typeof(RectTransform));
             titleGo.transform.SetParent(panelGo.transform, false);
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
@@ -172,47 +183,41 @@ namespace ProjectAstra.Core.Editor
             titleTmp.fontStyle = FontStyles.Bold;
             titleTmp.alignment = TextAlignmentOptions.Center;
             titleTmp.color = Color.white;
-            var titleLayout = titleGo.AddComponent<LayoutElement>();
-            titleLayout.preferredHeight = 60;
+            titleGo.AddComponent<LayoutElement>().preferredHeight = 60;
 
-            // Navigation label
-            var navLabelGo = new GameObject("NavigateLabel", typeof(RectTransform));
-            navLabelGo.transform.SetParent(panelGo.transform, false);
-            var navTmp = navLabelGo.AddComponent<TextMeshProUGUI>();
+            // Navigate label
+            var navGo = new GameObject("NavigateLabel", typeof(RectTransform));
+            navGo.transform.SetParent(panelGo.transform, false);
+            var navTmp = navGo.AddComponent<TextMeshProUGUI>();
             navTmp.text = "Navigate to:";
             navTmp.fontSize = 18;
             navTmp.fontStyle = FontStyles.Italic;
             navTmp.alignment = TextAlignmentOptions.Center;
             navTmp.color = new Color(0.7f, 0.7f, 0.7f);
-            var navLayout = navLabelGo.AddComponent<LayoutElement>();
-            navLayout.preferredHeight = 30;
+            navGo.AddComponent<LayoutElement>().preferredHeight = 30;
 
-            // Button container inside panel
+            // Button container
             var containerGo = new GameObject("ButtonContainer", typeof(RectTransform));
             containerGo.transform.SetParent(panelGo.transform, false);
             var containerLayout = containerGo.AddComponent<VerticalLayoutGroup>();
             containerLayout.spacing = 8;
             containerLayout.childControlWidth = true;
-            containerLayout.childControlHeight = false;
+            containerLayout.childControlHeight = true;
             containerLayout.childForceExpandWidth = true;
             containerLayout.childForceExpandHeight = false;
-            var containerElement = containerGo.AddComponent<LayoutElement>();
-            containerElement.flexibleHeight = 1;
+            containerGo.AddComponent<LayoutElement>().flexibleHeight = 1;
 
-            // StateUIController
-            var controller = rootGo.AddComponent<StateUIController>();
-            SetSerializedField(controller, "_state", state);
-            SetSerializedField(controller, "_transitionTable", transitionTable);
-            SetSerializedField(controller, "_buttonContainer", containerGo.transform);
+            // SceneUIRoot marker
+            var uiRoot = rootGo.AddComponent<SceneUIRoot>();
+            SetField(uiRoot, "_buttonContainer", containerGo.transform);
 
-            string path = $"Assets/Prefabs/Core/Overlays/{state}Overlay.prefab";
-            PrefabUtility.SaveAsPrefabAsset(rootGo, path);
+            PrefabUtility.SaveAsPrefabAsset(rootGo, $"Assets/Resources/Overlays/{state}.prefab");
             UnityEngine.Object.DestroyImmediate(rootGo);
         }
 
-        private static void SetupBootScene(GameStateTransitionTable transitionTable)
+        private static void SetupBootScene()
         {
-            string bootPath = "Assets/Scenes/SampleScene.unity";
+            string bootPath = "Assets/Scenes/BootScene.unity";
             if (!File.Exists(bootPath))
             {
                 var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -223,51 +228,43 @@ namespace ProjectAstra.Core.Editor
                 EditorSceneManager.OpenScene(bootPath);
             }
 
-            // Find or create GameStateManager
+            var eventChannel = LoadAsset<GameStateEventChannel>("t:GameStateEventChannel", "Assets/ScriptableObjects");
+            var transitionTable = LoadAsset<GameStateTransitionTable>("t:GameStateTransitionTable", "Assets/ScriptableObjects");
+
+            // GameStateManager
             var gsm = UnityEngine.Object.FindFirstObjectByType<GameStateManager>();
             if (gsm == null)
             {
-                var gsmGo = new GameObject("GameStateManager");
-                gsm = gsmGo.AddComponent<GameStateManager>();
+                var go = new GameObject("GameStateManager");
+                gsm = go.AddComponent<GameStateManager>();
             }
 
-            // Find or create EventSystem
-            var eventSystem = UnityEngine.Object.FindFirstObjectByType<EventSystem>();
-            if (eventSystem == null)
+            // EventSystem
+            if (UnityEngine.Object.FindFirstObjectByType<EventSystem>() == null)
             {
-                var esGo = new GameObject("EventSystem");
-                esGo.AddComponent<EventSystem>();
-                esGo.AddComponent<InputSystemUIInputModule>();
+                var go = new GameObject("EventSystem");
+                go.AddComponent<EventSystem>();
+                go.AddComponent<InputSystemUIInputModule>();
             }
 
-            // Find or create SceneLoader
-            var sceneLoader = UnityEngine.Object.FindFirstObjectByType<SceneLoader>();
-            if (sceneLoader == null)
+            // SceneLoader
+            var loader = UnityEngine.Object.FindFirstObjectByType<SceneLoader>();
+            if (loader == null)
             {
-                var loaderGo = new GameObject("SceneLoader");
-                sceneLoader = loaderGo.AddComponent<SceneLoader>();
+                var go = new GameObject("SceneLoader");
+                loader = go.AddComponent<SceneLoader>();
             }
+            SetField(loader, "_stateChangedChannel", eventChannel);
 
-            // Wire up SceneLoader overlay prefab references
-            var eventChannel = LoadEventChannel();
-            SetSerializedField(sceneLoader, "_stateChangedChannel", eventChannel);
-
-            foreach (var state in OverlayStates)
+            // StateUIController (single global instance)
+            var uiController = UnityEngine.Object.FindFirstObjectByType<StateUIController>();
+            if (uiController == null)
             {
-                string prefabPath = $"Assets/Prefabs/Core/Overlays/{state}Overlay.prefab";
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
-                string fieldName = state switch
-                {
-                    GameState.BattleMapPaused  => "_battleMapPausedOverlay",
-                    GameState.CombatAnimation  => "_combatAnimationOverlay",
-                    GameState.Dialogue         => "_dialogueOverlay",
-                    GameState.SaveMenu         => "_saveMenuOverlay",
-                    GameState.SettingsMenu     => "_settingsMenuOverlay",
-                    _ => null
-                };
-                if (fieldName != null && prefab != null)
-                    SetSerializedField(sceneLoader, fieldName, prefab);
+                var go = new GameObject("StateUIController");
+                uiController = go.AddComponent<StateUIController>();
             }
+            SetField(uiController, "_stateChangedChannel", eventChannel);
+            SetField(uiController, "_transitionTable", transitionTable);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), bootPath);
         }
@@ -276,7 +273,7 @@ namespace ProjectAstra.Core.Editor
         {
             var scenes = new List<EditorBuildSettingsScene>
             {
-                new("Assets/Scenes/SampleScene.unity", true)
+                new("Assets/Scenes/BootScene.unity", true)
             };
 
             foreach (var state in SceneStates)
@@ -285,57 +282,60 @@ namespace ProjectAstra.Core.Editor
             EditorBuildSettings.scenes = scenes.ToArray();
         }
 
-        // --- UI Creation Helpers ---
+        // --- Helpers ---
+
+        private static T LoadAsset<T>(string filter, string folder) where T : UnityEngine.Object
+        {
+            var guids = AssetDatabase.FindAssets(filter, new[] { folder });
+            return guids.Length > 0
+                ? AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guids[0]))
+                : null;
+        }
 
         private static void CreateSceneCamera()
         {
-            var camGo = new GameObject("Camera");
-            var cam = camGo.AddComponent<Camera>();
+            var go = new GameObject("Camera");
+            var cam = go.AddComponent<Camera>();
             cam.orthographic = true;
             cam.orthographicSize = 5;
-            // Clear to solid color so the background isn't rendering garbage
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = Color.black;
-            camGo.transform.position = new Vector3(0, 0, -10);
+            go.transform.position = new Vector3(0, 0, -10);
         }
 
         private static Canvas CreateCanvas(int sortOrder)
         {
-            var canvasGo = new GameObject("Canvas");
-            var canvas = canvasGo.AddComponent<Canvas>();
+            var go = new GameObject("Canvas");
+            var canvas = go.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = sortOrder;
-
-            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            var scaler = go.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
             scaler.matchWidthOrHeight = 0.5f;
-
-            canvasGo.AddComponent<GraphicRaycaster>();
+            go.AddComponent<GraphicRaycaster>();
             return canvas;
         }
 
         private static void CreateBackground(Transform parent, Color color)
         {
-            var bgGo = new GameObject("Background", typeof(RectTransform));
-            bgGo.transform.SetParent(parent, false);
-            var image = bgGo.AddComponent<Image>();
-            image.color = color;
-            StretchFull(bgGo.GetComponent<RectTransform>());
+            var go = new GameObject("Background", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            go.AddComponent<Image>().color = color;
+            StretchFull(go.GetComponent<RectTransform>());
         }
 
         private static void CreateTitle(Transform parent, string text)
         {
-            var titleGo = new GameObject("Title", typeof(RectTransform));
-            titleGo.transform.SetParent(parent, false);
-            var tmp = titleGo.AddComponent<TextMeshProUGUI>();
+            var go = new GameObject("Title", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = 48;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = Color.white;
-
-            var rect = titleGo.GetComponent<RectTransform>();
+            var rect = go.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0, 0.75f);
             rect.anchorMax = new Vector2(1, 0.95f);
             rect.offsetMin = Vector2.zero;
@@ -344,16 +344,15 @@ namespace ProjectAstra.Core.Editor
 
         private static void CreateNavigationLabel(Transform parent)
         {
-            var labelGo = new GameObject("NavigateLabel", typeof(RectTransform));
-            labelGo.transform.SetParent(parent, false);
-            var tmp = labelGo.AddComponent<TextMeshProUGUI>();
+            var go = new GameObject("NavigateLabel", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.text = "Navigate to:";
             tmp.fontSize = 22;
             tmp.fontStyle = FontStyles.Italic;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = new Color(0.7f, 0.7f, 0.7f);
-
-            var rect = labelGo.GetComponent<RectTransform>();
+            var rect = go.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.2f, 0.68f);
             rect.anchorMax = new Vector2(0.8f, 0.74f);
             rect.offsetMin = Vector2.zero;
@@ -362,10 +361,9 @@ namespace ProjectAstra.Core.Editor
 
         private static GameObject CreateButtonContainer(Transform parent)
         {
-            var containerGo = new GameObject("ButtonContainer", typeof(RectTransform));
-            containerGo.transform.SetParent(parent, false);
-
-            var layout = containerGo.AddComponent<VerticalLayoutGroup>();
+            var go = new GameObject("ButtonContainer", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var layout = go.AddComponent<VerticalLayoutGroup>();
             layout.spacing = 10;
             layout.childAlignment = TextAnchor.UpperCenter;
             layout.childControlWidth = true;
@@ -373,26 +371,12 @@ namespace ProjectAstra.Core.Editor
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
             layout.padding = new RectOffset(20, 20, 0, 0);
-
-            var rect = containerGo.GetComponent<RectTransform>();
+            var rect = go.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.25f, 0.05f);
             rect.anchorMax = new Vector2(0.75f, 0.67f);
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-
-            return containerGo;
-        }
-
-        private static void CreateStateController(
-            GameState state,
-            GameStateTransitionTable transitionTable,
-            Transform buttonContainer)
-        {
-            var controllerGo = new GameObject("StateController");
-            var controller = controllerGo.AddComponent<StateUIController>();
-            SetSerializedField(controller, "_state", state);
-            SetSerializedField(controller, "_transitionTable", transitionTable);
-            SetSerializedField(controller, "_buttonContainer", buttonContainer);
+            return go;
         }
 
         private static void StretchFull(RectTransform rect)
@@ -403,7 +387,7 @@ namespace ProjectAstra.Core.Editor
             rect.offsetMax = Vector2.zero;
         }
 
-        private static void SetSerializedField(UnityEngine.Object target, string fieldName, object value)
+        private static void SetField(UnityEngine.Object target, string fieldName, object value)
         {
             var field = target.GetType().GetField(fieldName,
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -412,7 +396,6 @@ namespace ProjectAstra.Core.Editor
                 Debug.LogWarning($"Could not find field '{fieldName}' on {target.GetType().Name}");
                 return;
             }
-
             field.SetValue(target, value);
             EditorUtility.SetDirty(target);
         }

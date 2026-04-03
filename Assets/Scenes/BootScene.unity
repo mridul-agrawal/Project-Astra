@@ -340,6 +340,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1000100477
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1000100479}
+  - component: {fileID: 1000100478}
+  m_Layer: 0
+  m_Name: StateUIController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1000100478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000100477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded590d7181140045b8d38cac2b9eb4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.StateUIController
+  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
+  _transitionTable: {fileID: 11400000, guid: 5a25e2f8fb709f140bfaa1bb9be5d6dc, type: 2}
+--- !u!4 &1000100479
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000100477}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1172619852
 GameObject:
   m_ObjectHideFlags: 0
@@ -449,11 +495,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.SceneLoader
   _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
-  _battleMapPausedOverlay: {fileID: 4843701451098095021, guid: 70d4ef66520eaf44ab852856c34cc3ca, type: 3}
-  _combatAnimationOverlay: {fileID: 6367569307241989329, guid: 15677ee0fa0f56c498baf8d3414772b9, type: 3}
-  _dialogueOverlay: {fileID: 481615889935405091, guid: 5a01e940ffa5c7a4baa7c9a1a06f3894, type: 3}
-  _saveMenuOverlay: {fileID: 5412608676031878318, guid: 8dc95e0604a179a48b5e914494e3e21c, type: 3}
-  _settingsMenuOverlay: {fileID: 3426962640017628892, guid: 169ff28bca07bd84c944501601798d20, type: 3}
 --- !u!4 &1567155997
 Transform:
   m_ObjectHideFlags: 0
@@ -588,3 +629,4 @@ SceneRoots:
   - {fileID: 1172619855}
   - {fileID: 1567155997}
   - {fileID: 1664336122}
+  - {fileID: 1000100479}

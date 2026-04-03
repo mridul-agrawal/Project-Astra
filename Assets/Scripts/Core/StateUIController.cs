@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,100 +9,128 @@ namespace ProjectAstra.Core
 {
     public class StateUIController : MonoBehaviour
     {
-        [SerializeField] private GameState _state;
+        [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private GameStateTransitionTable _transitionTable;
-        [SerializeField] private Transform _buttonContainer;
 
+        private GameObject _buttonPrefab;
         private BattlePhaseManager _battlePhaseManager;
         private bool _hasAllies = true;
-
-        // Cached references for battle phase UI (created at runtime)
         private TextMeshProUGUI _phaseLabel;
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+            _buttonPrefab = Resources.Load<GameObject>("UI/NavigationButton");
+        }
+
+        private void OnEnable()
+        {
+            _stateChangedChannel.Register(OnStateChanged);
+        }
+
+        private void OnDisable()
+        {
+            _stateChangedChannel.Unregister(OnStateChanged);
+        }
 
         private void Start()
         {
-            if (_transitionTable == null)
-            {
-                Debug.LogError($"[StateUIController] TransitionTable not assigned on {gameObject.name} in scene for state {_state}");
-                return;
-            }
-
-            if (_state == GameState.BattleMap)
-                SetupBattlePhaseControls();
-
-            if (_state == GameState.SaveMenu || _state == GameState.SettingsMenu)
-                CreateReturnButton();
-            else
-                CreateTransitionButtons();
+            StartCoroutine(PopulateUI());
         }
 
-        private void CreateTransitionButtons()
+        private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
+        {
+            StartCoroutine(PopulateUI());
+        }
+
+        // Wait one frame for scene/overlay to finish loading
+        private IEnumerator PopulateUI()
+        {
+            yield return null;
+
+            var root = FindFirstObjectByType<SceneUIRoot>();
+            if (root == null || root.ButtonContainer == null) yield break;
+
+            ClearContainer(root.ButtonContainer);
+
+            var currentState = GameStateManager.Instance.CurrentState;
+
+            if (currentState == GameState.BattleMap)
+                SetupBattlePhaseControls(root.ButtonContainer);
+            else
+                _battlePhaseManager = null;
+
+            if (currentState == GameState.SaveMenu || currentState == GameState.SettingsMenu)
+                CreateButton(root.ButtonContainer, "Return", () =>
+                    GameStateManager.Instance.ReturnFromContextMenu("SceneUI"));
+            else
+                CreateTransitionButtons(root.ButtonContainer, currentState);
+        }
+
+        private void CreateTransitionButtons(Transform container, GameState currentState)
         {
             var allStates = (GameState[])Enum.GetValues(typeof(GameState));
             foreach (var target in allStates)
             {
-                if (!_transitionTable.IsValid(_state, target)) continue;
-                CreateButton(FormatName(target.ToString()), () =>
-                    GameStateManager.Instance.RequestTransition(target, "SceneUI"));
+                if (!_transitionTable.IsValid(currentState, target)) continue;
+                var targetState = target;
+                CreateButton(container, FormatName(target.ToString()), () =>
+                    GameStateManager.Instance.RequestTransition(targetState, "SceneUI"));
             }
         }
 
-        private void CreateReturnButton()
-        {
-            CreateButton("Return", () =>
-                GameStateManager.Instance.ReturnFromContextMenu("SceneUI"));
-        }
-
-        private void SetupBattlePhaseControls()
+        private void SetupBattlePhaseControls(Transform container)
         {
             _battlePhaseManager = new BattlePhaseManager(_hasAllies);
 
-            _phaseLabel = CreateLabel($"Battle Phase:  {FormatName(_battlePhaseManager.CurrentPhase.ToString())}");
+            _phaseLabel = CreateLabel(container,
+                $"Battle Phase:  {FormatName(_battlePhaseManager.CurrentPhase.ToString())}");
 
-            CreateButton("Advance Phase", () =>
+            CreateButton(container, "Advance Phase", () =>
             {
                 _battlePhaseManager.AdvancePhase();
                 _phaseLabel.text = $"Battle Phase:  {FormatName(_battlePhaseManager.CurrentPhase.ToString())}";
             });
 
-            CreateToggle("Has Allies", _hasAllies, value =>
+            CreateToggle(container, "Has Allies", _hasAllies, value =>
             {
                 _hasAllies = value;
                 _battlePhaseManager.SetHasAllies(value);
             });
 
-            CreateSpacer(20f);
+            CreateSpacer(container, 20f);
         }
 
-        private void CreateButton(string label, UnityEngine.Events.UnityAction onClick)
+        private void CreateButton(Transform container, string label, UnityEngine.Events.UnityAction onClick)
         {
+            if (_buttonPrefab != null)
+            {
+                var instance = Instantiate(_buttonPrefab, container);
+                instance.name = label;
+                var tmp = instance.GetComponentInChildren<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = label;
+                var button = instance.GetComponent<Button>();
+                if (button != null) button.onClick.AddListener(onClick);
+                return;
+            }
+
+            // Fallback: create button from code if prefab missing
             var buttonGo = new GameObject(label, typeof(RectTransform));
-            buttonGo.transform.SetParent(_buttonContainer, false);
-
-            var image = buttonGo.AddComponent<Image>();
-            image.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
-
-            var button = buttonGo.AddComponent<Button>();
-            var colors = button.colors;
-            colors.highlightedColor = new Color(0.35f, 0.35f, 0.35f);
-            colors.pressedColor = new Color(0.15f, 0.15f, 0.15f);
-            button.colors = colors;
-            button.onClick.AddListener(onClick);
-
-            var rect = buttonGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0, 50);
-
-            var layout = buttonGo.AddComponent<LayoutElement>();
-            layout.preferredHeight = 50;
+            buttonGo.transform.SetParent(container, false);
+            buttonGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 50);
+            var img = buttonGo.AddComponent<Image>();
+            img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+            var btn = buttonGo.AddComponent<Button>();
+            btn.onClick.AddListener(onClick);
+            buttonGo.AddComponent<LayoutElement>().preferredHeight = 50;
 
             var textGo = new GameObject("Label", typeof(RectTransform));
             textGo.transform.SetParent(buttonGo.transform, false);
-            var tmp = textGo.AddComponent<TextMeshProUGUI>();
-            tmp.text = label;
-            tmp.fontSize = 22;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = Color.white;
-
+            var text = textGo.AddComponent<TextMeshProUGUI>();
+            text.text = label;
+            text.fontSize = 22;
+            text.alignment = TextAlignmentOptions.Center;
+            text.color = Color.white;
             var textRect = textGo.GetComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
@@ -109,37 +138,27 @@ namespace ProjectAstra.Core
             textRect.offsetMax = Vector2.zero;
         }
 
-        private TextMeshProUGUI CreateLabel(string text)
+        private TextMeshProUGUI CreateLabel(Transform container, string text)
         {
             var labelGo = new GameObject("Label", typeof(RectTransform));
-            labelGo.transform.SetParent(_buttonContainer, false);
-
-            var rect = labelGo.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(0, 35);
-
+            labelGo.transform.SetParent(container, false);
+            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 35);
             var tmp = labelGo.AddComponent<TextMeshProUGUI>();
             tmp.text = text;
             tmp.fontSize = 22;
             tmp.alignment = TextAlignmentOptions.Center;
             tmp.color = new Color(0.85f, 0.85f, 0.85f);
             tmp.raycastTarget = false;
-
-            var layout = labelGo.AddComponent<LayoutElement>();
-            layout.preferredHeight = 35;
-
+            labelGo.AddComponent<LayoutElement>().preferredHeight = 35;
             return tmp;
         }
 
-        private void CreateToggle(string label, bool initialValue, Action<bool> onValueChanged)
+        private void CreateToggle(Transform container, string label, bool initialValue, Action<bool> onValueChanged)
         {
             var toggleGo = new GameObject(label, typeof(RectTransform));
-            toggleGo.transform.SetParent(_buttonContainer, false);
-
-            var toggleRect = toggleGo.GetComponent<RectTransform>();
-            toggleRect.sizeDelta = new Vector2(0, 40);
-
-            var layout = toggleGo.AddComponent<LayoutElement>();
-            layout.preferredHeight = 40;
+            toggleGo.transform.SetParent(container, false);
+            toggleGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
+            toggleGo.AddComponent<LayoutElement>().preferredHeight = 40;
 
             var toggle = toggleGo.AddComponent<Toggle>();
             toggle.isOn = initialValue;
@@ -184,12 +203,17 @@ namespace ProjectAstra.Core
             toggle.onValueChanged.AddListener(val => onValueChanged(val));
         }
 
-        private void CreateSpacer(float height)
+        private void CreateSpacer(Transform container, float height)
         {
             var spacer = new GameObject("Spacer", typeof(RectTransform));
-            spacer.transform.SetParent(_buttonContainer, false);
-            var layout = spacer.AddComponent<LayoutElement>();
-            layout.preferredHeight = height;
+            spacer.transform.SetParent(container, false);
+            spacer.AddComponent<LayoutElement>().preferredHeight = height;
+        }
+
+        private static void ClearContainer(Transform container)
+        {
+            for (int i = container.childCount - 1; i >= 0; i--)
+                Destroy(container.GetChild(i).gameObject);
         }
 
         private static string FormatName(string pascalCase)
