@@ -111,20 +111,31 @@ namespace ProjectAstra.Core.UI
             _phaseLabel.text = $"Phase: {_phaseManager.CurrentPhase}";
         }
 
-        private void Pause() => GameStateManager.Instance.RequestTransition(GameState.BattleMapPaused, nameof(BattleMapUI));
+        private void Pause()
+        {
+            if (IsNotActiveState) return;
+            GameStateManager.Instance.RequestTransition(GameState.BattleMapPaused, nameof(BattleMapUI));
+        }
         private void GoToCutscene() => GameStateManager.Instance.RequestTransition(GameState.Cutscene, nameof(BattleMapUI));
         private void GoToCombatAnimation() => GameStateManager.Instance.RequestTransition(GameState.CombatAnimation, nameof(BattleMapUI));
         private void GoToDialogue() => GameStateManager.Instance.RequestTransition(GameState.Dialogue, nameof(BattleMapUI));
         private void GoToChapterClear() => GameStateManager.Instance.RequestTransition(GameState.ChapterClear, nameof(BattleMapUI));
         private void GoToGameOver() => GameStateManager.Instance.RequestTransition(GameState.GameOver, nameof(BattleMapUI));
 
+        private bool IsNotActiveState => GameStateManager.Instance.CurrentState != GameState.BattleMap;
+
         private void Navigate(Vector2Int dir)
         {
+            if (IsNotActiveState) return;
             if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
         }
 
-        private void ConfirmSelection() => _buttons[_selected].onClick.Invoke();
+        private void ConfirmSelection()
+        {
+            if (IsNotActiveState) return;
+            _buttons[_selected].onClick.Invoke();
+        }
 
         private void SelectButtonByIndex(int i)
         {

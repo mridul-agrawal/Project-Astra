@@ -62,13 +62,20 @@ namespace ProjectAstra.Core.UI
         private void GoToMainMenu() => GameStateManager.Instance.RequestTransition(GameState.MainMenu, nameof(GameOverUI));
         private void GoToSaveMenu() => GameStateManager.Instance.RequestTransition(GameState.SaveMenu, nameof(GameOverUI));
 
+        private bool IsNotActiveState => GameStateManager.Instance.CurrentState != GameState.GameOver;
+
         private void Navigate(Vector2Int dir)
         {
+            if (IsNotActiveState) return;
             if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
         }
 
-        private void ConfirmSelection() => _buttons[_selected].onClick.Invoke();
+        private void ConfirmSelection()
+        {
+            if (IsNotActiveState) return;
+            _buttons[_selected].onClick.Invoke();
+        }
 
         private void SelectButtonByIndex(int i)
         {
