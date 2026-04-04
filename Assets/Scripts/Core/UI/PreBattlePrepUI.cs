@@ -3,25 +3,45 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI
 {
-    /// <summary>Pre-battle preparation UI — confirm starts the battle.</summary>
+    /// <summary>
+    /// Pre-battle preparation UI — confirm starts the battle.
+    /// </summary>
     public class PreBattlePrepUI : MonoBehaviour
     {
         [SerializeField] private Button _battleMapButton;
 
-        private static readonly Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
+        [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
         private void OnEnable()
         {
-            _battleMapButton.onClick.AddListener(GoToBattleMap);
+            AddListenersToMouseClicks();
+            AddListenerToGameplayInputs();
             _battleMapButton.image.color = Selected;
+        }
 
+        private void AddListenersToMouseClicks()
+        {
+            _battleMapButton.onClick.AddListener(GoToBattleMap);
+        }
+
+        private void AddListenerToGameplayInputs()
+        {
             InputManager.Instance.OnConfirm += GoToBattleMap;
         }
 
         private void OnDisable()
         {
-            _battleMapButton.onClick.RemoveListener(GoToBattleMap);
+            RemoveListenersToMouseClicks();
+            RemoveListenerToGameplayInputs();
+        }
 
+        private void RemoveListenersToMouseClicks()
+        {
+            _battleMapButton.onClick.RemoveListener(GoToBattleMap);
+        }
+
+        private void RemoveListenerToGameplayInputs()
+        {
             InputManager.Instance.OnConfirm -= GoToBattleMap;
         }
 

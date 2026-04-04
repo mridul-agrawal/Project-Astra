@@ -4,7 +4,9 @@ using TMPro;
 
 namespace ProjectAstra.Core.UI
 {
-    /// <summary>Battle map UI — phase controls, allies toggle, and transition buttons. Subscribes to Pause.</summary>
+    /// <summary>
+    /// Battle map UI — phase controls, allies toggle, and transition buttons. Subscribes to Pause.
+    /// </summary>
     public class BattleMapUI : MonoBehaviour
     {
         [Header("Phase Controls")]
@@ -19,8 +21,9 @@ namespace ProjectAstra.Core.UI
         [SerializeField] private Button _chapterClearButton;
         [SerializeField] private Button _gameOverButton;
 
-        private static readonly Color Normal = new(0.2f, 0.2f, 0.2f, 0.9f);
-        private static readonly Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
+        [Header("Colors")]
+        [SerializeField] private Color Normal = new(0.2f, 0.2f, 0.2f, 0.9f);
+        [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
         private BattlePhaseManager _phaseManager;
         private bool _hasAllies = true;
@@ -39,24 +42,40 @@ namespace ProjectAstra.Core.UI
                 _chapterClearButton, _gameOverButton
             };
 
+            AddListenersToMouseClicks();
+            AddListenerToGameplayInputs();
+            InitializeButtonColors();
+            SelectButtonByIndex(0);
+
+            _hasAlliesToggle.isOn = _hasAllies;
+            _hasAlliesToggle.onValueChanged.AddListener(OnHasAlliesChanged);
+        }
+
+        private void AddListenersToMouseClicks()
+        {
             _advancePhaseButton.onClick.AddListener(AdvancePhase);
             _cutsceneButton.onClick.AddListener(GoToCutscene);
             _combatAnimationButton.onClick.AddListener(GoToCombatAnimation);
             _dialogueButton.onClick.AddListener(GoToDialogue);
             _chapterClearButton.onClick.AddListener(GoToChapterClear);
             _gameOverButton.onClick.AddListener(GoToGameOver);
+        }
 
-            _hasAlliesToggle.isOn = _hasAllies;
-            _hasAlliesToggle.onValueChanged.AddListener(OnHasAlliesChanged);
-
+        private void AddListenerToGameplayInputs()
+        {
             InputManager.Instance.OnCursorMove += Navigate;
             InputManager.Instance.OnConfirm += ConfirmSelection;
             InputManager.Instance.OnPause += Pause;
-
-            Select(0);
         }
 
         private void OnDisable()
+        {
+            RemoveListenersToMouseClicks();
+            RemoveListenerToGameplayInputs();
+            _hasAlliesToggle.onValueChanged.RemoveListener(OnHasAlliesChanged);
+        }
+
+        private void RemoveListenersToMouseClicks()
         {
             _advancePhaseButton.onClick.RemoveListener(AdvancePhase);
             _cutsceneButton.onClick.RemoveListener(GoToCutscene);
@@ -64,12 +83,16 @@ namespace ProjectAstra.Core.UI
             _dialogueButton.onClick.RemoveListener(GoToDialogue);
             _chapterClearButton.onClick.RemoveListener(GoToChapterClear);
             _gameOverButton.onClick.RemoveListener(GoToGameOver);
-            _hasAlliesToggle.onValueChanged.RemoveListener(OnHasAlliesChanged);
+        }
 
+        private void RemoveListenerToGameplayInputs()
+        {
             InputManager.Instance.OnCursorMove -= Navigate;
             InputManager.Instance.OnConfirm -= ConfirmSelection;
             InputManager.Instance.OnPause -= Pause;
         }
+
+        private void InitializeButtonColors() { foreach (var button in _buttons) button.image.color = Normal; }
 
         private void AdvancePhase()
         {
@@ -97,13 +120,13 @@ namespace ProjectAstra.Core.UI
 
         private void Navigate(Vector2Int dir)
         {
-            if (dir.y > 0) Select(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
-            else if (dir.y < 0) Select(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
+            if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
+            else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
         }
 
         private void ConfirmSelection() => _buttons[_selected].onClick.Invoke();
 
-        private void Select(int i)
+        private void SelectButtonByIndex(int i)
         {
             _buttons[_selected].image.color = Normal;
             _selected = i;

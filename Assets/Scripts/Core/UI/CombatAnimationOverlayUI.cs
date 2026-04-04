@@ -3,25 +3,45 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI
 {
-    /// <summary>Combat animation overlay — confirm returns to battle map.</summary>
+    /// <summary>
+    /// Combat animation overlay — confirm returns to battle map.
+    /// </summary>
     public class CombatAnimationOverlayUI : MonoBehaviour
     {
         [SerializeField] private Button _returnButton;
 
-        private static readonly Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
+        [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
         private void OnEnable()
         {
-            _returnButton.onClick.AddListener(ReturnToBattle);
+            AddListenersToMouseClicks();
+            AddListenerToGameplayInputs();
             _returnButton.image.color = Selected;
+        }
 
+        private void AddListenersToMouseClicks()
+        {
+            _returnButton.onClick.AddListener(ReturnToBattle);
+        }
+
+        private void AddListenerToGameplayInputs()
+        {
             InputManager.Instance.OnConfirm += ReturnToBattle;
         }
 
         private void OnDisable()
         {
-            _returnButton.onClick.RemoveListener(ReturnToBattle);
+            RemoveListenersToMouseClicks();
+            RemoveListenerToGameplayInputs();
+        }
 
+        private void RemoveListenersToMouseClicks()
+        {
+            _returnButton.onClick.RemoveListener(ReturnToBattle);
+        }
+
+        private void RemoveListenerToGameplayInputs()
+        {
             InputManager.Instance.OnConfirm -= ReturnToBattle;
         }
 
