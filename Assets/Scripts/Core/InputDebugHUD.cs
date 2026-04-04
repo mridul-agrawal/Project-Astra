@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>IMGUI overlay that logs InputManager events in real time for debugging input and device state.</summary>
     public class InputDebugHUD : MonoBehaviour
     {
         private readonly List<string> _log = new();

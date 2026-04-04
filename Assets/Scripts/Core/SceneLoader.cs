@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>
+    /// Listens to state changes and loads base scenes or instantiates overlay prefabs accordingly.
+    /// </summary>
     public class SceneLoader : MonoBehaviour
     {
         [SerializeField] private GameStateEventChannel _stateChangedChannel;

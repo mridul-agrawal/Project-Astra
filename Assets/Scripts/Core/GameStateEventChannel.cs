@@ -4,6 +4,7 @@ using UnityEngine;
 namespace ProjectAstra.Core
 {
     [CreateAssetMenu(fileName = "GameStateChanged", menuName = "Project Astra/Core/Game State Event Channel")]
+    /// <summary>ScriptableObject-based event bus for broadcasting game state transitions to decoupled listeners.</summary>
     public class GameStateEventChannel : ScriptableObject
     {
         public struct StateChangeArgs

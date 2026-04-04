@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>
+    /// Singleton state machine that owns the current GameState, validates transitions, and enforces one-transition-per-frame.
+    /// </summary>
     public class GameStateManager : MonoBehaviour
     {
         public static GameStateManager Instance { get; private set; }

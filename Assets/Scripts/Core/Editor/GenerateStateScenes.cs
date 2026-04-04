@@ -11,9 +11,11 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core;
+using ProjectAstra.Core.UI;
 
 namespace ProjectAstra.Core.Editor
 {
+    /// <summary>Editor utility that generates placeholder scenes, overlay prefabs, and build settings for all GameStates.</summary>
     public static class GenerateStateScenes
     {
         private static readonly Dictionary<GameState, Color> StateColors = new()
@@ -43,6 +45,76 @@ namespace ProjectAstra.Core.Editor
         {
             GameState.BattleMapPaused, GameState.CombatAnimation,
             GameState.Dialogue, GameState.SaveMenu, GameState.SettingsMenu
+        };
+
+        private struct ButtonDef
+        {
+            public string Label;
+            public string FieldName;
+        }
+
+        private static readonly Dictionary<GameState, Type> ControllerTypes = new()
+        {
+            { GameState.TitleScreen,      typeof(TitleScreenUI) },
+            { GameState.MainMenu,         typeof(MainMenuUI) },
+            { GameState.Cutscene,         typeof(CutsceneUI) },
+            { GameState.PreBattlePrep,    typeof(PreBattlePrepUI) },
+            { GameState.BattleMap,        typeof(BattleMapUI) },
+            { GameState.ChapterClear,     typeof(ChapterClearUI) },
+            { GameState.GameOver,         typeof(GameOverUI) },
+            { GameState.BattleMapPaused,  typeof(BattleMapPausedOverlayUI) },
+            { GameState.CombatAnimation,  typeof(CombatAnimationOverlayUI) },
+            { GameState.Dialogue,         typeof(DialogueOverlayUI) },
+            { GameState.SaveMenu,         typeof(SaveMenuOverlayUI) },
+            { GameState.SettingsMenu,     typeof(SettingsMenuOverlayUI) },
+        };
+
+        private static readonly Dictionary<GameState, ButtonDef[]> ButtonConfigs = new()
+        {
+            { GameState.MainMenu, new[] {
+                new ButtonDef { Label = "Cutscene",        FieldName = "_cutsceneButton" },
+                new ButtonDef { Label = "Pre Battle Prep", FieldName = "_preBattlePrepButton" },
+                new ButtonDef { Label = "Battle Map",      FieldName = "_battleMapButton" },
+            }},
+            { GameState.Cutscene, new[] {
+                new ButtonDef { Label = "Pre Battle Prep", FieldName = "_preBattlePrepButton" },
+                new ButtonDef { Label = "Battle Map",      FieldName = "_battleMapButton" },
+            }},
+            { GameState.PreBattlePrep, new[] {
+                new ButtonDef { Label = "Battle Map", FieldName = "_battleMapButton" },
+            }},
+            { GameState.BattleMap, new[] {
+                new ButtonDef { Label = "Cutscene",          FieldName = "_cutsceneButton" },
+                new ButtonDef { Label = "Combat Animation",  FieldName = "_combatAnimationButton" },
+                new ButtonDef { Label = "Dialogue",          FieldName = "_dialogueButton" },
+                new ButtonDef { Label = "Chapter Clear",     FieldName = "_chapterClearButton" },
+                new ButtonDef { Label = "Game Over",         FieldName = "_gameOverButton" },
+            }},
+            { GameState.ChapterClear, new[] {
+                new ButtonDef { Label = "Cutscene",  FieldName = "_cutsceneButton" },
+                new ButtonDef { Label = "Save Menu", FieldName = "_saveMenuButton" },
+            }},
+            { GameState.GameOver, new[] {
+                new ButtonDef { Label = "Main Menu", FieldName = "_mainMenuButton" },
+                new ButtonDef { Label = "Save Menu", FieldName = "_saveMenuButton" },
+            }},
+            { GameState.BattleMapPaused, new[] {
+                new ButtonDef { Label = "Resume",        FieldName = "_resumeButton" },
+                new ButtonDef { Label = "Save Menu",     FieldName = "_saveMenuButton" },
+                new ButtonDef { Label = "Settings Menu", FieldName = "_settingsMenuButton" },
+            }},
+            { GameState.CombatAnimation, new[] {
+                new ButtonDef { Label = "Return to Battle", FieldName = "_returnButton" },
+            }},
+            { GameState.Dialogue, new[] {
+                new ButtonDef { Label = "End Dialogue", FieldName = "_endDialogueButton" },
+            }},
+            { GameState.SaveMenu, new[] {
+                new ButtonDef { Label = "Return", FieldName = "_returnButton" },
+            }},
+            { GameState.SettingsMenu, new[] {
+                new ButtonDef { Label = "Return", FieldName = "_returnButton" },
+            }},
         };
 
         [MenuItem("Project Astra/Generate State Scenes and Overlays")]
@@ -128,8 +200,16 @@ namespace ProjectAstra.Core.Editor
             CreateNavigationLabel(canvas.transform);
             var buttonContainer = CreateButtonContainer(canvas.transform);
 
-            var uiRoot = canvas.gameObject.AddComponent<SceneUIRoot>();
-            SetField(uiRoot, "_buttonContainer", buttonContainer.transform);
+            var controller = (Component)canvas.gameObject.AddComponent(ControllerTypes[state]);
+
+            Button advancePhaseButton = null;
+            if (state == GameState.BattleMap)
+                advancePhaseButton = CreateBattleMapPhaseControls(buttonContainer.transform, controller);
+
+            var buttons = CreateButtonsForState(state, buttonContainer.transform);
+            if (advancePhaseButton != null)
+                buttons.Insert(0, advancePhaseButton);
+            WireController(controller, state, buttons);
 
             EditorSceneManager.SaveScene(scene, $"Assets/Scenes/{state}.unity");
         }
@@ -149,13 +229,11 @@ namespace ProjectAstra.Core.Editor
 
             rootGo.AddComponent<GraphicRaycaster>();
 
-            // Dim background
             var dimGo = new GameObject("DimBackground", typeof(RectTransform));
             dimGo.transform.SetParent(rootGo.transform, false);
             dimGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.6f);
             StretchFull(dimGo.GetComponent<RectTransform>());
 
-            // Panel
             var panelGo = new GameObject("Panel", typeof(RectTransform));
             panelGo.transform.SetParent(rootGo.transform, false);
             panelGo.AddComponent<Image>().color = StateColors[state];
@@ -174,7 +252,6 @@ namespace ProjectAstra.Core.Editor
             panelLayout.childForceExpandWidth = true;
             panelLayout.childForceExpandHeight = false;
 
-            // Title
             var titleGo = new GameObject("Title", typeof(RectTransform));
             titleGo.transform.SetParent(panelGo.transform, false);
             var titleTmp = titleGo.AddComponent<TextMeshProUGUI>();
@@ -185,7 +262,6 @@ namespace ProjectAstra.Core.Editor
             titleTmp.color = Color.white;
             titleGo.AddComponent<LayoutElement>().preferredHeight = 60;
 
-            // Navigate label
             var navGo = new GameObject("NavigateLabel", typeof(RectTransform));
             navGo.transform.SetParent(panelGo.transform, false);
             var navTmp = navGo.AddComponent<TextMeshProUGUI>();
@@ -196,7 +272,6 @@ namespace ProjectAstra.Core.Editor
             navTmp.color = new Color(0.7f, 0.7f, 0.7f);
             navGo.AddComponent<LayoutElement>().preferredHeight = 30;
 
-            // Button container
             var containerGo = new GameObject("ButtonContainer", typeof(RectTransform));
             containerGo.transform.SetParent(panelGo.transform, false);
             var containerLayout = containerGo.AddComponent<VerticalLayoutGroup>();
@@ -207,12 +282,155 @@ namespace ProjectAstra.Core.Editor
             containerLayout.childForceExpandHeight = false;
             containerGo.AddComponent<LayoutElement>().flexibleHeight = 1;
 
-            // SceneUIRoot marker
-            var uiRoot = rootGo.AddComponent<SceneUIRoot>();
-            SetField(uiRoot, "_buttonContainer", containerGo.transform);
+            var controller = (Component)rootGo.AddComponent(ControllerTypes[state]);
+
+            var buttons = CreateButtonsForState(state, containerGo.transform);
+            WireController(controller, state, buttons);
 
             PrefabUtility.SaveAsPrefabAsset(rootGo, $"Assets/Resources/Overlays/{state}.prefab");
             UnityEngine.Object.DestroyImmediate(rootGo);
+        }
+
+        private static List<Button> CreateButtonsForState(GameState state, Transform container)
+        {
+            var buttons = new List<Button>();
+            if (!ButtonConfigs.TryGetValue(state, out var defs)) return buttons;
+
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/NavigationButton.prefab");
+
+            foreach (var def in defs)
+            {
+                Button button;
+                if (prefab != null)
+                {
+                    var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                    instance.transform.SetParent(container, false);
+                    instance.name = def.Label;
+                    var tmp = instance.GetComponentInChildren<TextMeshProUGUI>();
+                    if (tmp != null) tmp.text = def.Label;
+                    button = instance.GetComponent<Button>();
+                }
+                else
+                {
+                    var go = CreateFallbackButton(container, def.Label);
+                    button = go.GetComponent<Button>();
+                }
+
+                buttons.Add(button);
+            }
+
+            return buttons;
+        }
+
+        private static void WireController(Component controller, GameState state, List<Button> buttons)
+        {
+            if (!ButtonConfigs.TryGetValue(state, out var defs)) return;
+
+            for (int i = 0; i < defs.Length && i < buttons.Count; i++)
+            {
+                if (defs[i].FieldName != null)
+                    SetField(controller, defs[i].FieldName, buttons[i]);
+            }
+        }
+
+        private static Button CreateBattleMapPhaseControls(Transform container, Component controller)
+        {
+            // Phase label
+            var labelGo = new GameObject("PhaseLabel", typeof(RectTransform));
+            labelGo.transform.SetParent(container, false);
+            labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 35);
+            var phaseTmp = labelGo.AddComponent<TextMeshProUGUI>();
+            phaseTmp.text = "Battle Phase:  Player Phase";
+            phaseTmp.fontSize = 22;
+            phaseTmp.alignment = TextAlignmentOptions.Center;
+            phaseTmp.color = new Color(0.85f, 0.85f, 0.85f);
+            phaseTmp.raycastTarget = false;
+            labelGo.AddComponent<LayoutElement>().preferredHeight = 35;
+
+            SetField(controller, "_phaseLabel", phaseTmp);
+
+            // Advance Phase button
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/NavigationButton.prefab");
+            Button advanceButton;
+            if (prefab != null)
+            {
+                var instance = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                instance.transform.SetParent(container, false);
+                instance.name = "Advance Phase";
+                var tmp = instance.GetComponentInChildren<TextMeshProUGUI>();
+                if (tmp != null) tmp.text = "Advance Phase";
+                advanceButton = instance.GetComponent<Button>();
+            }
+            else
+            {
+                advanceButton = CreateFallbackButton(container, "Advance Phase").GetComponent<Button>();
+            }
+
+            SetField(controller, "_advancePhaseButton", advanceButton);
+
+            // Has Allies toggle
+            var toggleGo = CreateToggle(container, "Has Allies", true);
+            var toggle = toggleGo.GetComponent<Toggle>();
+            SetField(controller, "_hasAlliesToggle", toggle);
+
+            // Spacer
+            var spacer = new GameObject("Spacer", typeof(RectTransform));
+            spacer.transform.SetParent(container, false);
+            spacer.AddComponent<LayoutElement>().preferredHeight = 20;
+
+            return advanceButton;
+        }
+
+        private static GameObject CreateToggle(Transform container, string label, bool initialValue)
+        {
+            var toggleGo = new GameObject(label, typeof(RectTransform));
+            toggleGo.transform.SetParent(container, false);
+            toggleGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
+            toggleGo.AddComponent<LayoutElement>().preferredHeight = 40;
+
+            var toggle = toggleGo.AddComponent<Toggle>();
+            toggle.isOn = initialValue;
+
+            var bgGo = new GameObject("Background", typeof(RectTransform));
+            bgGo.transform.SetParent(toggleGo.transform, false);
+            var bgImage = bgGo.AddComponent<Image>();
+            bgImage.color = new Color(0.3f, 0.3f, 0.3f);
+            var bgRect = bgGo.GetComponent<RectTransform>();
+            bgRect.anchorMin = new Vector2(0f, 0.5f);
+            bgRect.anchorMax = new Vector2(0f, 0.5f);
+            bgRect.pivot = new Vector2(0f, 0.5f);
+            bgRect.sizeDelta = new Vector2(30, 30);
+            bgRect.anchoredPosition = new Vector2(10, 0);
+
+            var checkGo = new GameObject("Checkmark", typeof(RectTransform));
+            checkGo.transform.SetParent(bgGo.transform, false);
+            var checkImage = checkGo.AddComponent<Image>();
+            checkImage.color = Color.white;
+            var checkRect = checkGo.GetComponent<RectTransform>();
+            checkRect.anchorMin = new Vector2(0.15f, 0.15f);
+            checkRect.anchorMax = new Vector2(0.85f, 0.85f);
+            checkRect.offsetMin = Vector2.zero;
+            checkRect.offsetMax = Vector2.zero;
+
+            toggle.targetGraphic = bgImage;
+            toggle.graphic = checkImage;
+
+            var textGo = new GameObject("Label", typeof(RectTransform));
+            textGo.transform.SetParent(toggleGo.transform, false);
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = label;
+            tmp.fontSize = 20;
+            tmp.alignment = TextAlignmentOptions.MidlineLeft;
+            tmp.color = new Color(0.85f, 0.85f, 0.85f);
+            var textRect = textGo.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = new Vector2(50, 0);
+            textRect.offsetMax = Vector2.zero;
+
+            toggle.onValueChanged.AddListener(val => { });
+
+            return toggleGo;
         }
 
         private static void SetupBootScene()
@@ -256,15 +474,10 @@ namespace ProjectAstra.Core.Editor
             }
             SetField(loader, "_stateChangedChannel", eventChannel);
 
-            // StateUIController (single global instance)
-            var uiController = UnityEngine.Object.FindFirstObjectByType<StateUIController>();
-            if (uiController == null)
-            {
-                var go = new GameObject("StateUIController");
-                uiController = go.AddComponent<StateUIController>();
-            }
-            SetField(uiController, "_stateChangedChannel", eventChannel);
-            SetField(uiController, "_transitionTable", transitionTable);
+            // Remove legacy StateUIController if present
+            var legacyGo = GameObject.Find("StateUIController");
+            if (legacyGo != null)
+                UnityEngine.Object.DestroyImmediate(legacyGo);
 
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), bootPath);
         }
@@ -379,6 +592,28 @@ namespace ProjectAstra.Core.Editor
             return go;
         }
 
+        private static GameObject CreateFallbackButton(Transform container, string label)
+        {
+            var buttonGo = new GameObject(label, typeof(RectTransform));
+            buttonGo.transform.SetParent(container, false);
+            buttonGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 50);
+            var img = buttonGo.AddComponent<Image>();
+            img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+            buttonGo.AddComponent<Button>();
+            buttonGo.AddComponent<LayoutElement>().preferredHeight = 50;
+
+            var textGo = new GameObject("Label", typeof(RectTransform));
+            textGo.transform.SetParent(buttonGo.transform, false);
+            var text = textGo.AddComponent<TextMeshProUGUI>();
+            text.text = label;
+            text.fontSize = 22;
+            text.alignment = TextAlignmentOptions.Center;
+            text.color = Color.white;
+            StretchFull(textGo.GetComponent<RectTransform>());
+
+            return buttonGo;
+        }
+
         private static void StretchFull(RectTransform rect)
         {
             rect.anchorMin = Vector2.zero;
@@ -387,17 +622,23 @@ namespace ProjectAstra.Core.Editor
             rect.offsetMax = Vector2.zero;
         }
 
-        private static void SetField(UnityEngine.Object target, string fieldName, object value)
+        private static void SetField(object target, string fieldName, object value)
         {
-            var field = target.GetType().GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (field == null)
+            var type = target.GetType();
+            while (type != null)
             {
-                Debug.LogWarning($"Could not find field '{fieldName}' on {target.GetType().Name}");
-                return;
+                var field = type.GetField(fieldName,
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    field.SetValue(target, value);
+                    if (target is UnityEngine.Object uObj)
+                        EditorUtility.SetDirty(uObj);
+                    return;
+                }
+                type = type.BaseType;
             }
-            field.SetValue(target, value);
-            EditorUtility.SetDirty(target);
+            Debug.LogWarning($"Could not find field '{fieldName}' on {target.GetType().Name} or its parents");
         }
 
         private static string FormatName(string pascalCase)

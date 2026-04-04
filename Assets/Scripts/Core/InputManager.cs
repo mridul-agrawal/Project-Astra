@@ -4,8 +4,15 @@ using UnityEngine.InputSystem;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>
+    /// Active input device classification for hot-swap detection.
+    /// </summary>
     public enum InputDeviceType { Keyboard, Gamepad, Mouse }
 
+    /// <summary>
+    /// Singleton that maps raw Input System actions to logical game events, 
+    /// with DAS cursor repeat, context filtering, and same-frame priority resolution.
+    /// </summary>
     public class InputManager : MonoBehaviour
     {
         public static InputManager Instance { get; private set; }
@@ -51,6 +58,12 @@ namespace ProjectAstra.Core
 
         private void Awake()
         {
+            CreateSingleton();
+            InitializeInputActionMap();
+        }
+
+        private void CreateSingleton()
+        {
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
@@ -58,7 +71,10 @@ namespace ProjectAstra.Core
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+        }
 
+        private void InitializeInputActionMap()
+        {
             _gameplayMap = _inputActions.FindActionMap("Gameplay");
             if (_gameplayMap == null)
             {

@@ -4,6 +4,7 @@ using UnityEngine;
 namespace ProjectAstra.Core
 {
     [CreateAssetMenu(fileName = "TransitionTable", menuName = "Project Astra/Core/Transition Table")]
+    /// <summary>Data-driven whitelist of legal GameState transitions, stored as a ScriptableObject and queried via HashSet lookup.</summary>
     public class GameStateTransitionTable : ScriptableObject
     {
         [System.Serializable]

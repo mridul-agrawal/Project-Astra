@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>Defines which input actions are allowed per GameState, used by InputManager for context-based action filtering.</summary>
     public static class InputContext
     {
         public const string CursorUp = "CursorUp";

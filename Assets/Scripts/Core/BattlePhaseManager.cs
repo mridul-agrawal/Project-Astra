@@ -2,6 +2,7 @@ using System;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>Cycles battle phases (Player->Enemy->Allied) and optionally skips AlliedPhase when no allies are present.</summary>
     public class BattlePhaseManager
     {
         private BattlePhase _currentPhase;
