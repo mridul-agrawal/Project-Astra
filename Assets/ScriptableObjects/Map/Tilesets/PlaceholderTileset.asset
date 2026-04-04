@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa9fbe11c97eaf48a08f532e14b6d6f, type: 3}
+  m_Name: PlaceholderTileset
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TilesetDefinition
+  _tilesetName: Placeholder
+  _sourceTexture: {fileID: 0}
+  _tilePixelSize: 16
+  _tiles:
+  - tileAsset: {fileID: 11400000, guid: cea8cdd513b10624eb89c1bf10d6acf8, type: 2}
+    terrainType: 0
+  - tileAsset: {fileID: 11400000, guid: 8e755d6036d64bc4a95a24def383ed23, type: 2}
+    terrainType: 1
+  - tileAsset: {fileID: 11400000, guid: e14963e2ff5ac324aa3321a59d45b992, type: 2}
+    terrainType: 2
+  - tileAsset: {fileID: 11400000, guid: 2238591155daefd44b8c37ff82495c60, type: 2}
+    terrainType: 3
+  - tileAsset: {fileID: 11400000, guid: 186c05f779a4a1b439886c8b66e2084d, type: 2}
+    terrainType: 4
+  - tileAsset: {fileID: 11400000, guid: b94bf5ff8b744084b80a9f0e05e96fc5, type: 2}
+    terrainType: 5
+  - tileAsset: {fileID: 11400000, guid: a9205be813f8d2046bf4ecb4488bf9b9, type: 2}
+    terrainType: 6
+  - tileAsset: {fileID: 11400000, guid: 8c301eca7d411084f93c36b400f02db5, type: 2}
+    terrainType: 7
+  - tileAsset: {fileID: 11400000, guid: aceb562a2e4c4a24dba47fcec2116840, type: 2}
+    terrainType: 8
+  - tileAsset: {fileID: 11400000, guid: 3ac13a7242ceeab42a10abbcef823c53, type: 2}
+    terrainType: 9
+  - tileAsset: {fileID: 11400000, guid: 8cde8f60752be2147ac8a3ddcc9c42cc, type: 2}
+    terrainType: 10
+  - tileAsset: {fileID: 11400000, guid: 0f0300b151c30bc45bec7380a5b51bf5, type: 2}
+    terrainType: 11
+  - tileAsset: {fileID: 11400000, guid: 38399bfb02813504197de06abcd355bf, type: 2}
+    terrainType: 12
+  - tileAsset: {fileID: 11400000, guid: 11812b2dd9b6a9443a6547ff6372856e, type: 2}
+    terrainType: 13
+  - tileAsset: {fileID: 11400000, guid: c665b2e487763d848a503942d7cf0c8c, type: 2}
+    terrainType: 14
+  - tileAsset: {fileID: 11400000, guid: 63c398c9fd9104a4e8a9c24e6006c14f, type: 2}
+    terrainType: 15

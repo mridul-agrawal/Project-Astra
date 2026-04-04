@@ -4,7 +4,8 @@
     "references": [
         "ProjectAstra.Core",
         "Unity.TextMeshPro",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.2D.Tilemap.Extras"
     ],
     "includePlatforms": [
         "Editor"

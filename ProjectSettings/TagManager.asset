@@ -41,3 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ground
+    uniqueID: 1
+    locked: 0
+  - name: Overlay
+    uniqueID: 2
+    locked: 0
+  - name: Object
+    uniqueID: 3
+    locked: 0
+  - name: Units
+    uniqueID: 4
+    locked: 0
+  - name: UIOverlay
+    uniqueID: 5
+    locked: 0
