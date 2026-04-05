@@ -47,8 +47,8 @@ namespace ProjectAstra.Core.Editor
             int[] groundIds = {
                 0, 0, 1, 1, 0, 0, 7, 0,   // row 0: plains, forest patch, road
                 0, 0, 1, 2, 0, 7, 7, 0,   // row 1: forest into mountain, road
-                7, 7, 0, 2, 0, 7, 0, 16,  // row 2: road, mountains, sand
-                7, 0, 0, 13, 0, 0, 0, 16, // row 3: road, wall barrier, sand
+                7, 7, 0, 2, 0, 7, 0, 15,  // row 2: road, mountains, rubble
+                7, 0, 0, 13, 0, 0, 0, 15, // row 3: road, wall barrier, rubble
                 0, 0, 4, 4, 4, 0, 0, 0,   // row 4: water lake
                 0, 1, 4, 4, 4, 1, 9, 0,   // row 5: lake with forest, fort
                 0, 1, 0, 0, 0, 1, 0, 0,   // row 6: forest corridor
