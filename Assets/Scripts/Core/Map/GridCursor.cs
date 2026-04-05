@@ -110,8 +110,12 @@ namespace ProjectAstra.Core
 
         public void SetPosition(Vector2Int position)
         {
-            _gridPosition = ClampToMapBounds(position);
+            Vector2Int newPos = ClampToMapBounds(position);
+            bool changed = newPos != _gridPosition;
+            _gridPosition = newPos;
             SnapToGridPosition();
+            if (changed)
+                OnCursorMoved?.Invoke(_gridPosition);
         }
 
         public void SetPositionWithMemory(Vector2Int position)

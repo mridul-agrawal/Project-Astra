@@ -33,10 +33,11 @@ namespace ProjectAstra.Core.Editor
 
             SetupGridCursor(mapRenderer, stateChannel, terrainStatTable, cursorSprite);
             SetupTestUnit(unitSprite);
+            SetupCameraController(mapRenderer);
 
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
                 UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
-            Debug.Log("GridCursor and TestUnit added to scene.");
+            Debug.Log("GridCursor, TestUnit, and CameraController added to scene.");
         }
 
         private static void SetupGridCursor(MapRenderer mapRenderer,
@@ -108,6 +109,32 @@ namespace ProjectAstra.Core.Editor
             unitGO.transform.position = new Vector3(2.5f, 2.5f, 0f);
 
             Undo.RegisterCreatedObjectUndo(unitGO, "Create TestUnit");
+        }
+
+        private static void SetupCameraController(MapRenderer mapRenderer)
+        {
+            var cam = Object.FindAnyObjectByType<Camera>();
+            if (cam == null)
+            {
+                Debug.LogError("CursorSceneSetup: No Camera found in scene.");
+                return;
+            }
+
+            // Don't create duplicate
+            if (cam.GetComponent<CameraController>() != null)
+            {
+                Debug.Log("CursorSceneSetup: CameraController already exists, skipping.");
+                return;
+            }
+
+            var gridCursor = Object.FindAnyObjectByType<GridCursor>();
+            var controller = Undo.AddComponent<CameraController>(cam.gameObject);
+
+            var so = new SerializedObject(controller);
+            so.FindProperty("_gridCursor").objectReferenceValue = gridCursor;
+            so.FindProperty("_mapRenderer").objectReferenceValue = mapRenderer;
+            so.FindProperty("_deadzoneMarginTiles").intValue = 3;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
     }
 }
