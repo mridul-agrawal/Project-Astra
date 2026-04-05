@@ -31,34 +31,39 @@ namespace ProjectAstra.Core
         {
             if (!IsInBounds(x, y)) return -1;
 
-            for (int i = 0; i < _layers.Length; i++)
-            {
-                if (_layers[i].layer != layer) continue;
-                int index = y * _width + x;
-                int[] ids = _layers[i].tileIds;
-                if (index < 0 || index >= ids.Length) return -1;
-                return ids[index];
-            }
+            MapLayerData? layerData = FindLayer(layer);
+            if (!layerData.HasValue) return -1;
 
-            return -1;
+            int index = ToFlatIndex(x, y);
+            if (index >= layerData.Value.tileIds.Length) return -1;
+
+            return layerData.Value.tileIds[index];
         }
 
         public void SetTileId(MapLayer layer, int x, int y, int tileId)
         {
             if (!IsInBounds(x, y)) return;
 
-            for (int i = 0; i < _layers.Length; i++)
-            {
-                if (_layers[i].layer != layer) continue;
-                int index = y * _width + x;
-                int[] ids = _layers[i].tileIds;
-                if (index >= 0 && index < ids.Length)
-                    ids[index] = tileId;
-                return;
-            }
+            MapLayerData? layerData = FindLayer(layer);
+            if (!layerData.HasValue) return;
+
+            int index = ToFlatIndex(x, y);
+            if (index < layerData.Value.tileIds.Length)
+                layerData.Value.tileIds[index] = tileId;
         }
 
         public MapLayerData? GetLayerData(MapLayer layer)
+        {
+            return FindLayer(layer);
+        }
+
+        // Converts (x, y) grid coordinates to an index into the flat tile ID array (row-major order)
+        private int ToFlatIndex(int x, int y)
+        {
+            return y * _width + x;
+        }
+
+        private MapLayerData? FindLayer(MapLayer layer)
         {
             for (int i = 0; i < _layers.Length; i++)
             {

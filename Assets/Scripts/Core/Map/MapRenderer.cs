@@ -4,11 +4,19 @@ using UnityEngine.Tilemaps;
 
 namespace ProjectAstra.Core
 {
+    /// <summary>
+    /// Orchestrates tilemap rendering for a loaded map. Reads MapData (integer tile IDs),
+    /// resolves them through TilesetDefinitions into Unity TileBase assets, and stamps them
+    /// onto the appropriate Tilemap layer. Also provides runtime tile swapping (for destructible
+    /// walls) and terrain type queries (for movement/combat systems).
+    /// </summary>
     public class MapRenderer : MonoBehaviour
     {
+        // One Tilemap per render layer: Ground, Overlay, Object, Units, UIOverlay
         [Header("Tilemap Layers")]
         [SerializeField] private Tilemap[] _tilemaps = new Tilemap[5];
 
+        // Magenta tile shown when a tile ID is invalid or missing
         [Header("Fallback")]
         [SerializeField] private TileBase _errorTile;
 
@@ -16,8 +24,10 @@ namespace ProjectAstra.Core
 
         public MapData CurrentMap => _currentMap;
 
+        /// <summary>Fired when SwapTile changes a tile, carrying the cell position. Pathfinding subscribes to this.</summary>
         public event Action<Vector2Int> OnTileSwapped;
 
+        /// <summary>Clears all tilemaps, then stamps every layer from the given MapData.</summary>
         public void LoadMap(MapData mapData)
         {
             if (mapData == null)
@@ -28,45 +38,34 @@ namespace ProjectAstra.Core
 
             _currentMap = mapData;
             ClearAllTilemaps();
-
-            foreach (var layerData in mapData.Layers)
-            {
-                int layerIndex = (int)layerData.layer;
-                if (layerIndex < 0 || layerIndex >= _tilemaps.Length || _tilemaps[layerIndex] == null)
-                {
-                    Debug.LogWarning($"MapRenderer: No tilemap assigned for layer {layerData.layer}.");
-                    continue;
-                }
-
-                var tileset = GetTileset(mapData, layerData.tilesetIndex);
-                if (tileset == null) continue;
-
-                var tilemap = _tilemaps[layerIndex];
-                StampLayer(tilemap, mapData, layerData, tileset);
-            }
-
+            StampAllLayers(mapData);
             ValidateGroundLayer(mapData);
         }
 
+        /// <summary>
+        /// Replaces a single tile at runtime (e.g. destructible wall → rubble).
+        /// Updates both the visual tilemap and the backing MapData in a single frame.
+        /// </summary>
         public void SwapTile(MapLayer layer, int x, int y, int newTileId, int tilesetIndex)
         {
             if (_currentMap == null) return;
             if (!_currentMap.IsInBounds(x, y)) return;
 
-            int layerIndex = (int)layer;
-            if (layerIndex < 0 || layerIndex >= _tilemaps.Length || _tilemaps[layerIndex] == null) return;
+            Tilemap tilemap = GetTilemapForLayer(layer);
+            if (tilemap == null) return;
 
-            var tileset = GetTileset(_currentMap, tilesetIndex);
+            TilesetDefinition tileset = GetTileset(_currentMap, tilesetIndex);
             if (tileset == null) return;
 
             _currentMap.SetTileId(layer, x, y, newTileId);
 
             TileBase tile = ResolveTile(tileset, newTileId, x, y);
-            _tilemaps[layerIndex].SetTile(new Vector3Int(x, y, 0), tile);
+            tilemap.SetTile(new Vector3Int(x, y, 0), tile);
 
             OnTileSwapped?.Invoke(new Vector2Int(x, y));
         }
 
+        /// <summary>Returns the terrain type at a ground-layer cell. Used by movement, combat, and pathfinding.</summary>
         public TerrainType GetTerrainType(int x, int y)
         {
             if (_currentMap == null) return TerrainType.Void;
@@ -74,15 +73,33 @@ namespace ProjectAstra.Core
             int groundTileId = _currentMap.GetTileId(MapLayer.Ground, x, y);
             if (groundTileId < 0) return TerrainType.Void;
 
-            var layerData = _currentMap.GetLayerData(MapLayer.Ground);
-            if (!layerData.HasValue) return TerrainType.Void;
-
-            var tileset = GetTileset(_currentMap, layerData.Value.tilesetIndex);
+            TilesetDefinition tileset = GetGroundTileset();
             if (tileset == null) return TerrainType.Void;
 
             return tileset.GetTerrainType(groundTileId);
         }
 
+        // --- Map loading helpers ---
+
+        private void StampAllLayers(MapData mapData)
+        {
+            foreach (var layerData in mapData.Layers)
+            {
+                Tilemap tilemap = GetTilemapForLayer(layerData.layer);
+                if (tilemap == null)
+                {
+                    Debug.LogWarning($"MapRenderer: No tilemap assigned for layer {layerData.layer}.");
+                    continue;
+                }
+
+                TilesetDefinition tileset = GetTileset(mapData, layerData.tilesetIndex);
+                if (tileset == null) continue;
+
+                StampLayer(tilemap, mapData, layerData, tileset);
+            }
+        }
+
+        /// <summary>Iterates every cell in a layer and places the resolved tile onto the tilemap.</summary>
         private void StampLayer(Tilemap tilemap, MapData mapData, MapLayerData layerData,
             TilesetDefinition tileset)
         {
@@ -90,10 +107,7 @@ namespace ProjectAstra.Core
             {
                 for (int x = 0; x < mapData.Width; x++)
                 {
-                    int index = y * mapData.Width + x;
-                    if (index >= layerData.tileIds.Length) continue;
-
-                    int tileId = layerData.tileIds[index];
+                    int tileId = mapData.GetTileId(layerData.layer, x, y);
                     if (tileId < 0) continue;
 
                     TileBase tile = ResolveTile(tileset, tileId, x, y);
@@ -102,6 +116,9 @@ namespace ProjectAstra.Core
             }
         }
 
+        // --- Tile resolution ---
+
+        /// <summary>Converts a tile ID to a TileBase via the tileset, falling back to the error tile on failure.</summary>
         private TileBase ResolveTile(TilesetDefinition tileset, int tileId, int x, int y)
         {
             if (!tileset.IsValidId(tileId))
@@ -120,10 +137,12 @@ namespace ProjectAstra.Core
             return tile;
         }
 
+        // --- Validation ---
+
+        /// <summary>Warns about cells with no ground tile — a map authoring error that renders as a black void.</summary>
         private void ValidateGroundLayer(MapData mapData)
         {
-            var groundLayer = mapData.GetLayerData(MapLayer.Ground);
-            if (!groundLayer.HasValue)
+            if (!mapData.GetLayerData(MapLayer.Ground).HasValue)
             {
                 Debug.LogWarning("MapRenderer: Map has no Ground layer defined.");
                 return;
@@ -133,14 +152,19 @@ namespace ProjectAstra.Core
             {
                 for (int x = 0; x < mapData.Width; x++)
                 {
-                    int tileId = mapData.GetTileId(MapLayer.Ground, x, y);
-                    if (tileId < 0)
-                    {
-                        Debug.LogWarning($"MapRenderer: Missing ground tile at ({x},{y}). " +
-                                         "This is a map authoring error.");
-                    }
+                    if (mapData.GetTileId(MapLayer.Ground, x, y) < 0)
+                        Debug.LogWarning($"MapRenderer: Missing ground tile at ({x},{y}). Map authoring error.");
                 }
             }
+        }
+
+        // --- Lookup helpers ---
+
+        private Tilemap GetTilemapForLayer(MapLayer layer)
+        {
+            int index = (int)layer;
+            if (index < 0 || index >= _tilemaps.Length) return null;
+            return _tilemaps[index];
         }
 
         private TilesetDefinition GetTileset(MapData mapData, int tilesetIndex)
@@ -151,6 +175,13 @@ namespace ProjectAstra.Core
                 return null;
             }
             return mapData.Tilesets[tilesetIndex];
+        }
+
+        private TilesetDefinition GetGroundTileset()
+        {
+            MapLayerData? groundLayer = _currentMap.GetLayerData(MapLayer.Ground);
+            if (!groundLayer.HasValue) return null;
+            return GetTileset(_currentMap, groundLayer.Value.tilesetIndex);
         }
 
         private void ClearAllTilemaps()
