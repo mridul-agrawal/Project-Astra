@@ -1,14 +1,18 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 
 namespace ProjectAstra.Core.UI
 {
     /// <summary>
-    /// Battle map UI — phase controls, allies toggle, and transition buttons. Subscribes to Pause.
+    /// Battle map debug UI — phase controls, allies toggle, and transition buttons.
+    /// Press Tab to toggle keyboard focus between this panel and the grid cursor.
     /// </summary>
     public class BattleMapUI : MonoBehaviour
     {
+        public static bool HasInputFocus { get; private set; }
+
         [Header("Phase Controls")]
         [SerializeField] private TextMeshProUGUI _phaseLabel;
         [SerializeField] private Button _advancePhaseButton;
@@ -111,6 +115,12 @@ namespace ProjectAstra.Core.UI
             _phaseLabel.text = $"Phase: {_phaseManager.CurrentPhase}";
         }
 
+        private void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+                HasInputFocus = !HasInputFocus;
+        }
+
         private void Pause()
         {
             if (IsNotActiveState) return;
@@ -126,14 +136,14 @@ namespace ProjectAstra.Core.UI
 
         private void Navigate(Vector2Int dir)
         {
-            if (IsNotActiveState) return;
+            if (IsNotActiveState || !HasInputFocus) return;
             if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
         }
 
         private void ConfirmSelection()
         {
-            if (IsNotActiveState) return;
+            if (IsNotActiveState || !HasInputFocus) return;
             _buttons[_selected].onClick.Invoke();
         }
 
