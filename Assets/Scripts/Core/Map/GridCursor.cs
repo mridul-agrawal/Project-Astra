@@ -21,6 +21,8 @@ namespace ProjectAstra.Core
         [SerializeField] private TerrainStatTable _terrainStatTable;
         [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private RangeHighlighter _rangeHighlighter;
+        [SerializeField] private PathArrowRenderer _pathArrowRenderer;
+        [SerializeField] private UnitMover _unitMover;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -137,6 +139,7 @@ namespace ProjectAstra.Core
         {
             if (_currentMode == CursorMode.Locked) return;
             if (BattleMapUI.HasInputFocus) return;
+            if (_unitMover != null && _unitMover.IsMoving) return;
 
             Vector2Int newPos = ClampToMapBounds(_gridPosition + direction);
 
@@ -149,12 +152,17 @@ namespace ProjectAstra.Core
             _gridPosition = newPos;
             SnapToGridPosition();
             OnCursorMoved?.Invoke(_gridPosition);
+
+            // Update path arrow preview while in UnitSelected mode
+            if (_currentMode == CursorMode.UnitSelected)
+                UpdatePathArrow();
         }
 
         internal void HandleConfirm()
         {
             if (_currentMode == CursorMode.Locked) return;
             if (BattleMapUI.HasInputFocus) return;
+            if (_unitMover != null && _unitMover.IsMoving) return;
 
             switch (_currentMode)
             {
@@ -174,6 +182,7 @@ namespace ProjectAstra.Core
         {
             if (_currentMode == CursorMode.Locked) return;
             if (BattleMapUI.HasInputFocus) return;
+            if (_unitMover != null && _unitMover.IsMoving) return;
 
             switch (_currentMode)
             {
@@ -192,6 +201,7 @@ namespace ProjectAstra.Core
         {
             TestUnit unit = FindUnitAt(_gridPosition);
             if (unit == null) return;
+            if (unit.hasActed) return; // Already acted this phase
 
             _selectedUnit = unit;
             EnterUnitSelectedMode();
@@ -224,8 +234,27 @@ namespace ProjectAstra.Core
             _selectedUnit = null;
             _validMoveTiles = null;
             _rangeHighlighter?.ClearAll();
+            _pathArrowRenderer?.Clear();
             ReturnToMemorizedPosition();
             SetMode(CursorMode.Free);
+        }
+
+        // --- Path arrow preview ---
+
+        private void UpdatePathArrow()
+        {
+            if (_pathArrowRenderer == null || _selectedUnit == null) return;
+
+            // Only show path to valid destination tiles (not pass-through)
+            if (!_currentReachability.Destinations.Contains(_gridPosition))
+            {
+                _pathArrowRenderer.Clear();
+                return;
+            }
+
+            var path = Pathfinder.ReconstructPath(
+                _selectedUnit.gridPosition, _gridPosition, _currentReachability);
+            _pathArrowRenderer.ShowPath(path);
         }
 
         // --- UNIT_SELECTED mode: commit movement ---
@@ -236,6 +265,24 @@ namespace ProjectAstra.Core
                 return; // Can't stop on pass-through tiles
 
             _committedDestination = _gridPosition;
+            _selectedUnit.preMovementPosition = _selectedUnit.gridPosition;
+
+            var path = Pathfinder.ReconstructPath(
+                _selectedUnit.gridPosition, _committedDestination, _currentReachability);
+
+            // Clear overlays and lock cursor during movement animation
+            _rangeHighlighter?.ClearAll();
+            _pathArrowRenderer?.Clear();
+            SetMode(CursorMode.Locked);
+
+            if (_unitMover != null && path != null && path.Count > 1)
+                _unitMover.MoveAlongPath(_selectedUnit, path, OnMovementComplete);
+            else
+                OnMovementComplete();
+        }
+
+        private void OnMovementComplete()
+        {
             EnterTargetingMode();
         }
 
@@ -248,7 +295,6 @@ namespace ProjectAstra.Core
 
             if (attackRange.Count == 0)
             {
-                // No valid attack targets — complete action immediately
                 CompleteAction();
                 return;
             }
@@ -256,12 +302,16 @@ namespace ProjectAstra.Core
             _validMoveTiles = attackRange;
             _rangeHighlighter?.ShowAttackRange(attackRange);
 
-            // Move cursor to first attackable tile
+            SetPosition(_committedDestination);
             SetMode(CursorMode.Targeting);
         }
 
         private void CancelTargeting()
         {
+            // Undo movement — snap unit back to pre-movement position
+            if (_unitMover != null)
+                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
+
             // Return to UNIT_SELECTED — restore movement highlights
             _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
             _validMoveTiles.UnionWith(_currentReachability.PassThrough);
@@ -270,7 +320,7 @@ namespace ProjectAstra.Core
                 _currentReachability.Destinations,
                 _currentReachability.PassThrough);
 
-            SetPosition(_committedDestination);
+            SetPosition(_selectedUnit.gridPosition);
             SetMode(CursorMode.UnitSelected);
         }
 
@@ -284,10 +334,14 @@ namespace ProjectAstra.Core
 
         private void CompleteAction()
         {
+            if (_selectedUnit != null)
+                _selectedUnit.MarkActed();
+
             _selectedUnit = null;
             _validMoveTiles = null;
             _memorizedPosition = null;
             _rangeHighlighter?.ClearAll();
+            _pathArrowRenderer?.Clear();
             SetMode(CursorMode.Free);
         }
 
@@ -338,7 +392,6 @@ namespace ProjectAstra.Core
 
         private Pathfinder.OccupantType GetOccupantType(Vector2Int pos)
         {
-            // For now, no real occupancy system — treat all tiles as empty
             return Pathfinder.OccupantType.None;
         }
 
@@ -362,6 +415,11 @@ namespace ProjectAstra.Core
         internal void SetRangeHighlighter(RangeHighlighter rh)
         {
             _rangeHighlighter = rh;
+        }
+
+        internal void SetUnitMover(UnitMover mover)
+        {
+            _unitMover = mover;
         }
     }
 }

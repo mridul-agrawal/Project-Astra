@@ -61,10 +61,12 @@ namespace ProjectAstra.Core.Editor
             sr.sortingLayerName = "UIOverlay";
             sr.sortingOrder = 0;
 
-            // Add RangeHighlighter
+            // Add helper components
             var highlighter = cursorGO.AddComponent<RangeHighlighter>();
+            var pathArrow = cursorGO.AddComponent<PathArrowRenderer>();
+            var unitMover = cursorGO.AddComponent<UnitMover>();
 
-            // Add GridCursor and wire references
+            // Add GridCursor and wire all references
             var cursor = cursorGO.AddComponent<GridCursor>();
             var so = new SerializedObject(cursor);
             so.FindProperty("_mapRenderer").objectReferenceValue = mapRenderer;
@@ -72,6 +74,8 @@ namespace ProjectAstra.Core.Editor
             so.FindProperty("_stateChangedChannel").objectReferenceValue = stateChannel;
             so.FindProperty("_spriteRenderer").objectReferenceValue = sr;
             so.FindProperty("_rangeHighlighter").objectReferenceValue = highlighter;
+            so.FindProperty("_pathArrowRenderer").objectReferenceValue = pathArrow;
+            so.FindProperty("_unitMover").objectReferenceValue = unitMover;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             Undo.RegisterCreatedObjectUndo(cursorGO, "Create GridCursor");

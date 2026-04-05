@@ -4,14 +4,13 @@ using UnityEngine;
 namespace ProjectAstra.Core
 {
     /// <summary>
-    /// Manages programmatic sprite overlays for movement range, pass-through, and attack range.
-    /// Creates and pools SpriteRenderers at runtime on the UIOverlay sorting layer.
+    /// Renders the optimal path from a unit's origin to the cursor tile as a visible
+    /// overlay. Uses pooled SpriteRenderers on the UIOverlay sorting layer, same pattern
+    /// as RangeHighlighter. Color: semi-transparent yellow to distinguish from range highlights.
     /// </summary>
-    public class RangeHighlighter : MonoBehaviour
+    public class PathArrowRenderer : MonoBehaviour
     {
-        private static readonly Color MovementColor = new(0.2f, 0.4f, 1.0f, 0.35f);
-        private static readonly Color PassThroughColor = new(0.2f, 0.8f, 1.0f, 0.25f);
-        private static readonly Color AttackColor = new(1.0f, 0.2f, 0.2f, 0.35f);
+        private static readonly Color PathColor = new(1.0f, 1.0f, 0.3f, 0.5f);
 
         private readonly List<GameObject> _activeOverlays = new();
         private readonly Queue<GameObject> _pool = new();
@@ -21,7 +20,7 @@ namespace ProjectAstra.Core
         private void Awake()
         {
             _overlaySprite = CreateOverlaySprite();
-            _overlayContainer = new GameObject("RangeOverlays").transform;
+            _overlayContainer = new GameObject("PathOverlays").transform;
         }
 
         private void OnDestroy()
@@ -30,29 +29,18 @@ namespace ProjectAstra.Core
                 Destroy(_overlayContainer.gameObject);
         }
 
-        public void ShowMovementRange(HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough)
+        /// <summary>Shows path overlay tiles along the given path. Skips the origin tile (index 0).</summary>
+        public void ShowPath(List<Vector2Int> path)
         {
-            ClearAll();
+            Clear();
+            if (path == null || path.Count <= 1) return;
 
-            foreach (var tile in destinations)
-                PlaceOverlay(tile, MovementColor);
-
-            if (passThrough != null)
-            {
-                foreach (var tile in passThrough)
-                    PlaceOverlay(tile, PassThroughColor);
-            }
+            // Skip origin (index 0), show the rest of the path
+            for (int i = 1; i < path.Count; i++)
+                PlaceOverlay(path[i]);
         }
 
-        public void ShowAttackRange(HashSet<Vector2Int> attackable)
-        {
-            ClearAll();
-
-            foreach (var tile in attackable)
-                PlaceOverlay(tile, AttackColor);
-        }
-
-        public void ClearAll()
+        public void Clear()
         {
             foreach (var go in _activeOverlays)
             {
@@ -62,15 +50,11 @@ namespace ProjectAstra.Core
             _activeOverlays.Clear();
         }
 
-        private void PlaceOverlay(Vector2Int tile, Color color)
+        private void PlaceOverlay(Vector2Int tile)
         {
             GameObject go = GetOrCreateOverlay();
             go.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
             go.SetActive(true);
-
-            var sr = go.GetComponent<SpriteRenderer>();
-            sr.color = color;
-
             _activeOverlays.Add(go);
         }
 
@@ -79,18 +63,18 @@ namespace ProjectAstra.Core
             if (_pool.Count > 0)
                 return _pool.Dequeue();
 
-            var go = new GameObject("RangeOverlay");
+            var go = new GameObject("PathOverlay");
             go.transform.SetParent(_overlayContainer);
 
             var sr = go.AddComponent<SpriteRenderer>();
             sr.sprite = _overlaySprite;
+            sr.color = PathColor;
             sr.sortingLayerName = "UIOverlay";
-            sr.sortingOrder = -1; // Below cursor sprite (order 0)
+            sr.sortingOrder = -2; // Below cursor (-0) and range highlights (-1)
 
             return go;
         }
 
-        /// <summary>Creates a 16×16 white square sprite at runtime for tinting via SpriteRenderer.color.</summary>
         private static Sprite CreateOverlaySprite()
         {
             const int size = 16;
