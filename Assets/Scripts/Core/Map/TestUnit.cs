@@ -8,6 +8,9 @@ namespace ProjectAstra.Core
     /// </summary>
     public class TestUnit : MonoBehaviour
     {
+        #region Fields
+        private static readonly Color ActedColor = new(0.4f, 0.4f, 0.4f, 0.7f);
+
         [Header("Unit Stats")]
         public Vector2Int gridPosition = new(2, 2);
         public int movementPoints = 3;
@@ -21,7 +24,9 @@ namespace ProjectAstra.Core
 
         private SpriteRenderer _spriteRenderer;
         private Color _normalColor;
+        #endregion
 
+        #region MonoBehaviour lifecycle
         private void Start()
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -30,28 +35,37 @@ namespace ProjectAstra.Core
             SnapToGridPosition();
         }
 
+        private void OnValidate()
+        {
+            SnapToGridPosition();
+        }
+        #endregion
+
+        #region Public API
         public void MarkActed()
         {
             hasActed = true;
-            if (_spriteRenderer != null)
-                _spriteRenderer.color = new Color(0.4f, 0.4f, 0.4f, 0.7f);
+            SetSpriteColor(ActedColor);
         }
 
         public void ResetActed()
         {
             hasActed = false;
-            if (_spriteRenderer != null)
-                _spriteRenderer.color = _normalColor;
+            SetSpriteColor(_normalColor);
         }
 
         public void SnapToGridPosition()
         {
             transform.position = new Vector3(gridPosition.x + 0.5f, gridPosition.y + 0.5f, 0f);
         }
+        #endregion
 
-        private void OnValidate()
+        #region Helpers
+        private void SetSpriteColor(Color color)
         {
-            SnapToGridPosition();
+            if (_spriteRenderer != null)
+                _spriteRenderer.color = color;
         }
+        #endregion
     }
 }

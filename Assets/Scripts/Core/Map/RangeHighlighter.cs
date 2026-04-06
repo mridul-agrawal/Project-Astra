@@ -9,6 +9,7 @@ namespace ProjectAstra.Core
     /// </summary>
     public class RangeHighlighter : MonoBehaviour
     {
+        #region Fields
         private static readonly Color MovementColor = new(0.2f, 0.4f, 1.0f, 0.35f);
         private static readonly Color PassThroughColor = new(0.2f, 0.8f, 1.0f, 0.25f);
         private static readonly Color AttackColor = new(1.0f, 0.2f, 0.2f, 0.35f);
@@ -17,7 +18,9 @@ namespace ProjectAstra.Core
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
+        #endregion
 
+        #region MonoBehaviour lifecycle
         private void Awake()
         {
             _overlaySprite = CreateOverlaySprite();
@@ -29,7 +32,9 @@ namespace ProjectAstra.Core
             if (_overlayContainer != null)
                 Destroy(_overlayContainer.gameObject);
         }
+        #endregion
 
+        #region Public API
         public void ShowMovementRange(HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough)
         {
             ClearAll();
@@ -38,10 +43,8 @@ namespace ProjectAstra.Core
                 PlaceOverlay(tile, MovementColor);
 
             if (passThrough != null)
-            {
                 foreach (var tile in passThrough)
                     PlaceOverlay(tile, PassThroughColor);
-            }
         }
 
         public void ShowAttackRange(HashSet<Vector2Int> attackable)
@@ -54,24 +57,26 @@ namespace ProjectAstra.Core
 
         public void ClearAll()
         {
-            foreach (var go in _activeOverlays)
+            foreach (var overlay in _activeOverlays)
             {
-                go.SetActive(false);
-                _pool.Enqueue(go);
+                overlay.SetActive(false);
+                _pool.Enqueue(overlay);
             }
             _activeOverlays.Clear();
         }
+        #endregion
 
+        #region Overlay placement and pooling
         private void PlaceOverlay(Vector2Int tile, Color color)
         {
-            GameObject go = GetOrCreateOverlay();
-            go.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
-            go.SetActive(true);
+            GameObject overlay = GetOrCreateOverlay();
+            overlay.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
+            overlay.SetActive(true);
 
-            var sr = go.GetComponent<SpriteRenderer>();
+            var sr = overlay.GetComponent<SpriteRenderer>();
             sr.color = color;
 
-            _activeOverlays.Add(go);
+            _activeOverlays.Add(overlay);
         }
 
         private GameObject GetOrCreateOverlay()
@@ -79,18 +84,18 @@ namespace ProjectAstra.Core
             if (_pool.Count > 0)
                 return _pool.Dequeue();
 
-            var go = new GameObject("RangeOverlay");
-            go.transform.SetParent(_overlayContainer);
+            var overlay = new GameObject("RangeOverlay");
+            overlay.transform.SetParent(_overlayContainer);
 
-            var sr = go.AddComponent<SpriteRenderer>();
+            var sr = overlay.AddComponent<SpriteRenderer>();
             sr.sprite = _overlaySprite;
             sr.sortingLayerName = "UIOverlay";
             sr.sortingOrder = -1; // Below cursor sprite (order 0)
 
-            return go;
+            return overlay;
         }
 
-        /// <summary>Creates a 16×16 white square sprite at runtime for tinting via SpriteRenderer.color.</summary>
+        /// <summary>Creates a 16x16 white square sprite at runtime for tinting via SpriteRenderer.color.</summary>
         private static Sprite CreateOverlaySprite()
         {
             const int size = 16;
@@ -107,5 +112,6 @@ namespace ProjectAstra.Core
 
             return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
+        #endregion
     }
 }

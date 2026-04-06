@@ -16,6 +16,7 @@ namespace ProjectAstra.Core
     /// </summary>
     public class GridCursor : MonoBehaviour
     {
+        #region Properties and fields
         [Header("Dependencies")]
         [SerializeField] private MapRenderer _mapRenderer;
         [SerializeField] private TerrainStatTable _terrainStatTable;
@@ -53,44 +54,29 @@ namespace ProjectAstra.Core
 
         /// <summary>Fired after the cursor moves to a new tile.</summary>
         public event Action<Vector2Int> OnCursorMoved;
+        #endregion
 
+        #region Monobehaviour lifecycle
         private void Awake()
         {
-            if (_spriteRenderer != null)
-                _animator = new CursorAnimator(_spriteRenderer, _pulseSpeed, _alphaMin, _alphaMax);
+            InitializeCursorAnimator();
         }
 
         private void OnEnable()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnCursorMove += HandleCursorMove;
-                InputManager.Instance.OnConfirm += HandleConfirm;
-                InputManager.Instance.OnCancel += HandleCancel;
-            }
-
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnGameStateChanged);
+            AddListenersToInputEvents();
+            AddListenersToGameStateEvents();
         }
 
         private void OnDisable()
         {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnCursorMove -= HandleCursorMove;
-                InputManager.Instance.OnConfirm -= HandleConfirm;
-                InputManager.Instance.OnCancel -= HandleCancel;
-            }
-
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnGameStateChanged);
+            RemoveListenersFromInputEvents();
+            RemoveListenersFromGameStateEvents();
         }
 
         private void Start()
         {
-            if (_mapRenderer != null && _terrainStatTable != null)
-                _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
-
+            InitializePathFindingService();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -99,24 +85,71 @@ namespace ProjectAstra.Core
         {
             _animator?.UpdatePulse();
         }
+        #endregion
 
-        // --- Public API ---
+        #region Helpers for initialization and event management
+        private void InitializeCursorAnimator()
+        {
+            if (_spriteRenderer != null)
+                _animator = new CursorAnimator(_spriteRenderer, _pulseSpeed, _alphaMin, _alphaMax);
+        }
+
+        private void AddListenersToInputEvents()
+        {
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.OnCursorMove += HandleCursorMove;
+                InputManager.Instance.OnConfirm += HandleConfirm;
+                InputManager.Instance.OnCancel += HandleCancel;
+            }
+        }
+
+        private void RemoveListenersFromInputEvents()
+        {
+            if (InputManager.Instance != null)
+            {
+                InputManager.Instance.OnCursorMove -= HandleCursorMove;
+                InputManager.Instance.OnConfirm -= HandleConfirm;
+                InputManager.Instance.OnCancel -= HandleCancel;
+            }
+        }
+
+        private void AddListenersToGameStateEvents()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Register(OnGameStateChanged);
+        }
+
+        private void RemoveListenersFromGameStateEvents()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Unregister(OnGameStateChanged);
+        }
+
+        private void InitializePathFindingService()
+        {
+            if (_mapRenderer != null && _terrainStatTable != null)
+                _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
+        }
+        #endregion
+
+        #region Methods for mode and position management
 
         public void SetMode(CursorMode mode)
         {
             _currentMode = mode;
-
-            if (_spriteRenderer != null)
-                _spriteRenderer.enabled = (mode != CursorMode.Locked);
+            ToggleSpriteRendererBasedOnCursorMode();
         }
 
         public void SetPosition(Vector2Int position)
         {
-            Vector2Int newPos = ClampToMapBounds(position);
-            bool changed = newPos != _gridPosition;
-            _gridPosition = newPos;
+            Vector2Int newClampedPosition = ClampToMapBounds(position);
+            bool hasCursorPositionActuallyChanged = newClampedPosition != _gridPosition;
+            
+            _gridPosition = newClampedPosition;
             SnapToGridPosition();
-            if (changed)
+            
+            if (hasCursorPositionActuallyChanged)
                 OnCursorMoved?.Invoke(_gridPosition);
         }
 
@@ -133,36 +166,89 @@ namespace ProjectAstra.Core
             _memorizedPosition = null;
         }
 
-        // --- Input handlers ---
+        private void ToggleSpriteRendererBasedOnCursorMode()
+        {
+            if (_spriteRenderer == null) return;
+            _spriteRenderer.enabled = (_currentMode != CursorMode.Locked);
+        }
 
+        private Vector2Int ClampToMapBounds(Vector2Int pos)
+        {
+            MapData map = _mapRenderer != null ? _mapRenderer.CurrentMap : null;
+            if (map == null) return pos;
+
+            return new Vector2Int(
+                Mathf.Clamp(pos.x, 0, map.Width - 1),
+                Mathf.Clamp(pos.y, 0, map.Height - 1)
+                );
+        }
+
+        private void SnapToGridPosition()
+        {
+            transform.position = new Vector3(_gridPosition.x + 0.5f, _gridPosition.y + 0.5f, 0f);
+        }
+        #endregion
+
+        #region Methods for handling input events and game state changes
         internal void HandleCursorMove(Vector2Int direction)
         {
-            if (_currentMode == CursorMode.Locked) return;
-            if (BattleMapUI.HasInputFocus) return;
-            if (_unitMover != null && _unitMover.IsMoving) return;
-
-            Vector2Int newPos = ClampToMapBounds(_gridPosition + direction);
-
-            // In constrained modes, only allow moves to valid tiles
-            if (_validMoveTiles != null && !_validMoveTiles.Contains(newPos))
+            if(!CanCursorMove()) 
                 return;
 
-            if (newPos == _gridPosition) return;
+            Vector2Int targetGridPosition = ClampToMapBounds(_gridPosition + direction);
 
-            _gridPosition = newPos;
+            if (ValidMoveTilesContains(targetGridPosition))
+                return;
+
+            if (targetGridPosition == _gridPosition) 
+                return;
+
+            _gridPosition = targetGridPosition;
             SnapToGridPosition();
             OnCursorMoved?.Invoke(_gridPosition);
 
-            // Update path arrow preview while in UnitSelected mode
             if (_currentMode == CursorMode.UnitSelected)
                 UpdatePathArrow();
         }
 
+        private bool CanCursorMove()
+        {
+            if (_currentMode == CursorMode.Locked) return false;
+            if (BattleMapUI.HasInputFocus) return false;
+            if (_unitMover != null && _unitMover.IsMoving) return false;
+            return true;
+        }
+
+        private bool ValidMoveTilesContains(Vector2Int pos)
+        {
+            return _validMoveTiles != null && _validMoveTiles.Contains(pos);
+        }
+
+
+        private void UpdatePathArrow()
+        {
+            if (_pathArrowRenderer == null || _selectedUnit == null) 
+                return;
+
+            if (!IsCurrentTileReachable())
+            {
+                _pathArrowRenderer.Clear();
+                return;
+            }
+
+            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, _gridPosition, _currentReachability);
+            _pathArrowRenderer.ShowPath(path);
+        }
+
+        private bool IsCurrentTileReachable()
+        {
+            return _currentReachability.Destinations.Contains(_gridPosition);
+        }
+
         internal void HandleConfirm()
         {
-            if (_currentMode == CursorMode.Locked) return;
-            if (BattleMapUI.HasInputFocus) return;
-            if (_unitMover != null && _unitMover.IsMoving) return;
+            if (!CanCursorMove())
+                return;
 
             switch (_currentMode)
             {
@@ -178,107 +264,79 @@ namespace ProjectAstra.Core
             }
         }
 
-        internal void HandleCancel()
-        {
-            if (_currentMode == CursorMode.Locked) return;
-            if (BattleMapUI.HasInputFocus) return;
-            if (_unitMover != null && _unitMover.IsMoving) return;
-
-            switch (_currentMode)
-            {
-                case CursorMode.UnitSelected:
-                    DeselectUnit();
-                    break;
-                case CursorMode.Targeting:
-                    CancelTargeting();
-                    break;
-            }
-        }
-
-        // --- FREE mode: unit selection ---
-
         private void TrySelectUnit()
         {
             TestUnit unit = FindUnitAt(_gridPosition);
-            if (unit == null) return;
-            if (unit.hasActed) return; // Already acted this phase
+
+            if (!IsUnitSelectable(unit)) 
+                return;
 
             _selectedUnit = unit;
             EnterUnitSelectedMode();
+        }
+
+        private TestUnit FindUnitAt(Vector2Int pos)
+        {
+            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+                if (unit.gridPosition == pos)
+                    return unit;
+            return null;
+        }
+
+        private bool IsUnitSelectable(TestUnit unit)
+        {
+            return unit != null && !unit.hasActed;
         }
 
         private void EnterUnitSelectedMode()
         {
             if (_pathfindingService == null || _selectedUnit == null) return;
 
-            _currentReachability = _pathfindingService.ComputeReachability(
-                _selectedUnit.gridPosition,
-                _selectedUnit.movementPoints,
-                _selectedUnit.movementType,
-                pos => GetOccupantType(pos));
+            _currentReachability = _pathfindingService.ComputeReachability(_selectedUnit.gridPosition, _selectedUnit.movementPoints, _selectedUnit.movementType, pos => GetOccupantType(pos));
 
             // Constrain cursor to reachable + pass-through tiles
             _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
             _validMoveTiles.UnionWith(_currentReachability.PassThrough);
 
-            _rangeHighlighter?.ShowMovementRange(
-                _currentReachability.Destinations,
-                _currentReachability.PassThrough);
+            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
 
             SetPositionWithMemory(_selectedUnit.gridPosition);
             SetMode(CursorMode.UnitSelected);
         }
 
-        private void DeselectUnit()
+        private Pathfinder.OccupantType GetOccupantType(Vector2Int pos)
         {
-            _selectedUnit = null;
-            _validMoveTiles = null;
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
-            ReturnToMemorizedPosition();
-            SetMode(CursorMode.Free);
+            return Pathfinder.OccupantType.None;
         }
-
-        // --- Path arrow preview ---
-
-        private void UpdatePathArrow()
-        {
-            if (_pathArrowRenderer == null || _selectedUnit == null) return;
-
-            // Only show path to valid destination tiles (not pass-through)
-            if (!_currentReachability.Destinations.Contains(_gridPosition))
-            {
-                _pathArrowRenderer.Clear();
-                return;
-            }
-
-            var path = Pathfinder.ReconstructPath(
-                _selectedUnit.gridPosition, _gridPosition, _currentReachability);
-            _pathArrowRenderer.ShowPath(path);
-        }
-
-        // --- UNIT_SELECTED mode: commit movement ---
 
         private void TryCommitMovement()
         {
             if (!_currentReachability.Destinations.Contains(_gridPosition))
-                return; // Can't stop on pass-through tiles
+                return;
 
             _committedDestination = _gridPosition;
             _selectedUnit.preMovementPosition = _selectedUnit.gridPosition;
 
-            var path = Pathfinder.ReconstructPath(
-                _selectedUnit.gridPosition, _committedDestination, _currentReachability);
+            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, _committedDestination, _currentReachability);
 
-            // Clear overlays and lock cursor during movement animation
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
+            ClearOverlay();
             SetMode(CursorMode.Locked);
 
-            if (_unitMover != null && path != null && path.Count > 1)
+            if (PathExists(path))
                 _unitMover.MoveAlongPath(_selectedUnit, path, OnMovementComplete);
             else
                 OnMovementComplete();
+        }
+
+        private void ClearOverlay()
+        {
+            _rangeHighlighter?.ClearAll();
+            _pathArrowRenderer?.Clear();
+        }
+
+        private bool PathExists(List<Vector2Int> path)
+        {
+            return (_unitMover != null && path != null && path.Count > 1);
         }
 
         private void OnMovementComplete()
@@ -288,10 +346,7 @@ namespace ProjectAstra.Core
 
         private void EnterTargetingMode()
         {
-            var attackRange = _pathfindingService.ComputeAttackRange(
-                new HashSet<Vector2Int> { _committedDestination },
-                _selectedUnit.attackRangeMin,
-                _selectedUnit.attackRangeMax);
+            var attackRange = _pathfindingService.ComputeAttackRange(new HashSet<Vector2Int> { _committedDestination }, _selectedUnit.attackRangeMin, _selectedUnit.attackRangeMax);
 
             if (attackRange.Count == 0)
             {
@@ -306,6 +361,52 @@ namespace ProjectAstra.Core
             SetMode(CursorMode.Targeting);
         }
 
+        private void CompleteAction()
+        {
+            if (_selectedUnit != null)
+                _selectedUnit.MarkActed();
+
+            _memorizedPosition = null;
+            ResetUnitTilesMode();
+        }
+
+        private void TryCommitAttack()
+        {
+            Debug.Log($"GridCursor: Attack committed at ({_gridPosition.x}, {_gridPosition.y})");
+            CompleteAction();
+        }
+
+        internal void HandleCancel()
+        {
+            if (!CanCursorMove())
+                return;
+
+            switch (_currentMode)
+            {
+                case CursorMode.UnitSelected:
+                    DeselectUnit();
+                    break;
+                case CursorMode.Targeting:
+                    CancelTargeting();
+                    break;
+            }
+        }
+
+        private void DeselectUnit()
+        {
+            ResetUnitTilesMode();
+            ReturnToMemorizedPosition();
+        }
+
+        private void ResetUnitTilesMode()
+        {
+            _selectedUnit = null;
+            _validMoveTiles = null;
+            _rangeHighlighter?.ClearAll();
+            _pathArrowRenderer?.Clear();
+            SetMode(CursorMode.Free);
+        }
+
         private void CancelTargeting()
         {
             // Undo movement — snap unit back to pre-movement position
@@ -316,36 +417,11 @@ namespace ProjectAstra.Core
             _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
             _validMoveTiles.UnionWith(_currentReachability.PassThrough);
 
-            _rangeHighlighter?.ShowMovementRange(
-                _currentReachability.Destinations,
-                _currentReachability.PassThrough);
+            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
 
             SetPosition(_selectedUnit.gridPosition);
             SetMode(CursorMode.UnitSelected);
         }
-
-        // --- TARGETING mode: commit attack ---
-
-        private void TryCommitAttack()
-        {
-            Debug.Log($"GridCursor: Attack committed at ({_gridPosition.x}, {_gridPosition.y})");
-            CompleteAction();
-        }
-
-        private void CompleteAction()
-        {
-            if (_selectedUnit != null)
-                _selectedUnit.MarkActed();
-
-            _selectedUnit = null;
-            _validMoveTiles = null;
-            _memorizedPosition = null;
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
-            SetMode(CursorMode.Free);
-        }
-
-        // --- Game state integration ---
 
         private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
@@ -357,46 +433,14 @@ namespace ProjectAstra.Core
 
         private void UpdateModeFromGameState()
         {
-            if (GameStateManager.Instance != null &&
-                GameStateManager.Instance.CurrentState == GameState.BattleMap)
+            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.BattleMap)
                 SetMode(CursorMode.Free);
             else
                 SetMode(CursorMode.Free); // Default to Free when loaded directly
         }
+#endregion
 
-        // --- Helpers ---
-
-        private Vector2Int ClampToMapBounds(Vector2Int pos)
-        {
-            MapData map = _mapRenderer != null ? _mapRenderer.CurrentMap : null;
-            if (map == null) return pos;
-            return new Vector2Int(
-                Mathf.Clamp(pos.x, 0, map.Width - 1),
-                Mathf.Clamp(pos.y, 0, map.Height - 1));
-        }
-
-        private void SnapToGridPosition()
-        {
-            transform.position = new Vector3(_gridPosition.x + 0.5f, _gridPosition.y + 0.5f, 0f);
-        }
-
-        private TestUnit FindUnitAt(Vector2Int pos)
-        {
-            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
-            {
-                if (unit.gridPosition == pos)
-                    return unit;
-            }
-            return null;
-        }
-
-        private Pathfinder.OccupantType GetOccupantType(Vector2Int pos)
-        {
-            return Pathfinder.OccupantType.None;
-        }
-
-        // --- Test initialization ---
-
+        #region Debug utilities
         internal void Initialize(MapRenderer mapRenderer, TerrainStatTable terrainStatTable)
         {
             _mapRenderer = mapRenderer;
@@ -421,5 +465,7 @@ namespace ProjectAstra.Core
         {
             _unitMover = mover;
         }
+        #endregion
+
     }
 }

@@ -10,13 +10,16 @@ namespace ProjectAstra.Core
     /// </summary>
     public class PathArrowRenderer : MonoBehaviour
     {
+        #region Fields
         private static readonly Color PathColor = new(1.0f, 1.0f, 0.3f, 0.5f);
 
         private readonly List<GameObject> _activeOverlays = new();
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
+        #endregion
 
+        #region MonoBehaviour lifecycle
         private void Awake()
         {
             _overlaySprite = CreateOverlaySprite();
@@ -28,34 +31,43 @@ namespace ProjectAstra.Core
             if (_overlayContainer != null)
                 Destroy(_overlayContainer.gameObject);
         }
+        #endregion
 
+        #region Public API
         /// <summary>Shows path overlay tiles along the given path. Skips the origin tile (index 0).</summary>
         public void ShowPath(List<Vector2Int> path)
         {
             Clear();
-            if (path == null || path.Count <= 1) return;
 
-            // Skip origin (index 0), show the rest of the path
+            if (!HasValidPath(path)) return;
+
             for (int i = 1; i < path.Count; i++)
                 PlaceOverlay(path[i]);
         }
 
         public void Clear()
         {
-            foreach (var go in _activeOverlays)
+            foreach (var overlay in _activeOverlays)
             {
-                go.SetActive(false);
-                _pool.Enqueue(go);
+                overlay.SetActive(false);
+                _pool.Enqueue(overlay);
             }
             _activeOverlays.Clear();
+        }
+        #endregion
+
+        #region Overlay placement and pooling
+        private bool HasValidPath(List<Vector2Int> path)
+        {
+            return path != null && path.Count > 1;
         }
 
         private void PlaceOverlay(Vector2Int tile)
         {
-            GameObject go = GetOrCreateOverlay();
-            go.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
-            go.SetActive(true);
-            _activeOverlays.Add(go);
+            GameObject overlay = GetOrCreateOverlay();
+            overlay.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
+            overlay.SetActive(true);
+            _activeOverlays.Add(overlay);
         }
 
         private GameObject GetOrCreateOverlay()
@@ -63,16 +75,16 @@ namespace ProjectAstra.Core
             if (_pool.Count > 0)
                 return _pool.Dequeue();
 
-            var go = new GameObject("PathOverlay");
-            go.transform.SetParent(_overlayContainer);
+            var overlay = new GameObject("PathOverlay");
+            overlay.transform.SetParent(_overlayContainer);
 
-            var sr = go.AddComponent<SpriteRenderer>();
+            var sr = overlay.AddComponent<SpriteRenderer>();
             sr.sprite = _overlaySprite;
             sr.color = PathColor;
             sr.sortingLayerName = "UIOverlay";
             sr.sortingOrder = -2; // Below cursor (-0) and range highlights (-1)
 
-            return go;
+            return overlay;
         }
 
         private static Sprite CreateOverlaySprite()
@@ -91,5 +103,6 @@ namespace ProjectAstra.Core
 
             return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
+        #endregion
     }
 }

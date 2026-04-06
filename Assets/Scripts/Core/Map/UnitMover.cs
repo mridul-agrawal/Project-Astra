@@ -11,10 +11,13 @@ namespace ProjectAstra.Core
     /// </summary>
     public class UnitMover : MonoBehaviour
     {
+        #region Fields
         [SerializeField] private float _tilesPerSecond = 8f;
 
         public bool IsMoving { get; private set; }
+        #endregion
 
+        #region Public API
         /// <summary>
         /// Animates the unit along the path tile-by-tile. Updates unit.gridPosition at each step.
         /// Calls onComplete when finished. Optional onTileEntered fires at each intermediate tile.
@@ -22,13 +25,13 @@ namespace ProjectAstra.Core
         public void MoveAlongPath(TestUnit unit, List<Vector2Int> path,
             Action onComplete, Action<Vector2Int> onTileEntered = null)
         {
-            if (unit == null || path == null || path.Count <= 1)
+            if (!IsPathValid(unit, path))
             {
                 onComplete?.Invoke();
                 return;
             }
 
-            StartCoroutine(MoveCoroutine(unit, path, onComplete, onTileEntered));
+            StartCoroutine(AnimateMovementAlongPath(unit, path, onComplete, onTileEntered));
         }
 
         /// <summary>Instantly snaps unit back to a position (no animation). Used for movement undo.</summary>
@@ -38,39 +41,47 @@ namespace ProjectAstra.Core
             unit.gridPosition = originalPosition;
             unit.SnapToGridPosition();
         }
+        #endregion
 
-        private IEnumerator MoveCoroutine(TestUnit unit, List<Vector2Int> path,
+        #region Movement animation
+        private bool IsPathValid(TestUnit unit, List<Vector2Int> path)
+        {
+            return unit != null && path != null && path.Count > 1;
+        }
+
+        private IEnumerator AnimateMovementAlongPath(TestUnit unit, List<Vector2Int> path,
             Action onComplete, Action<Vector2Int> onTileEntered)
         {
             IsMoving = true;
-            float stepDuration = 1f / _tilesPerSecond;
+            float secondsPerTile = 1f / _tilesPerSecond;
 
-            // Start from index 1 (index 0 is the origin where the unit already is)
             for (int i = 1; i < path.Count; i++)
             {
-                Vector2Int from = path[i - 1];
-                Vector2Int to = path[i];
+                yield return AnimateSingleStep(unit, path[i - 1], path[i], secondsPerTile);
 
-                Vector3 fromWorld = new(from.x + 0.5f, from.y + 0.5f, 0f);
-                Vector3 toWorld = new(to.x + 0.5f, to.y + 0.5f, 0f);
-
-                float elapsed = 0f;
-                while (elapsed < stepDuration)
-                {
-                    elapsed += Time.deltaTime;
-                    float t = Mathf.Clamp01(elapsed / stepDuration);
-                    unit.transform.position = Vector3.Lerp(fromWorld, toWorld, t);
-                    yield return null;
-                }
-
-                // Snap to exact tile position and update grid coordinate
-                unit.gridPosition = to;
+                unit.gridPosition = path[i];
                 unit.SnapToGridPosition();
-                onTileEntered?.Invoke(to);
+                onTileEntered?.Invoke(path[i]);
             }
 
             IsMoving = false;
             onComplete?.Invoke();
         }
+
+        private IEnumerator AnimateSingleStep(TestUnit unit, Vector2Int from, Vector2Int to, float duration)
+        {
+            Vector3 fromWorld = new(from.x + 0.5f, from.y + 0.5f, 0f);
+            Vector3 toWorld = new(to.x + 0.5f, to.y + 0.5f, 0f);
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float progress = Mathf.Clamp01(elapsed / duration);
+                unit.transform.position = Vector3.Lerp(fromWorld, toWorld, progress);
+                yield return null;
+            }
+        }
+        #endregion
     }
 }
