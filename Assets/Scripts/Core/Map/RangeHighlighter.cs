@@ -9,7 +9,6 @@ namespace ProjectAstra.Core
     /// </summary>
     public class RangeHighlighter : MonoBehaviour
     {
-        #region Fields
         private static readonly Color MovementColor = new(0.2f, 0.4f, 1.0f, 0.35f);
         private static readonly Color PassThroughColor = new(0.2f, 0.8f, 1.0f, 0.25f);
         private static readonly Color AttackColor = new(1.0f, 0.2f, 0.2f, 0.35f);
@@ -18,9 +17,7 @@ namespace ProjectAstra.Core
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
-        #endregion
 
-        #region MonoBehaviour lifecycle
         private void Awake()
         {
             _overlaySprite = CreateOverlaySprite();
@@ -32,9 +29,7 @@ namespace ProjectAstra.Core
             if (_overlayContainer != null)
                 Destroy(_overlayContainer.gameObject);
         }
-        #endregion
 
-        #region Public API
         public void ShowMovementRange(HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough)
         {
             ClearAll();
@@ -64,9 +59,7 @@ namespace ProjectAstra.Core
             }
             _activeOverlays.Clear();
         }
-        #endregion
 
-        #region Overlay placement and pooling
         private void PlaceOverlay(Vector2Int tile, Color color)
         {
             GameObject overlay = GetOrCreateOverlay();
@@ -112,6 +105,5 @@ namespace ProjectAstra.Core
 
             return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
-        #endregion
     }
 }

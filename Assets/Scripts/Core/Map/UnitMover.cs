@@ -11,13 +11,10 @@ namespace ProjectAstra.Core
     /// </summary>
     public class UnitMover : MonoBehaviour
     {
-        #region Fields
         [SerializeField] private float _tilesPerSecond = 8f;
 
         public bool IsMoving { get; private set; }
-        #endregion
 
-        #region Public API
         /// <summary>
         /// Animates the unit along the path tile-by-tile. Updates unit.gridPosition at each step.
         /// Calls onComplete when finished. Optional onTileEntered fires at each intermediate tile.
@@ -41,9 +38,7 @@ namespace ProjectAstra.Core
             unit.gridPosition = originalPosition;
             unit.SnapToGridPosition();
         }
-        #endregion
 
-        #region Movement animation
         private bool IsPathValid(TestUnit unit, List<Vector2Int> path)
         {
             return unit != null && path != null && path.Count > 1;
@@ -82,6 +77,5 @@ namespace ProjectAstra.Core
                 yield return null;
             }
         }
-        #endregion
     }
 }

@@ -10,16 +10,13 @@ namespace ProjectAstra.Core
     /// </summary>
     public class PathArrowRenderer : MonoBehaviour
     {
-        #region Fields
         private static readonly Color PathColor = new(1.0f, 1.0f, 0.3f, 0.5f);
 
         private readonly List<GameObject> _activeOverlays = new();
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
-        #endregion
 
-        #region MonoBehaviour lifecycle
         private void Awake()
         {
             _overlaySprite = CreateOverlaySprite();
@@ -31,9 +28,7 @@ namespace ProjectAstra.Core
             if (_overlayContainer != null)
                 Destroy(_overlayContainer.gameObject);
         }
-        #endregion
 
-        #region Public API
         /// <summary>Shows path overlay tiles along the given path. Skips the origin tile (index 0).</summary>
         public void ShowPath(List<Vector2Int> path)
         {
@@ -54,9 +49,7 @@ namespace ProjectAstra.Core
             }
             _activeOverlays.Clear();
         }
-        #endregion
 
-        #region Overlay placement and pooling
         private bool HasValidPath(List<Vector2Int> path)
         {
             return path != null && path.Count > 1;
@@ -103,6 +96,5 @@ namespace ProjectAstra.Core
 
             return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
-        #endregion
     }
 }

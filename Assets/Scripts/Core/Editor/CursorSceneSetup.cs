@@ -6,7 +6,6 @@ namespace ProjectAstra.Core.Editor
 {
     public static class CursorSceneSetup
     {
-        #region Entry point
         [MenuItem("Project Astra/Map/Setup Cursor & Test Unit in Scene")]
         public static void Setup()
         {
@@ -31,9 +30,7 @@ namespace ProjectAstra.Core.Editor
             MarkSceneDirty();
             Debug.Log("GridCursor, TestUnit, and CameraController added to scene.");
         }
-        #endregion
 
-        #region Asset loading
         private struct SceneAssets
         {
             public GameStateEventChannel stateChannel;
@@ -61,9 +58,7 @@ namespace ProjectAstra.Core.Editor
         {
             return assets.cursorSprite != null && assets.unitSprite != null;
         }
-        #endregion
 
-        #region Component setup
         private static void SetupGridCursor(MapRenderer mapRenderer, SceneAssets assets)
         {
             if (AlreadyExistsInScene<GridCursor>()) return;
@@ -141,9 +136,7 @@ namespace ProjectAstra.Core.Editor
             so.FindProperty("_deadzoneMarginTiles").intValue = 3;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
-        #endregion
 
-        #region Helpers
         private static bool AlreadyExistsInScene<T>() where T : Object
         {
             var existing = Object.FindAnyObjectByType<T>();
@@ -171,6 +164,5 @@ namespace ProjectAstra.Core.Editor
             UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(
                 UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
         }
-        #endregion
     }
 }

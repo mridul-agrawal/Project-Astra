@@ -8,7 +8,6 @@ namespace ProjectAstra.Core
     /// </summary>
     public class TestUnit : MonoBehaviour
     {
-        #region Fields
         private static readonly Color ActedColor = new(0.4f, 0.4f, 0.4f, 0.7f);
 
         [Header("Unit Stats")]
@@ -24,9 +23,7 @@ namespace ProjectAstra.Core
 
         private SpriteRenderer _spriteRenderer;
         private Color _normalColor;
-        #endregion
 
-        #region MonoBehaviour lifecycle
         private void Start()
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -39,9 +36,7 @@ namespace ProjectAstra.Core
         {
             SnapToGridPosition();
         }
-        #endregion
 
-        #region Public API
         public void MarkActed()
         {
             hasActed = true;
@@ -58,14 +53,11 @@ namespace ProjectAstra.Core
         {
             transform.position = new Vector3(gridPosition.x + 0.5f, gridPosition.y + 0.5f, 0f);
         }
-        #endregion
 
-        #region Helpers
         private void SetSpriteColor(Color color)
         {
             if (_spriteRenderer != null)
                 _spriteRenderer.color = color;
         }
-        #endregion
     }
 }
