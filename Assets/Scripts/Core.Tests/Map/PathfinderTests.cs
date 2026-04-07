@@ -42,6 +42,7 @@ namespace ProjectAstra.Core.Tests
             s.moveCostArmoured = cost;
             s.moveCostFlying = cost == 0 ? 0 : 1; // flying always 1 unless truly impassable
             s.moveCostPirate = cost;
+            s.moveCostThief = cost;
             return s;
         }
 
@@ -80,13 +81,14 @@ namespace ProjectAstra.Core.Tests
             var stats = new TerrainStats
             {
                 moveCostFoot = 1, moveCostMounted = 2, moveCostArmoured = 3,
-                moveCostFlying = 4, moveCostPirate = 5
+                moveCostFlying = 4, moveCostPirate = 5, moveCostThief = 6
             };
             Assert.AreEqual(1, Pathfinder.GetMovementCost(stats, MovementType.Foot));
             Assert.AreEqual(2, Pathfinder.GetMovementCost(stats, MovementType.Mounted));
             Assert.AreEqual(3, Pathfinder.GetMovementCost(stats, MovementType.Armoured));
             Assert.AreEqual(4, Pathfinder.GetMovementCost(stats, MovementType.Flying));
             Assert.AreEqual(5, Pathfinder.GetMovementCost(stats, MovementType.Pirate));
+            Assert.AreEqual(6, Pathfinder.GetMovementCost(stats, MovementType.Thief));
         }
 
         // --- Reachability tests ---
@@ -342,6 +344,38 @@ namespace ProjectAstra.Core.Tests
             Assert.AreEqual(2, range.Count);
             Assert.IsTrue(range.Contains(new Vector2Int(1, 0)));
             Assert.IsTrue(range.Contains(new Vector2Int(0, 1)));
+        }
+
+        // --- Thief movement type tests ---
+
+        [Test]
+        public void GetMovementCost_Thief_ReturnsThiefField()
+        {
+            var stats = new TerrainStats { moveCostThief = 7 };
+            Assert.AreEqual(7, Pathfinder.GetMovementCost(stats, MovementType.Thief));
+        }
+
+        [Test]
+        public void Reachability_ThiefOnForest_Cost1()
+        {
+            // Thief treats forest as cost 1 (vs Foot's cost 2)
+            Func<TerrainType, TerrainStats> thiefForestStats = t =>
+            {
+                var s = TerrainStats.Default;
+                if (t == TerrainType.Forest)
+                {
+                    s.moveCostFoot = 2;
+                    s.moveCostThief = 1;
+                }
+                return s;
+            };
+
+            var result = Pathfinder.ComputeReachability(
+                new Vector2Int(2, 2), 2, MovementType.Thief, 5, 5,
+                UniformGrid(TerrainType.Forest, 5, 5), thiefForestStats, NoOccupants());
+
+            // Cost 1 per tile means full diamond of 13 (same as plain)
+            Assert.AreEqual(13, result.Destinations.Count);
         }
     }
 }

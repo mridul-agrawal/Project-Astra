@@ -11,6 +11,7 @@ namespace ProjectAstra.Core
         Mounted,
         Armoured,
         Flying,
-        Pirate
+        Pirate,
+        Thief
     }
 }

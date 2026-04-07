@@ -61,6 +61,7 @@ namespace ProjectAstra.Core
                 MovementType.Armoured => stats.moveCostArmoured,
                 MovementType.Flying => stats.moveCostFlying,
                 MovementType.Pirate => stats.moveCostPirate,
+                MovementType.Thief => stats.moveCostThief,
                 _ => 0
             };
         }

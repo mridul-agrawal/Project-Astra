@@ -26,25 +26,25 @@ namespace ProjectAstra.Core.Editor
             stats.arraySize = 18;
 
             // 0 = impassable for that movement type
-            //                                    Foot  Mount Armr  Fly   Pir   DEF  AVO  Heal  Interact
-            SetStats(stats, TerrainType.Plain,           1,    1,    1,    1,    1,    0,   0,   0, false);
-            SetStats(stats, TerrainType.Forest,          2,    3,    3,    1,    2,    1,  20,   0, false);
-            SetStats(stats, TerrainType.Mountain,        4,    0,    0,    1,    4,    1,  30,   0, false);
-            SetStats(stats, TerrainType.Peak,            0,    0,    0,    1,    0,    2,  40,   0, false);
-            SetStats(stats, TerrainType.Water,           0,    0,    0,    1,    2,    0,   0,   0, false);
-            SetStats(stats, TerrainType.Sea,             0,    0,    0,    1,    1,    0,   0,   0, false);
-            SetStats(stats, TerrainType.River,           0,    0,    0,    1,    2,    0,   0,   0, false);
-            SetStats(stats, TerrainType.Road,            1,    1,    1,    1,    1,    0,   0,   0, false);
-            SetStats(stats, TerrainType.Village,         1,    1,    1,    1,    1,    0,  10,   0, true);
-            SetStats(stats, TerrainType.Fort,            1,    1,    1,    1,    1,    2,  20,  10, false);
-            SetStats(stats, TerrainType.Gate,            1,    1,    1,    1,    1,    3,  30,  10, false);
-            SetStats(stats, TerrainType.Chest,           1,    1,    1,    1,    1,    0,   0,   0, true);
-            SetStats(stats, TerrainType.Door,            0,    0,    0,    0,    0,    0,   0,   0, true);
-            SetStats(stats, TerrainType.Wall,            0,    0,    0,    0,    0,    0,   0,   0, false);
-            SetStats(stats, TerrainType.DestructibleWall,0,    0,    0,    0,    0,    0,   0,   0, false);
-            SetStats(stats, TerrainType.Rubble,          2,    3,    3,    1,    2,    0,  10,   0, false);
-            SetStats(stats, TerrainType.Sand,            2,    3,    2,    1,    1,    0,   5,   0, false);
-            SetStats(stats, TerrainType.Void,            0,    0,    0,    0,    0,    0,   0,   0, false);
+            //                                    Foot  Mount Armr  Fly   Pir   Thf   DEF  AVO  Heal  Interact
+            SetStats(stats, TerrainType.Plain,           1,    1,    1,    1,    1,    1,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Forest,          2,    3,    3,    1,    2,    1,    1,  20,   0, false);
+            SetStats(stats, TerrainType.Mountain,        4,    0,    0,    1,    4,    2,    1,  30,   0, false);
+            SetStats(stats, TerrainType.Peak,            0,    0,    0,    1,    0,    0,    2,  40,   0, false);
+            SetStats(stats, TerrainType.Water,           0,    0,    0,    1,    2,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Sea,             0,    0,    0,    1,    1,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.River,           0,    0,    0,    1,    2,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Road,            1,    1,    1,    1,    1,    1,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Village,         1,    1,    1,    1,    1,    1,    0,   0,   0, true);
+            SetStats(stats, TerrainType.Fort,            1,    1,    1,    1,    1,    1,    2,  20,  10, false);
+            SetStats(stats, TerrainType.Gate,            1,    1,    1,    1,    1,    1,    3,  30,  10, false);
+            SetStats(stats, TerrainType.Chest,           1,    1,    1,    1,    1,    1,    0,   0,   0, true);
+            SetStats(stats, TerrainType.Door,            0,    0,    0,    0,    0,    0,    0,   0,   0, true);
+            SetStats(stats, TerrainType.Wall,            0,    0,    0,    0,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.DestructibleWall,0,    0,    0,    0,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Rubble,          2,    3,    3,    1,    2,    1,    0,  10,   0, false);
+            SetStats(stats, TerrainType.Sand,            2,    3,    2,    1,    1,    2,    0,   5,   0, false);
+            SetStats(stats, TerrainType.Void,            0,    0,    0,    0,    0,    0,    0,   0,   0, false);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(table);
@@ -53,7 +53,7 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void SetStats(SerializedProperty statsArray, TerrainType terrain,
-            int foot, int mounted, int armoured, int flying, int pirate,
+            int foot, int mounted, int armoured, int flying, int pirate, int thief,
             int def, int avo, int heal, bool interactable)
         {
             var entry = statsArray.GetArrayElementAtIndex((int)terrain);
@@ -62,6 +62,7 @@ namespace ProjectAstra.Core.Editor
             entry.FindPropertyRelative("moveCostArmoured").intValue = armoured;
             entry.FindPropertyRelative("moveCostFlying").intValue = flying;
             entry.FindPropertyRelative("moveCostPirate").intValue = pirate;
+            entry.FindPropertyRelative("moveCostThief").intValue = thief;
             entry.FindPropertyRelative("defenceBonus").intValue = def;
             entry.FindPropertyRelative("avoidBonus").intValue = avo;
             entry.FindPropertyRelative("healPerTurn").intValue = heal;
