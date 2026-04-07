@@ -49,6 +49,10 @@ namespace ProjectAstra.Core
         private Vector2Int _committedDestination;
         private PathfindingService _pathfindingService;
 
+        // Targeting mode — cycle through attack tiles instead of grid-walking
+        private List<Vector2Int> _targetTiles;
+        private int _targetIndex;
+
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
 
@@ -192,15 +196,21 @@ namespace ProjectAstra.Core
         #region Methods for handling input events and game state changes
         internal void HandleCursorMove(Vector2Int direction)
         {
-            if(!CanCursorMove()) 
+            if(!CanCursorMove())
                 return;
+
+            if (_currentMode == CursorMode.Targeting)
+            {
+                CycleThroughTargets(direction);
+                return;
+            }
 
             Vector2Int targetGridPosition = ClampToMapBounds(_gridPosition + direction);
 
-            if (ValidMoveTilesContains(targetGridPosition))
+            if (IsMovementConstrained() && !_validMoveTiles.Contains(targetGridPosition))
                 return;
 
-            if (targetGridPosition == _gridPosition) 
+            if (targetGridPosition == _gridPosition)
                 return;
 
             _gridPosition = targetGridPosition;
@@ -211,6 +221,18 @@ namespace ProjectAstra.Core
                 UpdatePathArrow();
         }
 
+        private void CycleThroughTargets(Vector2Int direction)
+        {
+            if (_targetTiles == null || _targetTiles.Count == 0) return;
+
+            int step = (direction.x > 0 || direction.y > 0) ? 1 : -1;
+            _targetIndex = (_targetIndex + step + _targetTiles.Count) % _targetTiles.Count;
+
+            _gridPosition = _targetTiles[_targetIndex];
+            SnapToGridPosition();
+            OnCursorMoved?.Invoke(_gridPosition);
+        }
+
         private bool CanCursorMove()
         {
             if (_currentMode == CursorMode.Locked) return false;
@@ -219,9 +241,9 @@ namespace ProjectAstra.Core
             return true;
         }
 
-        private bool ValidMoveTilesContains(Vector2Int pos)
+        private bool IsMovementConstrained()
         {
-            return _validMoveTiles != null && _validMoveTiles.Contains(pos);
+            return _validMoveTiles != null;
         }
 
 
@@ -355,9 +377,13 @@ namespace ProjectAstra.Core
             }
 
             _validMoveTiles = attackRange;
+            _targetTiles = new List<Vector2Int>(attackRange);
+            _targetTiles.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+            _targetIndex = 0;
+
             _rangeHighlighter?.ShowAttackRange(attackRange);
 
-            SetPosition(_committedDestination);
+            SetPosition(_targetTiles[0]);
             SetMode(CursorMode.Targeting);
         }
 
@@ -402,6 +428,7 @@ namespace ProjectAstra.Core
         {
             _selectedUnit = null;
             _validMoveTiles = null;
+            _targetTiles = null;
             _rangeHighlighter?.ClearAll();
             _pathArrowRenderer?.Clear();
             SetMode(CursorMode.Free);
@@ -409,6 +436,8 @@ namespace ProjectAstra.Core
 
         private void CancelTargeting()
         {
+            _targetTiles = null;
+
             // Undo movement — snap unit back to pre-movement position
             if (_unitMover != null)
                 _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);

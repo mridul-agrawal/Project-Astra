@@ -3131,8 +3131,8 @@ MonoBehaviour:
   gridPosition: {x: 2, y: 2}
   movementPoints: 3
   movementType: 0
-  attackRangeMin: 1
-  attackRangeMax: 1
+  attackRangeMin: 2
+  attackRangeMax: 2
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
 --- !u!4 &1984388530
