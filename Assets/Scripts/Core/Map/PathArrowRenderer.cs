@@ -6,7 +6,7 @@ namespace ProjectAstra.Core
 {
     public class PathArrowRenderer : MonoBehaviour
     {
-        private static readonly Color PathColor = new(1.0f, 1.0f, 0.3f, 0.5f);
+        private static readonly Color PathColor = new(1.0f, 1.0f, 0.2f, 0.7f);
 
         const float ShimmerFrequency = 1.5f;
         const float ShimmerAmplitude = 0.15f;
