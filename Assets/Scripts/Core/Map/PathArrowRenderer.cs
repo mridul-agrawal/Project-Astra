@@ -1,25 +1,26 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Renders the optimal path from a unit's origin to the cursor tile as a visible
-    /// overlay. Uses pooled SpriteRenderers on the UIOverlay sorting layer, same pattern
-    /// as RangeHighlighter. Color: semi-transparent yellow to distinguish from range highlights.
-    /// </summary>
     public class PathArrowRenderer : MonoBehaviour
     {
         private static readonly Color PathColor = new(1.0f, 1.0f, 0.3f, 0.5f);
+
+        const float ShimmerFrequency = 1.5f;
+        const float ShimmerAmplitude = 0.15f;
 
         private readonly List<GameObject> _activeOverlays = new();
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
+        private Coroutine _shimmerCoroutine;
+        private float _shimmerPhase;
 
         private void Awake()
         {
-            _overlaySprite = CreateOverlaySprite();
+            _overlaySprite = OverlaySpriteFactory.GetOverlaySprite();
             _overlayContainer = new GameObject("PathOverlays").transform;
         }
 
@@ -29,7 +30,6 @@ namespace ProjectAstra.Core
                 Destroy(_overlayContainer.gameObject);
         }
 
-        /// <summary>Shows path overlay tiles along the given path. Skips the origin tile (index 0).</summary>
         public void ShowPath(List<Vector2Int> path)
         {
             Clear();
@@ -38,10 +38,14 @@ namespace ProjectAstra.Core
 
             for (int i = 1; i < path.Count; i++)
                 PlaceOverlay(path[i]);
+
+            StartShimmer();
         }
 
         public void Clear()
         {
+            StopShimmer();
+
             foreach (var overlay in _activeOverlays)
             {
                 overlay.SetActive(false);
@@ -63,6 +67,41 @@ namespace ProjectAstra.Core
             _activeOverlays.Add(overlay);
         }
 
+        private void StartShimmer()
+        {
+            if (_shimmerCoroutine == null)
+                _shimmerCoroutine = StartCoroutine(ShimmerLoop());
+        }
+
+        private void StopShimmer()
+        {
+            if (_shimmerCoroutine != null)
+            {
+                StopCoroutine(_shimmerCoroutine);
+                _shimmerCoroutine = null;
+            }
+        }
+
+        private IEnumerator ShimmerLoop()
+        {
+            while (true)
+            {
+                _shimmerPhase += Time.deltaTime * ShimmerFrequency;
+                float alphaMultiplier = 1.0f + ShimmerAmplitude * Mathf.Sin(_shimmerPhase * Mathf.PI * 2f);
+
+                Color c = PathColor;
+                c.a *= alphaMultiplier;
+
+                foreach (var overlay in _activeOverlays)
+                {
+                    if (!overlay.activeSelf) continue;
+                    overlay.GetComponent<SpriteRenderer>().color = c;
+                }
+
+                yield return null;
+            }
+        }
+
         private GameObject GetOrCreateOverlay()
         {
             if (_pool.Count > 0)
@@ -75,26 +114,9 @@ namespace ProjectAstra.Core
             sr.sprite = _overlaySprite;
             sr.color = PathColor;
             sr.sortingLayerName = "UIOverlay";
-            sr.sortingOrder = -2; // Below cursor (-0) and range highlights (-1)
+            sr.sortingOrder = -2;
 
             return overlay;
-        }
-
-        private static Sprite CreateOverlaySprite()
-        {
-            const int size = 16;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            texture.filterMode = FilterMode.Point;
-
-            var pixels = new Color32[size * size];
-            var white = new Color32(255, 255, 255, 255);
-            for (int i = 0; i < pixels.Length; i++)
-                pixels[i] = white;
-
-            texture.SetPixels32(pixels);
-            texture.Apply();
-
-            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
     }
 }

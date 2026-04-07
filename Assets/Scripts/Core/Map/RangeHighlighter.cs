@@ -1,26 +1,29 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Manages programmatic sprite overlays for movement range, pass-through, and attack range.
-    /// Creates and pools SpriteRenderers at runtime on the UIOverlay sorting layer.
-    /// </summary>
     public class RangeHighlighter : MonoBehaviour
     {
         private static readonly Color MovementColor = new(0.2f, 0.4f, 1.0f, 0.35f);
         private static readonly Color PassThroughColor = new(0.2f, 0.8f, 1.0f, 0.25f);
         private static readonly Color AttackColor = new(1.0f, 0.2f, 0.2f, 0.35f);
 
+        const float ShimmerFrequency = 1.5f;
+        const float ShimmerAmplitude = 0.15f;
+
         private readonly List<GameObject> _activeOverlays = new();
+        private readonly List<Color> _baseColors = new();
         private readonly Queue<GameObject> _pool = new();
         private Sprite _overlaySprite;
         private Transform _overlayContainer;
+        private Coroutine _shimmerCoroutine;
+        private float _shimmerPhase;
 
         private void Awake()
         {
-            _overlaySprite = CreateOverlaySprite();
+            _overlaySprite = OverlaySpriteFactory.GetOverlaySprite();
             _overlayContainer = new GameObject("RangeOverlays").transform;
         }
 
@@ -40,6 +43,8 @@ namespace ProjectAstra.Core
             if (passThrough != null)
                 foreach (var tile in passThrough)
                     PlaceOverlay(tile, PassThroughColor);
+
+            StartShimmer();
         }
 
         public void ShowAttackRange(HashSet<Vector2Int> attackable)
@@ -48,16 +53,21 @@ namespace ProjectAstra.Core
 
             foreach (var tile in attackable)
                 PlaceOverlay(tile, AttackColor);
+
+            StartShimmer();
         }
 
         public void ClearAll()
         {
+            StopShimmer();
+
             foreach (var overlay in _activeOverlays)
             {
                 overlay.SetActive(false);
                 _pool.Enqueue(overlay);
             }
             _activeOverlays.Clear();
+            _baseColors.Clear();
         }
 
         private void PlaceOverlay(Vector2Int tile, Color color)
@@ -70,6 +80,42 @@ namespace ProjectAstra.Core
             sr.color = color;
 
             _activeOverlays.Add(overlay);
+            _baseColors.Add(color);
+        }
+
+        private void StartShimmer()
+        {
+            if (_shimmerCoroutine == null)
+                _shimmerCoroutine = StartCoroutine(ShimmerLoop());
+        }
+
+        private void StopShimmer()
+        {
+            if (_shimmerCoroutine != null)
+            {
+                StopCoroutine(_shimmerCoroutine);
+                _shimmerCoroutine = null;
+            }
+        }
+
+        private IEnumerator ShimmerLoop()
+        {
+            while (true)
+            {
+                _shimmerPhase += Time.deltaTime * ShimmerFrequency;
+                float alphaMultiplier = 1.0f + ShimmerAmplitude * Mathf.Sin(_shimmerPhase * Mathf.PI * 2f);
+
+                for (int i = 0; i < _activeOverlays.Count; i++)
+                {
+                    if (!_activeOverlays[i].activeSelf) continue;
+                    var sr = _activeOverlays[i].GetComponent<SpriteRenderer>();
+                    Color c = _baseColors[i];
+                    c.a *= alphaMultiplier;
+                    sr.color = c;
+                }
+
+                yield return null;
+            }
         }
 
         private GameObject GetOrCreateOverlay()
@@ -83,27 +129,9 @@ namespace ProjectAstra.Core
             var sr = overlay.AddComponent<SpriteRenderer>();
             sr.sprite = _overlaySprite;
             sr.sortingLayerName = "UIOverlay";
-            sr.sortingOrder = -1; // Below cursor sprite (order 0)
+            sr.sortingOrder = -1;
 
             return overlay;
-        }
-
-        /// <summary>Creates a 16x16 white square sprite at runtime for tinting via SpriteRenderer.color.</summary>
-        private static Sprite CreateOverlaySprite()
-        {
-            const int size = 16;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            texture.filterMode = FilterMode.Point;
-
-            var pixels = new Color32[size * size];
-            var white = new Color32(255, 255, 255, 255);
-            for (int i = 0; i < pixels.Length; i++)
-                pixels[i] = white;
-
-            texture.SetPixels32(pixels);
-            texture.Apply();
-
-            return Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), size);
         }
     }
 }
