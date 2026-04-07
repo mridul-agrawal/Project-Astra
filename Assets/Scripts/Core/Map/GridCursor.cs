@@ -490,6 +490,11 @@ namespace ProjectAstra.Core
             _rangeHighlighter = rh;
         }
 
+        internal void SetPathArrowRenderer(PathArrowRenderer par)
+        {
+            _pathArrowRenderer = par;
+        }
+
         internal void SetUnitMover(UnitMover mover)
         {
             _unitMover = mover;
