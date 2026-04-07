@@ -5,7 +5,8 @@
         "ProjectAstra.Core",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
-        "Unity.2D.Tilemap.Extras"
+        "Unity.2D.Tilemap.Extras",
+        "Unity.Recorder.Editor"
     ],
     "includePlatforms": [
         "Editor"
