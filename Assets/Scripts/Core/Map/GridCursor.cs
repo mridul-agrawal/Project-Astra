@@ -24,6 +24,7 @@ namespace ProjectAstra.Core
         [SerializeField] private RangeHighlighter _rangeHighlighter;
         [SerializeField] private PathArrowRenderer _pathArrowRenderer;
         [SerializeField] private UnitMover _unitMover;
+        [SerializeField] private UnitActionMenuUI _actionMenuUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -52,6 +53,7 @@ namespace ProjectAstra.Core
         // Targeting mode — cycle through attack tiles instead of grid-walking
         private List<Vector2Int> _targetTiles;
         private int _targetIndex;
+        private List<Vector2Int> _cachedEnemyTiles = new();
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -105,6 +107,8 @@ namespace ProjectAstra.Core
                 InputManager.Instance.OnCursorMove += HandleCursorMove;
                 InputManager.Instance.OnConfirm += HandleConfirm;
                 InputManager.Instance.OnCancel += HandleCancel;
+                InputManager.Instance.OnNextUnit += HandleNextUnit;
+                InputManager.Instance.OnPrevUnit += HandlePrevUnit;
             }
         }
 
@@ -115,6 +119,8 @@ namespace ProjectAstra.Core
                 InputManager.Instance.OnCursorMove -= HandleCursorMove;
                 InputManager.Instance.OnConfirm -= HandleConfirm;
                 InputManager.Instance.OnCancel -= HandleCancel;
+                InputManager.Instance.OnNextUnit -= HandleNextUnit;
+                InputManager.Instance.OnPrevUnit -= HandlePrevUnit;
             }
         }
 
@@ -236,7 +242,9 @@ namespace ProjectAstra.Core
         private bool CanCursorMove()
         {
             if (_currentMode == CursorMode.Locked) return false;
+            if (_currentMode == CursorMode.ActionMenu) return false;
             if (BattleMapUI.HasInputFocus) return false;
+            if (UnitActionMenuUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;
             return true;
         }
@@ -246,6 +254,20 @@ namespace ProjectAstra.Core
             return _validMoveTiles != null;
         }
 
+
+        private void HandleNextUnit()
+        {
+            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            var next = TurnManager.Instance.UnitRegistry.GetNextUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
+            if (next != null) SetPosition(next.gridPosition);
+        }
+
+        private void HandlePrevUnit()
+        {
+            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            var prev = TurnManager.Instance.UnitRegistry.GetPrevUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
+            if (prev != null) SetPosition(prev.gridPosition);
+        }
 
         private void UpdatePathArrow()
         {
@@ -307,7 +329,21 @@ namespace ProjectAstra.Core
 
         private bool IsUnitSelectable(TestUnit unit)
         {
-            return unit != null && !unit.hasActed;
+            if (unit == null) return false;
+
+            if (TurnManager.Instance != null)
+            {
+                var registry = TurnManager.Instance.UnitRegistry;
+                if (!registry.CanAct(unit)) return false;
+                if (registry.GetFaction(unit) != Faction.Player) return false;
+                if (TurnManager.Instance.CurrentPhase != BattlePhase.PlayerPhase) return false;
+            }
+            else if (unit.hasActed)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void EnterUnitSelectedMode()
@@ -363,37 +399,101 @@ namespace ProjectAstra.Core
 
         private void OnMovementComplete()
         {
-            EnterTargetingMode();
+            ShowActionMenu();
+        }
+
+        private void ShowActionMenu()
+        {
+            var actions = new List<string>();
+            _cachedEnemyTiles = FindEnemiesInAttackRange();
+
+            if (_cachedEnemyTiles.Count > 0)
+                actions.Add("Attack");
+            actions.Add("Wait");
+
+            SetMode(CursorMode.ActionMenu);
+            _actionMenuUI?.Show(actions, OnActionSelected, OnActionCancelled);
+        }
+
+        private void OnActionSelected(int index)
+        {
+            string chosen = _cachedEnemyTiles.Count > 0 && index == 0 ? "Attack" : "Wait";
+
+            if (chosen == "Attack")
+                EnterTargetingMode();
+            else
+                CompleteAction();
+        }
+
+        private void OnActionCancelled()
+        {
+            if (_unitMover != null)
+                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
+
+            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
+            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
+            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
+
+            SetPosition(_selectedUnit.gridPosition);
+            SetMode(CursorMode.UnitSelected);
         }
 
         private void EnterTargetingMode()
         {
-            var attackRange = _pathfindingService.ComputeAttackRange(new HashSet<Vector2Int> { _committedDestination }, _selectedUnit.attackRangeMin, _selectedUnit.attackRangeMax);
-
-            if (attackRange.Count == 0)
+            if (_cachedEnemyTiles.Count == 0)
             {
                 CompleteAction();
                 return;
             }
 
-            _validMoveTiles = attackRange;
-            _targetTiles = new List<Vector2Int>(attackRange);
+            var enemyTileSet = new HashSet<Vector2Int>(_cachedEnemyTiles);
+            _validMoveTiles = enemyTileSet;
+            _targetTiles = new List<Vector2Int>(_cachedEnemyTiles);
             _targetTiles.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
             _targetIndex = 0;
 
-            _rangeHighlighter?.ShowAttackRange(attackRange);
+            _rangeHighlighter?.ShowAttackRange(enemyTileSet);
 
             SetPosition(_targetTiles[0]);
             SetMode(CursorMode.Targeting);
         }
 
+        private List<Vector2Int> FindEnemiesInAttackRange()
+        {
+            var attackRange = _pathfindingService.ComputeAttackRange(
+                new HashSet<Vector2Int> { _committedDestination },
+                _selectedUnit.attackRangeMin, _selectedUnit.attackRangeMax);
+
+            var enemyTiles = new List<Vector2Int>();
+            foreach (var tile in attackRange)
+            {
+                var unit = FindUnitAt(tile);
+                if (unit == null) continue;
+
+                bool isEnemy = TurnManager.Instance != null
+                    ? TurnManager.Instance.UnitRegistry.GetFaction(unit) == Faction.Enemy
+                    : unit.faction == Faction.Enemy;
+
+                if (isEnemy)
+                    enemyTiles.Add(tile);
+            }
+            return enemyTiles;
+        }
+
         private void CompleteAction()
         {
             if (_selectedUnit != null)
-                _selectedUnit.MarkActed();
+            {
+                if (TurnManager.Instance != null)
+                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
+                else
+                    _selectedUnit.MarkActed();
+            }
 
             _memorizedPosition = null;
             ResetUnitTilesMode();
+
+            TurnManager.Instance?.CheckAutoEndPlayerPhase();
         }
 
         private void TryCommitAttack()
@@ -437,19 +537,10 @@ namespace ProjectAstra.Core
         private void CancelTargeting()
         {
             _targetTiles = null;
+            _rangeHighlighter?.ClearAll();
 
-            // Undo movement — snap unit back to pre-movement position
-            if (_unitMover != null)
-                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
-
-            // Return to UNIT_SELECTED — restore movement highlights
-            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
-            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
-
-            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
-
-            SetPosition(_selectedUnit.gridPosition);
-            SetMode(CursorMode.UnitSelected);
+            SetPosition(_committedDestination);
+            ShowActionMenu();
         }
 
         private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
@@ -493,6 +584,11 @@ namespace ProjectAstra.Core
         internal void SetPathArrowRenderer(PathArrowRenderer par)
         {
             _pathArrowRenderer = par;
+        }
+
+        internal void SetActionMenuUI(UnitActionMenuUI ui)
+        {
+            _actionMenuUI = ui;
         }
 
         internal void SetUnitMover(UnitMover mover)

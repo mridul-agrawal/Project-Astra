@@ -99,9 +99,11 @@ namespace ProjectAstra.Core.Editor
                 new ButtonDef { Label = "Save Menu", FieldName = "_saveMenuButton" },
             }},
             { GameState.BattleMapPaused, new[] {
+                new ButtonDef { Label = "End Turn",      FieldName = "_endTurnButton" },
                 new ButtonDef { Label = "Resume",        FieldName = "_resumeButton" },
                 new ButtonDef { Label = "Save Menu",     FieldName = "_saveMenuButton" },
                 new ButtonDef { Label = "Settings Menu", FieldName = "_settingsMenuButton" },
+                new ButtonDef { Label = "Quit to Main Menu", FieldName = "_quitButton" },
             }},
             { GameState.CombatAnimation, new[] {
                 new ButtonDef { Label = "Return to Battle", FieldName = "_returnButton" },

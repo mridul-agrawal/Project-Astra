@@ -10,6 +10,9 @@ namespace ProjectAstra.Core
     {
         private static readonly Color ActedColor = new(0.4f, 0.4f, 0.4f, 0.7f);
 
+        [Header("Unit Identity")]
+        public Faction faction = Faction.Player;
+
         [Header("Unit Stats")]
         public Vector2Int gridPosition = new(2, 2);
         public int movementPoints = 3;
