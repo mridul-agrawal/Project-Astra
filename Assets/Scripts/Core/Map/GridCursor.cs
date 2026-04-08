@@ -523,8 +523,11 @@ namespace ProjectAstra.Core
             var (defTerrainDef, defTerrainAvo) = GetTerrainBonuses(defender);
             var (atkTerrainDef, atkTerrainAvo) = GetTerrainBonuses(attacker);
 
+            var atkClass = attacker.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
+            var defClass = defender.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
+
             return CombatRound.Resolve(atkData, defData, defTerrainDef, defTerrainAvo,
-                atkTerrainDef, atkTerrainAvo, new UnityRng());
+                atkTerrainDef, atkTerrainAvo, new UnityRng(), atkClass, defClass);
         }
 
         private CombatantData BuildCombatantData(TestUnit unit, int distance)
@@ -568,6 +571,10 @@ namespace ProjectAstra.Core
                 }
             }
 
+            if (result.TriangleAdvantage != 0)
+                Debug.Log($"[Combat] Weapon Triangle: {(result.TriangleAdvantage > 0 ? "Attacker advantage" : "Defender advantage")}");
+            if (result.AttackerEffective)
+                Debug.Log($"[Combat] Effective weapon!");
             Debug.Log($"[Combat] Result: {attacker.name} HP={result.AttackerHPAfter}, {defender.name} HP={result.DefenderHPAfter}");
         }
 

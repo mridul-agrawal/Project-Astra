@@ -62,6 +62,11 @@ namespace ProjectAstra.Core
             return baseDamage * 3;
         }
 
+        public static int ComputeEffectiveMight(int baseMight, WeaponData weapon, ClassType defenderClassType)
+        {
+            return weapon.IsEffectiveAgainst(defenderClassType) ? baseMight * 3 : baseMight;
+        }
+
         public static int ComputeDamage(DamageType type, int str, int mag, int weaponMight,
             int wtDmgBonus, int def, int res, int terrainDefBonus)
         {

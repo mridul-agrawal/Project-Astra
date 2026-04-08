@@ -268,8 +268,9 @@ namespace ProjectAstra.Core.Tests
         [Test]
         public void Round_CritTriples_Damage()
         {
+            // Use same weapon type to avoid triangle affecting damage
             var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, skl: 20, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 100, str: 5, spd: 5, def: 5, skl: 5, niyati: 0, weapon: WeaponData.IronLance);
+            var def = MakeCombatant(hp: 100, str: 5, spd: 5, def: 5, skl: 5, niyati: 0, weapon: WeaponData.IronSword);
 
             // Hit succeeds (0,0), crit succeeds (0), defender counter hit(0,0), no crit(99)
             var rng = new FixedRng(0, 0, 0, 0, 0, 99);
