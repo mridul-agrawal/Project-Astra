@@ -123,6 +123,7 @@ namespace ProjectAstra.Core.Editor
             unit.movementType = movementType;
             unit.attackRangeMin = 1;
             unit.attackRangeMax = 1;
+            unit.equippedWeapon = faction == Faction.Player ? WeaponData.IronSword : WeaponData.IronLance;
 
             CreateChildSprite(unitGO, "UnitSprite", sprite, "Units", 0);
 

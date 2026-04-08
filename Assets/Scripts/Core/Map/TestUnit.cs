@@ -20,6 +20,13 @@ namespace ProjectAstra.Core
         public int attackRangeMin = 1;
         public int attackRangeMax = 1;
 
+        [Header("Equipment")]
+        public WeaponData equippedWeapon;
+
+        [Header("HP")]
+        public int maxHP = 20;
+        public int currentHP = 20;
+
         [Header("Turn State")]
         public bool hasActed;
         public Vector2Int preMovementPosition;

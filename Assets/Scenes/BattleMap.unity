@@ -1544,6 +1544,16 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
+  equippedWeapon:
+    name: Iron Lance
+    weaponType: 1
+    damageType: 0
+    might: 7
+    hit: 80
+    crit: 0
+    weight: 8
+    minRange: 1
+    maxRange: 1
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
@@ -1719,6 +1729,16 @@ MonoBehaviour:
   movementType: 1
   attackRangeMin: 1
   attackRangeMax: 1
+  equippedWeapon:
+    name: Iron Sword
+    weaponType: 0
+    damageType: 0
+    might: 5
+    hit: 90
+    crit: 0
+    weight: 5
+    minRange: 1
+    maxRange: 1
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
@@ -1939,6 +1959,16 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
+  equippedWeapon:
+    name: Iron Sword
+    weaponType: 0
+    damageType: 0
+    might: 5
+    hit: 90
+    crit: 0
+    weight: 5
+    minRange: 1
+    maxRange: 1
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
@@ -2624,6 +2654,16 @@ MonoBehaviour:
   movementType: 2
   attackRangeMin: 1
   attackRangeMax: 1
+  equippedWeapon:
+    name: Iron Lance
+    weaponType: 1
+    damageType: 0
+    might: 7
+    hit: 80
+    crit: 0
+    weight: 8
+    minRange: 1
+    maxRange: 1
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
@@ -2890,6 +2930,16 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
+  equippedWeapon:
+    name: Iron Sword
+    weaponType: 0
+    damageType: 0
+    might: 5
+    hit: 90
+    crit: 0
+    weight: 5
+    minRange: 1
+    maxRange: 1
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}

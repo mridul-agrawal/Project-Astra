@@ -498,8 +498,95 @@ namespace ProjectAstra.Core
 
         private void TryCommitAttack()
         {
-            Debug.Log($"GridCursor: Attack committed at ({_gridPosition.x}, {_gridPosition.y})");
+            var defender = FindUnitAt(_gridPosition);
+            if (defender == null)
+            {
+                CompleteAction();
+                return;
+            }
+
+            var result = ResolveCombat(_selectedUnit, defender);
+            LogCombatResult(_selectedUnit, defender, result);
+            ApplyCombatResult(_selectedUnit, defender, result);
+
             CompleteAction();
+        }
+
+        private CombatResult ResolveCombat(TestUnit attacker, TestUnit defender)
+        {
+            int distance = Mathf.Abs(attacker.gridPosition.x - defender.gridPosition.x)
+                         + Mathf.Abs(attacker.gridPosition.y - defender.gridPosition.y);
+
+            var atkData = BuildCombatantData(attacker, distance);
+            var defData = BuildCombatantData(defender, distance);
+
+            var (defTerrainDef, defTerrainAvo) = GetTerrainBonuses(defender);
+            var (atkTerrainDef, atkTerrainAvo) = GetTerrainBonuses(attacker);
+
+            return CombatRound.Resolve(atkData, defData, defTerrainDef, defTerrainAvo,
+                atkTerrainDef, atkTerrainAvo, new UnityRng());
+        }
+
+        private CombatantData BuildCombatantData(TestUnit unit, int distance)
+        {
+            if (unit.UnitInstance != null)
+            {
+                return CombatantData.FromStats(unit.UnitInstance.Stats,
+                    unit.UnitInstance.CurrentHP, unit.UnitInstance.MaxHP,
+                    unit.equippedWeapon, distance);
+            }
+
+            var stats = StatArray.From(unit.maxHP, 8, 3, 7, 9, 5, 2, 6, 5);
+            return CombatantData.FromStats(stats, unit.currentHP, unit.maxHP, unit.equippedWeapon, distance);
+        }
+
+        private (int def, int avo) GetTerrainBonuses(TestUnit unit)
+        {
+            if (_mapRenderer == null || _terrainStatTable == null)
+                return (0, 0);
+
+            var terrain = _mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
+            var stats = _terrainStatTable.GetStats(terrain);
+            return TerrainStatTable.GetTerrainBonuses(stats, unit.movementType);
+        }
+
+        private static void LogCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
+        {
+            foreach (var hit in result.Hits)
+            {
+                string target = hit.Attacker == "Attacker" ? defender.name : attacker.name;
+                string source = hit.Attacker == "Attacker" ? attacker.name : defender.name;
+
+                if (hit.Hit)
+                {
+                    string critText = hit.Crit ? " CRITICAL!" : "";
+                    Debug.Log($"[Combat] {source} → {target}: {hit.Damage} damage{critText}");
+                }
+                else
+                {
+                    Debug.Log($"[Combat] {source} → {target}: MISS");
+                }
+            }
+
+            Debug.Log($"[Combat] Result: {attacker.name} HP={result.AttackerHPAfter}, {defender.name} HP={result.DefenderHPAfter}");
+        }
+
+        private static void ApplyCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
+        {
+            if (attacker.UnitInstance != null)
+                attacker.UnitInstance.SetCurrentHP(result.AttackerHPAfter);
+            else
+                attacker.currentHP = result.AttackerHPAfter;
+
+            if (defender.UnitInstance != null)
+                defender.UnitInstance.SetCurrentHP(result.DefenderHPAfter);
+            else
+                defender.currentHP = result.DefenderHPAfter;
+
+            if (result.DefenderDied)
+                defender.gameObject.SetActive(false);
+            if (result.AttackerDied)
+                attacker.gameObject.SetActive(false);
         }
 
         internal void HandleCancel()
