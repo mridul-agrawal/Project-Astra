@@ -21,14 +21,31 @@ namespace ProjectAstra.Core
         public bool hasActed;
         public Vector2Int preMovementPosition;
 
+        [Header("Unit System (optional)")]
+        [SerializeField] private UnitDefinition _unitDefinition;
+
+        private UnitInstance _unitInstance;
         private SpriteRenderer _spriteRenderer;
         private Color _normalColor;
+
+        public UnitInstance UnitInstance => _unitInstance;
+
+        public void BindUnitInstance(UnitInstance instance)
+        {
+            _unitInstance = instance;
+            movementPoints = instance.EffectiveMovement;
+            movementType = instance.MovementType;
+        }
 
         private void Start()
         {
             _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             if (_spriteRenderer != null)
                 _normalColor = _spriteRenderer.color;
+
+            if (_unitDefinition != null && _unitInstance == null)
+                BindUnitInstance(new UnitInstance(_unitDefinition));
+
             SnapToGridPosition();
         }
 
