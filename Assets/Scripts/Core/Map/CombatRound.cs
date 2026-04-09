@@ -22,6 +22,8 @@ namespace ProjectAstra.Core
         public int DefenderHPAfter;
         public int TriangleAdvantage;
         public bool AttackerEffective;
+        public bool AttackerFired;
+        public bool DefenderFired;
     }
 
     public static class CombatRound
@@ -42,6 +44,7 @@ namespace ProjectAstra.Core
             int atkAS = StatUtils.AttackSpeed(attacker.spd, attacker.weapon.weight, attacker.con);
             int defAS = StatUtils.AttackSpeed(defender.spd, defender.weapon.weight, defender.con);
 
+            bool attackerCanFire = !attacker.weapon.IsEmpty && !attacker.weapon.IsBroken;
             bool canCounter = !defender.weapon.IsEmpty && !defender.weapon.IsBroken &&
                               defender.weapon.CanReachRange(attacker.distance);
             bool atkDoubles = CombatEngine.CanDoubleAttack(atkAS, defAS);
@@ -89,19 +92,24 @@ namespace ProjectAstra.Core
                 defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, 0, attacker.niyati);
             }
 
+            bool defenderFired = false;
+
             // Step 1a: Attacker's first hit
-            var hit1 = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
-            hits.Add(hit1);
-            if (hit1.Hit) defHP = Mathf.Max(0, defHP - hit1.Damage);
-            if (defHP <= 0) { if (hit1.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective); }
+            if (attackerCanFire)
+            {
+                var hit1 = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
+                hits.Add(hit1);
+                if (hit1.Hit) defHP = Mathf.Max(0, defHP - hit1.Damage);
+                if (defHP <= 0) { if (hit1.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
+            }
 
             // Step 1b: Brave second hit (before counter)
-            if (attacker.weapon.brave)
+            if (attackerCanFire && attacker.weapon.brave)
             {
                 var hitBrave = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
                 hits.Add(hitBrave);
                 if (hitBrave.Hit) defHP = Mathf.Max(0, defHP - hitBrave.Damage);
-                if (defHP <= 0) { if (hitBrave.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective); }
+                if (defHP <= 0) { if (hitBrave.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
             }
 
             // Step 2: Defender's counterattack
@@ -109,17 +117,18 @@ namespace ProjectAstra.Core
             {
                 var hit2 = ResolveHit("Defender", defDisplayedHit, defDmg, defCrit, rng);
                 hits.Add(hit2);
+                defenderFired = true;
                 if (hit2.Hit) atkHP = Mathf.Max(0, atkHP - hit2.Damage);
-                if (atkHP <= 0) { if (hit2.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective); }
+                if (atkHP <= 0) { if (hit2.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
             }
 
             // Step 3: Attacker's double attack
-            if (atkDoubles)
+            if (attackerCanFire && atkDoubles)
             {
                 var hit3 = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
                 hits.Add(hit3);
                 if (hit3.Hit) defHP = Mathf.Max(0, defHP - hit3.Damage);
-                if (defHP <= 0) { if (hit3.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective); }
+                if (defHP <= 0) { if (hit3.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
             }
 
             // Step 4: Defender's double counterattack
@@ -131,7 +140,7 @@ namespace ProjectAstra.Core
                 if (atkHP <= 0 && hit4.TrueHitRoll < 30) unlikelyDeath = true;
             }
 
-            return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective);
+            return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired);
         }
 
         private static HitResult ResolveHit(string who, int displayedHit, int baseDamage, int critRate, IRng rng)
@@ -161,7 +170,7 @@ namespace ProjectAstra.Core
             };
         }
 
-        private static CombatResult Build(List<HitResult> hits, int atkHP, int defHP, bool unlikely, int triAdv, bool effective)
+        private static CombatResult Build(List<HitResult> hits, int atkHP, int defHP, bool unlikely, int triAdv, bool effective, bool attackerFired, bool defenderFired)
         {
             return new CombatResult
             {
@@ -173,6 +182,8 @@ namespace ProjectAstra.Core
                 DefenderHPAfter = defHP,
                 TriangleAdvantage = triAdv,
                 AttackerEffective = effective,
+                AttackerFired = attackerFired,
+                DefenderFired = defenderFired,
             };
         }
     }

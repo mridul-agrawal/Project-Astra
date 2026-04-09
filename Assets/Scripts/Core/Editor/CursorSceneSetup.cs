@@ -29,9 +29,10 @@ namespace ProjectAstra.Core.Editor
             SetupTurnManager(assets);
             SetupPhaseBanner(assets);
             SetupCameraController(mapRenderer);
+            SetupInventoryUIBindings();
 
             MarkSceneDirty();
-            Debug.Log("GridCursor, TestUnits, TurnManager, PhaseBanner, and CameraController added to scene.");
+            Debug.Log("GridCursor, TestUnits, TurnManager, PhaseBanner, CameraController, and Inventory UI added to scene.");
         }
 
         private struct SceneAssets
@@ -54,7 +55,7 @@ namespace ProjectAstra.Core.Editor
                 terrainStatTable = AssetDatabase.LoadAssetAtPath<TerrainStatTable>(
                     "Assets/ScriptableObjects/Map/TerrainStatTable.asset"),
                 cursorSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
-                    "Assets/Art/Cursor/PlaceholderCursor.png"),
+                    "Assets/Art/Cursor/GridCursor.png"),
                 unitSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
                     "Assets/Art/Cursor/PlaceholderUnitCircle.png"),
             };
@@ -123,13 +124,94 @@ namespace ProjectAstra.Core.Editor
             unit.movementType = movementType;
             unit.attackRangeMin = 1;
             unit.attackRangeMax = 1;
-            unit.equippedWeapon = faction == Faction.Player ? WeaponData.IronSword : WeaponData.IronLance;
+
+            // RequireComponent on TestUnit auto-adds UnitInventory; ensure it's present.
+            var inventory = unitGO.GetComponent<UnitInventory>() ?? unitGO.AddComponent<UnitInventory>();
+            SeedInventory(inventory, faction, name);
 
             CreateChildSprite(unitGO, "UnitSprite", sprite, "Units", 0);
 
             unitGO.transform.position = new Vector3(pos.x + 0.5f, pos.y + 0.5f, 0f);
 
             Undo.RegisterCreatedObjectUndo(unitGO, $"Create {name}");
+        }
+
+        private static void SeedInventory(UnitInventory inventory, Faction faction, string unitName)
+        {
+            if (faction == Faction.Player)
+            {
+                inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronSword));
+                if (unitName == "PlayerUnit1")
+                {
+                    inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                }
+                else if (unitName == "PlayerUnit2")
+                {
+                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                }
+            }
+            else
+            {
+                inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronLance));
+            }
+        }
+
+        private static void SetupInventoryUIBindings()
+        {
+            var canvas = Object.FindAnyObjectByType<Canvas>();
+            if (canvas == null)
+            {
+                Debug.LogWarning("CursorSceneSetup: No Canvas found; inventory UI components were not attached.");
+                return;
+            }
+
+            var inventoryMenu = Object.FindAnyObjectByType<InventoryMenuUI>();
+            if (inventoryMenu == null)
+            {
+                var go = new GameObject("InventoryMenuUI");
+                go.transform.SetParent(canvas.transform, false);
+                inventoryMenu = go.AddComponent<InventoryMenuUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create InventoryMenuUI");
+            }
+
+            var confirmDialog = Object.FindAnyObjectByType<ConfirmDialogUI>();
+            if (confirmDialog == null)
+            {
+                var go = new GameObject("ConfirmDialogUI");
+                go.transform.SetParent(canvas.transform, false);
+                confirmDialog = go.AddComponent<ConfirmDialogUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create ConfirmDialogUI");
+            }
+
+            var toast = Object.FindAnyObjectByType<ToastNotificationUI>();
+            if (toast == null)
+            {
+                var go = new GameObject("ToastNotificationUI");
+                go.transform.SetParent(canvas.transform, false);
+                toast = go.AddComponent<ToastNotificationUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create ToastNotificationUI");
+            }
+
+            var fullPrompt = Object.FindAnyObjectByType<InventoryFullPromptUI>();
+            if (fullPrompt == null)
+            {
+                var go = new GameObject("InventoryFullPromptUI");
+                go.transform.SetParent(canvas.transform, false);
+                fullPrompt = go.AddComponent<InventoryFullPromptUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create InventoryFullPromptUI");
+            }
+            InventoryAcquisition.PromptHandler = fullPrompt;
+
+            var cursor = Object.FindAnyObjectByType<GridCursor>();
+            if (cursor != null)
+            {
+                var so = new SerializedObject(cursor);
+                so.FindProperty("_inventoryMenuUI").objectReferenceValue = inventoryMenu;
+                so.FindProperty("_confirmDialogUI").objectReferenceValue = confirmDialog;
+                so.FindProperty("_toastUI").objectReferenceValue = toast;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         private static void SetupTurnManager(SceneAssets assets)

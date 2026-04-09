@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &12591620
+--- !u!1 &31134368
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,88 +127,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 12591622}
-  - component: {fileID: 12591621}
+  - component: {fileID: 31134370}
+  - component: {fileID: 31134369}
   m_Layer: 0
-  m_Name: CursorSprite
+  m_Name: ToastNotificationUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!212 &12591621
-SpriteRenderer:
-  serializedVersion: 2
+--- !u!114 &31134369
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 12591620}
+  m_GameObject: {fileID: 31134368}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 5
-  m_SortingLayer: 5
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ebca75da6995f1746ba65d4e7f5ce836, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
---- !u!4 &12591622
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a09617f6db663b44bc50f7a749e2e21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.ToastNotificationUI
+--- !u!4 &31134370
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 12591620}
+  m_GameObject: {fileID: 31134368}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 60710086}
+  m_Father: {fileID: 992180733}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &49920955
 GameObject:
@@ -347,115 +300,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 49920955}
   m_CullTransparentMesh: 1
---- !u!1 &60710081
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 60710086}
-  - component: {fileID: 60710085}
-  - component: {fileID: 60710084}
-  - component: {fileID: 60710083}
-  - component: {fileID: 60710082}
-  - component: {fileID: 60710087}
-  m_Layer: 0
-  m_Name: GridCursor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &60710082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e193b6e8c8fc7ff41871f152de9e432b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GridCursor
-  _mapRenderer: {fileID: 268787981}
-  _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
-  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
-  _rangeHighlighter: {fileID: 60710085}
-  _pathArrowRenderer: {fileID: 60710084}
-  _unitMover: {fileID: 60710083}
-  _actionMenuUI: {fileID: 60710087}
-  _spriteRenderer: {fileID: 12591621}
-  _pulseSpeed: 3
-  _alphaMin: 0.4
-  _alphaMax: 1
---- !u!114 &60710083
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 16f0f1406f19fc74d8f7164c3285a063, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitMover
-  _tilesPerSecond: 8
---- !u!114 &60710084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 476089368240ddc4e8975de2688b8c15, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.PathArrowRenderer
---- !u!114 &60710085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12d5eeb1928da23448ace1b10d59008b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.RangeHighlighter
---- !u!4 &60710086
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 12591622}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &60710087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 60710081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef349d2dec188ea45aaba7f631591f27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitActionMenuUI
 --- !u!1 &63806309
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,7 +376,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!1 &78343777
+--- !u!1 &124562915
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -540,55 +384,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 78343779}
-  - component: {fileID: 78343778}
-  m_Layer: 0
-  m_Name: TurnManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &78343778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 78343777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f502f59d90130a4c89a6347fab34680, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TurnManager
-  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
-  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
-  _hasAllies: 0
---- !u!4 &78343779
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 78343777}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &79396140
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 79396141}
-  - component: {fileID: 79396142}
+  - component: {fileID: 124562916}
+  - component: {fileID: 124562917}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -596,29 +393,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &79396141
+--- !u!4 &124562916
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 79396140}
+  m_GameObject: {fileID: 124562915}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1591141340}
+  m_Father: {fileID: 648242666}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &79396142
+--- !u!212 &124562917
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 79396140}
+  m_GameObject: {fileID: 124562915}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -1124,7 +921,7 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!1 &279508957
+--- !u!1 &274081471
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1132,8 +929,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 279508958}
-  - component: {fileID: 279508959}
+  - component: {fileID: 274081472}
+  - component: {fileID: 274081473}
   m_Layer: 0
   m_Name: UnitSprite
   m_TagString: Untagged
@@ -1141,29 +938,29 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &279508958
+--- !u!4 &274081472
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 279508957}
+  m_GameObject: {fileID: 274081471}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1470419154}
+  m_Father: {fileID: 1573989133}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &279508959
+--- !u!212 &274081473
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 279508957}
+  m_GameObject: {fileID: 274081471}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -1206,7 +1003,98 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
-  m_Color: {r: 1, g: 0.3, b: 0.3, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!1 &434988568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 434988569}
+  - component: {fileID: 434988570}
+  m_Layer: 0
+  m_Name: UnitSprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &434988569
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434988568}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1957716049}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &434988570
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434988568}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 4
+  m_SortingLayer: 4
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -1509,7 +1397,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &530906989
+--- !u!1 &648242663
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1517,8 +1405,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 530906991}
-  - component: {fileID: 530906990}
+  - component: {fileID: 648242666}
+  - component: {fileID: 648242665}
+  - component: {fileID: 648242664}
   m_Layer: 0
   m_Name: EnemyUnit1
   m_TagString: Untagged
@@ -1526,13 +1415,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &530906990
+--- !u!114 &648242664
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530906989}
+  m_GameObject: {fileID: 648242663}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
@@ -1544,33 +1433,174 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
-  equippedWeapon:
-    name: Iron Lance
-    weaponType: 1
-    damageType: 0
-    might: 7
-    hit: 80
-    crit: 0
-    weight: 8
-    minRange: 1
-    maxRange: 1
+  _allowedWeaponTypes: 
+  maxHP: 20
+  currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
---- !u!4 &530906991
+--- !u!114 &648242665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 648242663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
+  _slots:
+  - kind: 1
+    weapon:
+      name: Loha Shula
+      weaponType: 1
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 7
+      hit: 80
+      crit: 0
+      weight: 8
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+--- !u!4 &648242666
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530906989}
+  m_GameObject: {fileID: 648242663}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.5, y: 5.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1076052639}
+  - {fileID: 124562916}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &689441353
@@ -1694,7 +1724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!1 &829437978
+--- !u!1 &757303346
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1702,62 +1732,89 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 829437980}
-  - component: {fileID: 829437979}
+  - component: {fileID: 757303347}
+  - component: {fileID: 757303348}
   m_Layer: 0
-  m_Name: PlayerUnit3
+  m_Name: UnitSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &829437979
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 829437978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
-  faction: 0
-  gridPosition: {x: 3, y: 1}
-  movementPoints: 5
-  movementType: 1
-  attackRangeMin: 1
-  attackRangeMax: 1
-  equippedWeapon:
-    name: Iron Sword
-    weaponType: 0
-    damageType: 0
-    might: 5
-    hit: 90
-    crit: 0
-    weight: 5
-    minRange: 1
-    maxRange: 1
-  hasActed: 0
-  preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 0}
---- !u!4 &829437980
+--- !u!4 &757303347
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 829437978}
+  m_GameObject: {fileID: 757303346}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5, y: 1.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1722890231}
-  m_Father: {fileID: 0}
+  m_Children: []
+  m_Father: {fileID: 1329739663}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &757303348
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757303346}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 4
+  m_SortingLayer: 4
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &846940733
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,70 +1981,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!1 &884684105
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 884684107}
-  - component: {fileID: 884684106}
-  m_Layer: 0
-  m_Name: PlayerUnit1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &884684106
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 884684105}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
-  faction: 0
-  gridPosition: {x: 2, y: 2}
-  movementPoints: 3
-  movementType: 0
-  attackRangeMin: 1
-  attackRangeMax: 1
-  equippedWeapon:
-    name: Iron Sword
-    weaponType: 0
-    damageType: 0
-    might: 5
-    hit: 90
-    crit: 0
-    weight: 5
-    minRange: 1
-    maxRange: 1
-  hasActed: 0
-  preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 0}
---- !u!4 &884684107
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 884684105}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 2.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1541061296}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &992180728
 GameObject:
   m_ObjectHideFlags: 0
@@ -2111,6 +2104,10 @@ RectTransform:
   - {fileID: 1092260778}
   - {fileID: 1394400146}
   - {fileID: 846940734}
+  - {fileID: 1494991789}
+  - {fileID: 1517777290}
+  - {fileID: 31134370}
+  - {fileID: 1937008934}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2118,97 +2115,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &1076052638
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1076052639}
-  - component: {fileID: 1076052640}
-  m_Layer: 0
-  m_Name: UnitSprite
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1076052639
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076052638}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 530906991}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1076052640
-SpriteRenderer:
-  serializedVersion: 2
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1076052638}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 4
-  m_SortingLayer: 4
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
-  m_Color: {r: 1, g: 0.3, b: 0.3, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
 --- !u!1 &1092260777
 GameObject:
   m_ObjectHideFlags: 0
@@ -2473,6 +2379,324 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1196281086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1196281092}
+  - component: {fileID: 1196281091}
+  - component: {fileID: 1196281090}
+  - component: {fileID: 1196281089}
+  - component: {fileID: 1196281088}
+  - component: {fileID: 1196281087}
+  m_Layer: 0
+  m_Name: GridCursor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1196281087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e193b6e8c8fc7ff41871f152de9e432b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GridCursor
+  _mapRenderer: {fileID: 268787981}
+  _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
+  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
+  _rangeHighlighter: {fileID: 1196281091}
+  _pathArrowRenderer: {fileID: 1196281090}
+  _unitMover: {fileID: 1196281089}
+  _actionMenuUI: {fileID: 1196281088}
+  _inventoryMenuUI: {fileID: 1494991790}
+  _confirmDialogUI: {fileID: 1517777291}
+  _toastUI: {fileID: 31134369}
+  _spriteRenderer: {fileID: 1981726270}
+  _pulseSpeed: 3
+  _alphaMin: 0.4
+  _alphaMax: 1
+--- !u!114 &1196281088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef349d2dec188ea45aaba7f631591f27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitActionMenuUI
+--- !u!114 &1196281089
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16f0f1406f19fc74d8f7164c3285a063, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitMover
+  _tilesPerSecond: 8
+--- !u!114 &1196281090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 476089368240ddc4e8975de2688b8c15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.PathArrowRenderer
+--- !u!114 &1196281091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12d5eeb1928da23448ace1b10d59008b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.RangeHighlighter
+--- !u!4 &1196281092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196281086}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1981726271}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1329739660
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1329739663}
+  - component: {fileID: 1329739662}
+  - component: {fileID: 1329739661}
+  m_Layer: 0
+  m_Name: PlayerUnit2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1329739661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1329739660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
+  faction: 0
+  gridPosition: {x: 4, y: 3}
+  movementPoints: 4
+  movementType: 0
+  attackRangeMin: 1
+  attackRangeMax: 1
+  _allowedWeaponTypes: 
+  maxHP: 20
+  currentHP: 20
+  hasActed: 0
+  preMovementPosition: {x: 0, y: 0}
+  _unitDefinition: {fileID: 0}
+--- !u!114 &1329739662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1329739660}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
+  _slots:
+  - kind: 1
+    weapon:
+      name: Loha Khadga
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 5
+      hit: 90
+      crit: 0
+      weight: 5
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 2
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: Sanjivani
+      type: 0
+      magnitude: 10
+      maxUses: 3
+      currentUses: 3
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+--- !u!4 &1329739663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1329739660}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.5, y: 3.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 757303347}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1384146583
 GameObject:
   m_ObjectHideFlags: 0
@@ -2619,7 +2843,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!1 &1470419152
+--- !u!1 &1404133247
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2627,60 +2851,202 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1470419154}
-  - component: {fileID: 1470419153}
+  - component: {fileID: 1404133250}
+  - component: {fileID: 1404133249}
+  - component: {fileID: 1404133248}
   m_Layer: 0
-  m_Name: EnemyUnit2
+  m_Name: PlayerUnit3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1470419153
+--- !u!114 &1404133248
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1470419152}
+  m_GameObject: {fileID: 1404133247}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
-  faction: 1
-  gridPosition: {x: 7, y: 4}
-  movementPoints: 4
-  movementType: 2
+  faction: 0
+  gridPosition: {x: 3, y: 1}
+  movementPoints: 5
+  movementType: 1
   attackRangeMin: 1
   attackRangeMax: 1
-  equippedWeapon:
-    name: Iron Lance
-    weaponType: 1
-    damageType: 0
-    might: 7
-    hit: 80
-    crit: 0
-    weight: 8
-    minRange: 1
-    maxRange: 1
+  _allowedWeaponTypes: 
+  maxHP: 20
+  currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
---- !u!4 &1470419154
+--- !u!114 &1404133249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1404133247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
+  _slots:
+  - kind: 1
+    weapon:
+      name: Loha Khadga
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 5
+      hit: 90
+      crit: 0
+      weight: 5
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+--- !u!4 &1404133250
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1470419152}
+  m_GameObject: {fileID: 1404133247}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.5, y: 4.5, z: 0}
+  m_LocalPosition: {x: 3.5, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 279508958}
+  - {fileID: 1928587369}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1485393337
@@ -2804,7 +3170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!1 &1541061295
+--- !u!1 &1494991788
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2812,90 +3178,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1541061296}
-  - component: {fileID: 1541061297}
+  - component: {fileID: 1494991789}
+  - component: {fileID: 1494991790}
   m_Layer: 0
-  m_Name: UnitSprite
+  m_Name: InventoryMenuUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1541061296
+--- !u!4 &1494991789
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541061295}
+  m_GameObject: {fileID: 1494991788}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 884684107}
+  m_Father: {fileID: 992180733}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1541061297
-SpriteRenderer:
-  serializedVersion: 2
+--- !u!114 &1494991790
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1541061295}
+  m_GameObject: {fileID: 1494991788}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 4
-  m_SortingLayer: 4
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
---- !u!1 &1591141338
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e85a940327fb694b857b2ce71952973, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.InventoryMenuUI
+--- !u!1 &1517777289
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2903,60 +3222,246 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1591141340}
-  - component: {fileID: 1591141339}
+  - component: {fileID: 1517777290}
+  - component: {fileID: 1517777291}
   m_Layer: 0
-  m_Name: PlayerUnit2
+  m_Name: ConfirmDialogUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1591141339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591141338}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
-  faction: 0
-  gridPosition: {x: 4, y: 3}
-  movementPoints: 4
-  movementType: 0
-  attackRangeMin: 1
-  attackRangeMax: 1
-  equippedWeapon:
-    name: Iron Sword
-    weaponType: 0
-    damageType: 0
-    might: 5
-    hit: 90
-    crit: 0
-    weight: 5
-    minRange: 1
-    maxRange: 1
-  hasActed: 0
-  preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 0}
---- !u!4 &1591141340
+--- !u!4 &1517777290
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591141338}
+  m_GameObject: {fileID: 1517777289}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.5, y: 3.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 992180733}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1517777291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517777289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bc38ecf965ee9947a7db9f92478d2c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.ConfirmDialogUI
+--- !u!1 &1573989130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1573989133}
+  - component: {fileID: 1573989132}
+  - component: {fileID: 1573989131}
+  m_Layer: 0
+  m_Name: EnemyUnit2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1573989131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573989130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
+  faction: 1
+  gridPosition: {x: 7, y: 4}
+  movementPoints: 4
+  movementType: 2
+  attackRangeMin: 1
+  attackRangeMax: 1
+  _allowedWeaponTypes: 
+  maxHP: 20
+  currentHP: 20
+  hasActed: 0
+  preMovementPosition: {x: 0, y: 0}
+  _unitDefinition: {fileID: 0}
+--- !u!114 &1573989132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573989130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
+  _slots:
+  - kind: 1
+    weapon:
+      name: Loha Shula
+      weaponType: 1
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 7
+      hit: 80
+      crit: 0
+      weight: 8
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+--- !u!4 &1573989133
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1573989130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.5, y: 4.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 79396141}
+  - {fileID: 274081472}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1627940954
@@ -3034,97 +3539,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1627940954}
   m_CullTransparentMesh: 1
---- !u!1 &1722890230
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1722890231}
-  - component: {fileID: 1722890232}
-  m_Layer: 0
-  m_Name: UnitSprite
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1722890231
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1722890230}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 829437980}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &1722890232
-SpriteRenderer:
-  serializedVersion: 2
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1722890230}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 4
-  m_SortingLayer: 4
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
 --- !u!1 &1746744596
 GameObject:
   m_ObjectHideFlags: 0
@@ -3181,6 +3595,53 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &1819914994
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1819914996}
+  - component: {fileID: 1819914995}
+  m_Layer: 0
+  m_Name: TurnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1819914995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819914994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f502f59d90130a4c89a6347fab34680, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TurnManager
+  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
+  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
+  _hasAllies: 0
+--- !u!4 &1819914996
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819914994}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1830605491
 GameObject:
   m_ObjectHideFlags: 0
@@ -3468,6 +3929,97 @@ Transform:
   m_Children: []
   m_Father: {fileID: 268787982}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1928587368
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1928587369}
+  - component: {fileID: 1928587370}
+  m_Layer: 0
+  m_Name: UnitSprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1928587369
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928587368}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1404133250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1928587370
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928587368}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 4
+  m_SortingLayer: 4
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
 --- !u!1 &1930414530
 GameObject:
   m_ObjectHideFlags: 0
@@ -3753,6 +4305,50 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &1937008933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1937008934}
+  - component: {fileID: 1937008935}
+  m_Layer: 0
+  m_Name: InventoryFullPromptUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1937008934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937008933}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 992180733}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1937008935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937008933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31f1b451008039649ba67a467234ead3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.InventoryFullPromptUI
 --- !u!1001 &1944750199
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3981,6 +4577,303 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &1957716046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1957716049}
+  - component: {fileID: 1957716048}
+  - component: {fileID: 1957716047}
+  m_Layer: 0
+  m_Name: PlayerUnit1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1957716047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957716046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7496dd9c8bf79c04490641933073c4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TestUnit
+  faction: 0
+  gridPosition: {x: 2, y: 2}
+  movementPoints: 3
+  movementType: 0
+  attackRangeMin: 1
+  attackRangeMax: 1
+  _allowedWeaponTypes: 
+  maxHP: 20
+  currentHP: 20
+  hasActed: 0
+  preMovementPosition: {x: 0, y: 0}
+  _unitDefinition: {fileID: 0}
+--- !u!114 &1957716048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957716046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
+  _slots:
+  - kind: 1
+    weapon:
+      name: Loha Khadga
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 5
+      hit: 90
+      crit: 0
+      weight: 5
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 1
+    weapon:
+      name: Loha Parashu
+      weaponType: 2
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 8
+      hit: 75
+      crit: 0
+      weight: 10
+      minRange: 1
+      maxRange: 1
+      maxUses: 45
+      currentUses: 45
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 2
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: Sanjivani
+      type: 0
+      magnitude: 10
+      maxUses: 3
+      currentUses: 3
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+  - kind: 0
+    weapon:
+      name: 
+      weaponType: 0
+      damageType: 0
+      magicSchool: 0
+      tier: 0
+      minRank: 0
+      might: 0
+      hit: 0
+      crit: 0
+      weight: 0
+      minRange: 0
+      maxRange: 0
+      maxUses: 0
+      currentUses: 0
+      indestructible: 0
+      brave: 0
+      effectivenessTargets: 
+      characterLocked: 0
+      ownerUnitId: 
+    consumable:
+      name: 
+      type: 0
+      magnitude: 0
+      maxUses: 0
+      currentUses: 0
+--- !u!4 &1957716049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1957716046}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.5, y: 2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 434988569}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1981726269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1981726271}
+  - component: {fileID: 1981726270}
+  m_Layer: 0
+  m_Name: CursorSprite
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1981726270
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981726269}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 5
+  m_SortingLayer: 5
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: c4d922765bcbe35449fbbb89230adffb, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!4 &1981726271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1981726269}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1196281092}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3989,10 +4882,10 @@ SceneRoots:
   - {fileID: 992180733}
   - {fileID: 268787982}
   - {fileID: 506087792}
-  - {fileID: 60710086}
-  - {fileID: 884684107}
-  - {fileID: 1591141340}
-  - {fileID: 829437980}
-  - {fileID: 530906991}
-  - {fileID: 1470419154}
-  - {fileID: 78343779}
+  - {fileID: 1196281092}
+  - {fileID: 1957716049}
+  - {fileID: 1329739663}
+  - {fileID: 1404133250}
+  - {fileID: 648242666}
+  - {fileID: 1573989133}
+  - {fileID: 1819914996}

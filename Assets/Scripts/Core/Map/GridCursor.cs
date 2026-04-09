@@ -25,6 +25,9 @@ namespace ProjectAstra.Core
         [SerializeField] private PathArrowRenderer _pathArrowRenderer;
         [SerializeField] private UnitMover _unitMover;
         [SerializeField] private UnitActionMenuUI _actionMenuUI;
+        [SerializeField] private InventoryMenuUI _inventoryMenuUI;
+        [SerializeField] private ConfirmDialogUI _confirmDialogUI;
+        [SerializeField] private ToastNotificationUI _toastUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -54,6 +57,9 @@ namespace ProjectAstra.Core
         private List<Vector2Int> _targetTiles;
         private int _targetIndex;
         private List<Vector2Int> _cachedEnemyTiles = new();
+        private List<ActionChoice> _cachedActionChoices = new();
+
+        private enum ActionChoice { Attack, Item, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -245,6 +251,8 @@ namespace ProjectAstra.Core
             if (_currentMode == CursorMode.ActionMenu) return false;
             if (BattleMapUI.HasInputFocus) return false;
             if (UnitActionMenuUI.HasInputFocus) return false;
+            if (InventoryMenuUI.HasInputFocus) return false;
+            if (ConfirmDialogUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;
             return true;
         }
@@ -404,25 +412,63 @@ namespace ProjectAstra.Core
 
         private void ShowActionMenu()
         {
-            var actions = new List<string>();
+            var labels = new List<string>();
+            _cachedActionChoices.Clear();
             _cachedEnemyTiles = FindEnemiesInAttackRange();
 
-            if (_cachedEnemyTiles.Count > 0)
-                actions.Add("Attack");
-            actions.Add("Wait");
+            if (_cachedEnemyTiles.Count > 0 && _selectedUnit != null && !_selectedUnit.Inventory.IsUnarmed)
+            {
+                labels.Add("Attack");
+                _cachedActionChoices.Add(ActionChoice.Attack);
+            }
+
+            if (_selectedUnit != null && _selectedUnit.Inventory.OccupiedCount > 0)
+            {
+                labels.Add("Item");
+                _cachedActionChoices.Add(ActionChoice.Item);
+            }
+
+            labels.Add("Wait");
+            _cachedActionChoices.Add(ActionChoice.Wait);
 
             SetMode(CursorMode.ActionMenu);
-            _actionMenuUI?.Show(actions, OnActionSelected, OnActionCancelled);
+            _actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
         }
 
         private void OnActionSelected(int index)
         {
-            string chosen = _cachedEnemyTiles.Count > 0 && index == 0 ? "Attack" : "Wait";
-
-            if (chosen == "Attack")
-                EnterTargetingMode();
-            else
+            if (index < 0 || index >= _cachedActionChoices.Count)
+            {
                 CompleteAction();
+                return;
+            }
+
+            switch (_cachedActionChoices[index])
+            {
+                case ActionChoice.Attack:
+                    EnterTargetingMode();
+                    break;
+                case ActionChoice.Item:
+                    OpenInventoryMenu();
+                    break;
+                case ActionChoice.Wait:
+                default:
+                    CompleteAction();
+                    break;
+            }
+        }
+
+        private void OpenInventoryMenu()
+        {
+            if (_selectedUnit == null || _inventoryMenuUI == null)
+            {
+                ShowActionMenu();
+                return;
+            }
+
+            _inventoryMenuUI.Show(_selectedUnit, _confirmDialogUI,
+                onConsumableUsed: () => CompleteAction(),
+                onClose: () => ShowActionMenu());
         }
 
         private void OnActionCancelled()
@@ -505,11 +551,49 @@ namespace ProjectAstra.Core
                 return;
             }
 
+            if (_selectedUnit.Inventory.IsUnarmed)
+            {
+                Debug.LogWarning($"[Combat] {_selectedUnit.name} is unarmed; cannot attack.");
+                CompleteAction();
+                return;
+            }
+
             var result = ResolveCombat(_selectedUnit, defender);
             LogCombatResult(_selectedUnit, defender, result);
             ApplyCombatResult(_selectedUnit, defender, result);
+            ApplyDurability(_selectedUnit, defender, result);
 
             CompleteAction();
+        }
+
+        private void ApplyDurability(TestUnit attacker, TestUnit defender, CombatResult result)
+        {
+            if (result.AttackerFired)
+            {
+                AnnounceBreaks(attacker, () => attacker.Inventory.ConsumeEquippedWeaponUses(1));
+            }
+            if (result.DefenderFired)
+            {
+                AnnounceBreaks(defender, () => defender.Inventory.ConsumeEquippedWeaponUses(1));
+            }
+        }
+
+        private void AnnounceBreaks(TestUnit unit, Action mutate)
+        {
+            void OnDestroyed(InventoryItem item)
+            {
+                if (_toastUI != null)
+                {
+                    string message = item.kind == ItemKind.Weapon
+                        ? $"{item.weapon.name} broke!"
+                        : $"{item.consumable.name} depleted";
+                    _toastUI.Show(message);
+                }
+            }
+
+            unit.Inventory.OnItemDestroyed += OnDestroyed;
+            try { mutate(); }
+            finally { unit.Inventory.OnItemDestroyed -= OnDestroyed; }
         }
 
         private CombatResult ResolveCombat(TestUnit attacker, TestUnit defender)

@@ -6,6 +6,7 @@ namespace ProjectAstra.Core
     /// Minimal test unit for exercising cursor, movement, and targeting flows.
     /// NOT a real unit system — just data + a visual on the Units layer.
     /// </summary>
+    [RequireComponent(typeof(UnitInventory))]
     public class TestUnit : MonoBehaviour
     {
         private static readonly Color ActedColor = new(0.4f, 0.4f, 0.4f, 0.7f);
@@ -20,8 +21,8 @@ namespace ProjectAstra.Core
         public int attackRangeMin = 1;
         public int attackRangeMax = 1;
 
-        [Header("Equipment")]
-        public WeaponData equippedWeapon;
+        [Header("Equippability fallback")]
+        [SerializeField] private WeaponType[] _allowedWeaponTypes;
 
         [Header("HP")]
         public int maxHP = 20;
@@ -35,16 +36,48 @@ namespace ProjectAstra.Core
         [SerializeField] private UnitDefinition _unitDefinition;
 
         private UnitInstance _unitInstance;
+        private UnitInventory _inventory;
         private SpriteRenderer _spriteRenderer;
         private Color _normalColor;
 
         public UnitInstance UnitInstance => _unitInstance;
+        public WeaponRankTracker WeaponRankTracker { get; set; }
+        public WeaponType[] AllowedWeaponTypes => _allowedWeaponTypes;
+
+        public UnitInventory Inventory
+        {
+            get
+            {
+                if (_inventory == null)
+                {
+                    _inventory = GetComponent<UnitInventory>();
+                    if (_inventory == null) _inventory = gameObject.AddComponent<UnitInventory>();
+                }
+                return _inventory;
+            }
+        }
+
+        /// <summary>
+        /// Backwards-compatible accessor for the unit's active weapon. Reads delegate to
+        /// the inventory's first equippable weapon scan; writes place the weapon in slot 0
+        /// so existing setup code (e.g., CursorSceneSetup) keeps working without changes.
+        /// </summary>
+        public WeaponData equippedWeapon
+        {
+            get => Inventory.GetEquippedWeapon();
+            set => Inventory.SetSlot(0, InventoryItem.FromWeapon(value));
+        }
 
         public void BindUnitInstance(UnitInstance instance)
         {
             _unitInstance = instance;
             movementPoints = instance.EffectiveMovement;
             movementType = instance.MovementType;
+        }
+
+        private void Awake()
+        {
+            _inventory = GetComponent<UnitInventory>();
         }
 
         private void Start()
