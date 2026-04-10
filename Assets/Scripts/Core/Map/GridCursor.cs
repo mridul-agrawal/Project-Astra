@@ -29,6 +29,7 @@ namespace ProjectAstra.Core
         [SerializeField] private ConfirmDialogUI _confirmDialogUI;
         [SerializeField] private ToastNotificationUI _toastUI;
         [SerializeField] private TradeUI _tradeUI;
+        [SerializeField] private ConvoyUI _convoyUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -61,7 +62,7 @@ namespace ProjectAstra.Core
         private List<ActionChoice> _cachedActionChoices = new();
         private List<TestUnit> _cachedAdjacentAllies = new();
 
-        private enum ActionChoice { Attack, Item, Trade, Wait }
+        private enum ActionChoice { Attack, Item, Trade, Supply, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -256,6 +257,7 @@ namespace ProjectAstra.Core
             if (InventoryMenuUI.HasInputFocus) return false;
             if (ConfirmDialogUI.HasInputFocus) return false;
             if (TradeUI.HasInputFocus) return false;
+            if (ConvoyUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;
             return true;
         }
@@ -441,6 +443,12 @@ namespace ProjectAstra.Core
                 _cachedActionChoices.Add(ActionChoice.Trade);
             }
 
+            if (_selectedUnit != null && _selectedUnit.isLord && Convoy.Current.IsAvailable)
+            {
+                labels.Add("Supply");
+                _cachedActionChoices.Add(ActionChoice.Supply);
+            }
+
             labels.Add("Wait");
             _cachedActionChoices.Add(ActionChoice.Wait);
 
@@ -466,6 +474,9 @@ namespace ProjectAstra.Core
                     break;
                 case ActionChoice.Trade:
                     ShowTradeTargetMenu();
+                    break;
+                case ActionChoice.Supply:
+                    OpenConvoyUI();
                     break;
                 case ActionChoice.Wait:
                 default:
@@ -516,6 +527,22 @@ namespace ProjectAstra.Core
             _tradeUI.Show(session, _confirmDialogUI,
                 onConfirm: () => ShowActionMenu(),
                 onCancel: () => ShowActionMenu());
+        }
+
+        private void OpenConvoyUI()
+        {
+            if (_selectedUnit == null || _convoyUI == null)
+            {
+                ShowActionMenu();
+                return;
+            }
+            var convoy = Convoy.Current as SupplyConvoy;
+            if (convoy == null)
+            {
+                ShowActionMenu();
+                return;
+            }
+            _convoyUI.Show(convoy, _selectedUnit, _toastUI, onClose: () => CompleteAction());
         }
 
         private void OnActionCancelled()
@@ -722,9 +749,15 @@ namespace ProjectAstra.Core
                 defender.currentHP = result.DefenderHPAfter;
 
             if (result.DefenderDied)
+            {
                 defender.gameObject.SetActive(false);
+                if (defender.isLord) Convoy.Current = NullConvoy.Instance;
+            }
             if (result.AttackerDied)
+            {
                 attacker.gameObject.SetActive(false);
+                if (attacker.isLord) Convoy.Current = NullConvoy.Instance;
+            }
         }
 
         internal void HandleCancel()

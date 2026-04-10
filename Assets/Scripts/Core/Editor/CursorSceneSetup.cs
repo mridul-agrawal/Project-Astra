@@ -105,7 +105,7 @@ namespace ProjectAstra.Core.Editor
         {
             if (AlreadyExistsInScene<TestUnit>()) return;
 
-            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot);
+            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, isLord: true);
             CreateUnit("PlayerUnit2", unitSprite, new Vector2Int(4, 3), Faction.Player, 4, MovementType.Foot);
             CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted);
             CreateUnit("EnemyUnit1",  unitSprite, new Vector2Int(6, 5), Faction.Enemy,  3, MovementType.Foot);
@@ -113,12 +113,13 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void CreateUnit(string name, Sprite sprite, Vector2Int pos, Faction faction,
-            int movementPoints, MovementType movementType)
+            int movementPoints, MovementType movementType, bool isLord = false)
         {
             var unitGO = new GameObject(name);
 
             var unit = unitGO.AddComponent<TestUnit>();
             unit.faction = faction;
+            unit.isLord = isLord;
             unit.gridPosition = pos;
             unit.movementPoints = movementPoints;
             unit.movementType = movementType;
@@ -212,6 +213,23 @@ namespace ProjectAstra.Core.Editor
                 Undo.RegisterCreatedObjectUndo(go, "Create TradeUI");
             }
 
+            var convoyUI = Object.FindAnyObjectByType<ConvoyUI>();
+            if (convoyUI == null)
+            {
+                var go = new GameObject("ConvoyUI");
+                go.transform.SetParent(canvas.transform, false);
+                convoyUI = go.AddComponent<ConvoyUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create ConvoyUI");
+            }
+
+            // Ensure ConvoyBootstrap exists so Convoy.Current is initialized at runtime.
+            if (Object.FindAnyObjectByType<ConvoyBootstrap>() == null)
+            {
+                var bootstrapGo = new GameObject("ConvoyBootstrap");
+                bootstrapGo.AddComponent<ConvoyBootstrap>();
+                Undo.RegisterCreatedObjectUndo(bootstrapGo, "Create ConvoyBootstrap");
+            }
+
             var cursor = Object.FindAnyObjectByType<GridCursor>();
             if (cursor != null)
             {
@@ -220,6 +238,7 @@ namespace ProjectAstra.Core.Editor
                 so.FindProperty("_confirmDialogUI").objectReferenceValue = confirmDialog;
                 so.FindProperty("_toastUI").objectReferenceValue = toast;
                 so.FindProperty("_tradeUI").objectReferenceValue = tradeUI;
+                so.FindProperty("_convoyUI").objectReferenceValue = convoyUI;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
         }

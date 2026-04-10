@@ -13,6 +13,7 @@ namespace ProjectAstra.Core
 
         [Header("Unit Identity")]
         public Faction faction = Faction.Player;
+        public bool isLord;
 
         [Header("Unit Stats")]
         public Vector2Int gridPosition = new(2, 2);

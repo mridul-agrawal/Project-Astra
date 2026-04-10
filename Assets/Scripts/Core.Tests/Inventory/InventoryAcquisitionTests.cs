@@ -10,18 +10,21 @@ namespace ProjectAstra.Core.Tests.Inventory
     {
         private TestUnit _unit;
         private IInventoryFullPromptHandler _previousHandler;
+        private IConvoy _previousConvoy;
 
         [SetUp]
         public void SetUp()
         {
             _unit = new GameObject("AcquisitionTestUnit").AddComponent<TestUnit>();
             _previousHandler = InventoryAcquisition.PromptHandler;
+            _previousConvoy = Convoy.Current;
         }
 
         [TearDown]
         public void TearDown()
         {
             InventoryAcquisition.PromptHandler = _previousHandler;
+            Convoy.Current = _previousConvoy;
             if (_unit != null) UnityEngine.Object.DestroyImmediate(_unit.gameObject);
         }
 
@@ -95,6 +98,61 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             Assert.IsFalse(NullConvoy.Instance.IsAvailable);
             Assert.IsFalse(NullConvoy.Instance.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword)));
+        }
+
+        [Test]
+        public void FullInventory_ConvoyAvailable_SendsToConvoy()
+        {
+            FillInventory();
+            var convoy = new SupplyConvoy();
+            Convoy.Current = convoy;
+
+            AcquisitionResult? captured = null;
+            InventoryAcquisition.TryAcquireItem(
+                _unit,
+                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                r => captured = r);
+
+            Assert.AreEqual(AcquisitionOutcome.SentToConvoy, captured.Value.Outcome);
+            Assert.AreEqual(1, convoy.Count);
+        }
+
+        [Test]
+        public void FullInventory_ConvoyAlsoFull_FallsThrough()
+        {
+            FillInventory();
+            var convoy = new SupplyConvoy();
+            for (int i = 0; i < SupplyConvoy.MaxCapacity; i++)
+                convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe));
+            Convoy.Current = convoy;
+            InventoryAcquisition.PromptHandler = null;
+
+            AcquisitionResult? captured = null;
+            InventoryAcquisition.TryAcquireItem(
+                _unit,
+                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                r => captured = r);
+
+            Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
+        }
+
+        [Test]
+        public void FullInventory_ConvoyTakesPriority_OverPromptHandler()
+        {
+            FillInventory();
+            var convoy = new SupplyConvoy();
+            Convoy.Current = convoy;
+            bool handlerCalled = false;
+            InventoryAcquisition.PromptHandler = new TestPromptHandler { ShouldCancel = true };
+
+            AcquisitionResult? captured = null;
+            InventoryAcquisition.TryAcquireItem(
+                _unit,
+                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                r => captured = r);
+
+            Assert.AreEqual(AcquisitionOutcome.SentToConvoy, captured.Value.Outcome);
+            Assert.IsFalse(handlerCalled);
         }
 
         private void FillInventory()

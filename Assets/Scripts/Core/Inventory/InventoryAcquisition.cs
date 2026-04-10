@@ -70,6 +70,13 @@ namespace ProjectAstra.Core
                 return;
             }
 
+            // Automatic convoy routing — overflow goes to convoy silently.
+            if (Convoy.Current.IsAvailable && Convoy.Current.TryDeposit(incoming))
+            {
+                onComplete?.Invoke(AcquisitionResult.SentToConvoy());
+                return;
+            }
+
             if (PromptHandler == null)
             {
                 // No UI wired — degrade gracefully so editor/tests can still call this.
