@@ -203,6 +203,15 @@ namespace ProjectAstra.Core.Editor
             }
             InventoryAcquisition.PromptHandler = fullPrompt;
 
+            var tradeUI = Object.FindAnyObjectByType<TradeUI>();
+            if (tradeUI == null)
+            {
+                var go = new GameObject("TradeUI");
+                go.transform.SetParent(canvas.transform, false);
+                tradeUI = go.AddComponent<TradeUI>();
+                Undo.RegisterCreatedObjectUndo(go, "Create TradeUI");
+            }
+
             var cursor = Object.FindAnyObjectByType<GridCursor>();
             if (cursor != null)
             {
@@ -210,6 +219,7 @@ namespace ProjectAstra.Core.Editor
                 so.FindProperty("_inventoryMenuUI").objectReferenceValue = inventoryMenu;
                 so.FindProperty("_confirmDialogUI").objectReferenceValue = confirmDialog;
                 so.FindProperty("_toastUI").objectReferenceValue = toast;
+                so.FindProperty("_tradeUI").objectReferenceValue = tradeUI;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
         }

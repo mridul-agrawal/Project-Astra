@@ -28,6 +28,7 @@ namespace ProjectAstra.Core
         [SerializeField] private InventoryMenuUI _inventoryMenuUI;
         [SerializeField] private ConfirmDialogUI _confirmDialogUI;
         [SerializeField] private ToastNotificationUI _toastUI;
+        [SerializeField] private TradeUI _tradeUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -58,8 +59,9 @@ namespace ProjectAstra.Core
         private int _targetIndex;
         private List<Vector2Int> _cachedEnemyTiles = new();
         private List<ActionChoice> _cachedActionChoices = new();
+        private List<TestUnit> _cachedAdjacentAllies = new();
 
-        private enum ActionChoice { Attack, Item, Wait }
+        private enum ActionChoice { Attack, Item, Trade, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -253,6 +255,7 @@ namespace ProjectAstra.Core
             if (UnitActionMenuUI.HasInputFocus) return false;
             if (InventoryMenuUI.HasInputFocus) return false;
             if (ConfirmDialogUI.HasInputFocus) return false;
+            if (TradeUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;
             return true;
         }
@@ -428,6 +431,16 @@ namespace ProjectAstra.Core
                 _cachedActionChoices.Add(ActionChoice.Item);
             }
 
+            _cachedAdjacentAllies = _selectedUnit != null
+                ? AdjacentAllyFinder.FindAdjacentAllies(
+                    _committedDestination, Faction.Player, _selectedUnit, FindUnitAt)
+                : new List<TestUnit>();
+            if (_cachedAdjacentAllies.Count > 0)
+            {
+                labels.Add("Trade");
+                _cachedActionChoices.Add(ActionChoice.Trade);
+            }
+
             labels.Add("Wait");
             _cachedActionChoices.Add(ActionChoice.Wait);
 
@@ -451,6 +464,9 @@ namespace ProjectAstra.Core
                 case ActionChoice.Item:
                     OpenInventoryMenu();
                     break;
+                case ActionChoice.Trade:
+                    ShowTradeTargetMenu();
+                    break;
                 case ActionChoice.Wait:
                 default:
                     CompleteAction();
@@ -469,6 +485,37 @@ namespace ProjectAstra.Core
             _inventoryMenuUI.Show(_selectedUnit, _confirmDialogUI,
                 onConsumableUsed: () => CompleteAction(),
                 onClose: () => ShowActionMenu());
+        }
+
+        private void ShowTradeTargetMenu()
+        {
+            if (_cachedAdjacentAllies.Count == 1)
+            {
+                OpenTrade(_cachedAdjacentAllies[0]);
+                return;
+            }
+
+            var names = new List<string>();
+            foreach (var ally in _cachedAdjacentAllies)
+                names.Add(ally.name);
+
+            _actionMenuUI?.Show(names,
+                index => OpenTrade(_cachedAdjacentAllies[index]),
+                () => ShowActionMenu());
+        }
+
+        private void OpenTrade(TestUnit target)
+        {
+            if (_selectedUnit == null || _tradeUI == null)
+            {
+                ShowActionMenu();
+                return;
+            }
+
+            var session = new TradeSession(_selectedUnit, target);
+            _tradeUI.Show(session, _confirmDialogUI,
+                onConfirm: () => ShowActionMenu(),
+                onCancel: () => ShowActionMenu());
         }
 
         private void OnActionCancelled()
