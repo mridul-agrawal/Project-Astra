@@ -105,15 +105,20 @@ namespace ProjectAstra.Core.Editor
         {
             if (AlreadyExistsInScene<TestUnit>()) return;
 
-            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, isLord: true);
-            CreateUnit("PlayerUnit2", unitSprite, new Vector2Int(4, 3), Faction.Player, 4, MovementType.Foot);
-            CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted);
+            var arjun = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Arjun.asset");
+            var karna = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Karna.asset");
+            var priya = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Priya.asset");
+
+            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, isLord: true, unitDef: arjun);
+            CreateUnit("PlayerUnit2", unitSprite, new Vector2Int(4, 3), Faction.Player, 4, MovementType.Foot, unitDef: karna);
+            CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted, unitDef: priya);
             CreateUnit("EnemyUnit1",  unitSprite, new Vector2Int(6, 5), Faction.Enemy,  3, MovementType.Foot);
             CreateUnit("EnemyUnit2",  unitSprite, new Vector2Int(7, 4), Faction.Enemy,  4, MovementType.Armoured);
         }
 
         private static void CreateUnit(string name, Sprite sprite, Vector2Int pos, Faction faction,
-            int movementPoints, MovementType movementType, bool isLord = false)
+            int movementPoints, MovementType movementType, bool isLord = false,
+            UnitDefinition unitDef = null)
         {
             var unitGO = new GameObject(name);
 
@@ -125,6 +130,13 @@ namespace ProjectAstra.Core.Editor
             unit.movementType = movementType;
             unit.attackRangeMin = 1;
             unit.attackRangeMax = 1;
+
+            if (unitDef != null)
+            {
+                var so = new SerializedObject(unit);
+                so.FindProperty("_unitDefinition").objectReferenceValue = unitDef;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
 
             // RequireComponent on TestUnit auto-adds UnitInventory; ensure it's present.
             var inventory = unitGO.GetComponent<UnitInventory>() ?? unitGO.AddComponent<UnitInventory>();
@@ -146,6 +158,7 @@ namespace ProjectAstra.Core.Editor
                 {
                     inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
                     inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.ShaktiMudrika), out _);
                 }
                 else if (unitName == "PlayerUnit2")
                 {

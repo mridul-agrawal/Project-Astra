@@ -160,6 +160,12 @@ namespace ProjectAstra.Core.UI
                 actions.Add("Use");
                 handlers.Add(() =>
                 {
+                    if (item.consumable.type == ConsumableType.StatBooster && _confirmDialog != null)
+                    {
+                        ConfirmStatBoosterUse(slotIndex, item);
+                        return;
+                    }
+
                     if (_inventory.TryUseConsumable(slotIndex, out _))
                     {
                         var used = _onConsumableUsed;
@@ -203,6 +209,27 @@ namespace ProjectAstra.Core.UI
                 {
                     _inventory.DiscardSlot(slotIndex);
                     ReturnToMainMenu();
+                },
+                onNo: ReturnToMainMenu);
+        }
+
+        private void ConfirmStatBoosterUse(int slotIndex, InventoryItem item)
+        {
+            var (message, _) = ConsumableEffects.DescribeStatBoost(item.consumable, _unit);
+            _confirmDialog.Show(message,
+                onYes: () =>
+                {
+                    if (_inventory.TryUseConsumable(slotIndex, out string failReason))
+                    {
+                        var used = _onConsumableUsed;
+                        Hide();
+                        used?.Invoke();
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"[Inventory] Stat booster failed: {failReason}");
+                        ReturnToMainMenu();
+                    }
                 },
                 onNo: ReturnToMainMenu);
         }
