@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
+  m_Name: Karna
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
+  _unitName: Karna
+  _unitId: karna
+  _defaultClass: {fileID: 11400000, guid: 8535ce792f045b6449c7fd00e3b611e0, type: 2}
+  _baseStats:
+    _values: 160000000700000000000000050000000600000006000000010000000900000004000000
+  _baseLevel: 1
+  _personalGrowths:
+    _values: 410000002d000000050000002300000028000000230000000f000000000000001e000000

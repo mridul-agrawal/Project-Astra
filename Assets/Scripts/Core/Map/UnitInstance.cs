@@ -91,6 +91,23 @@ namespace ProjectAstra.Core
 
         #endregion
 
+        #region Stat boosters
+
+        public void ApplyStatBoost(StatIndex stat, int amount)
+        {
+            if (amount <= 0) return;
+            var updated = Stats;
+            updated[stat] += amount;
+            if (CurrentClass != null)
+                StatUtils.ClampStatsToCaps(ref updated, CurrentClass.StatCaps);
+            Stats = updated;
+
+            if (stat == StatIndex.HP)
+                RecalculateHPThreshold();
+        }
+
+        #endregion
+
         #region Level-up
 
         public StatArray ApplyLevelUp(Func<int, int, bool> rollFunction)

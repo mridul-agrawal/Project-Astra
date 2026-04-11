@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
+  m_Name: Cavalier
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
+  _className: Cavalier
+  _classType: 1
+  _movementRange: 7
+  _movementType: 1
+  _weaponWhitelist: 0000000001000000
+  _statGrowthModifiers:
+    _values: 050000000500000000000000000000000000000005000000000000000000000000000000
+  _statCaps:
+    _values: 340000001800000002000000160000001600000016000000140000000e0000001e000000
+  _hpGainOnLevelUp: 2
+  _canPromote: 1
+  _isPromoted: 0
+  _promotionTargets: []
+  _baseClass: {fileID: 0}
+  _promotionBonuses:
+    _values: 160000000700000000000000050000000600000006000000010000000900000004000000
+  _classAbilities: []
+  _mapSpriteId: 
+  _combatAnimationSetId: 

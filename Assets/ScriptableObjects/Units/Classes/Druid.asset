@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
+  m_Name: Druid
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
+  _className: Druid
+  _classType: 4
+  _movementRange: 6
+  _movementType: 0
+  _weaponWhitelist: 0600000007000000
+  _statGrowthModifiers:
+    _values: 00000000000000000a000000050000000000000005000000050000000000000000000000
+  _statCaps:
+    _values: 3c000000040000001e0000001a00000018000000160000001c0000000e0000001e000000
+  _hpGainOnLevelUp: 2
+  _canPromote: 0
+  _isPromoted: 1
+  _promotionTargets: []
+  _baseClass: {fileID: 0}
+  _promotionBonuses:
+    _values: 030000000000000002000000010000000100000001000000020000000000000000000000
+  _classAbilities: []
+  _mapSpriteId: 
+  _combatAnimationSetId: 
