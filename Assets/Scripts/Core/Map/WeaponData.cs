@@ -10,6 +10,7 @@ namespace ProjectAstra.Core
         public WeaponType weaponType;
         public DamageType damageType;
         public MagicSchool magicSchool;
+        public StaffEffect staffEffect;
         public WeaponTier tier;
         public WeaponRank minRank;
 
@@ -148,8 +149,41 @@ namespace ProjectAstra.Core
         public static WeaponData Heal => new()
         {
             name = "Chikitsa", weaponType = WeaponType.Staff, damageType = DamageType.Magical,
-            might = 0, hit = 100, crit = 0, weight = 2, minRange = 1, maxRange = 1,
+            staffEffect = StaffEffect.Heal, minRank = WeaponRank.E,
+            might = 10, hit = 100, crit = 0, weight = 2, minRange = 1, maxRange = 1,
             maxUses = 30, currentUses = 30,
+        };
+
+        public static WeaponData Mend => new()
+        {
+            name = "Sukhada", weaponType = WeaponType.Staff, damageType = DamageType.Magical,
+            staffEffect = StaffEffect.Heal, minRank = WeaponRank.C,
+            might = 20, hit = 100, crit = 0, weight = 4, minRange = 1, maxRange = 1,
+            maxUses = 20, currentUses = 20,
+        };
+
+        public static WeaponData Recover => new()
+        {
+            name = "Kayakalpa", weaponType = WeaponType.Staff, damageType = DamageType.Magical,
+            staffEffect = StaffEffect.FullHeal, minRank = WeaponRank.B,
+            might = 0, hit = 100, crit = 0, weight = 6, minRange = 1, maxRange = 1,
+            maxUses = 15, currentUses = 15,
+        };
+
+        public static WeaponData Physic => new()
+        {
+            name = "Dooradarshi", weaponType = WeaponType.Staff, damageType = DamageType.Magical,
+            staffEffect = StaffEffect.Ranged, minRank = WeaponRank.B,
+            might = 10, hit = 100, crit = 0, weight = 4, minRange = 1, maxRange = 1,
+            maxUses = 15, currentUses = 15,
+        };
+
+        public static WeaponData Fortify => new()
+        {
+            name = "Sarva Raksha", weaponType = WeaponType.Staff, damageType = DamageType.Magical,
+            staffEffect = StaffEffect.AreaOfEffect, minRank = WeaponRank.A,
+            might = 10, hit = 100, crit = 0, weight = 8, minRange = 0, maxRange = 0,
+            maxUses = 8, currentUses = 8,
         };
     }
 }

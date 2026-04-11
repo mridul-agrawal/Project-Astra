@@ -9,6 +9,7 @@ namespace ProjectAstra.Core
         private static readonly Color MovementColor = new(0.25f, 0.4f, 1.0f, 0.7f);
         private static readonly Color PassThroughColor = new(0.2f, 0.7f, 1.0f, 0.45f);
         private static readonly Color AttackColor = new(1.0f, 0.2f, 0.15f, 0.7f);
+        private static readonly Color HealColor = new(0.15f, 0.85f, 0.3f, 0.7f);
 
         const float ShimmerFrequency = 1.5f;
         const float ShimmerAmplitude = 0.15f;
@@ -53,6 +54,16 @@ namespace ProjectAstra.Core
 
             foreach (var tile in attackable)
                 PlaceOverlay(tile, AttackColor);
+
+            StartShimmer();
+        }
+
+        public void ShowHealRange(HashSet<Vector2Int> healable)
+        {
+            ClearAll();
+
+            foreach (var tile in healable)
+                PlaceOverlay(tile, HealColor);
 
             StartShimmer();
         }

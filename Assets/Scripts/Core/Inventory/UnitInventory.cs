@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectAstra.Core
@@ -163,6 +164,80 @@ namespace ProjectAstra.Core
                 _slots[slot] = item;
                 RaiseChanged();
             }
+        }
+
+        public bool TryUseStaff(TestUnit target, out int amountHealed, out string failReason)
+        {
+            amountHealed = 0;
+            int slot = EquippedWeaponSlot;
+            if (slot < 0)
+            {
+                failReason = "No weapon equipped.";
+                return false;
+            }
+
+            var item = _slots[slot];
+            if (item.weapon.weaponType != WeaponType.Staff || item.weapon.staffEffect == StaffEffect.None)
+            {
+                failReason = "Equipped weapon is not a healing staff.";
+                return false;
+            }
+
+            var weapon = item.weapon;
+            if (!StaffEffects.ApplyHeal(Owner, target, ref weapon, out amountHealed, out failReason))
+                return false;
+
+            item.weapon = weapon;
+            if (item.weapon.IsBroken && !item.weapon.indestructible)
+            {
+                _slots[slot] = InventoryItem.None;
+                RaiseDestroyed(item);
+            }
+            else
+            {
+                _slots[slot] = item;
+            }
+
+            RaiseChanged();
+            return true;
+        }
+
+        public bool TryUseFortify(
+            List<TestUnit> allUnits,
+            out List<(TestUnit unit, int amount)> healed, out string failReason)
+        {
+            healed = null;
+            int slot = EquippedWeaponSlot;
+            if (slot < 0)
+            {
+                failReason = "No weapon equipped.";
+                return false;
+            }
+
+            var item = _slots[slot];
+            if (item.weapon.staffEffect != StaffEffect.AreaOfEffect)
+            {
+                failReason = "Equipped weapon is not a Fortify staff.";
+                return false;
+            }
+
+            var weapon = item.weapon;
+            if (!StaffEffects.ApplyFortify(Owner, allUnits, ref weapon, out healed, out failReason))
+                return false;
+
+            item.weapon = weapon;
+            if (item.weapon.IsBroken && !item.weapon.indestructible)
+            {
+                _slots[slot] = InventoryItem.None;
+                RaiseDestroyed(item);
+            }
+            else
+            {
+                _slots[slot] = item;
+            }
+
+            RaiseChanged();
+            return true;
         }
 
         public bool TryUseConsumable(int slot, out string failReason)

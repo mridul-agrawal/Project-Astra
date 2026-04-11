@@ -59,10 +59,12 @@ namespace ProjectAstra.Core
         private List<Vector2Int> _targetTiles;
         private int _targetIndex;
         private List<Vector2Int> _cachedEnemyTiles = new();
+        private List<Vector2Int> _cachedHealTiles = new();
         private List<ActionChoice> _cachedActionChoices = new();
         private List<TestUnit> _cachedAdjacentAllies = new();
+        private bool _isHealTargeting;
 
-        private enum ActionChoice { Attack, Item, Trade, Supply, Wait }
+        private enum ActionChoice { Attack, Heal, Fortify, Item, Trade, Supply, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -316,7 +318,10 @@ namespace ProjectAstra.Core
                     TryCommitMovement();
                     break;
                 case CursorMode.Targeting:
-                    TryCommitAttack();
+                    if (_isHealTargeting)
+                        TryCommitHeal();
+                    else
+                        TryCommitAttack();
                     break;
             }
         }
@@ -427,6 +432,40 @@ namespace ProjectAstra.Core
                 _cachedActionChoices.Add(ActionChoice.Attack);
             }
 
+            if (_selectedUnit != null)
+            {
+                var staff = _selectedUnit.equippedWeapon;
+                if (staff.weaponType == WeaponType.Staff && staff.staffEffect != StaffEffect.None && !staff.IsBroken)
+                {
+                    if (staff.staffEffect == StaffEffect.AreaOfEffect)
+                    {
+                        var allUnits = new List<TestUnit>(FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
+                        int mag = GetMagStat(_selectedUnit);
+                        bool anyHealable = false;
+                        foreach (var u in allUnits)
+                        {
+                            if (u == _selectedUnit) continue;
+                            if (StaffEffects.CanHealTarget(_selectedUnit, u, staff, mag, out _))
+                            { anyHealable = true; break; }
+                        }
+                        if (anyHealable)
+                        {
+                            labels.Add("Fortify");
+                            _cachedActionChoices.Add(ActionChoice.Fortify);
+                        }
+                    }
+                    else
+                    {
+                        _cachedHealTiles = FindAlliesInHealRange();
+                        if (_cachedHealTiles.Count > 0)
+                        {
+                            labels.Add("Heal");
+                            _cachedActionChoices.Add(ActionChoice.Heal);
+                        }
+                    }
+                }
+            }
+
             if (_selectedUnit != null && _selectedUnit.Inventory.OccupiedCount > 0)
             {
                 labels.Add("Item");
@@ -468,6 +507,12 @@ namespace ProjectAstra.Core
             {
                 case ActionChoice.Attack:
                     EnterTargetingMode();
+                    break;
+                case ActionChoice.Heal:
+                    EnterHealTargetingMode();
+                    break;
+                case ActionChoice.Fortify:
+                    TryCommitFortify();
                     break;
                 case ActionChoice.Item:
                     OpenInventoryMenu();
@@ -560,6 +605,8 @@ namespace ProjectAstra.Core
 
         private void EnterTargetingMode()
         {
+            _isHealTargeting = false;
+
             if (_cachedEnemyTiles.Count == 0)
             {
                 CompleteAction();
@@ -598,6 +645,103 @@ namespace ProjectAstra.Core
                     enemyTiles.Add(tile);
             }
             return enemyTiles;
+        }
+
+        private List<Vector2Int> FindAlliesInHealRange()
+        {
+            var staff = _selectedUnit.equippedWeapon;
+            int mag = GetMagStat(_selectedUnit);
+
+            var healRange = new HashSet<Vector2Int>();
+            var map = _mapRenderer.CurrentMap;
+            StaffRangeResolver.GetTargetTiles(staff, mag, _committedDestination, map.Width, map.Height, healRange);
+
+            var allyTiles = new List<Vector2Int>();
+            foreach (var tile in healRange)
+            {
+                var unit = FindUnitAt(tile);
+                if (unit == null || unit == _selectedUnit) continue;
+
+                bool isAlly = TurnManager.Instance != null
+                    ? TurnManager.Instance.UnitRegistry.GetFaction(unit) != Faction.Enemy
+                    : unit.faction != Faction.Enemy;
+
+                if (!isAlly) continue;
+
+                int hp = unit.UnitInstance != null ? unit.UnitInstance.CurrentHP : unit.currentHP;
+                int maxHP = unit.UnitInstance != null ? unit.UnitInstance.MaxHP : unit.maxHP;
+
+                if (hp < maxHP)
+                    allyTiles.Add(tile);
+            }
+            return allyTiles;
+        }
+
+        private void EnterHealTargetingMode()
+        {
+            if (_cachedHealTiles.Count == 0)
+            {
+                ShowActionMenu();
+                return;
+            }
+
+            _isHealTargeting = true;
+
+            var healTileSet = new HashSet<Vector2Int>(_cachedHealTiles);
+            _validMoveTiles = healTileSet;
+            _targetTiles = new List<Vector2Int>(_cachedHealTiles);
+            _targetTiles.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+            _targetIndex = 0;
+
+            _rangeHighlighter?.ShowHealRange(healTileSet);
+
+            SetPosition(_targetTiles[0]);
+            SetMode(CursorMode.Targeting);
+        }
+
+        private void TryCommitHeal()
+        {
+            var target = FindUnitAt(_gridPosition);
+            if (target == null)
+            {
+                CompleteAction();
+                return;
+            }
+
+            AnnounceBreaks(_selectedUnit, () =>
+            {
+                if (_selectedUnit.Inventory.TryUseStaff(target, out int healed, out string fail))
+                    Debug.Log($"[Staff] {_selectedUnit.name} healed {target.name} for {healed} HP.");
+                else
+                    Debug.LogWarning($"[Staff] Heal failed: {fail}");
+            });
+
+            CompleteAction();
+        }
+
+        private void TryCommitFortify()
+        {
+            var allUnits = new List<TestUnit>(FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
+
+            AnnounceBreaks(_selectedUnit, () =>
+            {
+                if (_selectedUnit.Inventory.TryUseFortify(allUnits, out var healed, out string fail))
+                {
+                    foreach (var (unit, amount) in healed)
+                        Debug.Log($"[Staff] {_selectedUnit.name} healed {unit.name} for {amount} HP (Fortify).");
+                }
+                else
+                {
+                    Debug.LogWarning($"[Staff] Fortify failed: {fail}");
+                }
+            });
+
+            CompleteAction();
+        }
+
+        private static int GetMagStat(TestUnit unit)
+        {
+            return unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
         }
 
         private void CompleteAction()
@@ -794,6 +938,7 @@ namespace ProjectAstra.Core
 
         private void CancelTargeting()
         {
+            _isHealTargeting = false;
             _targetTiles = null;
             _rangeHighlighter?.ClearAll();
 

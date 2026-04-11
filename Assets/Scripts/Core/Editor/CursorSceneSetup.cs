@@ -153,7 +153,17 @@ namespace ProjectAstra.Core.Editor
         {
             if (faction == Faction.Player)
             {
-                inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronSword));
+                if (unitName == "PlayerUnit3")
+                {
+                    inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.Heal));
+                    inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.Mend), out _);
+                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                }
+                else
+                {
+                    inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronSword));
+                }
+
                 if (unitName == "PlayerUnit1")
                 {
                     inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);

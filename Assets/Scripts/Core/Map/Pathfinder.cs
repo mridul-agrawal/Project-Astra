@@ -256,7 +256,7 @@ namespace ProjectAstra.Core
         }
 
         /// <summary>Adds all tiles at Manhattan distance [minRange, maxRange] from center.</summary>
-        private static void AddTilesInRange(
+        internal static void AddTilesInRange(
             Vector2Int center,
             int minRange,
             int maxRange,
