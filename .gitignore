@@ -75,3 +75,11 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # End of https://www.toptal.com/developers/gitignore/api/unity
+
+### Project Astra — local dev tools ###
+# Out-of-Assets dev tools (image gen scripts, API helpers)
+/Tools/.env
+/Tools/*.env
+/Tools/__pycache__/
+/Tools/output/
+/Tools/venv/
