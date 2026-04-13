@@ -1,6 +1,19 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git -C:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git status:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git diff:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git log:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git branch:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git show:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git add:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git commit:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git push:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git checkout:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git stash:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git merge:*)",
+      "Bash(cd \"C:/Unity Projects/Project Astra\" && git mv:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
@@ -104,7 +117,8 @@
       "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
       "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")",
       "Bash(ls -la Assets/UI/MainMenu/Sprites/title_wordmark.png)",
-      "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"C:/Unity Projects/Project Astra/Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")"
+      "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"C:/Unity Projects/Project Astra/Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")",
+      "Bash(grep -n \"ChapterClearUI\\\\|CutsceneUI\\\\|GameOverUI\\\\|PreBattlePrepUI\" Assets/Scenes/*.unity)"
     ]
   }
 }

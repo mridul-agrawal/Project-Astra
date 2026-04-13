@@ -21,25 +21,20 @@ namespace ProjectAstra.Core.Editor
         private static readonly Dictionary<GameState, Color> StateColors = new()
         {
             { GameState.TitleScreen,      new Color(0.10f, 0.12f, 0.30f) },
-            { GameState.Cutscene,         new Color(0.22f, 0.10f, 0.30f) },
-            { GameState.PreBattlePrep,    new Color(0.28f, 0.28f, 0.15f) },
             { GameState.BattleMap,        new Color(0.10f, 0.25f, 0.12f) },
             { GameState.BattleMapPaused,  new Color(0.18f, 0.28f, 0.20f) },
             { GameState.CombatAnimation,  new Color(0.35f, 0.10f, 0.10f) },
             { GameState.Dialogue,         new Color(0.10f, 0.25f, 0.28f) },
-            { GameState.ChapterClear,     new Color(0.35f, 0.30f, 0.08f) },
-            { GameState.GameOver,         new Color(0.30f, 0.08f, 0.08f) },
             { GameState.SaveMenu,         new Color(0.20f, 0.22f, 0.28f) },
             { GameState.SettingsMenu,     new Color(0.22f, 0.22f, 0.22f) },
         };
 
-        // MainMenu is excluded — it's built by Assets/Editor/MainMenuBuilder.cs under
-        // "Project Astra/Build Main Menu", not by this generic generator.
+        // Only TitleScreen and BattleMap use the generic generator. MainMenu, Cutscene,
+        // PreBattlePrep, ChapterClear, and GameOver each have a dedicated scene builder
+        // under Assets/Editor/*Builder.cs (shared layout via TitleMenuLayoutBuilder).
         private static readonly GameState[] SceneStates =
         {
-            GameState.TitleScreen, GameState.Cutscene,
-            GameState.PreBattlePrep, GameState.BattleMap,
-            GameState.ChapterClear, GameState.GameOver
+            GameState.TitleScreen, GameState.BattleMap,
         };
 
         private static readonly GameState[] OverlayStates =
@@ -57,11 +52,7 @@ namespace ProjectAstra.Core.Editor
         private static readonly Dictionary<GameState, Type> ControllerTypes = new()
         {
             { GameState.TitleScreen,      typeof(TitleScreenUI) },
-            { GameState.Cutscene,         typeof(CutsceneUI) },
-            { GameState.PreBattlePrep,    typeof(PreBattlePrepUI) },
             { GameState.BattleMap,        typeof(BattleMapUI) },
-            { GameState.ChapterClear,     typeof(ChapterClearUI) },
-            { GameState.GameOver,         typeof(GameOverUI) },
             { GameState.BattleMapPaused,  typeof(BattleMapPausedOverlayUI) },
             { GameState.CombatAnimation,  typeof(CombatAnimationOverlayUI) },
             { GameState.Dialogue,         typeof(DialogueOverlayUI) },
@@ -71,27 +62,12 @@ namespace ProjectAstra.Core.Editor
 
         private static readonly Dictionary<GameState, ButtonDef[]> ButtonConfigs = new()
         {
-            { GameState.Cutscene, new[] {
-                new ButtonDef { Label = "Pre Battle Prep", FieldName = "_preBattlePrepButton" },
-                new ButtonDef { Label = "Battle Map",      FieldName = "_battleMapButton" },
-            }},
-            { GameState.PreBattlePrep, new[] {
-                new ButtonDef { Label = "Battle Map", FieldName = "_battleMapButton" },
-            }},
             { GameState.BattleMap, new[] {
                 new ButtonDef { Label = "Cutscene",          FieldName = "_cutsceneButton" },
                 new ButtonDef { Label = "Combat Animation",  FieldName = "_combatAnimationButton" },
                 new ButtonDef { Label = "Dialogue",          FieldName = "_dialogueButton" },
                 new ButtonDef { Label = "Chapter Clear",     FieldName = "_chapterClearButton" },
                 new ButtonDef { Label = "Game Over",         FieldName = "_gameOverButton" },
-            }},
-            { GameState.ChapterClear, new[] {
-                new ButtonDef { Label = "Cutscene",  FieldName = "_cutsceneButton" },
-                new ButtonDef { Label = "Save Menu", FieldName = "_saveMenuButton" },
-            }},
-            { GameState.GameOver, new[] {
-                new ButtonDef { Label = "Main Menu", FieldName = "_mainMenuButton" },
-                new ButtonDef { Label = "Save Menu", FieldName = "_saveMenuButton" },
             }},
             { GameState.BattleMapPaused, new[] {
                 new ButtonDef { Label = "End Turn",      FieldName = "_endTurnButton" },
@@ -119,7 +95,7 @@ namespace ProjectAstra.Core.Editor
         {
             if (!EditorUtility.DisplayDialog(
                 "Generate State Scenes",
-                "This will create 6 game scenes, 5 overlay prefabs, a navigation button prefab, and update build settings. Continue?",
+                "This will create 2 game scenes, 5 overlay prefabs, a navigation button prefab, and update build settings. Continue?",
                 "Generate", "Cancel"))
                 return;
 
@@ -138,7 +114,7 @@ namespace ProjectAstra.Core.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log("[GenerateStateScenes] Done! 6 scenes + 5 overlays + button prefab created.");
+            Debug.Log("[GenerateStateScenes] Done! 2 scenes + 5 overlays + button prefab created.");
         }
 
         private static void EnsureDirectories()
