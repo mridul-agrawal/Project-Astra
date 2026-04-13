@@ -1,6 +1,15 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git show:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(pwd)",
+      "Bash(echo:*)",
       "Bash(git checkout:*)",
       "Bash(pdftotext \"/c/Unity Projects/Project Astra/Assets/Project Reference Files/Ch1-Engine-Grid-Core.pdf\" -)",
       "Bash(pdftotext:*)",

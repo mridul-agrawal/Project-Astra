@@ -1,3 +1,4 @@
+using ProjectAstra.Core.UI;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -43,7 +44,7 @@ namespace ProjectAstra.EditorTools
         // entry point
         // ==================================================================
 
-        [MenuItem("Project Astra/Build Main Menu (temp)")]
+        [MenuItem("Project Astra/Build Main Menu")]
         public static void Build()
         {
             if (IsFullScreen && (Mathf.Abs(Sc(1920) - CanvasWidth) > 1f || Mathf.Abs(Sc(1080) - CanvasHeight) > 1f))
@@ -65,6 +66,11 @@ namespace ProjectAstra.EditorTools
             if (existing != null) Object.DestroyImmediate(existing.gameObject);
 
             var root = BuildRoot(canvas.transform);
+
+            // Attach runtime controller. MainMenuUI discovers its buttons from
+            // ButtonsContainer at OnEnable, so no serialized refs to patch.
+            if (root.GetComponent<MainMenuUI>() == null)
+                root.AddComponent<MainMenuUI>();
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Selection.activeGameObject = root;
@@ -240,9 +246,10 @@ namespace ProjectAstra.EditorTools
         // buttons
         // ==================================================================
 
+        // Order matches MainMenuUI's runtime wiring: 0 → Cutscene, 1 → PreBattlePrep, 2 → BattleMap.
         static readonly string[] ButtonLabels =
         {
-            "NEW GAME", "CONTINUE", "OPTIONS", "EXTRAS", "QUIT"
+            "Cutscene", "Pre Battle Prep", "Battle Map"
         };
 
         static void BuildButtons(RectTransform parent)
@@ -251,7 +258,8 @@ namespace ProjectAstra.EditorTools
             container.anchorMin = new Vector2(0.5f, 0.5f);
             container.anchorMax = new Vector2(0.5f, 0.5f);
             container.pivot = new Vector2(0.5f, 0.5f);
-            container.sizeDelta = V2(900, 5 * 78 + 4 * 24);
+            int n = ButtonLabels.Length;
+            container.sizeDelta = V2(900, n * 78 + (n - 1) * 24);
             container.anchoredPosition = V2(0, -150);
 
             var layout = container.gameObject.AddComponent<VerticalLayoutGroup>();
@@ -297,9 +305,10 @@ namespace ProjectAstra.EditorTools
             AddChakra(wrapper, "ChakraLeft",  new Vector2(0, 0.5f), V2(-26, 0),  false);
             AddChakra(wrapper, "ChakraRight", new Vector2(1, 0.5f), V2( 26, 0),  true);
 
-            // Label — plain sharp TMP text, no glow (user prefers crisp over halo here)
+            // Label — plain sharp TMP text, no glow. UpperCase is a display modifier:
+            // the stored string stays mixed-case ("Pre Battle Prep") but renders uppercase.
             var labelText = NewText("Label", wrapper, label, jost,
-                Sc(32), ColLabel, TextAlignmentOptions.Center, FontStyles.Normal);
+                Sc(32), ColLabel, TextAlignmentOptions.Center, FontStyles.UpperCase);
             labelText.characterSpacing = 12f;
             var lRt = labelText.rectTransform;
             lRt.anchorMin = new Vector2(0, 0);
