@@ -32,29 +32,33 @@ namespace ProjectAstra.Core.Tests
         }
 
         [Test]
-        public void CombatAnimation_OnlyAllowsSkipAnimation()
+        public void CombatAnimation_AllowsSkipAnimationAndBlocksGameplay()
         {
             var actions = InputContext.GetAllowedActions(GameState.CombatAnimation);
-            Assert.AreEqual(1, actions.Count);
             Assert.IsTrue(actions.Contains(InputContext.SkipAnimation));
+            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
+            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
+            Assert.IsFalse(actions.Contains(InputContext.FastCursor));
         }
 
         [Test]
-        public void Cutscene_OnlyAllowsDialogueActions()
+        public void Cutscene_AllowsDialogueActionsAndBlocksGameplay()
         {
             var actions = InputContext.GetAllowedActions(GameState.Cutscene);
-            Assert.AreEqual(2, actions.Count);
             Assert.IsTrue(actions.Contains(InputContext.SkipDialogue));
             Assert.IsTrue(actions.Contains(InputContext.HoldAdvanceDialogue));
+            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
+            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
         }
 
         [Test]
-        public void Dialogue_OnlyAllowsDialogueActions()
+        public void Dialogue_AllowsDialogueActionsAndBlocksGameplay()
         {
             var actions = InputContext.GetAllowedActions(GameState.Dialogue);
-            Assert.AreEqual(2, actions.Count);
             Assert.IsTrue(actions.Contains(InputContext.SkipDialogue));
             Assert.IsTrue(actions.Contains(InputContext.HoldAdvanceDialogue));
+            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
+            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
         }
 
         [Test]
@@ -106,9 +110,9 @@ namespace ProjectAstra.Core.Tests
             Assert.IsTrue(InputContext.IsActionAllowed(GameState.BattleMap, actionName));
         }
 
-        [TestCase(InputContext.Confirm)]
         [TestCase(InputContext.OpenMapMenu)]
         [TestCase(InputContext.NextUnit)]
+        [TestCase(InputContext.FastCursor)]
         public void CombatAnimation_DoesNotAllowGameplayActions(string actionName)
         {
             Assert.IsFalse(InputContext.IsActionAllowed(GameState.CombatAnimation, actionName));

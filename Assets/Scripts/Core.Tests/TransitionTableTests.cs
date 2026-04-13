@@ -27,16 +27,16 @@ namespace ProjectAstra.Core.Tests
         }
 
         [Test]
-        public void DefaultTransitions_ContainsExactly27Entries()
+        public void DefaultTransitions_ContainsExactly28Entries()
         {
             var transitions = GameStateTransitionTable.CreateDefaultTransitions();
-            Assert.AreEqual(27, transitions.Length);
+            Assert.AreEqual(28, transitions.Length);
         }
 
         [Test]
-        public void TransitionCount_Is27()
+        public void TransitionCount_Is28()
         {
-            Assert.AreEqual(27, _table.TransitionCount);
+            Assert.AreEqual(28, _table.TransitionCount);
         }
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]

@@ -18,6 +18,8 @@ namespace ProjectAstra.Core.Tests.Inventory
             _unit = new GameObject("AcquisitionTestUnit").AddComponent<TestUnit>();
             _previousHandler = InventoryAcquisition.PromptHandler;
             _previousConvoy = Convoy.Current;
+            // Default to no-convoy so each test exercises the prompt path unless it opts in.
+            Convoy.Current = NullConvoy.Instance;
         }
 
         [TearDown]
