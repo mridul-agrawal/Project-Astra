@@ -13,8 +13,8 @@ namespace ProjectAstra.Core
     {
         [Header("Pixel Perfect Settings")]
         [SerializeField] private int _assetsPPU = 16;             // Must match the tile size in pixels
-        [SerializeField] private int _referenceResolutionX = 240; // Viewport width at 1x scale (GBA: 240)
-        [SerializeField] private int _referenceResolutionY = 160; // Viewport height at 1x scale (GBA: 160)
+        [SerializeField] private int _referenceResolutionX = 240; // 240 / 16 PPU = 15 tiles wide (exact)
+        [SerializeField] private int _referenceResolutionY = 135; // 240x135 = 16:9, 8x upscale to 1920x1080
 
         private PixelPerfectCamera _pixelPerfect;
         private Camera _camera;

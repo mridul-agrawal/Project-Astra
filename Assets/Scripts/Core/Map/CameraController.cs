@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
@@ -25,6 +26,7 @@ namespace ProjectAstra.Core
         private Vector2Int _cameraGridPos;
         private int _viewportTilesW;
         private int _viewportTilesH;
+        private bool _viewportInitialized;
 
         /// <summary>Top-left corner of the viewport in world coordinates. Queryable by any system.</summary>
         public Vector2 WorldTopLeft => _cameraGridPos;
@@ -35,8 +37,12 @@ namespace ProjectAstra.Core
 
         private void OnEnable()
         {
-            if (_gridCursor != null)
-                _gridCursor.OnCursorMoved += OnCursorMoved;
+            if (_gridCursor == null)
+            {
+                Debug.LogError($"{nameof(CameraController)} on '{name}' has no GridCursor assigned — camera will not pan. Wire the reference in the scene.", this);
+                return;
+            }
+            _gridCursor.OnCursorMoved += OnCursorMoved;
         }
 
         private void OnDisable()
@@ -45,28 +51,40 @@ namespace ProjectAstra.Core
                 _gridCursor.OnCursorMoved -= OnCursorMoved;
         }
 
-        private void Start()
-        {
-            RecalculateViewport();
-            CenterOnTile(_gridCursor != null ? _gridCursor.GridPosition : Vector2Int.zero);
-        }
-
         private void LateUpdate()
         {
+            // Deferred init: PixelPerfectCamera updates orthographicSize via a render
+            // callback after Awake/Start, so the first LateUpdate is the earliest point
+            // we can read the correct viewport dimensions.
+            if (!_viewportInitialized)
+            {
+                RecalculateViewport();
+                CenterOnTile(_gridCursor != null ? _gridCursor.GridPosition : Vector2Int.zero);
+                _viewportInitialized = true;
+            }
+
             ApplyCameraPosition();
         }
 
         /// <summary>Recalculate viewport tile dimensions from camera settings.</summary>
         public void RecalculateViewport()
         {
+            // Prefer PixelPerfectCamera ref resolution when present: it's set in MapCamera.Awake
+            // and is deterministic, unlike camera.orthographicSize which PixelPerfectCamera only
+            // updates during the render callback (after LateUpdate).
+            var ppc = GetComponent<PixelPerfectCamera>();
+            if (ppc != null && ppc.assetsPPU > 0)
+            {
+                _viewportTilesW = ppc.refResolutionX / ppc.assetsPPU;
+                _viewportTilesH = ppc.refResolutionY / ppc.assetsPPU;
+                return;
+            }
+
             var cam = GetComponent<Camera>();
             if (cam == null || !cam.orthographic) return;
 
-            // Viewport size in world units = orthoSize * 2 (height), aspect * orthoSize * 2 (width)
             float worldHeight = cam.orthographicSize * 2f;
             float worldWidth = worldHeight * cam.aspect;
-
-            // Each tile = 1 world unit (Grid cellSize is 1x1)
             _viewportTilesW = Mathf.FloorToInt(worldWidth);
             _viewportTilesH = Mathf.FloorToInt(worldHeight);
         }
@@ -122,15 +140,13 @@ namespace ProjectAstra.Core
 
         private void ApplyCameraPosition()
         {
-            // Camera transform.position is the CENTER of the orthographic frustum.
-            // Convert from top-left tile coords to center world coords, then integer-snap.
+            // Camera center = top-left tile + half-viewport. For odd viewport widths this
+            // lands on a half-integer (e.g. 7.5), which is correct — PixelPerfectCamera
+            // snaps sprites to the pixel grid at render time, so no world-unit floor needed.
             float centerX = _cameraGridPos.x + _viewportTilesW * 0.5f;
             float centerY = _cameraGridPos.y + _viewportTilesH * 0.5f;
 
-            transform.position = new Vector3(
-                Mathf.Floor(centerX),
-                Mathf.Floor(centerY),
-                transform.position.z);
+            transform.position = new Vector3(centerX, centerY, transform.position.z);
         }
 
         // --- Test helpers ---

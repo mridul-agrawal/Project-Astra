@@ -12999,7 +12999,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapCamera
   _assetsPPU: 16
   _referenceResolutionX: 240
-  _referenceResolutionY: 160
+  _referenceResolutionY: 135
 --- !u!114 &1830605496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13012,7 +13012,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197244d5864fb684dbe618aab83ca8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.CameraController
-  _gridCursor: {fileID: 0}
+  _gridCursor: {fileID: 694383133}
   _mapRenderer: {fileID: 268787981}
   _deadzoneMarginTiles: 3
 --- !u!1 &1841560618
