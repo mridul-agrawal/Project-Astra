@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tana — Unit Info | Project Astra</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --p-light:#f3dfae;
+  --p-mid:#dcbe7d;
+  --p-dark:#a87c40;
+  --p-shadow:#5e3e10;
+  --ink:#3a2008;
+  --ink-soft:#5a3618;
+  --crimson:#962012;
+  --crimson-bright:#b9381d;
+  --navy-1:#0c1832;
+  --navy-2:#1a2c5a;
+  --navy-3:#2e4d8f;
+  --gold-1:#f6d97a;
+  --gold-2:#d4a142;
+  --gold-3:#7a4a14;
+  --ivory:#f7eed2;
+  --rune:#a7c0ee;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Cormorant Garamond",serif;
+  background:radial-gradient(circle at 50% 38%, #1a1410, #060403 70%);
+  display:grid;place-items:center;
+  min-height:100vh;
+  font-feature-settings:"lnum","tnum";
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- 16:9 STAGE ---------- */
+.stage{
+  width:min(96vw, calc(92vh*16/9));
+  aspect-ratio:16/9;
+  position:relative;
+  background:radial-gradient(ellipse 110% 80% at 50% 45%,
+    #f6e5b2 0%, #ddbc78 38%, #a87a3a 76%, #5e3e10 100%);
+  box-shadow:
+    0 0 0 5px #2a1810,
+    0 0 0 9px #d4a142,
+    0 0 0 13px #2a1810,
+    0 40px 100px rgba(0,0,0,.78);
+  overflow:hidden;
+  color:var(--ink);
+}
+/* parchment grain */
+.stage::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,235,180,.55), transparent 55%),
+    radial-gradient(circle at 82% 78%, rgba(70,30,5,.45), transparent 60%),
+    repeating-linear-gradient(45deg, rgba(120,70,20,.05) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(-45deg, rgba(120,70,20,.04) 0 2px, transparent 2px 9px);
+  mix-blend-mode:multiply; pointer-events:none;
+}
+.stage::after{
+  content:"";position:absolute;inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence baseFrequency='1.4' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .42 0'/></filter><rect width='280' height='280' filter='url(%23n)'/></svg>");
+  opacity:.34; mix-blend-mode:overlay; pointer-events:none;
+}
+
+.layout{
+  position:absolute; inset:5% 5%;
+  display:grid;
+  grid-template-columns: 38% 1fr;
+  gap: 0 4%;
+  z-index:2;
+}
+
+/* ---------- LEFT COLUMN ---------- */
+.left{display:flex; flex-direction:column; gap:1.2%; min-height:0}
+
+.portrait-frame{
+  flex:1 1 auto; min-height:0;
+  position:relative;
+  background:linear-gradient(180deg,#3a5a9f,#1a2a55);
+  border:3px solid #f4d27a;
+  outline:2px solid #2a1810; outline-offset:3px;
+  box-shadow:inset 0 0 60px rgba(0,0,0,.5), 0 8px 22px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.portrait-frame .corner{position:absolute;width:36px;height:36px;color:#f4d27a}
+.portrait-frame .corner.tl{top:6px;left:6px}
+.portrait-frame .corner.tr{top:6px;right:6px;transform:scaleX(-1)}
+.portrait-frame .corner.bl{bottom:6px;left:6px;transform:scaleY(-1)}
+.portrait-frame .corner.br{bottom:6px;right:6px;transform:scale(-1,-1)}
+
+/* placeholder portrait silhouette of Tana — replace with real art when available */
+.portrait-art{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 26% at 50% 16%, #1d2c5a 0 70%, transparent 73%),
+    radial-gradient(ellipse 38% 28% at 50% 38%, #f3d3a8 0 75%, transparent 78%),
+    radial-gradient(ellipse 75% 36% at 50% 80%, #2a3f78 0 70%, transparent 72%),
+    linear-gradient(180deg,#3a5a9f,#1a2a55);
+}
+.portrait-art::after{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 42% 38%, #1a2a55 0 3%, transparent 4%),
+    radial-gradient(circle at 58% 38%, #1a2a55 0 3%, transparent 4%);
+}
+
+.name-script{
+  text-align:center;
+  font-family:"Cormorant Garamond",serif;
+  font-style:italic; font-weight:700;
+  font-size:clamp(28px,3.6vw,54px);
+  color:var(--ink);
+  line-height:.9;
+  margin:6px 0 4px;
+  text-shadow:0 1px 0 rgba(255,240,200,.55);
+}
+
+.unit-meta{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto auto;
+  column-gap:14px; row-gap:4px;
+  align-items:center;
+  font-family:"Cinzel",serif; font-weight:600;
+  color:var(--ink);
+  padding:2px 8px 0;
+}
+.unit-meta .class{
+  grid-column:1/3; grid-row:1;
+  font-family:"Cinzel Decorative",serif;
+  font-weight:700;
+  font-size:clamp(18px,2vw,28px);
+  color:var(--ink);
+  letter-spacing:.04em;
+  text-shadow:0 1px 0 rgba(255,240,200,.55);
+}
+.unit-meta .lvrow{grid-column:1; grid-row:2}
+.unit-meta .hprow{grid-column:1; grid-row:3}
+.unit-meta .row{
+  display:flex; align-items:baseline; gap:10px;
+  font-size:clamp(16px,1.75vw,25px);
+}
+.unit-meta .lbl{color:var(--ink-soft); letter-spacing:.08em}
+.unit-meta .num{
+  font-family:"Cormorant Garamond",serif; font-weight:700;
+  color:var(--crimson);
+  font-variant-numeric:tabular-nums;
+}
+.unit-meta .icon{
+  grid-column:2; grid-row:2/4;
+  width:78px; height:78px;
+  align-self:center; justify-self:center;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.4));
+}
+
+/* ---------- RIGHT COLUMN ---------- */
+.right{display:flex; flex-direction:column; gap:3%; min-height:0}
+
+.items{
+  flex:1 1 auto;
+  display:flex; flex-direction:column;
+  position:relative;
+  padding-top:4%;
+  min-height:0;
+}
+
+.banner{
+  display:flex; align-items:center; justify-content:center;
+  gap:14px;
+  font-family:"Cinzel Decorative",serif; font-weight:700;
+  font-size:clamp(22px,2.3vw,34px);
+  color:var(--navy-1);
+  letter-spacing:.05em;
+  text-shadow:0 1px 0 rgba(255,240,200,.6);
+  margin-bottom:6px;
+}
+.banner .chain{height:18px; width:140px; color:#7a4a14}
+.banner .word{padding:0 8px}
+
+.page{
+  position:absolute; right:6px; top:6px;
+  font-family:"Cormorant Garamond",serif; font-weight:700;
+  font-size:clamp(15px,1.55vw,23px);
+  color:var(--crimson);
+}
+
+.item-list{
+  display:flex; flex-direction:column;
+  gap:2px; flex:1; min-height:0;
+  padding:6px 6px 0;
+}
+.item{
+  display:grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items:center;
+  gap:14px;
+  font-family:"Cinzel",serif; font-weight:600;
+  font-size:clamp(17px,1.9vw,27px);
+  color:var(--ink);
+  padding:5px 8px;
+  border-bottom:1px dashed rgba(58,32,8,.18);
+}
+.item:last-child{border-bottom:none}
+.item .ic{width:30px; height:30px; color:#5a3618}
+.item .qty{
+  font-family:"Cormorant Garamond",serif;
+  font-weight:700;
+  color:var(--crimson);
+  font-variant-numeric:tabular-nums;
+  display:flex; align-items:baseline; gap:1px;
+}
+.item .qty .slash{opacity:.55; padding:0 1px}
+.item .rank{
+  margin-left:10px;
+  font-family:"Cinzel",serif; font-weight:700;
+  color:var(--navy-2);
+  font-size:.82em;
+}
+
+/* ---------- EQUIPMENT PANEL (blue) ---------- */
+.equipment{
+  flex:0 0 auto;
+  background:linear-gradient(180deg, rgba(31,53,104,.97), rgba(12,24,50,.97));
+  border:3px solid #f4d27a;
+  outline:2px solid #2a1810; outline-offset:3px;
+  box-shadow:inset 0 0 50px rgba(0,0,0,.55), 0 10px 24px rgba(0,0,0,.45);
+  color:var(--ivory);
+  padding:14px 24px 16px;
+  display:grid;
+  grid-template-columns: auto 1fr auto auto;
+  grid-template-rows: auto auto auto;
+  column-gap:18px; row-gap:6px;
+  align-items:baseline;
+  font-family:"Cinzel",serif; font-weight:600;
+  font-size:clamp(16px,1.75vw,25px);
+  position:relative;
+}
+.equipment .head{
+  grid-column:1/3; grid-row:1;
+  font-family:"Cinzel Decorative",serif;
+  font-weight:700;
+  font-size:clamp(18px,2vw,29px);
+  color:var(--gold-1);
+  text-shadow:0 2px 0 #060c1c;
+  letter-spacing:.04em;
+}
+.equipment .rng{
+  grid-column:3/5; grid-row:1;
+  display:flex; align-items:baseline; gap:14px; justify-self:end;
+}
+.equipment .lbl{color:var(--rune); letter-spacing:.08em}
+.equipment .val{
+  font-family:"Cormorant Garamond",serif; font-weight:700;
+  color:var(--gold-1);
+  font-variant-numeric:tabular-nums;
+  text-align:right; min-width:2.4ch;
+}
+.equipment .a-l{grid-column:1; grid-row:2} .equipment .a-v{grid-column:2; grid-row:2}
+.equipment .c-l{grid-column:3; grid-row:2} .equipment .c-v{grid-column:4; grid-row:2}
+.equipment .h-l{grid-column:1; grid-row:3} .equipment .h-v{grid-column:2; grid-row:3}
+.equipment .v-l{grid-column:3; grid-row:3} .equipment .v-v{grid-column:4; grid-row:3}
+
+.equipment::before, .equipment::after{
+  content:"";position:absolute;width:18px;height:18px;
+  border:2px solid #f4d27a; pointer-events:none;
+}
+.equipment::before{top:6px; left:6px; border-right:none; border-bottom:none}
+.equipment::after{bottom:6px; right:6px; border-left:none; border-top:none}
+
+/* ---------- entrance ---------- */
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.left,.items,.equipment{animation:rise 1s cubic-bezier(.2,.7,.2,1) both}
+.left{animation-delay:.05s}
+.items{animation-delay:.22s}
+.equipment{animation-delay:.38s}
+</style>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+</head>
+<body>
+
+<div class="stage" role="img" aria-label="Unit info panel — Tana, Wyvern Knight">
+  <div class="layout">
+
+    <!-- LEFT -->
+    <section class="left">
+      <div class="portrait-frame">
+        <svg class="corner tl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 16V3h13M3 7h8M7 3v8"/></svg>
+        <svg class="corner tr" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 16V3h13M3 7h8M7 3v8"/></svg>
+        <svg class="corner bl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 16V3h13M3 7h8M7 3v8"/></svg>
+        <svg class="corner br" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 16V3h13M3 7h8M7 3v8"/></svg>
+        <div class="portrait-art" aria-hidden="true"></div>
+      </div>
+
+      <div class="name-script">Tana</div>
+
+      <div class="unit-meta">
+        <div class="class">Wyvern Knight</div>
+        <div class="row lvrow">
+          <span class="lbl">LV</span><span class="num">12</span>
+          <span class="lbl">E</span><span class="num">76</span>
+        </div>
+        <svg class="icon" viewBox="0 0 64 64" fill="none">
+          <path d="M6 42c8-5 14-3 19 1 3-13 14-20 26-20-2 6-2 11 3 16-7 0-12 5-14 11-7 5-16 7-25 5z"
+                fill="#2e4d8f" stroke="#3a2008" stroke-width="1.6"/>
+          <path d="M30 30c4-2 8-2 12 0" stroke="#7a4a14" stroke-width="1.4"/>
+          <circle cx="44" cy="26" r="1.6" fill="#0c1832"/>
+          <path d="M50 22l9-7M52 27l11-2" stroke="#7a4a14" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        <div class="row hprow">
+          <span class="lbl">HP</span>
+          <span class="num">45</span>
+          <span class="lbl">/</span>
+          <span class="num">45</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="right">
+
+      <div class="items">
+        <div class="page">2 / 3</div>
+        <div class="banner">
+          <svg class="chain" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M2 9h132"/>
+            <circle cx="20" cy="9" r="4"/><circle cx="40" cy="9" r="4"/><circle cx="60" cy="9" r="4"/><circle cx="80" cy="9" r="4"/><circle cx="100" cy="9" r="4"/><circle cx="120" cy="9" r="4"/>
+          </svg>
+          <span class="word">Items</span>
+          <svg class="chain" viewBox="0 0 140 18" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M6 9h132"/>
+            <circle cx="20" cy="9" r="4"/><circle cx="40" cy="9" r="4"/><circle cx="60" cy="9" r="4"/><circle cx="80" cy="9" r="4"/><circle cx="100" cy="9" r="4"/><circle cx="120" cy="9" r="4"/>
+          </svg>
+        </div>
+
+        <div class="item-list">
+          <div class="item">
+            <svg class="ic" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 23L22 6M18 4l6 6M5 22l4 0 0-4"/></svg>
+            <span class="name">Iron Lance</span>
+            <span class="qty">18<span class="slash">/</span>45<span class="rank">E</span></span>
+          </div>
+          <div class="item">
+            <svg class="ic" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 24L23 5M19 3l6 6M14 14l3 3"/></svg>
+            <span class="name">Javelin</span>
+            <span class="qty">12<span class="slash">/</span>20</span>
+          </div>
+          <div class="item">
+            <svg class="ic" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 24L22 6M18 4l6 6M9 19l4 4M14 14l4 4"/></svg>
+            <span class="name">Heavy Spear</span>
+            <span class="qty">3<span class="slash">/</span>16</span>
+          </div>
+          <div class="item">
+            <svg class="ic" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M11 3h6v4h-6zM9 7h10l-1 18H10z"/><path d="M12 13l4 4M16 13l-4 4"/></svg>
+            <span class="name">Elixir</span>
+            <span class="qty">3<span class="slash">/</span>3</span>
+          </div>
+          <div class="item">
+            <svg class="ic" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="14" r="5"/><path d="M14 14h12M22 14v5M26 14v3"/></svg>
+            <span class="name">Chest Key</span>
+            <span class="qty">1<span class="slash">/</span>1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="equipment">
+        <div class="head">Equipment</div>
+        <div class="rng"><span class="lbl">Rng</span><span class="val">1</span></div>
+        <span class="lbl a-l">Atk</span><span class="val a-v">31</span>
+        <span class="lbl c-l">Crit</span><span class="val c-v">15</span>
+        <span class="lbl h-l">Hit</span><span class="val h-v">140</span>
+        <span class="lbl v-l">Avo</span><span class="val v-v">78</span>
+      </div>
+
+    </section>
+
+  </div>
+</div>
+
+</body>
+</html>

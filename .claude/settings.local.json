@@ -74,7 +74,28 @@
       "Bash(mkdir -p \"C:/Users/Mridul/.claude/skills/canvas-design/canvas-fonts\")",
       "Read(//c/Users/Mridul/.claude/skills/**)",
       "Bash(python -c \"from PIL import Image, ImageDraw, ImageFilter, ImageFont; print\\('PIL OK'\\)\")",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Skill(update-config)",
+      "Read(//c/Users/Mridul/.claude/**)",
+      "WebSearch",
+      "WebFetch(domain:developers.figma.com)",
+      "mcp__figma__generate_figma_design",
+      "Bash(start:*)",
+      "mcp__figma__get_metadata",
+      "mcp__figma__get_design_context",
+      "mcp__figma__get_screenshot",
+      "mcp__UnityMCP__set_active_instance",
+      "Bash(unzip -l Cinzel.zip)",
+      "mcp__UnityMCP__manage_asset",
+      "mcp__UnityMCP__manage_ui",
+      "Bash(env)",
+      "mcp__figma__use_figma",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Microsoft/Edge/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
+      "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")",
+      "Bash(ls -la Assets/UI/MainMenu/Sprites/title_wordmark.png)",
+      "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"C:/Unity Projects/Project Astra/Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")"
     ]
   }
 }

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Project Astra — Main Menu · Variant A · Sanskrit Codex</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background: #0d0703;
+  font-family: 'Cormorant Garamond', serif;
+  color: #2a1408;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.stage {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  /* parchment base gradient */
+  background:
+    radial-gradient(ellipse 900px 700px at 25% 30%, #f4e0b2 0%, #e6c890 30%, rgba(212, 168, 104, 0) 70%),
+    radial-gradient(ellipse 1000px 800px at 80% 25%, #edd69a 0%, #d4a868 45%, rgba(138, 88, 42, 0) 75%),
+    radial-gradient(ellipse 1100px 900px at 50% 100%, #a06838 0%, #7a4618 50%, rgba(58, 28, 8, 0) 85%),
+    linear-gradient(135deg, #eed8a4 0%, #d4a868 45%, #6a3818 100%);
+}
+
+/* weathered stain overlay */
+.stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 450px 320px at 10% 15%, rgba(80, 35, 5, 0.45), transparent 70%),
+    radial-gradient(ellipse 520px 380px at 90% 28%, rgba(60, 25, 5, 0.4), transparent 70%),
+    radial-gradient(ellipse 500px 420px at 22% 82%, rgba(90, 40, 10, 0.5), transparent 70%),
+    radial-gradient(ellipse 620px 340px at 78% 90%, rgba(50, 20, 5, 0.45), transparent 70%),
+    radial-gradient(ellipse 380px 260px at 48% 45%, rgba(70, 30, 5, 0.22), transparent 70%),
+    radial-gradient(ellipse 280px 220px at 92% 55%, rgba(80, 35, 10, 0.35), transparent 70%);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* parchment grain */
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.22  0 0 0 0 0.12  0 0 0 0 0.04  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* abstract glyph background pattern */
+.glyph-layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0.11;
+  mix-blend-mode: multiply;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+/* border frame — subtle rule */
+.frame {
+  position: absolute;
+  inset: 40px;
+  border: 1px solid rgba(80, 40, 10, 0.35);
+  pointer-events: none;
+}
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(120, 70, 20, 0.25);
+}
+
+/* corner ornaments — oil lamps */
+.lamp {
+  position: absolute;
+  top: 90px;
+  width: 150px;
+  height: 200px;
+  filter: drop-shadow(0 4px 24px rgba(220, 130, 20, 0.5));
+}
+.lamp-left { left: 280px; }
+.lamp-right { right: 280px; transform: scaleX(-1); }
+
+/* title wordmark */
+.title {
+  position: absolute;
+  left: 50%;
+  top: 190px;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+.title-eyebrow {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-style: italic;
+  color: #5a2814;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0.65;
+}
+.title-main {
+  font-family: 'Cormorant SC', serif;
+  font-size: 104px;
+  font-weight: 700;
+  color: #2a1408;
+  letter-spacing: 14px;
+  line-height: 1;
+  text-shadow:
+    0 2px 0 rgba(250, 220, 150, 0.4),
+    0 4px 16px rgba(60, 20, 0, 0.35);
+}
+.title-rule {
+  margin: 24px auto 0;
+  width: 560px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* button stack */
+.buttons {
+  position: absolute;
+  top: 510px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  align-items: center;
+}
+
+.btn {
+  position: relative;
+  width: 720px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1), filter 0.3s ease;
+}
+
+.btn-plaque {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 30%, #6a2c18 0%, #3a1408 65%, #1e0804 100%);
+  border: 2px solid #c9a04a;
+  box-shadow:
+    inset 0 3px 12px rgba(0,0,0,0.9),
+    inset 0 0 0 1px rgba(220, 160, 60, 0.35),
+    inset 0 -8px 20px rgba(0,0,0,0.6),
+    0 6px 24px rgba(0,0,0,0.45);
+}
+.btn-plaque::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(210, 150, 50, 0.45);
+  pointer-events: none;
+}
+.btn-plaque::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='200'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.018' numOctaves='2'/><feColorMatrix type='matrix' values='0 0 0 0 0.3  0 0 0 0 0.15  0 0 0 0 0.05  0 0 0 0.45 0'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* lotus ornaments flanking each button */
+.lotus {
+  position: absolute;
+  top: 50%;
+  width: 92px;
+  height: 64px;
+  color: #d4a050;
+  transform: translateY(-50%);
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+  z-index: 2;
+}
+.lotus-left { left: -72px; }
+.lotus-right { right: -72px; transform: translateY(-50%) scaleX(-1); }
+
+.btn-label {
+  position: relative;
+  z-index: 3;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  font-size: 38px;
+  letter-spacing: 12px;
+  color: #f4d88a;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 24px rgba(220, 180, 80, 0.35);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.18);
+}
+.btn:hover .btn-label {
+  color: #fae8a8;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 32px rgba(240, 200, 100, 0.6);
+}
+.btn:hover .lotus {
+  color: #f4e0a0;
+}
+
+/* footer flourish */
+.footer-mark {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 30px;
+  opacity: 0.55;
+}
+.footer-hint {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(60, 30, 5, 0.6);
+  letter-spacing: 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- Shared SVG defs for oil lamp + lotus + glyphs + flourish -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="lampBody" cx="50%" cy="30%">
+      <stop offset="0%" stop-color="#e6b052"/>
+      <stop offset="55%" stop-color="#a06828"/>
+      <stop offset="100%" stop-color="#3a1e08"/>
+    </radialGradient>
+    <radialGradient id="flame" cx="50%" cy="60%">
+      <stop offset="0%" stop-color="#fff0a0"/>
+      <stop offset="40%" stop-color="#f4a030"/>
+      <stop offset="100%" stop-color="#c04010" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- stylised lotus: top-view with layered petals -->
+    <symbol id="lotus" viewBox="0 0 92 64">
+      <!-- outer petals -->
+      <path d="M 46 56 Q 10 48, 4 30 Q 18 22, 34 38 Q 42 44, 46 56 Z"
+            fill="currentColor" opacity="0.55"/>
+      <path d="M 46 56 Q 82 48, 88 30 Q 74 22, 58 38 Q 50 44, 46 56 Z"
+            fill="currentColor" opacity="0.55"/>
+      <!-- mid petals -->
+      <path d="M 46 56 Q 22 36, 20 14 Q 34 10, 42 28 Q 46 42, 46 56 Z"
+            fill="currentColor" opacity="0.78"/>
+      <path d="M 46 56 Q 70 36, 72 14 Q 58 10, 50 28 Q 46 42, 46 56 Z"
+            fill="currentColor" opacity="0.78"/>
+      <!-- center petal -->
+      <path d="M 46 56 Q 36 30, 46 4 Q 56 30, 46 56 Z"
+            fill="currentColor" opacity="1"/>
+      <!-- center bead -->
+      <circle cx="46" cy="52" r="3" fill="#f4e0a0"/>
+      <!-- base line -->
+      <path d="M 4 58 L 88 58" stroke="currentColor" stroke-width="1.2" opacity="0.6" fill="none"/>
+    </symbol>
+
+    <!-- oil lamp symbol -->
+    <symbol id="lamp" viewBox="0 0 150 200">
+      <!-- hanging chain -->
+      <line x1="75" y1="0" x2="75" y2="52" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="6" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="14" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="22" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="30" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="38" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <circle cx="75" cy="46" r="4" fill="none" stroke="#6a4018" stroke-width="2"/>
+      <!-- hanger ring -->
+      <ellipse cx="75" cy="58" rx="10" ry="4" fill="#5a3410" stroke="#8a5a20" stroke-width="1"/>
+      <!-- lamp bowl -->
+      <path d="M 32 94 Q 30 70, 75 64 Q 120 70, 118 94 L 110 124 Q 106 142, 75 146 Q 44 142, 40 124 Z"
+            fill="url(#lampBody)" stroke="#5a2e08" stroke-width="2"/>
+      <!-- bowl highlight -->
+      <path d="M 42 78 Q 50 70, 68 70" stroke="#f0c068" stroke-width="2" fill="none" opacity="0.7"/>
+      <!-- spout -->
+      <path d="M 115 102 L 140 86 L 134 108 Z" fill="#8a5a20" stroke="#5a2e08" stroke-width="2"/>
+      <!-- flame -->
+      <ellipse cx="135" cy="78" rx="9" ry="20" fill="url(#flame)"/>
+      <ellipse cx="135" cy="80" rx="4" ry="11" fill="#fff8d0"/>
+      <!-- decorative ridges -->
+      <path d="M 40 104 Q 75 110, 112 104" stroke="#5a2e08" stroke-width="1" fill="none" opacity="0.7"/>
+      <path d="M 44 116 Q 75 122, 106 116" stroke="#5a2e08" stroke-width="1" fill="none" opacity="0.7"/>
+      <!-- base plate -->
+      <ellipse cx="75" cy="154" rx="38" ry="6" fill="#4a2408" stroke="#6a3814" stroke-width="1"/>
+      <!-- decorative tassel under -->
+      <path d="M 75 158 L 68 178 M 75 158 L 75 184 M 75 158 L 82 178" stroke="#8a5a20" stroke-width="1.5"/>
+      <circle cx="68" cy="182" r="2" fill="#c9a04a"/>
+      <circle cx="75" cy="188" r="2" fill="#c9a04a"/>
+      <circle cx="82" cy="182" r="2" fill="#c9a04a"/>
+    </symbol>
+
+    <!-- glyph tile -->
+    <pattern id="glyph-pattern" x="0" y="0" width="260" height="140" patternUnits="userSpaceOnUse">
+      <g stroke="#3a1408" stroke-width="2.2" fill="none" stroke-linecap="round">
+        <path d="M 15 40 Q 35 18, 55 40 T 95 40"/>
+        <circle cx="35" cy="40" r="2.5" fill="#3a1408"/>
+        <path d="M 110 52 C 122 30, 144 30, 156 52 S 178 72, 188 52"/>
+        <path d="M 200 30 Q 220 50, 240 30"/>
+        <line x1="215" y1="32" x2="215" y2="58"/>
+        <path d="M 18 85 L 34 85 L 34 108 L 50 108"/>
+        <path d="M 62 95 Q 82 75, 102 95"/>
+        <path d="M 138 85 Q 158 108, 178 85"/>
+        <circle cx="158" cy="94" r="2" fill="#3a1408"/>
+        <path d="M 200 85 L 220 85 M 210 78 L 210 102"/>
+        <path d="M 230 95 Q 240 85, 250 95"/>
+      </g>
+    </pattern>
+
+    <!-- title rule ornament -->
+    <symbol id="title-rule" viewBox="0 0 560 24">
+      <line x1="0" y1="12" x2="230" y2="12" stroke="#8a5a1e" stroke-width="1"/>
+      <line x1="330" y1="12" x2="560" y2="12" stroke="#8a5a1e" stroke-width="1"/>
+      <path d="M 240 12 L 260 4 L 280 12 L 260 20 Z" fill="#c9a04a" stroke="#6a3810" stroke-width="1"/>
+      <circle cx="280" cy="12" r="4" fill="#c9a04a" stroke="#6a3810" stroke-width="1"/>
+      <path d="M 280 12 L 300 4 L 320 12 L 300 20 Z" fill="#c9a04a" stroke="#6a3810" stroke-width="1"/>
+      <circle cx="240" cy="12" r="3" fill="#6a3810"/>
+      <circle cx="320" cy="12" r="3" fill="#6a3810"/>
+    </symbol>
+
+    <!-- footer flourish -->
+    <symbol id="footer-mark" viewBox="0 0 280 30">
+      <line x1="0" y1="15" x2="110" y2="15" stroke="#3a1408" stroke-width="1"/>
+      <line x1="170" y1="15" x2="280" y2="15" stroke="#3a1408" stroke-width="1"/>
+      <circle cx="115" cy="15" r="3" fill="#3a1408"/>
+      <circle cx="165" cy="15" r="3" fill="#3a1408"/>
+      <path d="M 125 15 Q 140 5, 155 15 Q 140 25, 125 15 Z" fill="none" stroke="#3a1408" stroke-width="1.2"/>
+      <circle cx="140" cy="15" r="2" fill="#3a1408"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+  <!-- abstract glyph backdrop -->
+  <svg class="glyph-layer" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1920" height="1080" fill="url(#glyph-pattern)"/>
+  </svg>
+
+  <div class="content">
+    <div class="frame"></div>
+
+    <!-- corner lamps -->
+    <svg class="lamp lamp-left" viewBox="0 0 150 200"><use href="#lamp"/></svg>
+    <svg class="lamp lamp-right" viewBox="0 0 150 200"><use href="#lamp"/></svg>
+
+    <!-- title -->
+    <div class="title">
+      <div class="title-eyebrow">A Tactical Chronicle</div>
+      <div class="title-main">Project Astra</div>
+      <div class="title-rule">
+        <svg viewBox="0 0 560 24" width="560" height="24"><use href="#title-rule"/></svg>
+      </div>
+    </div>
+
+    <!-- buttons -->
+    <div class="buttons">
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="lotus lotus-left" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <svg class="lotus lotus-right" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <div class="btn-label">New Game</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="lotus lotus-left" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <svg class="lotus lotus-right" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <div class="btn-label">Continue</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="lotus lotus-left" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <svg class="lotus lotus-right" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <div class="btn-label">Options</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="lotus lotus-left" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <svg class="lotus lotus-right" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <div class="btn-label">Extras</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="lotus lotus-left" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <svg class="lotus lotus-right" viewBox="0 0 92 64"><use href="#lotus"/></svg>
+        <div class="btn-label">Quit</div>
+      </a>
+    </div>
+
+    <!-- footer -->
+    <svg class="footer-mark" viewBox="0 0 280 30"><use href="#footer-mark"/></svg>
+    <div class="footer-hint">— Select a path —</div>
+  </div>
+</div>
+
+</body>
+</html>

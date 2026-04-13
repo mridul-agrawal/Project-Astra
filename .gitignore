@@ -83,3 +83,4 @@ crashlytics-build.properties
 /Tools/__pycache__/
 /Tools/output/
 /Tools/venv/
+.secrets/

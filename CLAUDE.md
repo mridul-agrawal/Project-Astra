@@ -64,6 +64,20 @@ Detailed system specifications live in `Assets/Project Reference Files/`:
 
 Always consult these documents before implementing a system to ensure alignment with the specification.
 
+## UI Pipeline
+
+**Before doing any UI work, read `docs/UI_WORKFLOW.md` in full.** It codifies the Figma → Unity pipeline, the `Background` rectangle pattern for exportable frames, the uGUI-only rule, and the builder-script convention. Skipping it will cost hours rediscovering the same gotchas (text-doubling in exports, missing TMP atlas glyphs, UI Toolkit vs uGUI confusion, panel/canvas size mismatches).
+
+Key non-negotiables from that doc:
+- **Before starting any new UI screen, ask the user: "full-screen or modal popup?" and "target dimensions?"** Do not assume Figma's existing frame sizes are correct — a prior session may have authored the file at the wrong size. Canvas reference resolution is 1920×1080 for all UIs; full-screen panels match it, modals are smaller.
+- **Concept phase is REQUIRED for new screens.** Invoke the `frontend-design` skill and produce 2–3 HTML/CSS mockups exploring aesthetic variations before touching Figma. Present them to the user and wait for a pick. A reference image does NOT remove this requirement — a reference is one data point, the concept phase explores interpretations around it. Skip only when restructuring an already-approved existing Figma file.
+- **Reference images are style anchors, not blueprints.** Preserve layout, components, content, and color scheme from a reference. Do NOT preserve pixel-for-pixel fidelity, the reference's native resolution, pixelation, or the reference's aspect ratio. Shipped assets must be original (our own typography, ornament shapes, textures), HD quality, and always 16:9 at 1920×1080 regardless of the reference's format. Never reproduce copyrighted art pixel-for-pixel.
+- In-game UI is **uGUI** (Canvas + RectTransform + Image + TextMeshProUGUI). Never UI Toolkit for gameplay UI.
+- Every Figma frame with visual properties must have a child `Background` rectangle that owns those properties. The parent frame stays a pure layout container. Frames without a `Background` rect are not exportable cleanly.
+- Dynamic text stays live as TMP; never bake it into a background PNG.
+- UI screens ship as: `Assets/UI/{Screen}/` for assets + `Assets/Editor/{Screen}Builder.cs` for the hierarchy builder. Every builder declares `CanvasWidth`, `CanvasHeight`, `IsFullScreen`, `Scale` constants at the top and asserts the panel matches at build time.
+- Figma edits (including rescales) are done via `mcp__figma__use_figma` (Plugin API write access), not by hand. Figma token lives in `.secrets/figma.env` (gitignored).
+
 ## Implementation Notes
 
 - The input actions asset (`Assets/InputSystem_Actions.inputactions`) currently has default Unity template bindings — these need to be replaced with tactical RPG-specific actions (CURSOR_MOVE, CONFIRM, CANCEL, INFO, MENU, etc.) per the design spec.

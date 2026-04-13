@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Project Astra — Main Menu · Variant B · Astra Forge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background: #02030a;
+  font-family: 'Jost', sans-serif;
+  color: #e6e8f4;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.stage {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+  /* deep midnight base */
+  background:
+    radial-gradient(ellipse 1400px 900px at 50% 60%, #1a2358 0%, #0a1232 35%, #050818 70%, #02030a 100%);
+}
+
+/* starfield */
+.starfield {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #d8e0ff, transparent),
+    radial-gradient(1px 1px at 22% 32%, #b0c0e8, transparent),
+    radial-gradient(2px 2px at 38% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 48% 28%, #c0d0f0, transparent),
+    radial-gradient(1.5px 1.5px at 58% 8%, #e8f0ff, transparent),
+    radial-gradient(1px 1px at 68% 22%, #a8b8e0, transparent),
+    radial-gradient(1.5px 1.5px at 78% 36%, #d0d8ff, transparent),
+    radial-gradient(1px 1px at 88% 14%, #c8d0f0, transparent),
+    radial-gradient(2px 2px at 8% 48%, #fff, transparent),
+    radial-gradient(1px 1px at 16% 64%, #b8c8e8, transparent),
+    radial-gradient(1.5px 1.5px at 28% 82%, #d8e0ff, transparent),
+    radial-gradient(1px 1px at 42% 76%, #a0b0d8, transparent),
+    radial-gradient(2px 2px at 56% 92%, #f0f4ff, transparent),
+    radial-gradient(1px 1px at 72% 68%, #c0d0f0, transparent),
+    radial-gradient(1.5px 1.5px at 84% 84%, #e0e8ff, transparent),
+    radial-gradient(1px 1px at 94% 56%, #b8c8e8, transparent),
+    radial-gradient(1px 1px at 6% 92%, #d0d8f0, transparent),
+    radial-gradient(2px 2px at 32% 48%, #fff, transparent),
+    radial-gradient(1px 1px at 64% 50%, #c8d0e8, transparent),
+    radial-gradient(1.5px 1.5px at 50% 70%, #d8e0ff, transparent);
+  background-size: 100% 100%;
+  z-index: 1;
+}
+
+/* central yantra glow */
+.yantra-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1100px;
+  height: 1100px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(80, 120, 220, 0.18) 0%, rgba(40, 70, 160, 0.1) 30%, transparent 60%);
+  z-index: 2;
+}
+
+/* central yantra geometry */
+.yantra {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 880px;
+  height: 880px;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  opacity: 0.55;
+  filter: drop-shadow(0 0 24px rgba(90, 140, 255, 0.4));
+}
+
+/* sacred-geometry overlay grid */
+.geo-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* atmospheric haze */
+.haze {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 600px 300px at 50% 110%, rgba(60, 100, 200, 0.25), transparent 70%),
+    radial-gradient(ellipse 800px 400px at 50% -10%, rgba(40, 60, 140, 0.2), transparent 70%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* film grain */
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.6  0 0 0 0 0.7  0 0 0 0 1  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+}
+
+/* corner sigils — sun and moon */
+.sigil {
+  position: absolute;
+  top: 80px;
+  width: 130px;
+  height: 130px;
+  filter: drop-shadow(0 0 20px rgba(120, 160, 255, 0.5));
+}
+.sigil-left { left: 220px; }
+.sigil-right { right: 220px; }
+
+/* title */
+.title {
+  position: absolute;
+  left: 50%;
+  top: 200px;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+.title-eyebrow {
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 22px;
+  color: #8a9cd0;
+  letter-spacing: 18px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+.title-main {
+  font-family: 'Cinzel', serif;
+  font-size: 110px;
+  font-weight: 600;
+  color: #e8edff;
+  letter-spacing: 16px;
+  line-height: 1;
+  text-shadow:
+    0 0 24px rgba(120, 160, 255, 0.6),
+    0 0 48px rgba(80, 120, 220, 0.4),
+    0 4px 0 rgba(20, 30, 70, 0.8);
+}
+.title-main::after {
+  content: '';
+  display: block;
+  margin: 18px auto 0;
+  width: 360px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #5d7fff, transparent);
+  box-shadow: 0 0 8px rgba(120, 160, 255, 0.8);
+}
+
+/* button stack */
+.buttons {
+  position: absolute;
+  top: 510px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.btn {
+  position: relative;
+  width: 720px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1), filter 0.3s ease;
+}
+
+.btn-plaque {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #1a2348 0%, #0c1430 50%, #050818 100%);
+  border: 1px solid #5d7fff;
+  box-shadow:
+    inset 0 0 0 1px rgba(140, 180, 255, 0.25),
+    inset 0 1px 12px rgba(80, 120, 220, 0.35),
+    inset 0 -2px 16px rgba(0, 0, 0, 0.7),
+    0 0 24px rgba(40, 70, 160, 0.5),
+    0 0 0 1px rgba(120, 160, 255, 0.15);
+}
+.btn-plaque::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(120, 160, 255, 0.3);
+  pointer-events: none;
+}
+/* corner clip marks on each plaque */
+.btn-plaque::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, #5d7fff 0 12px, transparent 12px) top left/16px 16px no-repeat,
+    linear-gradient(225deg, #5d7fff 0 12px, transparent 12px) top right/16px 16px no-repeat,
+    linear-gradient(45deg, #5d7fff 0 12px, transparent 12px) bottom left/16px 16px no-repeat,
+    linear-gradient(315deg, #5d7fff 0 12px, transparent 12px) bottom right/16px 16px no-repeat;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* chakra disc ornaments */
+.chakra {
+  position: absolute;
+  top: 50%;
+  width: 76px;
+  height: 76px;
+  transform: translateY(-50%);
+  color: #7090e0;
+  filter: drop-shadow(0 0 8px rgba(120, 160, 255, 0.7));
+  z-index: 2;
+}
+.chakra-left { left: -64px; }
+.chakra-right { right: -64px; }
+
+.btn-label {
+  position: relative;
+  z-index: 3;
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  font-size: 32px;
+  letter-spacing: 14px;
+  color: #e6ecff;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px rgba(120, 160, 255, 0.6), 0 0 32px rgba(80, 120, 220, 0.35);
+}
+
+.btn:hover { transform: translateY(-3px); }
+.btn:hover .btn-plaque {
+  box-shadow:
+    inset 0 0 0 1px rgba(180, 210, 255, 0.5),
+    inset 0 1px 16px rgba(120, 160, 255, 0.5),
+    inset 0 -2px 16px rgba(0, 0, 0, 0.7),
+    0 0 36px rgba(80, 120, 240, 0.7),
+    0 0 0 1px rgba(140, 180, 255, 0.3);
+}
+.btn:hover .btn-label {
+  color: #ffffff;
+  text-shadow: 0 0 24px rgba(180, 210, 255, 0.95), 0 0 40px rgba(120, 160, 255, 0.6);
+}
+.btn:hover .chakra { color: #b8d0ff; }
+
+/* footer constellation */
+.footer-stars {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 30px;
+  opacity: 0.7;
+}
+.footer-hint {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  letter-spacing: 8px;
+  color: rgba(180, 200, 240, 0.55);
+  text-transform: uppercase;
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- yantra: square + triangles + lotus border + bindu -->
+    <symbol id="yantra" viewBox="0 0 880 880">
+      <g fill="none" stroke="#5d7fff" stroke-width="1.2">
+        <!-- outer square -->
+        <rect x="40" y="40" width="800" height="800" stroke-width="1.5"/>
+        <rect x="56" y="56" width="768" height="768" opacity="0.5"/>
+        <!-- gates on each side -->
+        <path d="M 440 40 L 410 10 L 470 10 Z M 440 840 L 410 870 L 470 870 Z M 40 440 L 10 410 L 10 470 Z M 840 440 L 870 410 L 870 470 Z"/>
+        <!-- outer circle -->
+        <circle cx="440" cy="440" r="380"/>
+        <circle cx="440" cy="440" r="360" opacity="0.5"/>
+        <!-- 16-petal lotus ring -->
+        <g stroke-width="1">
+          <path d="M 440 80 Q 460 140, 440 200 Q 420 140, 440 80 Z"/>
+          <path d="M 800 440 Q 740 460, 680 440 Q 740 420, 800 440 Z"/>
+          <path d="M 440 800 Q 420 740, 440 680 Q 460 740, 440 800 Z"/>
+          <path d="M 80 440 Q 140 420, 200 440 Q 140 460, 80 440 Z"/>
+          <path d="M 695 185 Q 660 220, 600 240 Q 620 180, 695 185 Z"/>
+          <path d="M 695 695 Q 660 660, 600 640 Q 620 700, 695 695 Z"/>
+          <path d="M 185 695 Q 220 660, 240 600 Q 180 620, 185 695 Z"/>
+          <path d="M 185 185 Q 220 220, 240 280 Q 180 260, 185 185 Z"/>
+        </g>
+        <!-- middle circle -->
+        <circle cx="440" cy="440" r="280" stroke-width="1.4"/>
+        <!-- 8-petal lotus -->
+        <g stroke-width="1.2">
+          <path d="M 440 160 Q 480 240, 440 320 Q 400 240, 440 160 Z"/>
+          <path d="M 720 440 Q 640 480, 560 440 Q 640 400, 720 440 Z"/>
+          <path d="M 440 720 Q 400 640, 440 560 Q 480 640, 440 720 Z"/>
+          <path d="M 160 440 Q 240 400, 320 440 Q 240 480, 160 440 Z"/>
+          <path d="M 638 242 Q 600 320, 532 348 Q 560 270, 638 242 Z"/>
+          <path d="M 638 638 Q 600 560, 532 532 Q 560 610, 638 638 Z"/>
+          <path d="M 242 638 Q 320 600, 348 532 Q 270 560, 242 638 Z"/>
+          <path d="M 242 242 Q 320 280, 348 348 Q 270 320, 242 242 Z"/>
+        </g>
+        <!-- inner circle -->
+        <circle cx="440" cy="440" r="190"/>
+        <!-- intersecting triangles (Sri Yantra style) -->
+        <path d="M 440 280 L 600 560 L 280 560 Z" stroke-width="1.5"/>
+        <path d="M 440 600 L 280 320 L 600 320 Z" stroke-width="1.5"/>
+        <path d="M 440 320 L 560 530 L 320 530 Z" opacity="0.7"/>
+        <path d="M 440 560 L 320 350 L 560 350 Z" opacity="0.7"/>
+        <path d="M 440 360 L 530 510 L 350 510 Z" opacity="0.5"/>
+        <path d="M 440 520 L 350 370 L 530 370 Z" opacity="0.5"/>
+        <!-- bindu (center point) -->
+        <circle cx="440" cy="440" r="14" fill="#5d7fff" opacity="0.8"/>
+        <circle cx="440" cy="440" r="6" fill="#e8edff"/>
+      </g>
+    </symbol>
+
+    <!-- sacred geometry overlay (corner crosshairs) -->
+    <pattern id="grid" x="0" y="0" width="120" height="120" patternUnits="userSpaceOnUse">
+      <path d="M 60 50 L 60 70 M 50 60 L 70 60" stroke="#5d7fff" stroke-width="0.6" fill="none"/>
+    </pattern>
+
+    <!-- chakra disc -->
+    <symbol id="chakra" viewBox="0 0 76 76">
+      <circle cx="38" cy="38" r="34" fill="none" stroke="currentColor" stroke-width="2"/>
+      <circle cx="38" cy="38" r="28" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.7"/>
+      <circle cx="38" cy="38" r="6" fill="currentColor"/>
+      <!-- 8 spokes -->
+      <g stroke="currentColor" stroke-width="1.5">
+        <line x1="38" y1="6" x2="38" y2="20"/>
+        <line x1="38" y1="56" x2="38" y2="70"/>
+        <line x1="6" y1="38" x2="20" y2="38"/>
+        <line x1="56" y1="38" x2="70" y2="38"/>
+        <line x1="15.4" y1="15.4" x2="25" y2="25"/>
+        <line x1="51" y1="51" x2="60.6" y2="60.6"/>
+        <line x1="60.6" y1="15.4" x2="51" y2="25"/>
+        <line x1="25" y1="51" x2="15.4" y2="60.6"/>
+      </g>
+      <!-- arrow tips between spokes -->
+      <g fill="currentColor">
+        <path d="M 38 4 L 42 12 L 38 10 L 34 12 Z"/>
+        <path d="M 38 72 L 42 64 L 38 66 L 34 64 Z"/>
+        <path d="M 4 38 L 12 42 L 10 38 L 12 34 Z"/>
+        <path d="M 72 38 L 64 42 L 66 38 L 64 34 Z"/>
+      </g>
+      <!-- inner ring decoration -->
+      <circle cx="38" cy="38" r="14" fill="none" stroke="currentColor" stroke-width="0.7" opacity="0.6"/>
+    </symbol>
+
+    <!-- sun sigil -->
+    <symbol id="sigil-sun" viewBox="0 0 130 130">
+      <g fill="none" stroke="#a8c0ff" stroke-width="1.6">
+        <circle cx="65" cy="65" r="34"/>
+        <circle cx="65" cy="65" r="42" opacity="0.5"/>
+        <circle cx="65" cy="65" r="22" stroke-width="1"/>
+        <!-- rays -->
+        <g stroke-width="1.2">
+          <line x1="65" y1="6" x2="65" y2="20"/>
+          <line x1="65" y1="110" x2="65" y2="124"/>
+          <line x1="6" y1="65" x2="20" y2="65"/>
+          <line x1="110" y1="65" x2="124" y2="65"/>
+          <line x1="22" y1="22" x2="32" y2="32"/>
+          <line x1="98" y1="98" x2="108" y2="108"/>
+          <line x1="108" y1="22" x2="98" y2="32"/>
+          <line x1="32" y1="98" x2="22" y2="108"/>
+          <line x1="65" y1="14" x2="65" y2="22" opacity="0.5"/>
+          <line x1="80" y1="10" x2="78" y2="22"/>
+          <line x1="50" y1="10" x2="52" y2="22"/>
+        </g>
+        <!-- inner dot -->
+        <circle cx="65" cy="65" r="5" fill="#e8edff"/>
+      </g>
+    </symbol>
+
+    <!-- moon sigil -->
+    <symbol id="sigil-moon" viewBox="0 0 130 130">
+      <g fill="none" stroke="#a8c0ff" stroke-width="1.6">
+        <circle cx="65" cy="65" r="42" opacity="0.5"/>
+        <!-- crescent -->
+        <path d="M 50 28 A 38 38 0 1 0 50 102 A 28 28 0 1 1 50 28 Z" fill="#a8c0ff" fill-opacity="0.15"/>
+        <path d="M 50 28 A 38 38 0 1 0 50 102 A 28 28 0 1 1 50 28 Z" stroke-width="1.4"/>
+        <!-- small stars -->
+        <circle cx="92" cy="35" r="1.5" fill="#e8edff"/>
+        <circle cx="100" cy="55" r="1" fill="#e8edff"/>
+        <circle cx="95" cy="80" r="1.5" fill="#e8edff"/>
+        <circle cx="105" cy="98" r="1" fill="#e8edff"/>
+        <!-- ring with notches -->
+        <g stroke-width="1.2">
+          <line x1="65" y1="14" x2="65" y2="22"/>
+          <line x1="22" y1="22" x2="30" y2="30"/>
+          <line x1="14" y1="65" x2="22" y2="65"/>
+          <line x1="22" y1="108" x2="30" y2="100"/>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- footer constellation -->
+    <symbol id="footer-stars" viewBox="0 0 320 30">
+      <g fill="#a8c0ff" stroke="#a8c0ff" stroke-width="0.8">
+        <line x1="20" y1="15" x2="60" y2="15" stroke-width="0.6"/>
+        <line x1="60" y1="15" x2="100" y2="6" stroke-width="0.6"/>
+        <line x1="100" y1="6" x2="160" y2="15" stroke-width="0.6"/>
+        <line x1="160" y1="15" x2="220" y2="24" stroke-width="0.6"/>
+        <line x1="220" y1="24" x2="260" y2="15" stroke-width="0.6"/>
+        <line x1="260" y1="15" x2="300" y2="15" stroke-width="0.6"/>
+        <circle cx="20" cy="15" r="2.5"/>
+        <circle cx="60" cy="15" r="2"/>
+        <circle cx="100" cy="6" r="3"/>
+        <circle cx="160" cy="15" r="2.5"/>
+        <circle cx="220" cy="24" r="2"/>
+        <circle cx="260" cy="15" r="3"/>
+        <circle cx="300" cy="15" r="2.5"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+  <div class="starfield"></div>
+  <div class="yantra-glow"></div>
+  <svg class="yantra" viewBox="0 0 880 880" xmlns="http://www.w3.org/2000/svg">
+    <use href="#yantra"/>
+  </svg>
+  <svg class="geo-overlay" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1920" height="1080" fill="url(#grid)"/>
+  </svg>
+  <div class="haze"></div>
+  <div class="grain"></div>
+
+  <div class="content">
+    <!-- corner sigils -->
+    <svg class="sigil sigil-left" viewBox="0 0 130 130"><use href="#sigil-sun"/></svg>
+    <svg class="sigil sigil-right" viewBox="0 0 130 130"><use href="#sigil-moon"/></svg>
+
+    <!-- title -->
+    <div class="title">
+      <div class="title-eyebrow">A Tactical Chronicle</div>
+      <div class="title-main">Project Astra</div>
+    </div>
+
+    <!-- buttons -->
+    <div class="buttons">
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="chakra chakra-left" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <svg class="chakra chakra-right" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <div class="btn-label">New Game</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="chakra chakra-left" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <svg class="chakra chakra-right" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <div class="btn-label">Continue</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="chakra chakra-left" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <svg class="chakra chakra-right" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <div class="btn-label">Options</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="chakra chakra-left" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <svg class="chakra chakra-right" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <div class="btn-label">Extras</div>
+      </a>
+      <a class="btn" href="#">
+        <div class="btn-plaque"></div>
+        <svg class="chakra chakra-left" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <svg class="chakra chakra-right" viewBox="0 0 76 76"><use href="#chakra"/></svg>
+        <div class="btn-label">Quit</div>
+      </a>
+    </div>
+
+    <!-- footer -->
+    <svg class="footer-stars" viewBox="0 0 320 30"><use href="#footer-stars"/></svg>
+    <div class="footer-hint">Choose Your Constellation</div>
+  </div>
+</div>
+
+</body>
+</html>
