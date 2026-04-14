@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Battle HUD · 03 Blood Moon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%), #050305;
+  color: #e8d9b8;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 56px 24px 96px;
+  min-height: 100vh;
+}
+.page-title {
+  font-family: 'Cinzel', serif; font-weight: 600; font-size: 30px;
+  letter-spacing: 0.35em; text-transform: uppercase; text-align: center;
+  color: #d4a24c; margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center; font-style: italic; font-size: 18px;
+  color: #7a6a4c; margin-bottom: 40px; letter-spacing: 0.04em;
+}
+.concept { margin: 0 auto; max-width: 1344px; }
+.concept-header {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 14px 6px;
+  border-top: 1px solid #2a1f12; border-bottom: 1px solid #2a1f12;
+  margin-bottom: 18px; display: flex; justify-content: space-between;
+  align-items: baseline; gap: 32px;
+}
+.concept-header .idx { color: #5a4c32; font-size: 11px; }
+.concept-header .name { color: #d4a24c; font-weight: 600; flex: 1; }
+.concept-header .note { color: #5a4c32; font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: 'Cormorant Garamond', serif; font-size: 15px; text-align: right; }
+
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.7;
+  position: relative; overflow: hidden; border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(212,162,76,0.1);
+  background: #060308;
+}
+.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hud { position: absolute; inset: 0; pointer-events: none; }
+.unit-card { position: absolute; top: 56px; left: 56px; }
+.objective  { position: absolute; top: 56px; right: 56px; }
+.tile-info  { position: absolute; bottom: 56px; right: 56px; }
+
+.panel-outer {
+  position: relative;
+  filter: drop-shadow(0 25px 40px rgba(0,0,0,0.8)) drop-shadow(0 0 40px rgba(164,32,50,0.15));
+}
+.panel {
+  background: linear-gradient(180deg, rgba(24,8,12,0.82) 0%, rgba(8,3,6,0.78) 100%);
+  backdrop-filter: blur(9px) saturate(1.2);
+  -webkit-backdrop-filter: blur(9px) saturate(1.2);
+  padding: 30px 36px;
+  position: relative;
+  clip-path: polygon(
+    18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px),
+    calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px
+  );
+}
+.panel-outer::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, #d46a2c 0%, #a52032 40%, #6b4a2b 100%);
+  clip-path: polygon(
+    18px 0, calc(100% - 18px) 0, 100% 18px, 100% calc(100% - 18px),
+    calc(100% - 18px) 100%, 18px 100%, 0 calc(100% - 18px), 0 18px
+  );
+  z-index: 0;
+}
+.panel-outer > .panel { margin: 1.5px; z-index: 1; }
+.panel::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    linear-gradient(135deg, rgba(212,106,44,0.08) 0%, transparent 45%),
+    radial-gradient(ellipse at 80% 10%, rgba(164,32,50,0.18), transparent 60%);
+  pointer-events: none; mix-blend-mode: screen;
+}
+.panel::after {
+  content: ''; position: absolute; inset: 8px;
+  border: 1px solid rgba(107,74,43,0.35);
+  clip-path: polygon(
+    12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px),
+    calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px
+  );
+  pointer-events: none;
+}
+
+.unit-card .panel-outer { width: 580px; }
+.unit-row { display: flex; gap: 28px; align-items: center; position: relative; z-index: 2; }
+.portrait-wrap {
+  width: 132px; height: 132px;
+  background: radial-gradient(circle at 40% 30%, #3a0a14, #080308);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  overflow: hidden; flex-shrink: 0; position: relative;
+}
+.portrait-wrap::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, #d46a2c, #a52032, #6b4a2b);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  z-index: 0;
+}
+.portrait-wrap svg {
+  position: relative;
+  width: calc(100% - 3px); height: calc(100% - 3px);
+  margin: 1.5px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  display: block; z-index: 1;
+}
+.unit-meta { flex: 1; }
+.unit-name {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 40px;
+  color: #f5d8b8; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1;
+  text-shadow: 0 2px 8px rgba(164,32,50,0.65), 0 0 22px rgba(212,106,44,0.3);
+}
+.unit-class {
+  font-family: 'Spectral', serif; font-weight: 300; font-style: italic;
+  font-size: 19px; color: #d46a2c; margin-top: 8px; letter-spacing: 0.1em;
+}
+.hp-row { margin-top: 18px; position: relative; z-index: 2; }
+.hp-label-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.hp-label {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.4em;
+  color: #8a5a3a; text-transform: uppercase;
+}
+.hp-value { font-family: 'Cinzel', serif; font-weight: 700; font-size: 26px; color: #f5d8b8; }
+.hp-value .sep { color: #6b4a2b; margin: 0 5px; font-weight: 400; }
+.hp-value .max { color: #a5724a; }
+.hp-bar {
+  height: 10px; background: rgba(0,0,0,0.75);
+  position: relative; overflow: hidden;
+  clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 50%, calc(100% - 5px) 100%, 5px 100%, 0 50%);
+}
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5a0a14 0%, #a52032 45%, #e8402a 100%);
+  box-shadow: 0 0 14px rgba(232,64,42,0.7);
+}
+
+.objective .panel-outer { width: 460px; }
+.objective .panel { text-align: center; }
+.obj-label {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.45em;
+  color: #8a5a3a; text-transform: uppercase; display: block; margin-bottom: 12px;
+  position: relative; z-index: 2;
+}
+.obj-text {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 28px;
+  color: #f5d8b8; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.22;
+  text-shadow: 0 2px 8px rgba(164,32,50,0.65); position: relative; z-index: 2;
+}
+.obj-divider {
+  height: 1px; background: linear-gradient(90deg, transparent, rgba(212,106,44,0.7), transparent);
+  margin: 18px 0; position: relative; z-index: 2;
+}
+.obj-turn { display: flex; justify-content: space-between; align-items: baseline; position: relative; z-index: 2; }
+.obj-turn .lbl { font-family: 'Spectral', serif; font-style: italic; font-size: 18px; color: #8a5a3a; }
+.obj-turn .num { font-family: 'Cinzel', serif; font-weight: 700; font-size: 32px; color: #f5d8b8; }
+
+.tile-info .panel-outer { width: 340px; }
+.tile-info .panel { text-align: center; }
+.tile-name {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 24px;
+  color: #f5d8b8; text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 16px; position: relative; z-index: 2;
+}
+.tile-stats {
+  display: flex; justify-content: space-around;
+  border-top: 1px solid rgba(107,74,43,0.45); padding-top: 18px;
+  position: relative; z-index: 2;
+}
+.stat { text-align: center; }
+.stat-label {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.45em;
+  color: #8a5a3a; text-transform: uppercase; display: block; margin-bottom: 6px;
+}
+.stat-value {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 32px;
+  color: #d46a2c; line-height: 1; text-shadow: 0 0 16px rgba(212,106,44,0.45);
+}
+.stat-value .plus { color: #8a5a3a; font-size: 20px; vertical-align: 4px; margin-right: 1px; }
+
+.page-footer {
+  text-align: center; font-style: italic; font-size: 14px;
+  color: #3a2f1c; margin-top: 48px; letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Battle Map HUD · 03 Blood Moon</p>
+
+<section class="concept">
+  <div class="concept-header">
+    <span class="idx">03</span>
+    <span class="name">Blood Moon · dark kshatriya drama</span>
+    <span class="note">obsidian + crimson + ember bronze, cinzel × spectral italic</span>
+  </div>
+  <div class="frame">
+    <svg class="map-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="v3-fog" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stop-color="#1a0408" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#040103" stop-opacity="0.95"/>
+        </radialGradient>
+        <pattern id="v3-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#140a0c"/>
+          <rect width="64" height="64" fill="none" stroke="#6b2a20" stroke-width="0.5" stroke-opacity="0.25"/>
+        </pattern>
+        <radialGradient id="v3-ember" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#d46a2c" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#d46a2c" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1920" height="1080" fill="#0a0408"/>
+      <rect width="1920" height="1080" fill="url(#v3-grid)"/>
+      <circle cx="960" cy="544" r="420" fill="url(#v3-ember)"/>
+      <g transform="translate(960 544)" opacity="0.9">
+        <circle r="230" fill="none" stroke="#a52032" stroke-width="1.5" stroke-opacity="0.6"/>
+        <circle r="190" fill="none" stroke="#6b4a2b" stroke-width="0.8" stroke-opacity="0.5"/>
+        <circle r="140" fill="none" stroke="#a52032" stroke-width="1.2" stroke-opacity="0.7"/>
+        <circle r="95" fill="none" stroke="#d46a2c" stroke-width="0.8" stroke-opacity="0.55"/>
+        <circle r="40" fill="#3a0a0a" fill-opacity="0.8"/>
+        <circle r="40" fill="none" stroke="#d46a2c" stroke-width="1.5" stroke-opacity="0.8"/>
+        <g stroke="#d46a2c" stroke-width="2" stroke-opacity="0.75" fill="none" stroke-linecap="round">
+          <path d="M 0 -230 L 0 -180"/>
+          <path d="M -12 -200 L 12 -200"/>
+          <path d="M 0 230 L 0 180"/>
+          <path d="M -12 200 L 12 200"/>
+          <path d="M -230 0 L -180 0"/>
+          <path d="M -200 -12 L -200 12"/>
+          <path d="M 230 0 L 180 0"/>
+          <path d="M 200 -12 L 200 12"/>
+        </g>
+        <g stroke="#f5d8b8" stroke-width="2.5" stroke-opacity="0.8" fill="none" stroke-linecap="round">
+          <path d="M 0 -22 L 0 22"/>
+          <path d="M -14 -10 L -14 -22 L -10 -18"/>
+          <path d="M 14 -10 L 14 -22 L 10 -18"/>
+        </g>
+      </g>
+      <circle cx="256" cy="200" r="40" fill="#d46a2c" fill-opacity="0.18"/>
+      <circle cx="1664" cy="200" r="40" fill="#d46a2c" fill-opacity="0.18"/>
+      <circle cx="256" cy="888" r="40" fill="#d46a2c" fill-opacity="0.18"/>
+      <circle cx="1664" cy="888" r="40" fill="#d46a2c" fill-opacity="0.18"/>
+      <g fill="#f5a060">
+        <circle cx="256" cy="200" r="5"/>
+        <circle cx="1664" cy="200" r="5"/>
+        <circle cx="256" cy="888" r="5"/>
+        <circle cx="1664" cy="888" r="5"/>
+      </g>
+      <g fill="#4a84c8" fill-opacity="0.22" stroke="#8ab4e8" stroke-width="1" stroke-opacity="0.45">
+        <rect x="512" y="448" width="64" height="64"/>
+        <rect x="448" y="512" width="64" height="64"/>
+        <rect x="512" y="512" width="64" height="64"/>
+        <rect x="576" y="512" width="64" height="64"/>
+        <rect x="384" y="576" width="64" height="64"/>
+        <rect x="448" y="576" width="64" height="64"/>
+        <rect x="576" y="576" width="64" height="64"/>
+        <rect x="640" y="576" width="64" height="64"/>
+        <rect x="448" y="640" width="64" height="64"/>
+        <rect x="512" y="640" width="64" height="64"/>
+        <rect x="576" y="640" width="64" height="64"/>
+        <rect x="512" y="704" width="64" height="64"/>
+        <rect x="320" y="576" width="64" height="64"/>
+        <rect x="704" y="576" width="64" height="64"/>
+      </g>
+      <g fill="#d43020" fill-opacity="0.3" stroke="#f06040" stroke-width="1" stroke-opacity="0.55">
+        <rect x="1216" y="384" width="64" height="64"/>
+        <rect x="1280" y="384" width="64" height="64"/>
+        <rect x="1344" y="384" width="64" height="64"/>
+        <rect x="1216" y="448" width="64" height="64"/>
+        <rect x="1344" y="448" width="64" height="64"/>
+        <rect x="1408" y="576" width="64" height="64"/>
+        <rect x="1472" y="576" width="64" height="64"/>
+      </g>
+      <g transform="translate(544 608)">
+        <circle r="32" fill="none" stroke="#f5d8b8" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.85"/>
+        <circle r="24" fill="#14243a" stroke="#8ab4e8" stroke-width="2"/>
+        <circle r="16" fill="#3a5a8a"/>
+        <text x="0" y="6" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="18" fill="#f5d8b8">A</text>
+      </g>
+      <g transform="translate(416 608)"><circle r="22" fill="#14243a" stroke="#5a7aa8" stroke-width="1.5"/><circle r="14" fill="#3a5a8a"/></g>
+      <g transform="translate(480 544)"><circle r="22" fill="#14243a" stroke="#5a7aa8" stroke-width="1.5"/><circle r="14" fill="#3a5a8a"/></g>
+      <g transform="translate(672 672)"><circle r="22" fill="#14243a" stroke="#5a7aa8" stroke-width="1.5"/><circle r="14" fill="#3a5a8a"/></g>
+      <g transform="translate(1312 416)"><circle r="22" fill="#3a0608" stroke="#d43020" stroke-width="1.5"/><circle r="14" fill="#8a1a22"/></g>
+      <g transform="translate(1376 416)"><circle r="22" fill="#3a0608" stroke="#d43020" stroke-width="1.5"/><circle r="14" fill="#8a1a22"/></g>
+      <g transform="translate(1440 608)">
+        <circle r="30" fill="none" stroke="#d46a2c" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.7"/>
+        <circle r="26" fill="#3a0608" stroke="#f06040" stroke-width="2.5"/>
+        <circle r="18" fill="#a52032"/>
+        <text x="0" y="8" text-anchor="middle" font-family="Cinzel, serif" font-weight="900" font-size="22" fill="#f5d8b8">✦</text>
+      </g>
+      <rect width="1920" height="1080" fill="url(#v3-fog)"/>
+    </svg>
+
+    <div class="hud">
+      <div class="unit-card">
+        <div class="panel-outer">
+          <div class="panel">
+            <div class="unit-row">
+              <div class="portrait-wrap">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <radialGradient id="p3-bg" cx="40%" cy="30%">
+                      <stop offset="0%" stop-color="#4a0810"/>
+                      <stop offset="100%" stop-color="#080204"/>
+                    </radialGradient>
+                    <linearGradient id="p3-skin" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#d08c68"/>
+                      <stop offset="100%" stop-color="#6a3820"/>
+                    </linearGradient>
+                  </defs>
+                  <rect width="200" height="200" fill="url(#p3-bg)"/>
+                  <ellipse cx="140" cy="50" rx="90" ry="120" fill="#d46a2c" fill-opacity="0.18"/>
+                  <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="#1a0408"/>
+                  <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="none" stroke="#d46a2c" stroke-width="1.2"/>
+                  <path d="M 28 155 L 35 140 L 42 155 Z" fill="#6b4a2b"/>
+                  <path d="M 158 155 L 165 140 L 172 155 Z" fill="#6b4a2b"/>
+                  <rect x="88" y="122" width="24" height="24" fill="url(#p3-skin)"/>
+                  <ellipse cx="100" cy="90" rx="40" ry="46" fill="url(#p3-skin)"/>
+                  <path d="M 60 85 Q 56 44 100 42 Q 144 44 140 85 Q 136 62 118 58 Q 100 54 82 58 Q 64 62 60 85 Z" fill="#080204"/>
+                  <path d="M 60 70 L 72 55 L 84 70 L 100 50 L 116 70 L 128 55 L 140 70 L 140 82 Q 100 66 60 82 Z" fill="#6b4a2b"/>
+                  <circle cx="100" cy="65" r="3" fill="#d43020"/>
+                  <ellipse cx="85" cy="98" rx="4" ry="2.8" fill="#080204"/>
+                  <ellipse cx="115" cy="98" rx="4" ry="2.8" fill="#080204"/>
+                  <circle cx="86" cy="97" r="0.9" fill="#d46a2c"/>
+                  <circle cx="116" cy="97" r="0.9" fill="#d46a2c"/>
+                  <path d="M 78 92 L 92 88" stroke="#080204" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M 108 88 L 122 92" stroke="#080204" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M 100 100 Q 98 112 100 118 Q 104 118 105 114" stroke="#4a1a0a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                  <path d="M 92 124 Q 100 125 108 124" stroke="#2a0a04" stroke-width="2" fill="none" stroke-linecap="round"/>
+                  <g stroke="#f5d8b8" stroke-width="1.2" stroke-opacity="0.8">
+                    <line x1="90" y1="78" x2="110" y2="78"/>
+                    <line x1="92" y1="82" x2="108" y2="82"/>
+                  </g>
+                  <path d="M 124 105 Q 126 111 124 115 Q 122 111 124 105 Z" fill="#a52032"/>
+                  <ellipse cx="120" cy="88" rx="8" ry="20" fill="#d46a2c" fill-opacity="0.15"/>
+                </svg>
+              </div>
+              <div class="unit-meta">
+                <div class="unit-name">Arjuna</div>
+                <div class="unit-class">Kshatriya — bow of Indra</div>
+              </div>
+            </div>
+            <div class="hp-row">
+              <div class="hp-label-row">
+                <span class="hp-label">Prana</span>
+                <span class="hp-value">48<span class="sep">/</span><span class="max">48</span></span>
+              </div>
+              <div class="hp-bar"><div class="hp-fill"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="objective">
+        <div class="panel-outer">
+          <div class="panel">
+            <span class="obj-label">Primary Dharma</span>
+            <div class="obj-text">Slay the Asura Lord</div>
+            <div class="obj-divider"></div>
+            <div class="obj-turn">
+              <span class="lbl">Turn of War</span>
+              <span class="num">04</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tile-info">
+        <div class="panel-outer">
+          <div class="panel">
+            <div class="tile-name">Temple Floor</div>
+            <div class="tile-stats">
+              <div class="stat">
+                <span class="stat-label">Def</span>
+                <div class="stat-value"><span class="plus">+</span>1</div>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Avo</span>
+                <div class="stat-value"><span class="plus">+</span>10</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="page-footer">1920 × 1080 · displayed at 70% · zoom your browser to inspect full scale</p>
+
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Battle HUD · 02 Dharma Minimal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%), #050305;
+  color: #e8d9b8;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 56px 24px 96px;
+  min-height: 100vh;
+}
+.page-title {
+  font-family: 'Cinzel', serif; font-weight: 600; font-size: 30px;
+  letter-spacing: 0.35em; text-transform: uppercase; text-align: center;
+  color: #d4a24c; margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center; font-style: italic; font-size: 18px;
+  color: #7a6a4c; margin-bottom: 40px; letter-spacing: 0.04em;
+}
+.concept { margin: 0 auto; max-width: 1344px; }
+.concept-header {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 14px 6px;
+  border-top: 1px solid #2a1f12; border-bottom: 1px solid #2a1f12;
+  margin-bottom: 18px; display: flex; justify-content: space-between;
+  align-items: baseline; gap: 32px;
+}
+.concept-header .idx { color: #5a4c32; font-size: 11px; }
+.concept-header .name { color: #d4a24c; font-weight: 600; flex: 1; }
+.concept-header .note { color: #5a4c32; font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: 'Cormorant Garamond', serif; font-size: 15px; text-align: right; }
+
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.7;
+  position: relative; overflow: hidden; border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(212,162,76,0.1);
+  background: #090c14;
+}
+.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hud { position: absolute; inset: 0; pointer-events: none; }
+.unit-card { position: absolute; top: 56px; left: 56px; }
+.objective  { position: absolute; top: 56px; right: 56px; }
+.tile-info  { position: absolute; bottom: 56px; right: 56px; }
+
+.panel {
+  background: rgba(10, 14, 22, 0.58);
+  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-backdrop-filter: blur(16px) saturate(1.05);
+  border: 1px solid rgba(200,166,101,0.32);
+  padding: 30px 36px;
+  position: relative;
+}
+.panel::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 1px solid rgba(200,166,101,0.08); pointer-events: none;
+}
+.panel .mark {
+  position: absolute; top: -1px; left: 24px;
+  height: 2px; width: 36px; background: #c8a665;
+}
+.panel .mark-r {
+  position: absolute; top: -1px; right: 24px;
+  height: 2px; width: 36px; background: #c8a665;
+}
+
+.unit-card .panel { width: 540px; }
+.unit-row { display: flex; gap: 24px; align-items: center; }
+.portrait-wrap {
+  width: 112px; height: 112px; border-radius: 50%;
+  overflow: hidden; background: #0f1322;
+  border: 1px solid rgba(200,166,101,0.5);
+  box-shadow: 0 0 0 4px rgba(200,166,101,0.06);
+  flex-shrink: 0;
+}
+.portrait-wrap svg { width: 100%; height: 100%; display: block; }
+.unit-meta { flex: 1; }
+.unit-name {
+  font-family: 'Cinzel', serif; font-weight: 500; font-size: 34px;
+  letter-spacing: 0.2em; color: #f0e6d0; text-transform: uppercase; line-height: 1;
+}
+.unit-class {
+  font-family: 'Fraunces', serif; font-weight: 300; font-style: italic;
+  font-size: 18px; color: #8a9bb8; margin-top: 8px; letter-spacing: 0.02em;
+}
+.hp-row { margin-top: 20px; }
+.hp-label-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.hp-label {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5em;
+  color: #5a6a85; text-transform: uppercase;
+}
+.hp-value {
+  font-family: 'Fraunces', serif; font-weight: 400; font-size: 22px;
+  color: #f0e6d0; letter-spacing: 0.04em;
+}
+.hp-value .sep { color: #3a4a65; margin: 0 4px; }
+.hp-value .max { color: #7a8aa5; }
+.hp-bar { height: 2px; background: rgba(200,166,101,0.15); position: relative; }
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c8a665, #f0d89a);
+  box-shadow: 0 0 8px rgba(240,216,154,0.6);
+}
+
+.objective .panel { width: 430px; text-align: right; }
+.obj-label {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.5em;
+  color: #5a6a85; text-transform: uppercase; display: block; margin-bottom: 10px;
+}
+.obj-text {
+  font-family: 'Cinzel', serif; font-weight: 500; font-size: 26px;
+  color: #f0e6d0; letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.22;
+}
+.obj-divider {
+  height: 1px; width: 48px;
+  background: rgba(200,166,101,0.55);
+  margin: 18px 0 18px auto;
+}
+.obj-turn { display: flex; justify-content: flex-end; gap: 18px; align-items: baseline; }
+.obj-turn .lbl {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.45em;
+  color: #5a6a85; text-transform: uppercase;
+}
+.obj-turn .num {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 34px;
+  color: #f0e6d0; line-height: 1;
+}
+
+.tile-info .panel { width: 320px; text-align: center; }
+.tile-info .panel .mark { left: 50%; transform: translateX(-50%); }
+.tile-name {
+  font-family: 'Cinzel', serif; font-weight: 500; font-size: 22px;
+  letter-spacing: 0.22em; color: #f0e6d0; text-transform: uppercase; margin-bottom: 20px;
+}
+.tile-stats {
+  display: flex; justify-content: space-around;
+  border-top: 1px solid rgba(200,166,101,0.22); padding-top: 18px;
+}
+.stat { text-align: center; }
+.stat-label {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.5em;
+  color: #5a6a85; text-transform: uppercase; display: block; margin-bottom: 8px;
+}
+.stat-value {
+  font-family: 'Fraunces', serif; font-weight: 300; font-size: 34px;
+  color: #c8a665; line-height: 1;
+}
+.stat-value .plus { color: #5a6a85; font-size: 20px; vertical-align: 2px; }
+
+.page-footer {
+  text-align: center; font-style: italic; font-size: 14px;
+  color: #3a2f1c; margin-top: 48px; letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Battle Map HUD · 02 Dharma Minimal</p>
+
+<section class="concept">
+  <div class="concept-header">
+    <span class="idx">02</span>
+    <span class="name">Dharma Minimal · editorial restraint</span>
+    <span class="note">hairline borders, cool marble map, cinzel × fraunces</span>
+  </div>
+  <div class="frame">
+    <svg class="map-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="v2-fog" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stop-color="#0a0e18" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#05070c" stop-opacity="0.85"/>
+        </radialGradient>
+        <pattern id="v2-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#0e1322"/>
+          <rect width="64" height="64" fill="none" stroke="#c8a665" stroke-width="0.4" stroke-opacity="0.12"/>
+        </pattern>
+        <pattern id="v2-marble" width="128" height="128" patternUnits="userSpaceOnUse">
+          <rect width="128" height="128" fill="#0e1322"/>
+          <path d="M 0 90 Q 40 70 80 88 T 160 80" stroke="#8a9bb8" stroke-width="0.4" stroke-opacity="0.15" fill="none"/>
+          <path d="M 20 30 Q 60 20 100 40 T 160 30" stroke="#8a9bb8" stroke-width="0.4" stroke-opacity="0.1" fill="none"/>
+        </pattern>
+      </defs>
+      <rect width="1920" height="1080" fill="#0c1020"/>
+      <rect width="1920" height="1080" fill="url(#v2-marble)"/>
+      <rect width="1920" height="1080" fill="url(#v2-grid)"/>
+      <g transform="translate(960 544)" opacity="0.85">
+        <circle r="220" fill="none" stroke="#c8a665" stroke-width="0.8" stroke-opacity="0.35"/>
+        <circle r="180" fill="none" stroke="#c8a665" stroke-width="0.4" stroke-opacity="0.25"/>
+        <circle r="90" fill="none" stroke="#c8a665" stroke-width="0.8" stroke-opacity="0.4"/>
+        <circle r="50" fill="none" stroke="#c8a665" stroke-width="0.6" stroke-opacity="0.5"/>
+        <circle r="8" fill="#c8a665" fill-opacity="0.6"/>
+        <g stroke="#c8a665" stroke-width="1" stroke-opacity="0.5">
+          <line x1="-230" y1="0" x2="-200" y2="0"/>
+          <line x1="230" y1="0" x2="200" y2="0"/>
+          <line x1="0" y1="-230" x2="0" y2="-200"/>
+          <line x1="0" y1="230" x2="0" y2="200"/>
+        </g>
+      </g>
+      <g fill="none" stroke="#c8a665" stroke-width="0.8" stroke-opacity="0.4">
+        <circle cx="384" cy="256" r="10"/>
+        <circle cx="1536" cy="256" r="10"/>
+        <circle cx="384" cy="832" r="10"/>
+        <circle cx="1536" cy="832" r="10"/>
+      </g>
+      <g fill="#c8a665" fill-opacity="0.1" stroke="#c8a665" stroke-width="0.8" stroke-opacity="0.35">
+        <rect x="512" y="448" width="64" height="64"/>
+        <rect x="448" y="512" width="64" height="64"/>
+        <rect x="512" y="512" width="64" height="64"/>
+        <rect x="576" y="512" width="64" height="64"/>
+        <rect x="384" y="576" width="64" height="64"/>
+        <rect x="448" y="576" width="64" height="64"/>
+        <rect x="576" y="576" width="64" height="64"/>
+        <rect x="640" y="576" width="64" height="64"/>
+        <rect x="448" y="640" width="64" height="64"/>
+        <rect x="512" y="640" width="64" height="64"/>
+        <rect x="576" y="640" width="64" height="64"/>
+        <rect x="512" y="704" width="64" height="64"/>
+        <rect x="320" y="576" width="64" height="64"/>
+        <rect x="704" y="576" width="64" height="64"/>
+      </g>
+      <g fill="#a83232" fill-opacity="0.12" stroke="#e85a5a" stroke-width="0.8" stroke-opacity="0.4">
+        <rect x="1216" y="384" width="64" height="64"/>
+        <rect x="1280" y="384" width="64" height="64"/>
+        <rect x="1344" y="384" width="64" height="64"/>
+        <rect x="1216" y="448" width="64" height="64"/>
+        <rect x="1344" y="448" width="64" height="64"/>
+        <rect x="1408" y="576" width="64" height="64"/>
+        <rect x="1472" y="576" width="64" height="64"/>
+      </g>
+      <g transform="translate(544 608)">
+        <circle r="30" fill="none" stroke="#f0e6d0" stroke-width="1" stroke-dasharray="3 3" opacity="0.9"/>
+        <circle r="20" fill="#1a2a4a" stroke="#8ab0e8" stroke-width="1.5"/>
+        <circle r="12" fill="#4a74b8"/>
+      </g>
+      <g transform="translate(416 608)"><circle r="18" fill="#1a2a4a" stroke="#5a84c8" stroke-width="1"/><circle r="10" fill="#4a74b8"/></g>
+      <g transform="translate(480 544)"><circle r="18" fill="#1a2a4a" stroke="#5a84c8" stroke-width="1"/><circle r="10" fill="#4a74b8"/></g>
+      <g transform="translate(672 672)"><circle r="18" fill="#1a2a4a" stroke="#5a84c8" stroke-width="1"/><circle r="10" fill="#4a74b8"/></g>
+      <g transform="translate(1312 416)"><circle r="18" fill="#2a0a12" stroke="#a83232" stroke-width="1"/><circle r="10" fill="#6a121a"/></g>
+      <g transform="translate(1376 416)"><circle r="18" fill="#2a0a12" stroke="#a83232" stroke-width="1"/><circle r="10" fill="#6a121a"/></g>
+      <g transform="translate(1440 608)">
+        <circle r="24" fill="#2a0a12" stroke="#e85a5a" stroke-width="2"/>
+        <circle r="14" fill="#8a1a22"/>
+      </g>
+      <rect width="1920" height="1080" fill="url(#v2-fog)"/>
+    </svg>
+
+    <div class="hud">
+      <div class="unit-card">
+        <div class="panel">
+          <span class="mark"></span>
+          <div class="unit-row">
+            <div class="portrait-wrap">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="p2-bg" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#1a2238"/>
+                    <stop offset="100%" stop-color="#08090f"/>
+                  </linearGradient>
+                  <linearGradient id="p2-skin" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d4a68a"/>
+                    <stop offset="100%" stop-color="#8a5a48"/>
+                  </linearGradient>
+                </defs>
+                <rect width="200" height="200" fill="url(#p2-bg)"/>
+                <ellipse cx="80" cy="60" rx="70" ry="100" fill="#f0e6d0" fill-opacity="0.06"/>
+                <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="#141a2a"/>
+                <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="none" stroke="#c8a665" stroke-width="0.8" stroke-opacity="0.6"/>
+                <rect x="88" y="122" width="24" height="24" fill="url(#p2-skin)"/>
+                <ellipse cx="100" cy="90" rx="40" ry="46" fill="url(#p2-skin)"/>
+                <path d="M 60 85 Q 56 44 100 42 Q 144 44 140 85 Q 136 62 118 58 Q 100 54 82 58 Q 64 62 60 85 Z" fill="#0a0e18"/>
+                <path d="M 62 72 Q 100 60 138 72" stroke="#c8a665" stroke-width="1.2" fill="none"/>
+                <circle cx="100" cy="66" r="2" fill="#c8a665"/>
+                <ellipse cx="85" cy="98" rx="3.5" ry="2.2" fill="#0a0e18"/>
+                <ellipse cx="115" cy="98" rx="3.5" ry="2.2" fill="#0a0e18"/>
+                <path d="M 79 90 L 92 88" stroke="#0a0e18" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M 108 88 L 121 90" stroke="#0a0e18" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M 100 100 Q 99 112 100 118" stroke="#6a3a2a" stroke-width="1" fill="none"/>
+                <path d="M 93 124 Q 100 126 107 124" stroke="#4a1a0a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                <rect x="99" y="80" width="2" height="8" fill="#c8a665"/>
+                <ellipse cx="82" cy="102" rx="9" ry="4" fill="#f0e6d0" fill-opacity="0.1"/>
+              </svg>
+            </div>
+            <div class="unit-meta">
+              <div class="unit-name">Arjuna</div>
+              <div class="unit-class">Kshatriya · Lord</div>
+            </div>
+          </div>
+          <div class="hp-row">
+            <div class="hp-label-row">
+              <span class="hp-label">Vitality</span>
+              <span class="hp-value">48<span class="sep">/</span><span class="max">48</span></span>
+            </div>
+            <div class="hp-bar"><div class="hp-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="objective">
+        <div class="panel">
+          <span class="mark-r"></span>
+          <span class="obj-label">Primary Dharma</span>
+          <div class="obj-text">Slay the Asura Lord</div>
+          <div class="obj-divider"></div>
+          <div class="obj-turn">
+            <span class="lbl">Turn</span>
+            <span class="num">04</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tile-info">
+        <div class="panel">
+          <span class="mark"></span>
+          <div class="tile-name">Temple Floor</div>
+          <div class="tile-stats">
+            <div class="stat">
+              <span class="stat-label">Def</span>
+              <div class="stat-value"><span class="plus">+</span>1</div>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Avo</span>
+              <div class="stat-value"><span class="plus">+</span>10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="page-footer">1920 × 1080 · displayed at 70% · zoom your browser to inspect full scale</p>
+
+</body>
+</html>

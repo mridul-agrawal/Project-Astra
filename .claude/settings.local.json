@@ -118,7 +118,12 @@
       "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")",
       "Bash(ls -la Assets/UI/MainMenu/Sprites/title_wordmark.png)",
       "Bash(\"C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 --window-size=1800,360 --screenshot=\"C:/Unity Projects/Project Astra/Assets/UI/MainMenu/Sprites/title_wordmark.png\" \"file:///C:/Unity Projects/Project Astra/UI_Concepts/main_menu/title_wordmark_render.html\")",
-      "Bash(grep -n \"ChapterClearUI\\\\|CutsceneUI\\\\|GameOverUI\\\\|PreBattlePrepUI\" Assets/Scenes/*.unity)"
+      "Bash(grep -n \"ChapterClearUI\\\\|CutsceneUI\\\\|GameOverUI\\\\|PreBattlePrepUI\" Assets/Scenes/*.unity)",
+      "Bash(git rm:*)",
+      "Bash(awk '/^--- !u!1 &/{n=$NF} /m_Name: Canvas/{for\\(i=1;i<=30;i++\\){getline; print}}' Assets/Scenes/BattleMap.unity)",
+      "Bash(awk '/m_Name: ToastNotificationUI/,/m_Father:/' Assets/Scenes/BattleMap.unity)",
+      "Bash(grep -A 20 \"m_LocalScale: {x: 0, y: 0, z: 0}\")",
+      "Bash(awk:*)"
     ]
   }
 }

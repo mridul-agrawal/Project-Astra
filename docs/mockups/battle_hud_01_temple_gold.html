@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Battle HUD · 01 Temple Gold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%), #050305;
+  color: #e8d9b8;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 56px 24px 96px;
+  min-height: 100vh;
+}
+.page-title {
+  font-family: 'Cinzel', serif; font-weight: 600; font-size: 30px;
+  letter-spacing: 0.35em; text-transform: uppercase; text-align: center;
+  color: #d4a24c; margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center; font-style: italic; font-size: 18px;
+  color: #7a6a4c; margin-bottom: 40px; letter-spacing: 0.04em;
+}
+.concept { margin: 0 auto; max-width: 1344px; }
+.concept-header {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 14px 6px;
+  border-top: 1px solid #2a1f12; border-bottom: 1px solid #2a1f12;
+  margin-bottom: 18px; display: flex; justify-content: space-between;
+  align-items: baseline; gap: 32px;
+}
+.concept-header .idx { color: #5a4c32; font-size: 11px; }
+.concept-header .name { color: #d4a24c; font-weight: 600; flex: 1; }
+.concept-header .note { color: #5a4c32; font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: 'Cormorant Garamond', serif; font-size: 15px; text-align: right; }
+
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.7;
+  position: relative; overflow: hidden; border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(212,162,76,0.1);
+  background: #0a0614;
+}
+.map-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hud { position: absolute; inset: 0; pointer-events: none; }
+.unit-card { position: absolute; top: 56px; left: 56px; }
+.objective  { position: absolute; top: 56px; right: 56px; }
+.tile-info  { position: absolute; bottom: 56px; right: 56px; }
+
+.panel {
+  background: linear-gradient(180deg, rgba(32,20,12,0.78) 0%, rgba(14,8,4,0.72) 100%);
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  border: 1px solid rgba(212,162,76,0.55);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5), 0 0 40px rgba(212,162,76,0.1), 0 20px 50px -20px rgba(0,0,0,0.85);
+  position: relative;
+  padding: 28px 32px;
+}
+.panel::before {
+  content: ''; position: absolute; inset: 6px;
+  border: 1px solid rgba(212,162,76,0.22); pointer-events: none;
+}
+.panel > .corner {
+  position: absolute; width: 22px; height: 22px;
+  background: radial-gradient(circle at 40% 35%, #f5d27a 0%, #d4a24c 40%, #6a3a0a 85%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #0a0408, 0 0 8px rgba(212,162,76,0.4);
+  pointer-events: none;
+}
+.panel > .corner.tl { top: -6px; left: -6px; }
+.panel > .corner.tr { top: -6px; right: -6px; }
+.panel > .corner.bl { bottom: -6px; left: -6px; }
+.panel > .corner.br { bottom: -6px; right: -6px; }
+
+.unit-card .panel { width: 580px; }
+.unit-row { display: flex; gap: 26px; align-items: center; position: relative; z-index: 1; }
+.portrait-wrap {
+  width: 140px; height: 140px; border-radius: 50%; background: #0f0805;
+  box-shadow: 0 0 0 2px #d4a24c, 0 0 0 6px #1a0f04, 0 0 0 7px rgba(212,162,76,0.5), inset 0 0 30px rgba(212,162,76,0.25);
+  overflow: hidden; flex-shrink: 0; position: relative;
+}
+.portrait-wrap svg { width: 100%; height: 100%; display: block; }
+.unit-meta { flex: 1; min-width: 0; }
+.unit-name {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 40px;
+  color: #f5e9c8; letter-spacing: 0.04em; line-height: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.85), 0 0 22px rgba(212,162,76,0.28);
+}
+.unit-class {
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 19px; color: #c08858; margin-top: 6px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+}
+.hp-row { margin-top: 16px; position: relative; z-index: 1; }
+.hp-label-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.hp-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.4em; color: #8a7a5c; text-transform: uppercase; }
+.hp-value { font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 26px; color: #f5e9c8; }
+.hp-value .sep { color: #6a5a3c; margin: 0 6px; font-weight: 400; }
+.hp-value .max { color: #c0a068; }
+.hp-bar {
+  height: 10px; background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(212,162,76,0.45); position: relative; overflow: hidden;
+}
+.hp-fill {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, #2e7a3a 0%, #5ea858 50%, #8de078 100%);
+  box-shadow: 0 0 12px rgba(140,224,120,0.55);
+}
+.hp-bar::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 23px, rgba(0,0,0,0.45) 23px 24px);
+  pointer-events: none;
+}
+
+.objective .panel { width: 450px; text-align: center; }
+.obj-label {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.45em;
+  color: #8a7a5c; text-transform: uppercase; display: block;
+  margin-bottom: 10px; position: relative; z-index: 1;
+}
+.obj-text {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 28px;
+  color: #f5e9c8; letter-spacing: 0.04em; line-height: 1.15;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.85); position: relative; z-index: 1;
+}
+.obj-divider {
+  height: 1px; background: linear-gradient(90deg, transparent, rgba(212,162,76,0.55), transparent);
+  margin: 16px 0; position: relative; z-index: 1;
+}
+.obj-turn {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: 'Cormorant Garamond', serif; font-style: italic;
+  font-size: 18px; color: #c0a068; position: relative; z-index: 1;
+}
+.obj-turn .num {
+  font-family: 'Cinzel Decorative', serif; font-style: normal;
+  font-weight: 700; font-size: 28px; color: #f5e9c8;
+}
+
+.tile-info .panel { width: 340px; text-align: center; }
+.tile-name {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 28px;
+  color: #f5e9c8; letter-spacing: 0.04em; margin-bottom: 14px;
+  position: relative; z-index: 1;
+}
+.tile-stats {
+  display: grid; grid-template-columns: 1fr 1px 1fr;
+  gap: 0 20px; align-items: center; position: relative; z-index: 1;
+}
+.tile-stats .divider { background: rgba(212,162,76,0.35); height: 56px; }
+.stat { text-align: center; }
+.stat-label {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.4em;
+  color: #8a7a5c; display: block; margin-bottom: 6px; text-transform: uppercase;
+}
+.stat-value {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 32px;
+  color: #8de078; line-height: 1; text-shadow: 0 0 16px rgba(140,224,120,0.35);
+}
+.stat-value .plus { color: #c0a068; font-size: 20px; vertical-align: 4px; margin-right: 1px; }
+
+.page-footer {
+  text-align: center; font-style: italic; font-size: 14px;
+  color: #3a2f1c; margin-top: 48px; letter-spacing: 0.04em;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Battle Map HUD · 01 Temple Gold</p>
+
+<section class="concept">
+  <div class="concept-header">
+    <span class="idx">01</span>
+    <span class="name">Temple Gold · ornate mythic</span>
+    <span class="note">saffron filigree, deep indigo, cinzel decorative × cormorant</span>
+  </div>
+  <div class="frame">
+    <svg class="map-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="v1-fog" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stop-color="#2a1a08" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#050205" stop-opacity="0.9"/>
+        </radialGradient>
+        <pattern id="v1-grid" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#3a2410"/>
+          <rect width="64" height="64" fill="none" stroke="#d4a24c" stroke-width="0.6" stroke-opacity="0.18"/>
+          <circle cx="32" cy="32" r="0.9" fill="#d4a24c" fill-opacity="0.22"/>
+        </pattern>
+        <pattern id="v1-grid-warm" width="64" height="64" patternUnits="userSpaceOnUse">
+          <rect width="64" height="64" fill="#4a2e12"/>
+          <rect width="64" height="64" fill="none" stroke="#f0c06a" stroke-width="0.6" stroke-opacity="0.25"/>
+        </pattern>
+      </defs>
+      <rect width="1920" height="1080" fill="#261608"/>
+      <rect width="1920" height="1080" fill="url(#v1-grid)"/>
+      <g opacity="0.7"><rect x="640" y="320" width="640" height="448" fill="url(#v1-grid-warm)"/></g>
+      <g opacity="0.85" transform="translate(960 544)">
+        <circle r="240" fill="#4a2e14" fill-opacity="0.6"/>
+        <circle r="240" fill="none" stroke="#d4a24c" stroke-width="1.5" stroke-opacity="0.55"/>
+        <circle r="195" fill="none" stroke="#d4a24c" stroke-width="0.8" stroke-opacity="0.45"/>
+        <circle r="140" fill="none" stroke="#d4a24c" stroke-width="1.2" stroke-opacity="0.6"/>
+        <circle r="95" fill="none" stroke="#d4a24c" stroke-width="0.8" stroke-opacity="0.5"/>
+        <circle r="42" fill="#d4a24c" fill-opacity="0.22"/>
+        <circle r="42" fill="none" stroke="#f5d27a" stroke-width="1" stroke-opacity="0.6"/>
+        <g fill="#d4a24c" fill-opacity="0.5">
+          <ellipse cx="0" cy="-175" rx="18" ry="34"/>
+          <ellipse cx="0" cy="175" rx="18" ry="34"/>
+          <ellipse cx="-175" cy="0" rx="34" ry="18"/>
+          <ellipse cx="175" cy="0" rx="34" ry="18"/>
+        </g>
+        <g fill="#d4a24c" fill-opacity="0.3">
+          <circle cx="124" cy="-124" r="8"/>
+          <circle cx="-124" cy="-124" r="8"/>
+          <circle cx="124" cy="124" r="8"/>
+          <circle cx="-124" cy="124" r="8"/>
+        </g>
+        <g stroke="#f5d27a" stroke-width="3" stroke-opacity="0.65" fill="none" stroke-linecap="square">
+          <path d="M -20 -20 L -20 20"/>
+          <path d="M 20 -20 L 20 20"/>
+          <path d="M -20 -20 L 20 -20"/>
+          <path d="M -20 20 L 20 20"/>
+        </g>
+      </g>
+      <g opacity="0.6">
+        <circle cx="384" cy="256" r="14" fill="#6a3a12" stroke="#d4a24c" stroke-width="1"/>
+        <circle cx="384" cy="256" r="6" fill="#d4a24c" fill-opacity="0.6"/>
+        <circle cx="1536" cy="256" r="14" fill="#6a3a12" stroke="#d4a24c" stroke-width="1"/>
+        <circle cx="1536" cy="256" r="6" fill="#d4a24c" fill-opacity="0.6"/>
+        <circle cx="384" cy="832" r="14" fill="#6a3a12" stroke="#d4a24c" stroke-width="1"/>
+        <circle cx="384" cy="832" r="6" fill="#d4a24c" fill-opacity="0.6"/>
+        <circle cx="1536" cy="832" r="14" fill="#6a3a12" stroke="#d4a24c" stroke-width="1"/>
+        <circle cx="1536" cy="832" r="6" fill="#d4a24c" fill-opacity="0.6"/>
+      </g>
+      <g fill="#4a84c8" fill-opacity="0.3" stroke="#9ac4f0" stroke-width="1.2" stroke-opacity="0.6">
+        <rect x="512" y="448" width="64" height="64"/>
+        <rect x="448" y="512" width="64" height="64"/>
+        <rect x="512" y="512" width="64" height="64"/>
+        <rect x="576" y="512" width="64" height="64"/>
+        <rect x="384" y="576" width="64" height="64"/>
+        <rect x="448" y="576" width="64" height="64"/>
+        <rect x="576" y="576" width="64" height="64"/>
+        <rect x="640" y="576" width="64" height="64"/>
+        <rect x="448" y="640" width="64" height="64"/>
+        <rect x="512" y="640" width="64" height="64"/>
+        <rect x="576" y="640" width="64" height="64"/>
+        <rect x="512" y="704" width="64" height="64"/>
+        <rect x="320" y="576" width="64" height="64"/>
+        <rect x="704" y="576" width="64" height="64"/>
+      </g>
+      <g fill="#a83232" fill-opacity="0.26" stroke="#f06060" stroke-width="1.2" stroke-opacity="0.5">
+        <rect x="1216" y="384" width="64" height="64"/>
+        <rect x="1280" y="384" width="64" height="64"/>
+        <rect x="1344" y="384" width="64" height="64"/>
+        <rect x="1216" y="448" width="64" height="64"/>
+        <rect x="1344" y="448" width="64" height="64"/>
+        <rect x="1408" y="576" width="64" height="64"/>
+        <rect x="1472" y="576" width="64" height="64"/>
+      </g>
+      <g transform="translate(544 608)">
+        <circle r="32" fill="none" stroke="#f5e9c8" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.85"/>
+        <circle r="24" fill="#1a3a6b" stroke="#9ac4f0" stroke-width="2"/>
+        <circle r="16" fill="#3a6ab8"/>
+        <text x="0" y="6" text-anchor="middle" font-family="Cinzel Decorative, serif" font-weight="900" font-size="18" fill="#f5e9c8">A</text>
+      </g>
+      <g transform="translate(416 608)"><circle r="22" fill="#1a3a6b" stroke="#5a94c8" stroke-width="1.5"/><circle r="14" fill="#3a6ab8"/></g>
+      <g transform="translate(480 544)"><circle r="22" fill="#1a3a6b" stroke="#5a94c8" stroke-width="1.5"/><circle r="14" fill="#3a6ab8"/></g>
+      <g transform="translate(672 672)"><circle r="22" fill="#1a3a6b" stroke="#5a94c8" stroke-width="1.5"/><circle r="14" fill="#3a6ab8"/></g>
+      <g transform="translate(1312 416)"><circle r="22" fill="#4a0a12" stroke="#c84040" stroke-width="1.5"/><circle r="14" fill="#8a1a22"/></g>
+      <g transform="translate(1376 416)"><circle r="22" fill="#4a0a12" stroke="#c84040" stroke-width="1.5"/><circle r="14" fill="#8a1a22"/></g>
+      <g transform="translate(1440 608)">
+        <circle r="28" fill="#4a0a12" stroke="#f06060" stroke-width="2.5"/>
+        <circle r="20" fill="#a52032"/>
+        <text x="0" y="8" text-anchor="middle" font-family="Cinzel Decorative, serif" font-weight="900" font-size="22" fill="#f5e9c8">✦</text>
+      </g>
+      <rect width="1920" height="1080" fill="url(#v1-fog)"/>
+    </svg>
+
+    <div class="hud">
+      <div class="unit-card">
+        <div class="panel">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <span class="corner bl"></span><span class="corner br"></span>
+          <div class="unit-row">
+            <div class="portrait-wrap">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="p1-bg" cx="40%" cy="30%">
+                    <stop offset="0%" stop-color="#6a3e1a"/>
+                    <stop offset="100%" stop-color="#0c0604"/>
+                  </radialGradient>
+                  <linearGradient id="p1-skin" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d8986a"/>
+                    <stop offset="100%" stop-color="#8a5630"/>
+                  </linearGradient>
+                </defs>
+                <rect width="200" height="200" fill="url(#p1-bg)"/>
+                <ellipse cx="70" cy="50" rx="90" ry="120" fill="#f5d27a" fill-opacity="0.08"/>
+                <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="#2a0a14"/>
+                <path d="M 10 200 Q 10 155 55 135 Q 100 120 145 135 Q 190 155 190 200 Z" fill="none" stroke="#d4a24c" stroke-width="1.5"/>
+                <circle cx="40" cy="160" r="6" fill="#d4a24c"/>
+                <circle cx="160" cy="160" r="6" fill="#d4a24c"/>
+                <rect x="88" y="122" width="24" height="24" fill="url(#p1-skin)"/>
+                <ellipse cx="100" cy="90" rx="40" ry="46" fill="url(#p1-skin)"/>
+                <path d="M 60 85 Q 56 45 100 42 Q 144 45 140 85 Q 136 62 118 58 Q 100 54 82 58 Q 64 62 60 85 Z" fill="#140804"/>
+                <path d="M 60 66 Q 100 50 140 66 L 140 78 Q 100 62 60 78 Z" fill="#d4a24c"/>
+                <path d="M 60 66 Q 100 50 140 66 L 140 78 Q 100 62 60 78 Z" fill="none" stroke="#6a3a0a" stroke-width="0.8"/>
+                <circle cx="100" cy="66" r="3.5" fill="#c84040"/>
+                <circle cx="100" cy="66" r="1.5" fill="#f5d27a"/>
+                <circle cx="64" cy="72" r="2" fill="#f5d27a"/>
+                <circle cx="136" cy="72" r="2" fill="#f5d27a"/>
+                <ellipse cx="85" cy="98" rx="4" ry="2.8" fill="#0c0604"/>
+                <ellipse cx="115" cy="98" rx="4" ry="2.8" fill="#0c0604"/>
+                <circle cx="86" cy="97" r="0.9" fill="#f5d27a"/>
+                <circle cx="116" cy="97" r="0.9" fill="#f5d27a"/>
+                <path d="M 78 90 L 92 88" stroke="#140804" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 108 88 L 122 90" stroke="#140804" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M 100 100 Q 98 112 100 118 Q 103 118 104 114" stroke="#6a3a1c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M 92 124 Q 100 126 108 124" stroke="#4a1a0a" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M 97 80 L 103 80 L 100 90 Z" fill="#c84040"/>
+                <ellipse cx="82" cy="102" rx="10" ry="5" fill="#f5d8b8" fill-opacity="0.18"/>
+              </svg>
+            </div>
+            <div class="unit-meta">
+              <div class="unit-name">Arjuna</div>
+              <div class="unit-class">Kshatriya · Lord</div>
+            </div>
+          </div>
+          <div class="hp-row">
+            <div class="hp-label-row">
+              <span class="hp-label">Vitality</span>
+              <span class="hp-value">48<span class="sep">/</span><span class="max">48</span></span>
+            </div>
+            <div class="hp-bar"><div class="hp-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="objective">
+        <div class="panel">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <span class="corner bl"></span><span class="corner br"></span>
+          <span class="obj-label">Primary Dharma</span>
+          <div class="obj-text">Slay the Asura Lord</div>
+          <div class="obj-divider"></div>
+          <div class="obj-turn">
+            <span>Turn</span>
+            <span class="num">04</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tile-info">
+        <div class="panel">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <span class="corner bl"></span><span class="corner br"></span>
+          <div class="tile-name">Temple Floor</div>
+          <div class="tile-stats">
+            <div class="stat">
+              <span class="stat-label">Def</span>
+              <div class="stat-value"><span class="plus">+</span>1</div>
+            </div>
+            <div class="divider"></div>
+            <div class="stat">
+              <span class="stat-label">Avo</span>
+              <div class="stat-value"><span class="plus">+</span>10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="page-footer">1920 × 1080 · displayed at 70% · zoom your browser to inspect full scale</p>
+
+</body>
+</html>

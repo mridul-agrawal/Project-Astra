@@ -34,6 +34,18 @@ namespace ProjectAstra.Core.UI
         private Button[] _buttons;
         private int _selected;
 
+        // The four loose Canvas children that together make up the left-side
+        // debug nav panel. Cached in Awake so we can toggle visibility atomically
+        // when the user presses Tab.
+        private GameObject[] _navPanelRoots;
+
+        private void Awake()
+        {
+            CacheNavPanelRoots();
+            HasInputFocus = false;
+            SetNavPanelVisible(false);
+        }
+
         private void OnEnable()
         {
             _phaseManager = new BattlePhaseManager(_hasAllies);
@@ -118,7 +130,28 @@ namespace ProjectAstra.Core.UI
         private void Update()
         {
             if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+            {
                 HasInputFocus = !HasInputFocus;
+                SetNavPanelVisible(HasInputFocus);
+            }
+        }
+
+        private void CacheNavPanelRoots()
+        {
+            _navPanelRoots = new[]
+            {
+                transform.Find("Background")?.gameObject,
+                transform.Find("Title")?.gameObject,
+                transform.Find("NavigateLabel")?.gameObject,
+                transform.Find("ButtonContainer")?.gameObject,
+            };
+        }
+
+        private void SetNavPanelVisible(bool visible)
+        {
+            if (_navPanelRoots == null) return;
+            foreach (var go in _navPanelRoots)
+                if (go != null) go.SetActive(visible);
         }
 
         private void Pause()
