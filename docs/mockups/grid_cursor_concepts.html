@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Grid Cursor · Art Direction R01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --ink: #050305;
+  --indigo: #0a0614;
+  --indigo-2: #120a1f;
+  --gold: #d4a24c;
+  --gold-hi: #f5d27a;
+  --gold-deep: #8c5a1a;
+  --cream: #e8d9b8;
+  --cream-dim: #8a7a58;
+  --mute: #5a4c32;
+  --rule: #2a1f12;
+  --blood: #c04538;
+  --blood-hi: #f26a3e;
+  --ember: #f5a04c;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--ink); }
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -5%, rgba(212,162,76,0.09), transparent 70%),
+    radial-gradient(ellipse 700px 400px at 100% 100%, rgba(90,60,180,0.04), transparent 70%),
+    linear-gradient(180deg, #0a0614 0%, #050305 100%);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  padding: 72px 32px 120px;
+  min-height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+.sheet { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; }
+
+/* ──────────────────────────────────────────────────────── MASTHEAD */
+.masthead { text-align: center; margin-bottom: 96px; }
+.overline {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.48em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.8;
+}
+.overline .dot { display: inline-block; width: 3px; height: 3px; background: var(--gold); border-radius: 50%; vertical-align: middle; margin: 0 14px 3px; }
+.masthead h1 {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: 62px; line-height: 1.05;
+  color: var(--gold-hi);
+  margin: 22px 0 20px;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 40px rgba(212,162,76,0.22);
+}
+.masthead .sub {
+  font-style: italic; font-size: 22px;
+  color: var(--cream-dim);
+  max-width: 740px; margin: 0 auto;
+  line-height: 1.5;
+}
+.masthead .rule {
+  display: flex; align-items: center; justify-content: center;
+  gap: 22px; margin-top: 44px;
+}
+.masthead .rule .line {
+  width: 160px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+}
+.masthead .rule .ornament {
+  color: var(--gold); font-size: 14px;
+  font-family: 'Cinzel Decorative', serif;
+  transform: translateY(-1px);
+}
+
+/* ──────────────────────────────────────────────────────── VARIANT CARD */
+.variant {
+  position: relative;
+  padding: 46px 58px 58px;
+  margin-bottom: 56px;
+  background:
+    linear-gradient(180deg, rgba(18,10,31,0.55) 0%, rgba(10,6,20,0.35) 100%);
+  border: 1px solid rgba(212,162,76,0.16);
+  box-shadow:
+    0 40px 90px -50px rgba(0,0,0,0.9),
+    inset 0 0 80px rgba(212,162,76,0.025);
+}
+.variant::before,
+.variant::after {
+  content: ''; position: absolute;
+  width: 22px; height: 22px;
+  border: 1px solid var(--gold);
+  opacity: 0.55; pointer-events: none;
+}
+.variant::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.variant::after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+.variant-header {
+  display: flex; align-items: baseline; gap: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 18px;
+}
+.variant-no {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.34em; color: var(--mute);
+}
+.variant-name {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700;
+  font-size: 38px; color: var(--gold-hi);
+  letter-spacing: 0.015em;
+  line-height: 1;
+}
+.variant-style {
+  margin-left: auto;
+  font-style: italic; font-size: 16px;
+  color: var(--cream-dim);
+  letter-spacing: 0.02em;
+}
+.variant-pitch {
+  font-size: 19px; line-height: 1.6;
+  color: var(--cream); opacity: 0.88;
+  max-width: 820px;
+  margin-bottom: 40px;
+}
+.variant-pitch em { color: var(--gold); font-style: italic; }
+
+/* ──────────────────────────────────────────────────────── STATES ROW */
+.states {
+  display: flex; gap: 34px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.state {
+  display: flex; flex-direction: column;
+  gap: 14px;
+  width: 232px;
+}
+.state-label {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cream-dim);
+  display: flex; align-items: center; gap: 10px;
+}
+.state-label .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(212,162,76,0.7);
+}
+.state-label .kbd {
+  margin-left: auto; font-size: 9px; letter-spacing: 0.2em;
+  color: var(--mute); font-family: 'Cinzel', serif;
+}
+.state[data-mode="selected"] .state-label .dot {
+  background: var(--gold-hi);
+  box-shadow: 0 0 10px var(--gold-hi);
+}
+.state[data-mode="targeting"] .state-label .dot {
+  background: var(--blood);
+  box-shadow: 0 0 8px var(--blood-hi);
+}
+
+/* ──────────────────────────────────────────────────────── TILE SNIPPET */
+.tile-snippet {
+  position: relative;
+  width: 232px; height: 232px;
+  border: 1px solid rgba(212,162,76,0.22);
+  box-shadow:
+    0 14px 40px -22px rgba(0,0,0,0.85),
+    inset 0 0 0 1px rgba(0,0,0,0.6);
+  background-color: #3d5a2e;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='231' height='231' viewBox='0 0 231 231'>\
+<defs>\
+<pattern id='gn' patternUnits='userSpaceOnUse' width='6' height='6'>\
+<rect width='6' height='6' fill='%233d5a2e'/>\
+<circle cx='1.5' cy='2' r='0.5' fill='%234e6d3a'/>\
+<circle cx='4' cy='4.5' r='0.4' fill='%232a4020'/>\
+</pattern>\
+<pattern id='st' patternUnits='userSpaceOnUse' width='8' height='8'>\
+<rect width='8' height='8' fill='%234e4a3e'/>\
+<circle cx='2' cy='3' r='0.6' fill='%235f5b4c'/>\
+<circle cx='6' cy='6' r='0.5' fill='%233a362c'/>\
+</pattern>\
+<pattern id='pt' patternUnits='userSpaceOnUse' width='7' height='7'>\
+<rect width='7' height='7' fill='%237a6340'/>\
+<circle cx='2' cy='2' r='0.5' fill='%238c7450'/>\
+<circle cx='5' cy='5' r='0.4' fill='%235a4424'/>\
+</pattern>\
+</defs>\
+<rect width='231' height='231' fill='url(%23gn)'/>\
+<rect x='154' y='0' width='77' height='77' fill='url(%23st)'/>\
+<rect x='0' y='154' width='77' height='77' fill='url(%23pt)'/>\
+<rect x='154' y='154' width='77' height='77' fill='url(%23st)'/>\
+<g stroke='black' stroke-opacity='0.25' stroke-width='1'>\
+<path d='M77 0 V231 M154 0 V231 M0 77 H231 M0 154 H231'/>\
+</g>\
+<g fill='%23000' opacity='0.15'>\
+<circle cx='20' cy='105' r='3'/>\
+<circle cx='110' cy='20' r='2'/>\
+<circle cx='195' cy='115' r='2.5'/>\
+</g>\
+</svg>");
+  background-size: 100% 100%;
+}
+.tile-snippet::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.35), transparent 60%);
+  pointer-events: none;
+}
+/* Cursor anchored to the centre tile (middle of 3x3) */
+.cursor {
+  position: absolute;
+  left: 33.333%; top: 33.333%;
+  width: 33.333%; height: 33.333%;
+  pointer-events: none;
+  z-index: 2;
+}
+.cursor svg { width: 100%; height: 100%; display: block; overflow: hidden; }
+
+/* Simple pulse used by most cursors */
+@keyframes pulseSoft  { 0%, 100% { opacity: 0.82; } 50% { opacity: 1; } }
+@keyframes pulseHard  { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.035); opacity: 1; } }
+@keyframes spinSlow   { to { transform: rotate(360deg); } }
+@keyframes spinRev    { to { transform: rotate(-360deg); } }
+@keyframes flicker    { 0%, 100% { opacity: 0.92; } 33% { opacity: 0.82; } 66% { opacity: 1; } }
+
+/* ==================================================================
+   VARIANT 01 · PIXEL YANTRA
+   16×16 sprite, rendered crisply; colour ramp drawn from
+   temple-flag saffrons and manuscript maroons.
+================================================================== */
+.cursor-pixel svg { image-rendering: pixelated; image-rendering: crisp-edges; }
+.cursor-pixel { animation: pulseSoft 1.4s ease-in-out infinite; }
+
+.px-shadow { fill: #1a0408; }
+.px-main   { fill: #e8882b; }
+.px-hi     { fill: #f5d27a; }
+.px-glyph  { fill: #c0661a; }
+
+.state[data-mode="selected"] .px-main  { fill: #f5d27a; }
+.state[data-mode="selected"] .px-hi    { fill: #fff5d0; }
+.state[data-mode="selected"] .px-glyph { fill: #d4a24c; }
+
+.state[data-mode="targeting"] .px-shadow { fill: #200404; }
+.state[data-mode="targeting"] .px-main   { fill: #c04538; }
+.state[data-mode="targeting"] .px-hi     { fill: #f26a3e; }
+.state[data-mode="targeting"] .px-glyph  { fill: #7a1e1e; }
+
+/* ==================================================================
+   VARIANT 02 · CHAKRA MANDALA
+   Ornate rotating filigree, medallion cardinals, temple-ceiling feel.
+================================================================== */
+.cursor-mandala { /* inherits .cursor sizing (one tile) */ }
+.cursor-mandala .rot-cw  { transform-origin: 50% 50%; animation: spinSlow 36s linear infinite; }
+.cursor-mandala .rot-ccw { transform-origin: 50% 50%; animation: spinRev 48s linear infinite; }
+.cursor-mandala .core    { animation: pulseHard 2.2s ease-in-out infinite; transform-origin: 50% 50%; }
+
+.md-line  { stroke: var(--gold); fill: none; }
+.md-fill  { fill: var(--gold); }
+.md-deep  { fill: var(--gold-deep); }
+.md-hi    { fill: var(--gold-hi); }
+
+.state[data-mode="selected"] .md-line { stroke: var(--gold-hi); }
+.state[data-mode="selected"] .md-fill { fill: var(--gold-hi); }
+.state[data-mode="selected"] .md-hi   { fill: #fff5d0; }
+
+.state[data-mode="targeting"] .md-line { stroke: #f26a3e; }
+.state[data-mode="targeting"] .md-fill { fill: #c04538; }
+.state[data-mode="targeting"] .md-deep { fill: #5a1010; }
+.state[data-mode="targeting"] .md-hi   { fill: #f26a3e; }
+
+/* ==================================================================
+   VARIANT 03 · TEMPLE BRACKET
+   Four corner ogee brackets with lotus-bud outer tips. Flat, legible.
+================================================================== */
+.cursor-bracket svg { animation: pulseHard 1.8s ease-in-out infinite; transform-origin: 50% 50%; }
+.tb-line { stroke: var(--gold); fill: none; }
+.tb-bud  { fill: var(--gold); }
+.tb-eye  { fill: var(--indigo); }
+
+.state[data-mode="selected"] .tb-line { stroke: var(--gold-hi); }
+.state[data-mode="selected"] .tb-bud  { fill: var(--gold-hi); }
+.state[data-mode="targeting"] .tb-line { stroke: var(--blood-hi); }
+.state[data-mode="targeting"] .tb-bud  { fill: var(--blood); }
+
+/* ==================================================================
+   VARIANT 04 · SANSKRIT ILLUMINATION
+   Dashed manuscript frame with marginal flourishes and glyph marks.
+================================================================== */
+.cursor-sanskrit svg { animation: flicker 3.2s ease-in-out infinite; }
+.sk-ink { stroke: var(--cream); fill: none; }
+.sk-fill { fill: var(--cream); }
+
+.state[data-mode="selected"] .sk-ink { stroke: #fff5d0; }
+.state[data-mode="selected"] .sk-fill { fill: #fff5d0; }
+.state[data-mode="targeting"] .sk-ink { stroke: #f26a3e; }
+.state[data-mode="targeting"] .sk-fill { fill: #c04538; }
+
+/* ==================================================================
+   VARIANT 05 · DHARMA EMBER
+   No outline — a divine glow with rising particles. Most filmic.
+================================================================== */
+.cursor-ember { overflow: hidden; }
+.cursor-ember .glow {
+  position: absolute; inset: 6%;
+  background: radial-gradient(circle, rgba(245,210,122,0.55) 0%, rgba(212,100,30,0.25) 38%, transparent 72%);
+  border-radius: 50%;
+  animation: pulseHard 1.6s ease-in-out infinite;
+  filter: blur(1px);
+}
+.cursor-ember .glow-core {
+  position: absolute; inset: 28%;
+  background: radial-gradient(circle, rgba(255,245,208,0.85), rgba(245,160,76,0.3) 60%, transparent 100%);
+  border-radius: 50%;
+  filter: blur(0.5px);
+}
+.cursor-ember .halo-ring {
+  position: absolute; inset: 4%;
+  border: 1px dashed rgba(245,210,122,0.5);
+  border-radius: 50%;
+  animation: spinSlow 40s linear infinite;
+}
+.cursor-ember .ember {
+  position: absolute;
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--gold-hi);
+  box-shadow: 0 0 5px var(--ember), 0 0 10px rgba(245,160,76,0.55);
+  bottom: 28%;
+  animation: emberRise 2.6s ease-out infinite;
+}
+@keyframes emberRise {
+  0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translate(var(--dx, 0px), -40px) scale(0.2); opacity: 0; }
+}
+.state[data-mode="selected"] .cursor-ember .glow {
+  background: radial-gradient(circle, rgba(255,245,208,0.7) 0%, rgba(245,210,122,0.3) 35%, transparent 70%);
+}
+.state[data-mode="targeting"] .cursor-ember .glow {
+  background: radial-gradient(circle, rgba(242,106,62,0.55) 0%, rgba(192,69,56,0.28) 35%, transparent 70%);
+}
+.state[data-mode="targeting"] .cursor-ember .glow-core {
+  background: radial-gradient(circle, rgba(255,180,140,0.8), rgba(192,69,56,0.3) 60%, transparent 100%);
+}
+.state[data-mode="targeting"] .cursor-ember .ember {
+  background: #ffb07a;
+  box-shadow: 0 0 8px #f26a3e, 0 0 14px rgba(192,69,56,0.7);
+}
+.state[data-mode="targeting"] .cursor-ember .halo-ring {
+  border-color: rgba(242,106,62,0.5);
+}
+
+/* ──────────────────────────────────────────────────────── COLOPHON */
+.colophon {
+  margin-top: 40px; padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 13px; color: var(--mute);
+  font-family: 'Cinzel', serif; letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.colophon em {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--cream-dim);
+  font-size: 15px;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- ═══════════════════════════════════════════════ MASTHEAD -->
+  <header class="masthead">
+    <div class="overline">Project Astra<span class="dot"></span>Art Direction<span class="dot"></span>R01<span class="dot"></span>Grid Cursor</div>
+    <h1>The Cursor in Five Tongues</h1>
+    <p class="sub">Five ways the player's hand could rest upon the battlefield — each shown in the three modes the cursor actually assumes in play: idle hover, a unit selected, an enemy in the crosshairs.</p>
+    <div class="rule"><div class="line"></div><div class="ornament">✦  ✦  ✦</div><div class="line"></div></div>
+  </header>
+
+  <!-- ════════════════════════════════════════════════ 01 · PIXEL YANTRA -->
+  <section class="variant">
+    <div class="variant-header">
+      <div class="variant-no">I</div>
+      <div class="variant-name">Pixel Yantra</div>
+      <div class="variant-style">16×16 pixel · saffron &amp; maroon</div>
+    </div>
+    <p class="variant-pitch">A tight GBA-era cursor built on a strict 16-pixel grid. Four inward-opening brackets in a <em>saffron-to-maroon</em> ramp pulled from temple-flag dyes; tiny yantra ticks mark the cardinals, so direction reads even at 1&times;. Honours the existing pixel placeholder — production-cheap and Fire Emblem-literate.</p>
+    <div class="states">
+      <!-- IDLE -->
+      <div class="state" data-mode="idle">
+        <div class="state-label"><span class="dot"></span>Idle · Free<span class="kbd">Hover</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-pixel">
+            <svg viewBox="0 0 16 16">
+              <!-- drop shadow -->
+              <rect class="px-shadow" x="1" y="1" width="4" height="1"/>
+              <rect class="px-shadow" x="1" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="11" y="1" width="4" height="1"/>
+              <rect class="px-shadow" x="14" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="1" y="11" width="1" height="4"/>
+              <rect class="px-shadow" x="2" y="14" width="3" height="1"/>
+              <rect class="px-shadow" x="14" y="11" width="1" height="4"/>
+              <rect class="px-shadow" x="11" y="14" width="3" height="1"/>
+              <!-- main saffron fill -->
+              <rect class="px-main" x="2" y="2" width="3" height="1"/>
+              <rect class="px-main" x="2" y="3" width="1" height="2"/>
+              <rect class="px-main" x="11" y="2" width="3" height="1"/>
+              <rect class="px-main" x="13" y="3" width="1" height="2"/>
+              <rect class="px-main" x="2" y="11" width="1" height="2"/>
+              <rect class="px-main" x="2" y="13" width="3" height="1"/>
+              <rect class="px-main" x="13" y="11" width="1" height="2"/>
+              <rect class="px-main" x="11" y="13" width="3" height="1"/>
+              <!-- highlights -->
+              <rect class="px-hi" x="2" y="2" width="1" height="1"/>
+              <rect class="px-hi" x="13" y="2" width="1" height="1"/>
+              <rect class="px-hi" x="2" y="13" width="1" height="1"/>
+              <rect class="px-hi" x="13" y="13" width="1" height="1"/>
+              <!-- cardinal yantra glyphs -->
+              <rect class="px-glyph" x="7" y="0" width="2" height="1"/>
+              <rect class="px-glyph" x="7" y="15" width="2" height="1"/>
+              <rect class="px-glyph" x="0" y="7" width="1" height="2"/>
+              <rect class="px-glyph" x="15" y="7" width="1" height="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- SELECTED -->
+      <div class="state" data-mode="selected">
+        <div class="state-label"><span class="dot"></span>Unit Selected<span class="kbd">Confirm</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-pixel">
+            <svg viewBox="0 0 16 16">
+              <rect class="px-shadow" x="1" y="1" width="4" height="1"/><rect class="px-shadow" x="1" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="11" y="1" width="4" height="1"/><rect class="px-shadow" x="14" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="1" y="11" width="1" height="4"/><rect class="px-shadow" x="2" y="14" width="3" height="1"/>
+              <rect class="px-shadow" x="14" y="11" width="1" height="4"/><rect class="px-shadow" x="11" y="14" width="3" height="1"/>
+              <rect class="px-main" x="2" y="2" width="3" height="1"/><rect class="px-main" x="2" y="3" width="1" height="2"/>
+              <rect class="px-main" x="11" y="2" width="3" height="1"/><rect class="px-main" x="13" y="3" width="1" height="2"/>
+              <rect class="px-main" x="2" y="11" width="1" height="2"/><rect class="px-main" x="2" y="13" width="3" height="1"/>
+              <rect class="px-main" x="13" y="11" width="1" height="2"/><rect class="px-main" x="11" y="13" width="3" height="1"/>
+              <rect class="px-hi" x="2" y="2" width="1" height="1"/><rect class="px-hi" x="13" y="2" width="1" height="1"/>
+              <rect class="px-hi" x="2" y="13" width="1" height="1"/><rect class="px-hi" x="13" y="13" width="1" height="1"/>
+              <rect class="px-glyph" x="7" y="0" width="2" height="1"/><rect class="px-glyph" x="7" y="15" width="2" height="1"/>
+              <rect class="px-glyph" x="0" y="7" width="1" height="2"/><rect class="px-glyph" x="15" y="7" width="1" height="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- TARGETING -->
+      <div class="state" data-mode="targeting">
+        <div class="state-label"><span class="dot"></span>Targeting Foe<span class="kbd">Strike</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-pixel">
+            <svg viewBox="0 0 16 16">
+              <rect class="px-shadow" x="1" y="1" width="4" height="1"/><rect class="px-shadow" x="1" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="11" y="1" width="4" height="1"/><rect class="px-shadow" x="14" y="2" width="1" height="3"/>
+              <rect class="px-shadow" x="1" y="11" width="1" height="4"/><rect class="px-shadow" x="2" y="14" width="3" height="1"/>
+              <rect class="px-shadow" x="14" y="11" width="1" height="4"/><rect class="px-shadow" x="11" y="14" width="3" height="1"/>
+              <rect class="px-main" x="2" y="2" width="3" height="1"/><rect class="px-main" x="2" y="3" width="1" height="2"/>
+              <rect class="px-main" x="11" y="2" width="3" height="1"/><rect class="px-main" x="13" y="3" width="1" height="2"/>
+              <rect class="px-main" x="2" y="11" width="1" height="2"/><rect class="px-main" x="2" y="13" width="3" height="1"/>
+              <rect class="px-main" x="13" y="11" width="1" height="2"/><rect class="px-main" x="11" y="13" width="3" height="1"/>
+              <rect class="px-hi" x="2" y="2" width="1" height="1"/><rect class="px-hi" x="13" y="2" width="1" height="1"/>
+              <rect class="px-hi" x="2" y="13" width="1" height="1"/><rect class="px-hi" x="13" y="13" width="1" height="1"/>
+              <rect class="px-glyph" x="7" y="0" width="2" height="1"/><rect class="px-glyph" x="7" y="15" width="2" height="1"/>
+              <rect class="px-glyph" x="0" y="7" width="1" height="2"/><rect class="px-glyph" x="15" y="7" width="1" height="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════ 02 · CHAKRA MANDALA -->
+  <section class="variant">
+    <div class="variant-header">
+      <div class="variant-no">II</div>
+      <div class="variant-name">Chakra Mandala</div>
+      <div class="variant-style">HD painterly · filigree ring</div>
+    </div>
+    <p class="variant-pitch">An ornate filigree ring slowly rotating around the tile, inspired by the <em>mandala medallions of temple ceilings</em> — twelve inward petals, four cardinal jewels, an inner ring of inward-pointing darts. Maximalist and reverent. Pairs best with a painted tileset, not pixels.</p>
+    <div class="states">
+      <!-- IDLE -->
+      <div class="state" data-mode="idle">
+        <div class="state-label"><span class="dot"></span>Idle · Free<span class="kbd">Hover</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-mandala">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <path id="mdPetal" d="M50 4 C 52 12 53 18 50 22 C 47 18 48 12 50 4 Z"/>
+                <path id="mdDart"  d="M50 18 L52 24 L50 22 L48 24 Z"/>
+              </defs>
+              <!-- outer dashed ring -->
+              <circle class="md-line" cx="50" cy="50" r="47" stroke-width="0.6" stroke-dasharray="0.6 2.2"/>
+              <!-- rotating petal ring -->
+              <g class="rot-cw">
+                <use href="#mdPetal" class="md-fill"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(30 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(60 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(120 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(150 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(210 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(240 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(300 50 50)"/>
+                <use href="#mdPetal" class="md-fill" transform="rotate(330 50 50)"/>
+              </g>
+              <!-- main ring -->
+              <circle class="md-line" cx="50" cy="50" r="38" stroke-width="1.4"/>
+              <circle class="md-line" cx="50" cy="50" r="35" stroke-width="0.4" stroke-dasharray="0.8 1.6"/>
+              <!-- inward darts (counter-rotating) -->
+              <g class="rot-ccw">
+                <use href="#mdDart" class="md-fill"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(45 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(135 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(225 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdDart" class="md-fill" transform="rotate(315 50 50)"/>
+              </g>
+              <!-- cardinal medallions -->
+              <circle class="md-fill" cx="50" cy="3" r="2.6"/>
+              <circle class="md-fill" cx="50" cy="97" r="2.6"/>
+              <circle class="md-fill" cx="3" cy="50" r="2.6"/>
+              <circle class="md-fill" cx="97" cy="50" r="2.6"/>
+              <circle class="md-hi" cx="50" cy="3" r="1"/>
+              <circle class="md-hi" cx="50" cy="97" r="1"/>
+              <circle class="md-hi" cx="3" cy="50" r="1"/>
+              <circle class="md-hi" cx="97" cy="50" r="1"/>
+              <!-- core sigil -->
+              <g class="core">
+                <circle class="md-line" cx="50" cy="50" r="5" stroke-width="0.8"/>
+                <circle class="md-hi" cx="50" cy="50" r="1.4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- SELECTED (reuse markup; colours switch via CSS) -->
+      <div class="state" data-mode="selected">
+        <div class="state-label"><span class="dot"></span>Unit Selected<span class="kbd">Confirm</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-mandala">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <path id="mdPetal2" d="M50 4 C 52 12 53 18 50 22 C 47 18 48 12 50 4 Z"/>
+                <path id="mdDart2"  d="M50 18 L52 24 L50 22 L48 24 Z"/>
+              </defs>
+              <circle class="md-line" cx="50" cy="50" r="47" stroke-width="0.6" stroke-dasharray="0.6 2.2"/>
+              <g class="rot-cw">
+                <use href="#mdPetal2" class="md-fill"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(30 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(60 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(120 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(150 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(210 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(240 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(300 50 50)"/>
+                <use href="#mdPetal2" class="md-fill" transform="rotate(330 50 50)"/>
+              </g>
+              <circle class="md-line" cx="50" cy="50" r="38" stroke-width="1.4"/>
+              <circle class="md-line" cx="50" cy="50" r="35" stroke-width="0.4" stroke-dasharray="0.8 1.6"/>
+              <g class="rot-ccw">
+                <use href="#mdDart2" class="md-fill"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(45 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(135 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(225 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdDart2" class="md-fill" transform="rotate(315 50 50)"/>
+              </g>
+              <circle class="md-fill" cx="50" cy="3" r="2.6"/>
+              <circle class="md-fill" cx="50" cy="97" r="2.6"/>
+              <circle class="md-fill" cx="3" cy="50" r="2.6"/>
+              <circle class="md-fill" cx="97" cy="50" r="2.6"/>
+              <circle class="md-hi" cx="50" cy="3" r="1"/>
+              <circle class="md-hi" cx="50" cy="97" r="1"/>
+              <circle class="md-hi" cx="3" cy="50" r="1"/>
+              <circle class="md-hi" cx="97" cy="50" r="1"/>
+              <g class="core">
+                <circle class="md-line" cx="50" cy="50" r="5" stroke-width="0.8"/>
+                <circle class="md-hi" cx="50" cy="50" r="1.4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- TARGETING -->
+      <div class="state" data-mode="targeting">
+        <div class="state-label"><span class="dot"></span>Targeting Foe<span class="kbd">Strike</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-mandala">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <path id="mdPetal3" d="M50 4 C 52 12 53 18 50 22 C 47 18 48 12 50 4 Z"/>
+                <path id="mdDart3"  d="M50 18 L52 24 L50 22 L48 24 Z"/>
+              </defs>
+              <circle class="md-line" cx="50" cy="50" r="47" stroke-width="0.6" stroke-dasharray="0.6 2.2"/>
+              <g class="rot-cw">
+                <use href="#mdPetal3" class="md-fill"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(30 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(60 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(120 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(150 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(210 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(240 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(300 50 50)"/>
+                <use href="#mdPetal3" class="md-fill" transform="rotate(330 50 50)"/>
+              </g>
+              <circle class="md-line" cx="50" cy="50" r="38" stroke-width="1.4"/>
+              <circle class="md-line" cx="50" cy="50" r="35" stroke-width="0.4" stroke-dasharray="0.8 1.6"/>
+              <g class="rot-ccw">
+                <use href="#mdDart3" class="md-fill"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(45 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(90 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(135 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(180 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(225 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(270 50 50)"/>
+                <use href="#mdDart3" class="md-fill" transform="rotate(315 50 50)"/>
+              </g>
+              <circle class="md-fill" cx="50" cy="3" r="2.6"/>
+              <circle class="md-fill" cx="50" cy="97" r="2.6"/>
+              <circle class="md-fill" cx="3" cy="50" r="2.6"/>
+              <circle class="md-fill" cx="97" cy="50" r="2.6"/>
+              <circle class="md-hi" cx="50" cy="3" r="1"/>
+              <circle class="md-hi" cx="50" cy="97" r="1"/>
+              <circle class="md-hi" cx="3" cy="50" r="1"/>
+              <circle class="md-hi" cx="97" cy="50" r="1"/>
+              <g class="core">
+                <circle class="md-line" cx="50" cy="50" r="5" stroke-width="0.8"/>
+                <circle class="md-hi" cx="50" cy="50" r="1.4"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════════════════════════════════════ 03 · TEMPLE BRACKET -->
+  <section class="variant">
+    <div class="variant-header">
+      <div class="variant-no">III</div>
+      <div class="variant-name">Temple Bracket</div>
+      <div class="variant-style">minimal cel-shaded · flat gold</div>
+    </div>
+    <p class="variant-pitch">Four corner brackets shaped from <em>lotus-tipped ogee arches</em> borrowed from temple doorway reliefs. Flat gold on transparent, with a hairline inner ghost-line doubling the frame. The most readable option at any zoom; the least committed tonally.</p>
+    <div class="states">
+      <!-- IDLE -->
+      <div class="state" data-mode="idle">
+        <div class="state-label"><span class="dot"></span>Idle · Free<span class="kbd">Hover</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-bracket">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <g id="tbCorner">
+                  <!-- outer L with ogee curl -->
+                  <path class="tb-line" d="M6 32 L6 16 Q6 8 14 8 L32 8" stroke-width="3" stroke-linecap="round"/>
+                  <!-- inner hairline parallel -->
+                  <path class="tb-line" d="M12 32 L12 18 Q12 14 16 14 L32 14" stroke-width="0.8" stroke-linecap="round"/>
+                  <!-- ogee flourish at inner end -->
+                  <path class="tb-line" d="M32 8 Q36 8 36 12 Q36 14 34 14" stroke-width="2" stroke-linecap="round"/>
+                  <path class="tb-line" d="M6 32 Q6 36 10 36 Q12 36 12 34" stroke-width="2" stroke-linecap="round"/>
+                  <!-- lotus bud at outer corner -->
+                  <circle class="tb-bud" cx="9" cy="9" r="2.6"/>
+                  <circle class="tb-eye" cx="9" cy="9" r="1.1"/>
+                </g>
+              </defs>
+              <use href="#tbCorner"/>
+              <use href="#tbCorner" transform="translate(100 0) scale(-1 1)"/>
+              <use href="#tbCorner" transform="translate(0 100) scale(1 -1)"/>
+              <use href="#tbCorner" transform="translate(100 100) scale(-1 -1)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- SELECTED -->
+      <div class="state" data-mode="selected">
+        <div class="state-label"><span class="dot"></span>Unit Selected<span class="kbd">Confirm</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-bracket">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <g id="tbCorner2">
+                  <path class="tb-line" d="M6 32 L6 16 Q6 8 14 8 L32 8" stroke-width="3" stroke-linecap="round"/>
+                  <path class="tb-line" d="M12 32 L12 18 Q12 14 16 14 L32 14" stroke-width="0.8" stroke-linecap="round"/>
+                  <path class="tb-line" d="M32 8 Q36 8 36 12 Q36 14 34 14" stroke-width="2" stroke-linecap="round"/>
+                  <path class="tb-line" d="M6 32 Q6 36 10 36 Q12 36 12 34" stroke-width="2" stroke-linecap="round"/>
+                  <circle class="tb-bud" cx="9" cy="9" r="2.6"/>
+                  <circle class="tb-eye" cx="9" cy="9" r="1.1"/>
+                </g>
+              </defs>
+              <use href="#tbCorner2"/>
+              <use href="#tbCorner2" transform="translate(100 0) scale(-1 1)"/>
+              <use href="#tbCorner2" transform="translate(0 100) scale(1 -1)"/>
+              <use href="#tbCorner2" transform="translate(100 100) scale(-1 -1)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- TARGETING -->
+      <div class="state" data-mode="targeting">
+        <div class="state-label"><span class="dot"></span>Targeting Foe<span class="kbd">Strike</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-bracket">
+            <svg viewBox="0 0 100 100">
+              <defs>
+                <g id="tbCorner3">
+                  <path class="tb-line" d="M6 32 L6 16 Q6 8 14 8 L32 8" stroke-width="3" stroke-linecap="round"/>
+                  <path class="tb-line" d="M12 32 L12 18 Q12 14 16 14 L32 14" stroke-width="0.8" stroke-linecap="round"/>
+                  <path class="tb-line" d="M32 8 Q36 8 36 12 Q36 14 34 14" stroke-width="2" stroke-linecap="round"/>
+                  <path class="tb-line" d="M6 32 Q6 36 10 36 Q12 36 12 34" stroke-width="2" stroke-linecap="round"/>
+                  <circle class="tb-bud" cx="9" cy="9" r="2.6"/>
+                  <circle class="tb-eye" cx="9" cy="9" r="1.1"/>
+                </g>
+              </defs>
+              <use href="#tbCorner3"/>
+              <use href="#tbCorner3" transform="translate(100 0) scale(-1 1)"/>
+              <use href="#tbCorner3" transform="translate(0 100) scale(1 -1)"/>
+              <use href="#tbCorner3" transform="translate(100 100) scale(-1 -1)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ 04 · SANSKRIT ILLUMINATION -->
+  <section class="variant">
+    <div class="variant-header">
+      <div class="variant-no">IV</div>
+      <div class="variant-name">Sanskrit Illumination</div>
+      <div class="variant-style">inked manuscript · cream on wood</div>
+    </div>
+    <p class="variant-pitch">A frame that feels inked onto <em>palm-leaf manuscript</em> — a dashed double-line rule broken by hand-drawn flourishes at the corners and small Devanagari-evoking glyphs at the cardinals. Storybook, scholarly, distinctly literary. Strongest when the story is told through scripture.</p>
+    <div class="states">
+      <!-- IDLE -->
+      <div class="state" data-mode="idle">
+        <div class="state-label"><span class="dot"></span>Idle · Free<span class="kbd">Hover</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-sanskrit">
+            <svg viewBox="0 0 100 100">
+              <!-- double dashed frame -->
+              <rect class="sk-ink" x="10" y="10" width="80" height="80" stroke-width="1.1" stroke-dasharray="4 1.5 1 1.5"/>
+              <rect class="sk-ink" x="14" y="14" width="72" height="72" stroke-width="0.5"/>
+              <!-- corner flourishes -->
+              <g stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M10 18 Q4 14 6 8 Q10 4 16 6 Q20 8 22 12"/>
+                <path class="sk-ink" d="M90 18 Q96 14 94 8 Q90 4 84 6 Q80 8 78 12"/>
+                <path class="sk-ink" d="M10 82 Q4 86 6 92 Q10 96 16 94 Q20 92 22 88"/>
+                <path class="sk-ink" d="M90 82 Q96 86 94 92 Q90 96 84 94 Q80 92 78 88"/>
+              </g>
+              <!-- corner ink dots -->
+              <circle class="sk-fill" cx="9"  cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="9"  cy="91" r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="91" r="1.3"/>
+              <!-- cardinal glyphs (devanagari-evoking marks) -->
+              <g stroke-linecap="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M46 4 H54 M50 4 V9 Q50 11 52 11"/>
+                <path class="sk-ink" d="M46 96 H54 M50 91 V96 Q52 96 52 94"/>
+                <path class="sk-ink" d="M4 46 V54 M4 50 H9 Q11 50 11 52"/>
+                <path class="sk-ink" d="M96 46 V54 M91 50 H96 Q96 52 94 52"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- SELECTED -->
+      <div class="state" data-mode="selected">
+        <div class="state-label"><span class="dot"></span>Unit Selected<span class="kbd">Confirm</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-sanskrit">
+            <svg viewBox="0 0 100 100">
+              <rect class="sk-ink" x="10" y="10" width="80" height="80" stroke-width="1.1" stroke-dasharray="4 1.5 1 1.5"/>
+              <rect class="sk-ink" x="14" y="14" width="72" height="72" stroke-width="0.5"/>
+              <g stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M10 18 Q4 14 6 8 Q10 4 16 6 Q20 8 22 12"/>
+                <path class="sk-ink" d="M90 18 Q96 14 94 8 Q90 4 84 6 Q80 8 78 12"/>
+                <path class="sk-ink" d="M10 82 Q4 86 6 92 Q10 96 16 94 Q20 92 22 88"/>
+                <path class="sk-ink" d="M90 82 Q96 86 94 92 Q90 96 84 94 Q80 92 78 88"/>
+              </g>
+              <circle class="sk-fill" cx="9"  cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="9"  cy="91" r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="91" r="1.3"/>
+              <g stroke-linecap="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M46 4 H54 M50 4 V9 Q50 11 52 11"/>
+                <path class="sk-ink" d="M46 96 H54 M50 91 V96 Q52 96 52 94"/>
+                <path class="sk-ink" d="M4 46 V54 M4 50 H9 Q11 50 11 52"/>
+                <path class="sk-ink" d="M96 46 V54 M91 50 H96 Q96 52 94 52"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- TARGETING -->
+      <div class="state" data-mode="targeting">
+        <div class="state-label"><span class="dot"></span>Targeting Foe<span class="kbd">Strike</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-sanskrit">
+            <svg viewBox="0 0 100 100">
+              <rect class="sk-ink" x="10" y="10" width="80" height="80" stroke-width="1.1" stroke-dasharray="4 1.5 1 1.5"/>
+              <rect class="sk-ink" x="14" y="14" width="72" height="72" stroke-width="0.5"/>
+              <g stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M10 18 Q4 14 6 8 Q10 4 16 6 Q20 8 22 12"/>
+                <path class="sk-ink" d="M90 18 Q96 14 94 8 Q90 4 84 6 Q80 8 78 12"/>
+                <path class="sk-ink" d="M10 82 Q4 86 6 92 Q10 96 16 94 Q20 92 22 88"/>
+                <path class="sk-ink" d="M90 82 Q96 86 94 92 Q90 96 84 94 Q80 92 78 88"/>
+              </g>
+              <circle class="sk-fill" cx="9"  cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="9"  r="1.3"/>
+              <circle class="sk-fill" cx="9"  cy="91" r="1.3"/>
+              <circle class="sk-fill" cx="91" cy="91" r="1.3"/>
+              <g stroke-linecap="round" stroke-width="1.2" fill="none">
+                <path class="sk-ink" d="M46 4 H54 M50 4 V9 Q50 11 52 11"/>
+                <path class="sk-ink" d="M46 96 H54 M50 91 V96 Q52 96 52 94"/>
+                <path class="sk-ink" d="M4 46 V54 M4 50 H9 Q11 50 11 52"/>
+                <path class="sk-ink" d="M96 46 V54 M91 50 H96 Q96 52 94 52"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════ 05 · DHARMA EMBER -->
+  <section class="variant">
+    <div class="variant-header">
+      <div class="variant-no">V</div>
+      <div class="variant-name">Dharma Ember</div>
+      <div class="variant-style">VFX-led · divine glow &amp; particles</div>
+    </div>
+    <p class="variant-pitch">No outline. A warm halo of divine light settles on the tile and <em>embers rise from it like offered incense</em>. A dashed ring orbits silently. The most filmic, most emotional option — but also the least literal: the tile boundary is implied, not drawn.</p>
+    <div class="states">
+      <!-- IDLE -->
+      <div class="state" data-mode="idle">
+        <div class="state-label"><span class="dot"></span>Idle · Free<span class="kbd">Hover</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-ember">
+            <div class="halo-ring"></div>
+            <div class="glow"></div>
+            <div class="glow-core"></div>
+            <div class="ember" style="left: 32%; --dx:-6px;  animation-delay: 0s;"></div>
+            <div class="ember" style="left: 46%; --dx: 4px;  animation-delay: 0.35s;"></div>
+            <div class="ember" style="left: 58%; --dx:-3px;  animation-delay: 0.8s;"></div>
+            <div class="ember" style="left: 40%; --dx: 8px;  animation-delay: 1.2s;"></div>
+            <div class="ember" style="left: 66%; --dx: 2px;  animation-delay: 1.7s;"></div>
+            <div class="ember" style="left: 26%; --dx: 6px;  animation-delay: 2.1s;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- SELECTED -->
+      <div class="state" data-mode="selected">
+        <div class="state-label"><span class="dot"></span>Unit Selected<span class="kbd">Confirm</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-ember">
+            <div class="halo-ring"></div>
+            <div class="glow"></div>
+            <div class="glow-core"></div>
+            <div class="ember" style="left: 32%; --dx:-6px;  animation-delay: 0s;"></div>
+            <div class="ember" style="left: 46%; --dx: 4px;  animation-delay: 0.35s;"></div>
+            <div class="ember" style="left: 58%; --dx:-3px;  animation-delay: 0.8s;"></div>
+            <div class="ember" style="left: 40%; --dx: 8px;  animation-delay: 1.2s;"></div>
+            <div class="ember" style="left: 66%; --dx: 2px;  animation-delay: 1.7s;"></div>
+            <div class="ember" style="left: 26%; --dx: 6px;  animation-delay: 2.1s;"></div>
+          </div>
+        </div>
+      </div>
+      <!-- TARGETING -->
+      <div class="state" data-mode="targeting">
+        <div class="state-label"><span class="dot"></span>Targeting Foe<span class="kbd">Strike</span></div>
+        <div class="tile-snippet">
+          <div class="cursor cursor-ember">
+            <div class="halo-ring"></div>
+            <div class="glow"></div>
+            <div class="glow-core"></div>
+            <div class="ember" style="left: 32%; --dx:-6px;  animation-delay: 0s;"></div>
+            <div class="ember" style="left: 46%; --dx: 4px;  animation-delay: 0.35s;"></div>
+            <div class="ember" style="left: 58%; --dx:-3px;  animation-delay: 0.8s;"></div>
+            <div class="ember" style="left: 40%; --dx: 8px;  animation-delay: 1.2s;"></div>
+            <div class="ember" style="left: 66%; --dx: 2px;  animation-delay: 1.7s;"></div>
+            <div class="ember" style="left: 26%; --dx: 6px;  animation-delay: 2.1s;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ COLOPHON -->
+  <footer class="colophon">
+    <div>Project Astra · Art Direction R01 · Grid Cursor</div>
+    <em>— pick a tongue before we carve the sprite.</em>
+  </footer>
+</div>
+</body>
+</html>

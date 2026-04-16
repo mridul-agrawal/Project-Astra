@@ -248,6 +248,11 @@ namespace ProjectAstra.EditorTools
 
             BuildHpBar(card, rightX, 162, rightW);
 
+            var weapon = NewText("WeaponName", card, "Iron Sword", cormorantItalic, 17,
+                ColCopper, TextAlignmentOptions.Left, FontStyles.Italic);
+            weapon.characterSpacing = 4f;
+            PlaceTopLeft(weapon, rightX, 184, rightW, 24);
+
             AddCornerBosses(card, UnitCardW, UnitCardH);
         }
 
@@ -287,11 +292,13 @@ namespace ProjectAstra.EditorTools
             var bg = NewImage("HpBarBg", oRt, ColHpDark);
             SetStretch(bg, 1f);
 
-            // Green gradient fill (driven by Image.fillAmount at runtime)
-            var fill = NewImage("HpFill", bg.transform, Color.white);
+            // Solid fill driven by Image.color at runtime so the controller can swap
+            // green/yellow/red based on HP thresholds (§R11). sprite=null makes Image
+            // render a plain quad; color tinting then produces a clean solid fill.
+            var fill = NewImage("HpFill", bg.transform, ColGreenStat);
             SetStretch(fill, 0);
             var fImg = fill.GetComponent<Image>();
-            fImg.sprite = LoadSprite("hp_fill_green.png");
+            fImg.sprite = null;
             fImg.type = Image.Type.Filled;
             fImg.fillMethod = Image.FillMethod.Horizontal;
             fImg.fillAmount = 1f;
@@ -381,6 +388,11 @@ namespace ProjectAstra.EditorTools
             var vRt = vDiv.GetComponent<RectTransform>();
             PlaceTopLeft(vRt, colW - 0.5f, 90, 1, 56);
 
+            var heal = NewText("HealValue", panel, "Heal +0 / turn", cinzel, 14,
+                ColGreenStat, TextAlignmentOptions.Center, FontStyles.Normal);
+            heal.characterSpacing = 4f;
+            PlaceTopLeft(heal, 0, 150, TileInfoW, 22);
+
             AddCornerBosses(panel, TileInfoW, TileInfoH);
         }
 
@@ -398,6 +410,7 @@ namespace ProjectAstra.EditorTools
             controller.UnitClass     = root.Find("UnitCard/UnitClass").GetComponent<TextMeshProUGUI>();
             controller.HpValue       = root.Find("UnitCard/HPValue").GetComponent<TextMeshProUGUI>();
             controller.HpFill        = root.Find("UnitCard/HpBar/HpBarBg/HpFill").GetComponent<Image>();
+            controller.WeaponName    = root.Find("UnitCard/WeaponName").GetComponent<TextMeshProUGUI>();
             controller.PortraitImage = root.Find("UnitCard/PortraitFrame/Arjuna").GetComponent<Image>();
             controller.DefaultPortrait = AssetDatabase.LoadAssetAtPath<Sprite>(SpriteDir + "portrait_arjuna.png");
 
@@ -406,9 +419,11 @@ namespace ProjectAstra.EditorTools
             controller.TurnNum       = root.Find("ObjectivePanel/TurnNum").GetComponent<TextMeshProUGUI>();
 
             // Tile info panel refs
+            controller.TileInfoRoot  = root.Find("TileInfoPanel").gameObject;
             controller.TileName      = root.Find("TileInfoPanel/TileName").GetComponent<TextMeshProUGUI>();
             controller.StatValueDef  = root.Find("TileInfoPanel/StatValueDef").GetComponent<TextMeshProUGUI>();
             controller.StatValueAvo  = root.Find("TileInfoPanel/StatValueAvo").GetComponent<TextMeshProUGUI>();
+            controller.HealValue     = root.Find("TileInfoPanel/HealValue").GetComponent<TextMeshProUGUI>();
 
             // Data sources — ScriptableObjects wired by path
             controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.TerrainStatTable>(
