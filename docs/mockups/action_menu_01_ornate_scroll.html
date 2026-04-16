@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Action Menu · 01 Ornate Scroll</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%);
+  color: #e8d9b8;
+  font-family: 'Cormorant Garamond', serif;
+  padding: 56px 24px 96px;
+  min-height: 100vh;
+}
+.page-title {
+  font-family: 'Cinzel', serif; font-weight: 600; font-size: 28px;
+  letter-spacing: 0.35em; text-transform: uppercase; text-align: center;
+  color: #d4a24c; margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center; font-style: italic; font-size: 17px;
+  color: #7a6a4c; margin-bottom: 40px; letter-spacing: 0.04em;
+}
+.concept { margin: 0 auto 64px; max-width: 1400px; }
+.concept-header {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 14px 6px;
+  border-top: 1px solid #2a1f12; border-bottom: 1px solid #2a1f12;
+  margin-bottom: 18px; display: flex; justify-content: space-between;
+  align-items: baseline; gap: 32px;
+}
+.concept-header .idx { color: #5a4c32; }
+.concept-header .name { color: #d4a24c; font-weight: 600; flex: 1; }
+.concept-header .note { color: #5a4c32; font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: 'Cormorant Garamond', serif; font-size: 15px; text-align: right; }
+
+.states { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+.state-wrap { text-align: center; }
+.state-label {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.4em;
+  text-transform: uppercase; color: #5a4c32; margin-bottom: 12px;
+}
+
+/* ============================================================
+   THE MENU — Ornate Scroll variant
+   ============================================================ */
+.menu-frame {
+  position: relative;
+  display: inline-block;
+  min-width: 260px;
+}
+
+/* Outer ornamental border — double gold ring with corner bosses */
+.menu-outer {
+  position: relative;
+  background: linear-gradient(180deg, rgba(28,18,10,0.88) 0%, rgba(14,8,4,0.84) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid rgba(212,162,76,0.7);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.5),
+    0 0 50px rgba(212,162,76,0.12),
+    0 24px 60px -12px rgba(0,0,0,0.8);
+  padding: 0;
+}
+
+/* Inner hairline border */
+.menu-outer::before {
+  content: ''; position: absolute; inset: 5px;
+  border: 1px solid rgba(212,162,76,0.25);
+  pointer-events: none;
+}
+
+/* Scroll-end ornaments (top + bottom) */
+.scroll-end {
+  display: flex; align-items: center; gap: 0;
+  padding: 0 8px;
+  height: 22px;
+}
+.scroll-end .line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,162,76,0.55), transparent);
+}
+.scroll-end .lotus {
+  width: 16px; height: 16px; flex-shrink: 0;
+  background: radial-gradient(circle at 50% 45%, #f5d27a 0%, #d4a24c 40%, #6a3a0a 90%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(212,162,76,0.5);
+  margin: 0 8px;
+}
+
+/* Corner bosses */
+.corner-boss {
+  position: absolute; width: 18px; height: 18px;
+  background: radial-gradient(circle at 40% 35%, #f5d27a 0%, #d4a24c 40%, #6a3a0a 85%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #0a0408, 0 0 6px rgba(212,162,76,0.4);
+  z-index: 10;
+}
+.corner-boss.tl { top: -5px; left: -5px; }
+.corner-boss.tr { top: -5px; right: -5px; }
+.corner-boss.bl { bottom: -5px; left: -5px; }
+.corner-boss.br { bottom: -5px; right: -5px; }
+
+/* Menu content area */
+.menu-body {
+  padding: 6px 14px 6px 14px;
+}
+
+/* Individual option row */
+.menu-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px 10px 12px;
+  position: relative;
+  cursor: default;
+  transition: all 0.15s;
+  border-radius: 3px;
+}
+
+/* Selection highlight bar */
+.menu-row.selected {
+  background: linear-gradient(90deg,
+    rgba(212,162,76,0.18) 0%,
+    rgba(212,162,76,0.10) 70%,
+    transparent 100%);
+}
+.menu-row.selected::before {
+  content: ''; position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, #f5d27a, #d4a24c);
+  border-radius: 2px;
+}
+
+/* Lotus cursor mark (selected) */
+.cursor-mark {
+  width: 14px; height: 14px; flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.menu-row.selected .cursor-mark { opacity: 1; }
+.cursor-mark svg { width: 100%; height: 100%; display: block; }
+
+/* Option text */
+.option-text {
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: #f5e9c8;
+  text-transform: uppercase;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+}
+.menu-row.selected .option-text {
+  color: #f5d27a;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.7), 0 0 16px rgba(212,162,76,0.3);
+}
+
+/* Disabled state */
+.menu-row.disabled .option-text {
+  color: #5a4c3c;
+  text-shadow: none;
+}
+.menu-row.disabled .cursor-mark { display: none; }
+
+/* Divider between options */
+.menu-divider {
+  height: 1px; margin: 0 18px;
+  background: linear-gradient(90deg, transparent, rgba(212,162,76,0.18), transparent);
+}
+
+/* Tiny key hint on the right */
+.key-hint {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px; font-style: italic;
+  color: #5a4c3c;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.menu-row.selected .key-hint { opacity: 1; color: #8a7a5c; }
+
+.page-footer {
+  text-align: center; font-style: italic; font-size: 14px;
+  color: #3a2f1c; margin-top: 48px;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Unit Action Menu · 01 Ornate Scroll</p>
+
+<section class="concept">
+  <div class="concept-header">
+    <span class="idx">01</span>
+    <span class="name">Ornate Scroll · parchment filigree</span>
+    <span class="note">gold lotus cursor, ornamental dividers, cinzel display</span>
+  </div>
+
+  <div class="states">
+    <!-- STATE A: 4 options -->
+    <div class="state-wrap">
+      <div class="state-label">4 Options · Common Case</div>
+      <div class="menu-frame">
+        <div class="menu-outer">
+          <span class="corner-boss tl"></span><span class="corner-boss tr"></span>
+          <span class="corner-boss bl"></span><span class="corner-boss br"></span>
+
+          <div class="scroll-end">
+            <span class="line"></span><span class="lotus"></span><span class="line"></span>
+          </div>
+
+          <div class="menu-body">
+            <div class="menu-row selected">
+              <span class="cursor-mark">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="5" fill="#f5d27a" fill-opacity="0.9"/>
+                  <circle cx="10" cy="10" r="3" fill="#d4a24c"/>
+                  <circle cx="10" cy="4" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="10" cy="16" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="4" cy="10" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="16" cy="10" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                </svg>
+              </span>
+              <span class="option-text">Attack</span>
+              <span class="key-hint">Z</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Item</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row disabled">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Trade</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Wait</span>
+              <span class="key-hint"></span>
+            </div>
+          </div>
+
+          <div class="scroll-end">
+            <span class="line"></span><span class="lotus"></span><span class="line"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE B: 7 options -->
+    <div class="state-wrap">
+      <div class="state-label">7 Options · Maximum Case</div>
+      <div class="menu-frame">
+        <div class="menu-outer">
+          <span class="corner-boss tl"></span><span class="corner-boss tr"></span>
+          <span class="corner-boss bl"></span><span class="corner-boss br"></span>
+
+          <div class="scroll-end">
+            <span class="line"></span><span class="lotus"></span><span class="line"></span>
+          </div>
+
+          <div class="menu-body">
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Attack</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row disabled">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Magic</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row selected">
+              <span class="cursor-mark">
+                <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="5" fill="#f5d27a" fill-opacity="0.9"/>
+                  <circle cx="10" cy="10" r="3" fill="#d4a24c"/>
+                  <circle cx="10" cy="4" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="10" cy="16" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="4" cy="10" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                  <circle cx="16" cy="10" r="1.5" fill="#f5d27a" fill-opacity="0.7"/>
+                </svg>
+              </span>
+              <span class="option-text">Item</span>
+              <span class="key-hint">Z</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Trade</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Rescue</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Visit</span>
+              <span class="key-hint"></span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-row">
+              <span class="cursor-mark"><svg viewBox="0 0 20 20"></svg></span>
+              <span class="option-text">Wait</span>
+              <span class="key-hint"></span>
+            </div>
+          </div>
+
+          <div class="scroll-end">
+            <span class="line"></span><span class="lotus"></span><span class="line"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="page-footer">Action Menu popup · dynamically expandable · gold lotus cursor on selected row</p>
+</body>
+</html>

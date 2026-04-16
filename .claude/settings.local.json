@@ -123,7 +123,9 @@
       "Bash(awk '/^--- !u!1 &/{n=$NF} /m_Name: Canvas/{for\\(i=1;i<=30;i++\\){getline; print}}' Assets/Scenes/BattleMap.unity)",
       "Bash(awk '/m_Name: ToastNotificationUI/,/m_Father:/' Assets/Scenes/BattleMap.unity)",
       "Bash(grep -A 20 \"m_LocalScale: {x: 0, y: 0, z: 0}\")",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "mcp__figma__whoami",
+      "mcp__figma__create_new_file"
     ]
   }
 }

@@ -147,6 +147,16 @@ namespace ProjectAstra.EditorTools
                 underlayOffY: -0.06f,
                 underlaySoft: 0.18f);
 
+            // Cinzel (regular) gold glow — used by UnitActionMenuUI (different atlas than CinzelDecorative)
+            LoadOrCreateGlow(
+                MatDir + "CinzelGoldGlow.mat",
+                cinzel,
+                glowColor:    new Color(0xd4 / 255f, 0xa2 / 255f, 0x4c / 255f, 0.28f),
+                glowOuter:    0.6f,
+                underlayColor:new Color(0f, 0f, 0f, 0.85f),
+                underlayOffY: -0.06f,
+                underlaySoft: 0.18f);
+
             matGreenGlow = LoadOrCreateGlow(
                 MatDir + "CinzelDecorGreenGlow.mat",
                 cinzelDecor,

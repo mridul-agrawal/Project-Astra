@@ -6,34 +6,56 @@ using TMPro;
 
 namespace ProjectAstra.Core.UI
 {
+    /// <summary>
+    /// Unit Action Menu popup — appears after a unit moves, showing context-dependent
+    /// options (Attack, Item, Trade, Wait, etc.). Visual style: Warrior's Command
+    /// (octagonal frame, ember gradients, trishul cursor).
+    ///
+    /// Lifecycle: Show(options, onSelect, onCancel) → input handling → Hide().
+    /// Integration: GridCursor calls Show after movement; HasInputFocus gates cursor input.
+    /// </summary>
     public class UnitActionMenuUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }
 
-        private static readonly Color PanelColor = new(0.22f, 0.22f, 0.45f, 0.88f);
-        private static readonly Color BorderColor = new(0.55f, 0.45f, 0.3f, 1f);
-        private static readonly Color TextNormal = Color.white;
-        private static readonly Color TextSelected = new(1f, 1f, 0.6f, 1f);
+        [Header("Visual Assets")]
+        [SerializeField] private Sprite _bgSprite;
+        [SerializeField] private Sprite _cursorSprite;
+        [SerializeField] private Sprite _dividerSprite;
+        [SerializeField] private TMP_FontAsset _optionFont;
+        [SerializeField] private Material _selectedGlowMat;
 
-        const float OptionHeight = 32f;
-        const float PanelPadding = 12f;
-        const float BorderWidth = 3f;
-        const float CursorOffset = 8f;
+        // Warrior's Command palette
+        static readonly Color ColTextDefault  = new Color32(0xf5, 0xd8, 0xb8, 0xff);
+        static readonly Color ColTextSelected = new Color32(0xf5, 0xd8, 0xb8, 0xff);
+        static readonly Color ColTextDisabled = new Color32(0x4a, 0x2a, 0x1a, 0xff);
+        static readonly Color ColEmberBar     = new Color32(0xd4, 0x6a, 0x2c, 0xff);
+
+        const float OptionHeight = 52f;
+        const float DividerHeight = 8f;
+        const float PanelPaddingY = 20f;
+        const float PanelWidth = 340f;
+        const float TrishulSize = 20f;
+        const float TextLeftOffset = 48f;
 
         private GameObject _root;
         private readonly List<TextMeshProUGUI> _optionTexts = new();
-        private TextMeshProUGUI _cursorIndicator;
+        private readonly List<GameObject> _accentBars = new();
+        private readonly List<GameObject> _trishulIcons = new();
         private int _selectedIndex;
         private List<string> _options;
+        private List<bool> _enabledFlags;
         private Action<int> _onSelect;
         private Action _onCancel;
 
-        public void Show(List<string> options, Action<int> onSelect, Action onCancel)
+        public void Show(List<string> options, Action<int> onSelect, Action onCancel,
+            List<bool> enabledFlags = null)
         {
             _options = options;
             _onSelect = onSelect;
             _onCancel = onCancel;
-            _selectedIndex = 0;
+            _enabledFlags = enabledFlags;
+            _selectedIndex = FindFirstEnabled(0, 1);
 
             BuildUI();
             UpdateSelection();
@@ -63,6 +85,8 @@ namespace ProjectAstra.Core.UI
                 Destroy(_root);
 
             _optionTexts.Clear();
+            _accentBars.Clear();
+            _trishulIcons.Clear();
             _onSelect = null;
             _onCancel = null;
         }
@@ -76,18 +100,19 @@ namespace ProjectAstra.Core.UI
 
         private void Navigate(Vector2Int dir)
         {
-            if (dir.y > 0)
-                _selectedIndex = _selectedIndex <= 0 ? _options.Count - 1 : _selectedIndex - 1;
-            else if (dir.y < 0)
-                _selectedIndex = _selectedIndex >= _options.Count - 1 ? 0 : _selectedIndex + 1;
-            else
-                return;
-
-            UpdateSelection();
+            if (dir.y == 0) return;
+            int step = dir.y > 0 ? -1 : 1;
+            int next = FindFirstEnabled(_selectedIndex + step, step);
+            if (next >= 0)
+            {
+                _selectedIndex = next;
+                UpdateSelection();
+            }
         }
 
         private void Confirm()
         {
+            if (IsDisabled(_selectedIndex)) return;
             int index = _selectedIndex;
             var callback = _onSelect;
             Hide();
@@ -101,6 +126,22 @@ namespace ProjectAstra.Core.UI
             callback?.Invoke();
         }
 
+        private bool IsDisabled(int index) =>
+            _enabledFlags != null && index < _enabledFlags.Count && !_enabledFlags[index];
+
+        private int FindFirstEnabled(int start, int step)
+        {
+            if (_options == null || _options.Count == 0) return 0;
+            int count = _options.Count;
+            int idx = ((start % count) + count) % count;
+            for (int i = 0; i < count; i++)
+            {
+                if (!IsDisabled(idx)) return idx;
+                idx = ((idx + step) % count + count) % count;
+            }
+            return 0;
+        }
+
         #endregion
 
         #region UI construction
@@ -109,99 +150,159 @@ namespace ProjectAstra.Core.UI
         {
             if (_root != null) Destroy(_root);
             _optionTexts.Clear();
+            _accentBars.Clear();
+            _trishulIcons.Clear();
 
             var canvas = GetComponentInParent<Canvas>();
             if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
             if (canvas == null) return;
 
-            float panelHeight = _options.Count * OptionHeight + PanelPadding * 2;
-            float panelWidth = 180f;
+            int optCount = _options.Count;
+            int dividerCount = Mathf.Max(0, optCount - 1);
+            float panelHeight = optCount * OptionHeight + dividerCount * DividerHeight + PanelPaddingY * 2;
 
-            // Root with border
+            // Root — anchored right-center of canvas, offset left to clear HUD
             _root = new GameObject("ActionMenu");
             _root.transform.SetParent(canvas.transform, false);
             var rootRect = _root.AddComponent<RectTransform>();
             rootRect.anchorMin = new Vector2(1f, 0.5f);
             rootRect.anchorMax = new Vector2(1f, 0.5f);
             rootRect.pivot = new Vector2(1f, 0.5f);
-            rootRect.anchoredPosition = new Vector2(-20f, 40f);
-            rootRect.sizeDelta = new Vector2(panelWidth + BorderWidth * 2, panelHeight + BorderWidth * 2);
+            rootRect.anchoredPosition = new Vector2(-40f, 0f);
+            rootRect.sizeDelta = new Vector2(PanelWidth, panelHeight);
 
-            var borderImg = _root.AddComponent<Image>();
-            borderImg.color = BorderColor;
+            // Octagonal background (9-sliced sprite with shape baked in)
+            var bgImg = _root.AddComponent<Image>();
+            bgImg.sprite = _bgSprite;
+            bgImg.type = _bgSprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            bgImg.color = Color.white;
+            bgImg.pixelsPerUnitMultiplier = 1f;
 
-            // Inner panel
-            var panel = new GameObject("Panel");
-            panel.transform.SetParent(_root.transform, false);
-            var panelRect = panel.AddComponent<RectTransform>();
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.offsetMin = new Vector2(BorderWidth, BorderWidth);
-            panelRect.offsetMax = new Vector2(-BorderWidth, -BorderWidth);
+            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
 
-            var panelImg = panel.AddComponent<Image>();
-            panelImg.color = PanelColor;
-
-            // Options container
+            // Options container inside the panel
             var container = new GameObject("Options");
-            container.transform.SetParent(panel.transform, false);
+            container.transform.SetParent(_root.transform, false);
             var containerRect = container.AddComponent<RectTransform>();
             containerRect.anchorMin = Vector2.zero;
             containerRect.anchorMax = Vector2.one;
-            containerRect.offsetMin = new Vector2(PanelPadding + 20f, PanelPadding);
-            containerRect.offsetMax = new Vector2(-PanelPadding, -PanelPadding);
+            containerRect.offsetMin = new Vector2(8f, PanelPaddingY);
+            containerRect.offsetMax = new Vector2(-8f, -PanelPaddingY);
 
-            for (int i = 0; i < _options.Count; i++)
+            float yOffset = 0f;
+            for (int i = 0; i < optCount; i++)
             {
-                var optGo = new GameObject(_options[i]);
-                optGo.transform.SetParent(container.transform, false);
-                var optRect = optGo.AddComponent<RectTransform>();
-                optRect.anchorMin = new Vector2(0f, 1f);
-                optRect.anchorMax = new Vector2(1f, 1f);
-                optRect.pivot = new Vector2(0f, 1f);
-                optRect.anchoredPosition = new Vector2(0f, -i * OptionHeight);
-                optRect.sizeDelta = new Vector2(0f, OptionHeight);
+                bool disabled = IsDisabled(i);
+                BuildOptionRow(container.transform, i, yOffset, disabled);
+                yOffset += OptionHeight;
 
-                var tmp = optGo.AddComponent<TextMeshProUGUI>();
-                tmp.text = _options[i];
-                tmp.fontSize = 20;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.MidlineLeft;
-                tmp.color = TextNormal;
-                tmp.enableWordWrapping = false;
-
-                _optionTexts.Add(tmp);
+                if (i < optCount - 1)
+                {
+                    BuildDivider(container.transform, yOffset);
+                    yOffset += DividerHeight;
+                }
             }
+        }
 
-            // Selection cursor (arrow indicator)
-            var cursorGo = new GameObject("Cursor");
-            cursorGo.transform.SetParent(container.transform, false);
-            var cursorRect = cursorGo.AddComponent<RectTransform>();
-            cursorRect.anchorMin = new Vector2(0f, 1f);
-            cursorRect.anchorMax = new Vector2(0f, 1f);
-            cursorRect.pivot = new Vector2(1f, 0.5f);
-            cursorRect.sizeDelta = new Vector2(20f, OptionHeight);
-            cursorRect.anchoredPosition = new Vector2(-CursorOffset, -OptionHeight * 0.5f);
+        private void BuildOptionRow(Transform parent, int index, float yOffset, bool disabled)
+        {
+            var row = new GameObject(_options[index]);
+            row.transform.SetParent(parent, false);
+            var rowRect = row.AddComponent<RectTransform>();
+            rowRect.anchorMin = new Vector2(0f, 1f);
+            rowRect.anchorMax = new Vector2(1f, 1f);
+            rowRect.pivot = new Vector2(0f, 1f);
+            rowRect.anchoredPosition = new Vector2(0f, -yOffset);
+            rowRect.sizeDelta = new Vector2(0f, OptionHeight);
 
-            _cursorIndicator = cursorGo.AddComponent<TextMeshProUGUI>();
-            _cursorIndicator.text = "\u25B6";
-            _cursorIndicator.fontSize = 16;
-            _cursorIndicator.alignment = TextAlignmentOptions.Center;
-            _cursorIndicator.color = TextSelected;
-            _cursorIndicator.enableWordWrapping = false;
+            // Left ember accent bar (hidden by default, shown when selected)
+            var bar = new GameObject("AccentBar");
+            bar.transform.SetParent(row.transform, false);
+            var barRect = bar.AddComponent<RectTransform>();
+            barRect.anchorMin = new Vector2(0f, 0.05f);
+            barRect.anchorMax = new Vector2(0f, 0.95f);
+            barRect.pivot = new Vector2(0f, 0.5f);
+            barRect.anchoredPosition = Vector2.zero;
+            barRect.sizeDelta = new Vector2(3f, 0f);
+            var barImg = bar.AddComponent<Image>();
+            barImg.color = ColEmberBar;
+            bar.SetActive(false);
+            _accentBars.Add(bar);
 
-            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            // Trishul cursor icon (hidden by default)
+            var trishul = new GameObject("Trishul");
+            trishul.transform.SetParent(row.transform, false);
+            var tRt = trishul.AddComponent<RectTransform>();
+            tRt.anchorMin = new Vector2(0f, 0.5f);
+            tRt.anchorMax = new Vector2(0f, 0.5f);
+            tRt.pivot = new Vector2(0.5f, 0.5f);
+            tRt.anchoredPosition = new Vector2(16f, 0f);
+            tRt.sizeDelta = new Vector2(TrishulSize, TrishulSize);
+            var tImg = trishul.AddComponent<Image>();
+            tImg.sprite = _cursorSprite;
+            tImg.preserveAspect = true;
+            trishul.SetActive(false);
+            _trishulIcons.Add(trishul);
+
+            // Option text
+            var textGo = new GameObject("Text");
+            textGo.transform.SetParent(row.transform, false);
+            var textRect = textGo.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = new Vector2(TextLeftOffset, 0f);
+            textRect.offsetMax = new Vector2(-8f, 0f);
+
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = _options[index];
+            tmp.fontSize = 26;
+            tmp.fontStyle = FontStyles.Bold;
+            tmp.alignment = TextAlignmentOptions.MidlineLeft;
+            tmp.color = disabled ? ColTextDisabled : ColTextDefault;
+            tmp.enableWordWrapping = false;
+            tmp.overflowMode = TextOverflowModes.Overflow;
+            tmp.characterSpacing = 4f;
+            if (_optionFont != null) tmp.font = _optionFont;
+
+            _optionTexts.Add(tmp);
+        }
+
+        private void BuildDivider(Transform parent, float yOffset)
+        {
+            var div = new GameObject("Divider");
+            div.transform.SetParent(parent, false);
+            var divRect = div.AddComponent<RectTransform>();
+            divRect.anchorMin = new Vector2(0f, 1f);
+            divRect.anchorMax = new Vector2(1f, 1f);
+            divRect.pivot = new Vector2(0.5f, 1f);
+            divRect.anchoredPosition = new Vector2(0f, -yOffset);
+            divRect.sizeDelta = new Vector2(-32f, DividerHeight);
+
+            var img = div.AddComponent<Image>();
+            img.sprite = _dividerSprite;
+            img.type = _dividerSprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            img.color = Color.white;
         }
 
         private void UpdateSelection()
         {
             for (int i = 0; i < _optionTexts.Count; i++)
-                _optionTexts[i].color = i == _selectedIndex ? TextSelected : TextNormal;
-
-            if (_cursorIndicator != null)
             {
-                var rect = _cursorIndicator.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(-CursorOffset, -_selectedIndex * OptionHeight - OptionHeight * 0.5f);
+                bool selected = i == _selectedIndex;
+                bool disabled = IsDisabled(i);
+
+                _optionTexts[i].color = disabled ? ColTextDisabled
+                    : selected ? ColTextSelected : ColTextDefault;
+
+                if (selected && !disabled && _selectedGlowMat != null)
+                    _optionTexts[i].fontMaterial = _selectedGlowMat;
+                else
+                    _optionTexts[i].fontMaterial = _optionFont != null ? _optionFont.material : null;
+
+                if (i < _accentBars.Count)
+                    _accentBars[i].SetActive(selected && !disabled);
+                if (i < _trishulIcons.Count)
+                    _trishulIcons[i].SetActive(selected && !disabled);
             }
         }
 

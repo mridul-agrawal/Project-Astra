@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Action Menu · 02 Clean Bracket</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%);
+  color: #e8d9b8;
+  font-family: 'Fraunces', serif;
+  padding: 56px 24px 96px;
+  min-height: 100vh;
+}
+.page-title {
+  font-family: 'Cinzel', serif; font-weight: 600; font-size: 28px;
+  letter-spacing: 0.35em; text-transform: uppercase; text-align: center;
+  color: #d4a24c; margin-bottom: 6px;
+}
+.page-sub {
+  text-align: center; font-style: italic; font-size: 17px;
+  color: #7a6a4c; margin-bottom: 40px; letter-spacing: 0.04em;
+}
+.concept { margin: 0 auto 64px; max-width: 1400px; }
+.concept-header {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.3em;
+  text-transform: uppercase; padding: 14px 6px;
+  border-top: 1px solid #2a1f12; border-bottom: 1px solid #2a1f12;
+  margin-bottom: 18px; display: flex; justify-content: space-between;
+  align-items: baseline; gap: 32px;
+}
+.concept-header .idx { color: #5a4c32; }
+.concept-header .name { color: #d4a24c; font-weight: 600; flex: 1; }
+.concept-header .note { color: #5a4c32; font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: 'Fraunces', serif; font-size: 15px; text-align: right; }
+
+.states { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; }
+.state-wrap { text-align: center; }
+.state-label {
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.4em;
+  text-transform: uppercase; color: #5a4c32; margin-bottom: 12px;
+}
+
+/* ============================================================
+   THE MENU — Clean Bracket variant (Dharma Minimal)
+   ============================================================ */
+.menu-frame { position: relative; display: inline-block; min-width: 240px; }
+
+.menu-outer {
+  position: relative;
+  background: rgba(8, 12, 20, 0.72);
+  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-backdrop-filter: blur(16px) saturate(1.05);
+  border: 1px solid rgba(200,166,101,0.35);
+  padding: 0;
+}
+
+/* Top accent mark (thin gold line) */
+.menu-outer::before {
+  content: ''; position: absolute;
+  top: -1px; left: 20px;
+  width: 32px; height: 2px;
+  background: #c8a665;
+}
+/* Inner subtle hairline */
+.menu-outer::after {
+  content: ''; position: absolute; inset: 4px;
+  border: 1px solid rgba(200,166,101,0.08);
+  pointer-events: none;
+}
+
+.menu-body { padding: 14px 0; }
+
+/* Option row */
+.menu-row {
+  display: flex; align-items: center;
+  padding: 11px 28px 11px 24px;
+  position: relative;
+  cursor: default;
+  transition: background 0.12s;
+}
+
+/* Selected: full-width highlight bar */
+.menu-row.selected {
+  background: rgba(200,166,101,0.10);
+}
+/* Left accent bar on selected */
+.menu-row.selected::before {
+  content: ''; position: absolute;
+  left: 0; top: 4px; bottom: 4px; width: 2px;
+  background: #c8a665;
+}
+/* Right arrow glyph on selected */
+.menu-row.selected::after {
+  content: '›'; position: absolute;
+  right: 14px; top: 50%; transform: translateY(-50%);
+  font-family: 'Cinzel', serif; font-size: 20px;
+  color: #c8a665; line-height: 1;
+}
+
+.option-text {
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 20px;
+  letter-spacing: 0.2em;
+  color: #f0e6d0;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.menu-row.selected .option-text {
+  color: #f0e6d0;
+}
+
+/* Disabled */
+.menu-row.disabled .option-text {
+  color: #3a4a5c;
+  letter-spacing: 0.2em;
+}
+.menu-row.disabled.selected::before,
+.menu-row.disabled.selected::after { display: none; }
+.menu-row.disabled.selected { background: none; }
+
+/* No dividers in this variant — clean whitespace-only separation */
+
+.page-footer {
+  text-align: center; font-style: italic; font-size: 14px;
+  color: #3a2f1c; margin-top: 48px;
+}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Unit Action Menu · 02 Clean Bracket</p>
+
+<section class="concept">
+  <div class="concept-header">
+    <span class="idx">02</span>
+    <span class="name">Clean Bracket · editorial restraint</span>
+    <span class="note">hairline border, highlight bar, cinzel × fraunces, no ornament</span>
+  </div>
+
+  <div class="states">
+    <!-- STATE A: 4 options -->
+    <div class="state-wrap">
+      <div class="state-label">4 Options · Common Case</div>
+      <div class="menu-frame">
+        <div class="menu-outer">
+          <div class="menu-body">
+            <div class="menu-row selected">
+              <span class="option-text">Attack</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Item</span>
+            </div>
+            <div class="menu-row disabled">
+              <span class="option-text">Trade</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Wait</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE B: 7 options -->
+    <div class="state-wrap">
+      <div class="state-label">7 Options · Maximum Case</div>
+      <div class="menu-frame">
+        <div class="menu-outer">
+          <div class="menu-body">
+            <div class="menu-row">
+              <span class="option-text">Attack</span>
+            </div>
+            <div class="menu-row disabled">
+              <span class="option-text">Magic</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Item</span>
+            </div>
+            <div class="menu-row selected">
+              <span class="option-text">Trade</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Rescue</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Visit</span>
+            </div>
+            <div class="menu-row">
+              <span class="option-text">Wait</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="page-footer">Action Menu popup · dynamically expandable · minimal highlight bar + accent line</p>
+</body>
+</html>
