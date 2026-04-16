@@ -41,6 +41,9 @@ namespace ProjectAstra.Core.Editor
             public TurnEventChannel turnChannel;
             public TerrainStatTable terrainStatTable;
             public Sprite cursorSprite;
+            public Sprite cursorIdle;
+            public Sprite cursorSelected;
+            public Sprite cursorTargeting;
             public Sprite unitSprite;
         }
 
@@ -55,7 +58,14 @@ namespace ProjectAstra.Core.Editor
                 terrainStatTable = AssetDatabase.LoadAssetAtPath<TerrainStatTable>(
                     "Assets/ScriptableObjects/Map/TerrainStatTable.asset"),
                 cursorSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
-                    "Assets/Art/Cursor/GridCursor.png"),
+                    "Assets/Art/Cursor/TempleBracket_Idle.png")
+                    ?? AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Art/Cursor/GridCursor.png"),
+                cursorIdle = AssetDatabase.LoadAssetAtPath<Sprite>(
+                    "Assets/Art/Cursor/TempleBracket_Idle.png"),
+                cursorSelected = AssetDatabase.LoadAssetAtPath<Sprite>(
+                    "Assets/Art/Cursor/TempleBracket_Selected.png"),
+                cursorTargeting = AssetDatabase.LoadAssetAtPath<Sprite>(
+                    "Assets/Art/Cursor/TempleBracket_Targeting.png"),
                 unitSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
                     "Assets/Art/Cursor/PlaceholderUnitCircle.png"),
             };
@@ -94,6 +104,9 @@ namespace ProjectAstra.Core.Editor
             so.FindProperty("_terrainStatTable").objectReferenceValue = assets.terrainStatTable;
             so.FindProperty("_stateChangedChannel").objectReferenceValue = assets.stateChannel;
             so.FindProperty("_spriteRenderer").objectReferenceValue = spriteRenderer;
+            so.FindProperty("_idleSprite").objectReferenceValue = assets.cursorIdle;
+            so.FindProperty("_selectedSprite").objectReferenceValue = assets.cursorSelected;
+            so.FindProperty("_targetingSprite").objectReferenceValue = assets.cursorTargeting;
             so.FindProperty("_rangeHighlighter").objectReferenceValue = highlighter;
             so.FindProperty("_pathArrowRenderer").objectReferenceValue = pathArrow;
             so.FindProperty("_unitMover").objectReferenceValue = unitMover;

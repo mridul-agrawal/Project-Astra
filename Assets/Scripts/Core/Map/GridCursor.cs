@@ -33,11 +33,16 @@ namespace ProjectAstra.Core
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private Sprite _idleSprite;
+        [SerializeField] private Sprite _selectedSprite;
+        [SerializeField] private Sprite _targetingSprite;
 
         [Header("Animation")]
         [SerializeField] private float _pulseSpeed = 3f;
-        [SerializeField] private float _alphaMin = 0.4f;
+        [SerializeField] private float _alphaMin = 0.85f;
         [SerializeField] private float _alphaMax = 1.0f;
+        [SerializeField] private float _scaleMin = 1f;
+        [SerializeField] private float _scaleMax = 1.04f;
 
         private Vector2Int _gridPosition;
         private CursorMode _currentMode = CursorMode.Locked;
@@ -100,7 +105,7 @@ namespace ProjectAstra.Core
 
         private void Update()
         {
-            _animator?.UpdatePulse();
+            _animator?.UpdatePulse(_pulseSpeed, _alphaMin, _alphaMax, _scaleMin, _scaleMax);
         }
         #endregion
 
@@ -108,7 +113,7 @@ namespace ProjectAstra.Core
         private void InitializeCursorAnimator()
         {
             if (_spriteRenderer != null)
-                _animator = new CursorAnimator(_spriteRenderer, _pulseSpeed, _alphaMin, _alphaMax);
+                _animator = new CursorAnimator(_spriteRenderer);
         }
 
         private void AddListenersToInputEvents()
@@ -160,6 +165,7 @@ namespace ProjectAstra.Core
         {
             _currentMode = mode;
             ToggleSpriteRendererBasedOnCursorMode();
+            UpdateSpriteForMode();
         }
 
         public void SetPosition(Vector2Int position)
@@ -191,6 +197,23 @@ namespace ProjectAstra.Core
         {
             if (_spriteRenderer == null) return;
             _spriteRenderer.enabled = (_currentMode != CursorMode.Locked);
+        }
+
+        private void UpdateSpriteForMode()
+        {
+            if (_spriteRenderer == null) return;
+
+            Sprite target = _currentMode switch
+            {
+                CursorMode.Free => _idleSprite,
+                CursorMode.UnitSelected => _selectedSprite,
+                CursorMode.Targeting => _targetingSprite,
+                CursorMode.ActionMenu => _selectedSprite,
+                _ => _idleSprite,
+            };
+
+            if (target != null)
+                _spriteRenderer.sprite = target;
         }
 
         private Vector2Int ClampToMapBounds(Vector2Int pos)
@@ -997,6 +1020,13 @@ namespace ProjectAstra.Core
         internal void SetUnitMover(UnitMover mover)
         {
             _unitMover = mover;
+        }
+
+        internal void SetModeSprites(Sprite idle, Sprite selected, Sprite targeting)
+        {
+            _idleSprite = idle;
+            _selectedSprite = selected;
+            _targetingSprite = targeting;
         }
         #endregion
 
