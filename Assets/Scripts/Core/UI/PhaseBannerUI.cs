@@ -1,30 +1,56 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 namespace ProjectAstra.Core.UI
 {
     public class PhaseBannerUI : MonoBehaviour
     {
-        private static readonly Color PlayerPhaseColor = new(0.2f, 0.4f, 0.9f, 1f);
-        private static readonly Color EnemyPhaseColor = new(0.85f, 0.15f, 0.15f, 1f);
-        private static readonly Color AlliedPhaseColor = new(0.2f, 0.75f, 0.3f, 1f);
+        static readonly Color PlayerAccent = new(0.831f, 0.635f, 0.298f, 1f);
+        static readonly Color EnemyAccent  = new(0.753f, 0.271f, 0.220f, 1f);
+        static readonly Color AlliedAccent = new(0.165f, 0.541f, 0.290f, 1f);
 
+        static readonly Color PlayerTextColor = new(0.961f, 0.824f, 0.478f, 1f);
+        static readonly Color EnemyTextColor  = new(0.961f, 0.627f, 0.541f, 1f);
+        static readonly Color AlliedTextColor = new(0.627f, 0.910f, 0.667f, 1f);
+
+        static readonly Color TurnTextColor = new(0.541f, 0.478f, 0.345f, 1f);
+
+        [Header("Event Channel")]
         [SerializeField] private TurnEventChannel _turnEventChannel;
 
-        const float SlideDuration = 0.3f;
-        const float HoldDuration = 1.2f;
-        const float BannerHeight = 40f;
+        [Header("UI References")]
+        [SerializeField] private RectTransform _bannerRoot;
+        [SerializeField] private Image _borderTop;
+        [SerializeField] private Image _borderBottom;
+        [SerializeField] private Image _innerBorderTop;
+        [SerializeField] private Image _innerBorderBottom;
+        [SerializeField] private Image[] _orbImages;
+        [SerializeField] private TextMeshProUGUI _phaseText;
+        [SerializeField] private TextMeshProUGUI _turnText;
+        [SerializeField] private Image _dimOverlay;
 
-        private GameObject _bannerObject;
-        private TextMeshProUGUI _text;
-        private RectTransform _bannerRect;
-        private CanvasGroup _canvasGroup;
+        [Header("Phase Materials")]
+        [SerializeField] private Material _playerGlowMat;
+        [SerializeField] private Material _enemyGlowMat;
+        [SerializeField] private Material _alliedGlowMat;
+
+        [Header("Animation")]
+        [SerializeField] private float _slideDuration = 0.3f;
+        [SerializeField] private float _holdDuration = 1.2f;
+        [SerializeField, Range(0f, 1f)] private float _dimAlpha = 0.55f;
+        static readonly Color DimColor = new(0.0196f, 0.0118f, 0.0196f, 0f);
 
         private void Awake()
         {
-            CreateBannerUI();
-            _bannerObject.SetActive(false);
+            if (_bannerRoot != null)
+                _bannerRoot.gameObject.SetActive(false);
+            if (_dimOverlay != null)
+            {
+                _dimOverlay.color = DimColor;
+                _dimOverlay.gameObject.SetActive(false);
+            }
         }
 
         private void OnEnable()
@@ -47,96 +73,116 @@ namespace ProjectAstra.Core.UI
 
         private IEnumerator ShowBanner(BattlePhase phase, int turnNumber)
         {
-            _text.text = GetPhaseText(phase, turnNumber);
-            _text.color = GetPhaseColor(phase);
-            _bannerObject.SetActive(true);
+            ApplyPhaseVisuals(phase, turnNumber);
+            if (_bannerRoot == null) yield break;
 
-            // Slide in from left
-            yield return SlideHorizontal(-Screen.width, 0, SlideDuration);
+            _bannerRoot.gameObject.SetActive(true);
+            if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(true);
 
-            // Hold
-            yield return new WaitForSeconds(HoldDuration);
+            yield return AnimateSlideAndDim(-Screen.width, 0, 0f, _dimAlpha, _slideDuration);
+            yield return new WaitForSeconds(_holdDuration);
+            yield return AnimateSlideAndDim(0, Screen.width, _dimAlpha, 0f, _slideDuration);
 
-            // Slide out to right
-            yield return SlideHorizontal(0, Screen.width, SlideDuration);
-
-            _bannerObject.SetActive(false);
+            _bannerRoot.gameObject.SetActive(false);
+            if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(false);
         }
 
-        private IEnumerator SlideHorizontal(float fromX, float toX, float duration)
+        private IEnumerator AnimateSlideAndDim(float fromX, float toX,
+            float fromDim, float toDim, float duration)
         {
             float elapsed = 0f;
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-                _bannerRect.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), 0f);
+                _bannerRoot.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), 0f);
+                SetDimAlpha(Mathf.Lerp(fromDim, toDim, t));
                 yield return null;
             }
-            _bannerRect.anchoredPosition = new Vector2(toX, 0f);
+            _bannerRoot.anchoredPosition = new Vector2(toX, 0f);
+            SetDimAlpha(toDim);
         }
 
-        private static string GetPhaseText(BattlePhase phase, int turn)
+        private void SetDimAlpha(float alpha)
+        {
+            if (_dimOverlay == null) return;
+            var c = _dimOverlay.color;
+            c.a = alpha;
+            _dimOverlay.color = c;
+        }
+
+        private void ApplyPhaseVisuals(BattlePhase phase, int turnNumber)
+        {
+            var accent = GetAccentColor(phase);
+            var textColor = GetTextColor(phase);
+            var glowMat = GetGlowMaterial(phase);
+
+            if (_phaseText == null) return;
+
+            _phaseText.text = GetPhaseLabel(phase);
+            _phaseText.color = textColor;
+            if (glowMat != null) _phaseText.fontMaterial = glowMat;
+
+            if (_turnText != null)
+                _turnText.text = phase == BattlePhase.PlayerPhase ? $"Turn {turnNumber}" : "";
+
+            if (_borderTop != null) _borderTop.color = WithAlpha(accent, 0.55f);
+            if (_borderBottom != null) _borderBottom.color = WithAlpha(accent, 0.55f);
+            if (_innerBorderTop != null) _innerBorderTop.color = WithAlpha(accent, 0.2f);
+            if (_innerBorderBottom != null) _innerBorderBottom.color = WithAlpha(accent, 0.2f);
+
+            if (_orbImages != null)
+                foreach (var orb in _orbImages)
+                    if (orb != null) orb.color = accent;
+        }
+
+        private static string GetPhaseLabel(BattlePhase phase)
         {
             return phase switch
             {
-                BattlePhase.PlayerPhase => $"Player Phase  -  Turn {turn}",
+                BattlePhase.PlayerPhase => "Player Phase",
                 BattlePhase.EnemyPhase => "Enemy Phase",
                 BattlePhase.AlliedPhase => "Allied Phase",
                 _ => ""
             };
         }
 
-        private static Color GetPhaseColor(BattlePhase phase)
+        private static Color GetAccentColor(BattlePhase phase)
         {
             return phase switch
             {
-                BattlePhase.PlayerPhase => PlayerPhaseColor,
-                BattlePhase.EnemyPhase => EnemyPhaseColor,
-                BattlePhase.AlliedPhase => AlliedPhaseColor,
+                BattlePhase.PlayerPhase => PlayerAccent,
+                BattlePhase.EnemyPhase => EnemyAccent,
+                BattlePhase.AlliedPhase => AlliedAccent,
+                _ => PlayerAccent
+            };
+        }
+
+        private static Color GetTextColor(BattlePhase phase)
+        {
+            return phase switch
+            {
+                BattlePhase.PlayerPhase => PlayerTextColor,
+                BattlePhase.EnemyPhase => EnemyTextColor,
+                BattlePhase.AlliedPhase => AlliedTextColor,
                 _ => Color.white
             };
         }
 
-        private void CreateBannerUI()
+        private Material GetGlowMaterial(BattlePhase phase)
         {
-            var canvas = GetComponentInParent<Canvas>();
-            if (canvas == null)
+            return phase switch
             {
-                canvas = gameObject.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvas.sortingOrder = 100;
-            }
+                BattlePhase.PlayerPhase => _playerGlowMat,
+                BattlePhase.EnemyPhase => _enemyGlowMat,
+                BattlePhase.AlliedPhase => _alliedGlowMat,
+                _ => _playerGlowMat
+            };
+        }
 
-            _bannerObject = new GameObject("PhaseBanner");
-            _bannerObject.transform.SetParent(canvas.transform, false);
-
-            _bannerRect = _bannerObject.AddComponent<RectTransform>();
-            _bannerRect.anchorMin = new Vector2(0f, 0.4f);
-            _bannerRect.anchorMax = new Vector2(1f, 0.6f);
-            _bannerRect.offsetMin = Vector2.zero;
-            _bannerRect.offsetMax = Vector2.zero;
-
-            var bg = _bannerObject.AddComponent<UnityEngine.UI.Image>();
-            bg.color = new Color(0f, 0f, 0f, 0.7f);
-
-            _canvasGroup = _bannerObject.AddComponent<CanvasGroup>();
-            _canvasGroup.blocksRaycasts = false;
-
-            var textObj = new GameObject("PhaseText");
-            textObj.transform.SetParent(_bannerObject.transform, false);
-
-            var textRect = textObj.AddComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-
-            _text = textObj.AddComponent<TextMeshProUGUI>();
-            _text.alignment = TextAlignmentOptions.Center;
-            _text.fontSize = 24;
-            _text.fontStyle = FontStyles.Bold;
-            _text.enableWordWrapping = false;
+        private static Color WithAlpha(Color c, float a)
+        {
+            return new Color(c.r, c.g, c.b, a);
         }
     }
 }

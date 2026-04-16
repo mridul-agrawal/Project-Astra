@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Phase Banner · Concept R01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --ink: #050305;
+  --indigo: #0a0614;
+  --gold: #d4a24c;
+  --gold-hi: #f5d27a;
+  --gold-deep: #8c5a1a;
+  --cream: #e8d9b8;
+  --cream-dim: #8a7a58;
+  --mute: #5a4c32;
+  --rule: #2a1f12;
+  --blood: #c04538;
+  --blood-hi: #f26a3e;
+  --emerald: #2a8a4a;
+  --emerald-hi: #5ed47a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--ink); }
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -5%, rgba(212,162,76,0.07), transparent 70%),
+    linear-gradient(180deg, #0a0614 0%, #050305 100%);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  padding: 72px 32px 120px;
+  min-height: 100vh;
+}
+.sheet { max-width: 1100px; margin: 0 auto; position: relative; }
+
+/* ──────────── MASTHEAD ──────────── */
+.masthead { text-align: center; margin-bottom: 80px; }
+.overline {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.48em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.8;
+}
+.masthead h1 {
+  font-family: 'Cinzel Decorative', serif; font-weight: 900;
+  font-size: 54px; color: var(--gold-hi);
+  margin: 20px 0 16px; letter-spacing: 0.02em;
+  text-shadow: 0 0 40px rgba(212,162,76,0.18);
+}
+.masthead .sub {
+  font-style: italic; font-size: 20px;
+  color: var(--cream-dim); max-width: 680px; margin: 0 auto; line-height: 1.5;
+}
+
+/* ──────────── VARIANT SECTION ──────────── */
+.variant-section { margin-bottom: 72px; }
+.variant-header {
+  display: flex; align-items: baseline; gap: 24px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--rule);
+  margin-bottom: 20px;
+}
+.variant-no {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.34em; color: var(--mute);
+}
+.variant-name {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700;
+  font-size: 32px; color: var(--gold-hi); line-height: 1;
+}
+.variant-style {
+  margin-left: auto; font-style: italic; font-size: 15px;
+  color: var(--cream-dim);
+}
+.variant-pitch {
+  font-size: 18px; line-height: 1.55; color: var(--cream);
+  opacity: 0.85; max-width: 780px; margin-bottom: 28px;
+}
+.variant-pitch em { color: var(--gold); font-style: italic; }
+
+/* ──────────── GAME FRAME ──────────── */
+.frame-wrap {
+  border: 1px solid rgba(212,162,76,0.18);
+  box-shadow: 0 30px 80px -30px rgba(0,0,0,0.9);
+  margin-bottom: 18px;
+}
+.game-frame {
+  width: 1920px; height: 1080px;
+  zoom: 0.545;
+  position: relative; overflow: hidden;
+}
+/* simulated battle map */
+.map-bg {
+  position: absolute; inset: 0;
+  background-color: #1a3a14;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1920' height='1080'>\
+<defs>\
+<pattern id='g1' patternUnits='userSpaceOnUse' width='128' height='128'>\
+<rect width='128' height='128' fill='%232d4e1e'/>\
+<circle cx='20' cy='30' r='2' fill='%23385a28' opacity='0.6'/>\
+<circle cx='80' cy='70' r='1.5' fill='%23234416' opacity='0.5'/>\
+<circle cx='50' cy='110' r='1' fill='%23385a28' opacity='0.4'/>\
+</pattern>\
+</defs>\
+<rect width='1920' height='1080' fill='url(%23g1)'/>\
+<rect x='256' y='0' width='384' height='256' fill='%23504838' opacity='0.7'/>\
+<rect x='384' y='128' width='256' height='384' fill='%23504838' opacity='0.6'/>\
+<rect x='1280' y='640' width='384' height='256' fill='%23504838' opacity='0.7'/>\
+<rect x='0' y='768' width='256' height='128' fill='%23504838' opacity='0.5'/>\
+<rect x='896' y='0' width='256' height='128' fill='%23385a8c' opacity='0.5'/>\
+<rect x='1024' y='0' width='384' height='256' fill='%23385a8c' opacity='0.4'/>\
+<rect x='1536' y='768' width='256' height='256' fill='%23385a8c' opacity='0.3'/>\
+<rect x='640' y='512' width='128' height='128' fill='%23223a10' opacity='0.8'/>\
+<rect x='1152' y='384' width='128' height='128' fill='%23223a10' opacity='0.7'/>\
+<g stroke='%23000' stroke-opacity='0.12' stroke-width='1' fill='none'>\
+<line x1='128' y1='0' x2='128' y2='1080'/><line x1='256' y1='0' x2='256' y2='1080'/>\
+<line x1='384' y1='0' x2='384' y2='1080'/><line x1='512' y1='0' x2='512' y2='1080'/>\
+<line x1='640' y1='0' x2='640' y2='1080'/><line x1='768' y1='0' x2='768' y2='1080'/>\
+<line x1='896' y1='0' x2='896' y2='1080'/><line x1='1024' y1='0' x2='1024' y2='1080'/>\
+<line x1='1152' y1='0' x2='1152' y2='1080'/><line x1='1280' y1='0' x2='1280' y2='1080'/>\
+<line x1='1408' y1='0' x2='1408' y2='1080'/><line x1='1536' y1='0' x2='1536' y2='1080'/>\
+<line x1='1664' y1='0' x2='1664' y2='1080'/><line x1='1792' y1='0' x2='1792' y2='1080'/>\
+<line x1='0' y1='128' x2='1920' y2='128'/><line x1='0' y1='256' x2='1920' y2='256'/>\
+<line x1='0' y1='384' x2='1920' y2='384'/><line x1='0' y1='512' x2='1920' y2='512'/>\
+<line x1='0' y1='640' x2='1920' y2='640'/><line x1='0' y1='768' x2='1920' y2='768'/>\
+<line x1='0' y1='896' x2='1920' y2='896'/>\
+</g>\
+<circle cx='320' cy='320' r='28' fill='%234488ff' opacity='0.6'/>\
+<circle cx='448' cy='448' r='28' fill='%234488ff' opacity='0.6'/>\
+<circle cx='576' cy='320' r='28' fill='%234488ff' opacity='0.6'/>\
+<circle cx='1280' cy='512' r='28' fill='%23dd3333' opacity='0.6'/>\
+<circle cx='1408' cy='640' r='28' fill='%23dd3333' opacity='0.6'/>\
+</svg>");
+  background-size: 100% 100%;
+}
+.map-dim {
+  position: absolute; inset: 0;
+  background: rgba(5,3,5,0.55);
+}
+
+/* ──────────── BANNER LAYER (shared positioning) ──────────── */
+.banner-layer {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════════════════════════
+   VARIATION 1 — FLOATING SIGIL
+   Pure glowing text, no background. Maximally dramatic.
+════════════════════════════════════════════════════════════ */
+.v1-phase-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900; font-size: 96px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f5d27a;
+  text-shadow:
+    0 0 8px rgba(245,210,122,1),
+    0 0 20px rgba(212,162,76,0.95),
+    0 0 50px rgba(212,162,76,0.7),
+    0 0 100px rgba(212,162,76,0.45),
+    0 0 160px rgba(212,162,76,0.25),
+    0 0 240px rgba(212,162,76,0.1),
+    0 6px 12px rgba(0,0,0,0.9);
+  position: relative;
+  z-index: 2;
+}
+.v1-turn {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 28px;
+  color: rgba(232,217,184,0.7);
+  letter-spacing: 0.18em;
+  margin-top: 8px;
+  text-shadow: 0 0 20px rgba(212,162,76,0.5), 0 3px 8px rgba(0,0,0,0.9);
+}
+.v1-ornament {
+  margin-top: 16px; width: 480px; height: 20px;
+}
+.v1-ornament line { stroke: #d4a24c; stroke-width: 1; }
+.v1-ornament circle { fill: #d4a24c; }
+.v1-ornament .fade { opacity: 0.4; }
+
+/* Enemy variant */
+.v1-enemy .v1-phase-text {
+  color: #f5a08a;
+  text-shadow:
+    0 0 8px rgba(242,106,62,1),
+    0 0 20px rgba(192,69,56,0.95),
+    0 0 50px rgba(192,69,56,0.7),
+    0 0 100px rgba(192,69,56,0.45),
+    0 0 160px rgba(192,69,56,0.25),
+    0 0 240px rgba(140,30,20,0.15),
+    0 6px 12px rgba(0,0,0,0.9);
+}
+.v1-enemy .v1-ornament line { stroke: #c04538; }
+.v1-enemy .v1-ornament circle { fill: #c04538; }
+
+/* Allied variant */
+.v1-allied .v1-phase-text {
+  color: #a0e8aa;
+  text-shadow:
+    0 0 8px rgba(94,212,122,1),
+    0 0 20px rgba(42,138,74,0.95),
+    0 0 50px rgba(42,138,74,0.7),
+    0 0 100px rgba(42,138,74,0.45),
+    0 0 160px rgba(42,138,74,0.25),
+    0 6px 12px rgba(0,0,0,0.9);
+}
+.v1-allied .v1-ornament line { stroke: #2a8a4a; }
+.v1-allied .v1-ornament circle { fill: #2a8a4a; }
+
+/* ════════════════════════════════════════════════════════════
+   VARIATION 2 — TEMPLE SCROLL
+   Semi-transparent banner strip with gold borders and orbs.
+════════════════════════════════════════════════════════════ */
+.v2-scroll {
+  position: relative;
+  width: 100%; padding: 38px 0;
+  background: linear-gradient(180deg, rgba(20,12,8,0.82) 0%, rgba(10,6,4,0.75) 100%);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border-top: 1px solid rgba(212,162,76,0.55);
+  border-bottom: 1px solid rgba(212,162,76,0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,0.5),
+    0 0 60px rgba(212,162,76,0.1),
+    0 30px 70px -30px rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.v2-scroll::before {
+  content: ''; position: absolute;
+  left: 60px; right: 60px; top: 8px; bottom: 8px;
+  border-top: 1px solid rgba(212,162,76,0.2);
+  border-bottom: 1px solid rgba(212,162,76,0.2);
+  pointer-events: none;
+}
+/* corner orbs */
+.v2-scroll .orb {
+  position: absolute; width: 18px; height: 18px;
+  background: radial-gradient(circle at 40% 35%, #f5d27a, #d4a24c 50%, #6a3a0a 90%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #0a0408, 0 0 10px rgba(212,162,76,0.5);
+}
+.v2-scroll .orb-tl { top: -9px; left: 56px; }
+.v2-scroll .orb-tr { top: -9px; right: 56px; }
+.v2-scroll .orb-bl { bottom: -9px; left: 56px; }
+.v2-scroll .orb-br { bottom: -9px; right: 56px; }
+.v2-phase-text {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900; font-size: 78px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold-hi);
+  text-shadow:
+    0 0 14px rgba(212,162,76,0.6),
+    0 0 40px rgba(212,162,76,0.3),
+    0 4px 10px rgba(0,0,0,0.8);
+}
+.v2-turn {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 24px;
+  color: var(--cream-dim); letter-spacing: 0.16em;
+  margin-top: 4px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+.v2-filigree {
+  position: absolute; top: 0; left: 0;
+  width: 200px; height: 100%;
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(212,162,76,0.03) 0px, rgba(212,162,76,0.03) 1px,
+      transparent 1px, transparent 12px);
+  pointer-events: none;
+}
+
+/* Enemy variant */
+.v2-enemy .v2-scroll {
+  border-top-color: rgba(192,69,56,0.6);
+  border-bottom-color: rgba(192,69,56,0.6);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5), 0 0 60px rgba(192,69,56,0.12), 0 30px 70px -30px rgba(0,0,0,0.85);
+}
+.v2-enemy .v2-scroll::before { border-color: rgba(192,69,56,0.2); }
+.v2-enemy .v2-scroll .orb {
+  background: radial-gradient(circle at 40% 35%, #f26a3e, #c04538 50%, #5a1010 90%);
+  box-shadow: 0 0 0 1px #200404, 0 0 10px rgba(192,69,56,0.5);
+}
+.v2-enemy .v2-phase-text {
+  color: #f5a08a;
+  text-shadow: 0 0 14px rgba(192,69,56,0.7), 0 0 40px rgba(192,69,56,0.35), 0 4px 10px rgba(0,0,0,0.8);
+}
+.v2-enemy .v2-filigree {
+  background: repeating-linear-gradient(135deg, rgba(192,69,56,0.03) 0px, rgba(192,69,56,0.03) 1px, transparent 1px, transparent 12px);
+}
+
+/* Allied variant */
+.v2-allied .v2-scroll {
+  border-top-color: rgba(42,138,74,0.55);
+  border-bottom-color: rgba(42,138,74,0.55);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5), 0 0 60px rgba(42,138,74,0.1), 0 30px 70px -30px rgba(0,0,0,0.85);
+}
+.v2-allied .v2-scroll::before { border-color: rgba(42,138,74,0.2); }
+.v2-allied .v2-scroll .orb {
+  background: radial-gradient(circle at 40% 35%, #5ed47a, #2a8a4a 50%, #0a3a18 90%);
+  box-shadow: 0 0 0 1px #040a06, 0 0 10px rgba(42,138,74,0.5);
+}
+.v2-allied .v2-phase-text {
+  color: #a0e8aa;
+  text-shadow: 0 0 14px rgba(42,138,74,0.7), 0 0 40px rgba(42,138,74,0.35), 0 4px 10px rgba(0,0,0,0.8);
+}
+.v2-allied .v2-filigree {
+  background: repeating-linear-gradient(135deg, rgba(42,138,74,0.03) 0px, rgba(42,138,74,0.03) 1px, transparent 1px, transparent 12px);
+}
+
+/* ════════════════════════════════════════════════════════════
+   VARIATION 3 — DHARMA VERSE
+   Minimal: two thin rules, text between, yantra ornament.
+════════════════════════════════════════════════════════════ */
+.v3-verse {
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 10px;
+  padding: 0 200px;
+  width: 100%;
+}
+.v3-rule {
+  width: 680px; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 20%, var(--gold) 80%, transparent 100%);
+  opacity: 0.65;
+}
+.v3-text-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: 40px;
+}
+.v3-phase-word {
+  font-family: 'Cinzel', serif;
+  font-weight: 700; font-size: 72px;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--gold-hi);
+  text-shadow: 0 0 30px rgba(212,162,76,0.4), 0 4px 10px rgba(0,0,0,0.85);
+}
+.v3-yantra {
+  width: 28px; height: 28px; flex-shrink: 0;
+}
+.v3-yantra rect { fill: var(--gold); }
+.v3-turn {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 22px;
+  color: var(--cream-dim); letter-spacing: 0.2em;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+
+/* Enemy variant */
+.v3-enemy .v3-rule { background: linear-gradient(90deg, transparent 0%, #c04538 20%, #c04538 80%, transparent 100%); }
+.v3-enemy .v3-phase-word {
+  color: #f5a08a;
+  text-shadow: 0 0 30px rgba(192,69,56,0.5), 0 4px 10px rgba(0,0,0,0.85);
+}
+.v3-enemy .v3-yantra rect { fill: #c04538; }
+
+/* Allied variant */
+.v3-allied .v3-rule { background: linear-gradient(90deg, transparent 0%, #2a8a4a 20%, #2a8a4a 80%, transparent 100%); }
+.v3-allied .v3-phase-word {
+  color: #a0e8aa;
+  text-shadow: 0 0 30px rgba(42,138,74,0.5), 0 4px 10px rgba(0,0,0,0.85);
+}
+.v3-allied .v3-yantra rect { fill: #2a8a4a; }
+
+/* ──────────── PHASE STRIP (color variants below each frame) ──────────── */
+.phase-strip {
+  display: flex; gap: 12px; margin-bottom: 8px;
+}
+.phase-chip {
+  flex: 1;
+  height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px;
+  border: 1px solid rgba(212,162,76,0.15);
+  background: rgba(10,6,20,0.6);
+}
+.phase-chip .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.phase-chip .dot-player { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.phase-chip .dot-enemy  { background: var(--blood); box-shadow: 0 0 8px var(--blood); }
+.phase-chip .dot-allied { background: var(--emerald); box-shadow: 0 0 8px var(--emerald); }
+.phase-chip .label {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--cream-dim);
+}
+.phase-chip.active { border-color: rgba(212,162,76,0.4); }
+.phase-chip.active .label { color: var(--cream); }
+
+/* ──────────── COLOPHON ──────────── */
+.colophon {
+  margin-top: 40px; padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 13px; color: var(--mute);
+  font-family: 'Cinzel', serif; letter-spacing: 0.22em; text-transform: uppercase;
+}
+.colophon em {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; text-transform: none;
+  letter-spacing: 0.02em; color: var(--cream-dim); font-size: 15px;
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- ═══════════ MASTHEAD ═══════════ -->
+  <header class="masthead">
+    <div class="overline">Project Astra &middot; Art Direction &middot; R01 &middot; Phase Banner</div>
+    <h1>The Turning of the Wheel</h1>
+    <p class="sub">Three ways to announce whose hand guides the battle. Each shown at full 16:9 over a simulated map, in all three faction colours.</p>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════
+       VARIATION 1 — FLOATING SIGIL
+  ═══════════════════════════════════════════════ -->
+  <section class="variant-section">
+    <div class="variant-header">
+      <div class="variant-no">I</div>
+      <div class="variant-name">Floating Sigil</div>
+      <div class="variant-style">Pure glowing text &middot; no backdrop</div>
+    </div>
+    <p class="variant-pitch">No rectangle, no panel — just <em>massive radiant typography</em> burning through the battlefield like a divine decree. Multi-layered text-shadow creates a halo that reads over any terrain. Closest to the Fire Emblem reference, reinterpreted with temple-gold warmth.</p>
+
+    <!-- Player Phase (hero view) -->
+    <div class="frame-wrap">
+      <div class="game-frame">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v1-phase-text">Player Phase</div>
+          <div class="v1-turn">Turn 3</div>
+          <svg class="v1-ornament" viewBox="0 0 480 20">
+            <line x1="0" y1="10" x2="200" y2="10" class="fade"/>
+            <circle cx="210" cy="10" r="2"/>
+            <line x1="220" y1="10" x2="230" y2="10"/>
+            <circle cx="240" cy="10" r="3.5"/>
+            <line x1="250" y1="10" x2="260" y2="10"/>
+            <circle cx="270" cy="10" r="2"/>
+            <line x1="280" y1="10" x2="480" y2="10" class="fade"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip active"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Enemy Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v1-enemy">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v1-phase-text">Enemy Phase</div>
+          <div class="v1-turn">&nbsp;</div>
+          <svg class="v1-ornament" viewBox="0 0 480 20">
+            <line x1="0" y1="10" x2="200" y2="10" class="fade"/>
+            <circle cx="210" cy="10" r="2"/>
+            <line x1="220" y1="10" x2="230" y2="10"/>
+            <circle cx="240" cy="10" r="3.5"/>
+            <line x1="250" y1="10" x2="260" y2="10"/>
+            <circle cx="270" cy="10" r="2"/>
+            <line x1="280" y1="10" x2="480" y2="10" class="fade"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Allied Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v1-allied">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v1-phase-text">Allied Phase</div>
+          <div class="v1-turn">&nbsp;</div>
+          <svg class="v1-ornament" viewBox="0 0 480 20">
+            <line x1="0" y1="10" x2="200" y2="10" class="fade"/>
+            <circle cx="210" cy="10" r="2"/>
+            <line x1="220" y1="10" x2="230" y2="10"/>
+            <circle cx="240" cy="10" r="3.5"/>
+            <line x1="250" y1="10" x2="260" y2="10"/>
+            <circle cx="270" cy="10" r="2"/>
+            <line x1="280" y1="10" x2="480" y2="10" class="fade"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       VARIATION 2 — TEMPLE SCROLL
+  ═══════════════════════════════════════════════ -->
+  <section class="variant-section">
+    <div class="variant-header">
+      <div class="variant-no">II</div>
+      <div class="variant-name">Temple Scroll</div>
+      <div class="variant-style">Panelled strip &middot; gold borders &amp; orbs</div>
+    </div>
+    <p class="variant-pitch">A semi-transparent banner strip with <em>backdrop blur, gold borders, and corner orbs</em> — the same visual language as the existing battle HUD panels. Most polished and production-consistent; the banner feels like it belongs to the same UI family.</p>
+
+    <!-- Player Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v2-scroll">
+            <div class="v2-filigree"></div>
+            <div class="orb orb-tl"></div><div class="orb orb-tr"></div>
+            <div class="orb orb-bl"></div><div class="orb orb-br"></div>
+            <div class="v2-phase-text">Player Phase</div>
+            <div class="v2-turn">Turn 3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip active"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Enemy Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v2-enemy">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v2-scroll">
+            <div class="v2-filigree"></div>
+            <div class="orb orb-tl"></div><div class="orb orb-tr"></div>
+            <div class="orb orb-bl"></div><div class="orb orb-br"></div>
+            <div class="v2-phase-text">Enemy Phase</div>
+            <div class="v2-turn">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Allied Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v2-allied">
+        <div class="map-bg"></div>
+        <div class="map-dim"></div>
+        <div class="banner-layer">
+          <div class="v2-scroll">
+            <div class="v2-filigree"></div>
+            <div class="orb orb-tl"></div><div class="orb orb-tr"></div>
+            <div class="orb orb-bl"></div><div class="orb orb-br"></div>
+            <div class="v2-phase-text">Allied Phase</div>
+            <div class="v2-turn">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       VARIATION 3 — DHARMA VERSE
+  ═══════════════════════════════════════════════ -->
+  <section class="variant-section">
+    <div class="variant-header">
+      <div class="variant-no">III</div>
+      <div class="variant-name">Dharma Verse</div>
+      <div class="variant-style">Minimal rules &middot; editorial restraint</div>
+    </div>
+    <p class="variant-pitch">Two thin gold rules frame the phase name; a small <em>yantra diamond</em> sits between the words. Maximum negative space, maximum restraint. The map shows through almost unobstructed — the announcement is a whisper, not a shout.</p>
+
+    <!-- Player Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame">
+        <div class="map-bg"></div>
+        <div class="map-dim" style="background: rgba(5,3,5,0.45);"></div>
+        <div class="banner-layer">
+          <div class="v3-verse">
+            <div class="v3-rule"></div>
+            <div class="v3-text-row">
+              <span class="v3-phase-word">Player</span>
+              <svg class="v3-yantra" viewBox="0 0 28 28">
+                <rect x="14" y="2" width="12" height="12" transform="rotate(45 14 14)" rx="1"/>
+              </svg>
+              <span class="v3-phase-word">Phase</span>
+            </div>
+            <div class="v3-turn">Turn 3</div>
+            <div class="v3-rule"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip active"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Enemy Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v3-enemy">
+        <div class="map-bg"></div>
+        <div class="map-dim" style="background: rgba(5,3,5,0.45);"></div>
+        <div class="banner-layer">
+          <div class="v3-verse">
+            <div class="v3-rule"></div>
+            <div class="v3-text-row">
+              <span class="v3-phase-word">Enemy</span>
+              <svg class="v3-yantra" viewBox="0 0 28 28">
+                <rect x="14" y="2" width="12" height="12" transform="rotate(45 14 14)" rx="1"/>
+              </svg>
+              <span class="v3-phase-word">Phase</span>
+            </div>
+            <div class="v3-turn">&nbsp;</div>
+            <div class="v3-rule"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+
+    <!-- Allied Phase -->
+    <div class="frame-wrap">
+      <div class="game-frame v3-allied">
+        <div class="map-bg"></div>
+        <div class="map-dim" style="background: rgba(5,3,5,0.45);"></div>
+        <div class="banner-layer">
+          <div class="v3-verse">
+            <div class="v3-rule"></div>
+            <div class="v3-text-row">
+              <span class="v3-phase-word">Allied</span>
+              <svg class="v3-yantra" viewBox="0 0 28 28">
+                <rect x="14" y="2" width="12" height="12" transform="rotate(45 14 14)" rx="1"/>
+              </svg>
+              <span class="v3-phase-word">Phase</span>
+            </div>
+            <div class="v3-turn">&nbsp;</div>
+            <div class="v3-rule"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="phase-strip">
+      <div class="phase-chip"><span class="dot dot-player"></span><span class="label">Player Phase</span></div>
+      <div class="phase-chip"><span class="dot dot-enemy"></span><span class="label">Enemy Phase</span></div>
+      <div class="phase-chip active"><span class="dot dot-allied"></span><span class="label">Allied Phase</span></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ COLOPHON ═══════════ -->
+  <footer class="colophon">
+    <div>Project Astra &middot; Phase Banner &middot; R01</div>
+    <em>— whose hand turns the wheel?</em>
+  </footer>
+</div>
+</body>
+</html>
