@@ -129,10 +129,10 @@ TextureImporter:
       name: portrait_frame_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 907
-        height: 911
+        x: 19
+        y: 11
+        width: 842
+        height: 850
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

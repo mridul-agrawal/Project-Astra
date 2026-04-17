@@ -34,7 +34,7 @@ namespace ProjectAstra.Core
                 attacker.str, attacker.mag, attacker.weapon.might, 0,
                 defender.def, defender.res, defenderTerrainDef);
 
-            int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, 0, defender.niyati);
+            int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, attacker.classCrit, defender.niyati);
 
             bool canCounter = !defender.weapon.IsEmpty &&
                               defender.weapon.CanReachRange(attacker.distance);
@@ -48,7 +48,7 @@ namespace ProjectAstra.Core
                 defDmg = CombatEngine.ComputeDamage(defender.weapon.damageType,
                     defender.str, defender.mag, defender.weapon.might, 0,
                     attacker.def, attacker.res, attackerTerrainDef);
-                defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, 0, attacker.niyati);
+                defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, defender.classCrit, attacker.niyati);
             }
 
             return new CombatForecast
@@ -79,8 +79,9 @@ namespace ProjectAstra.Core
         public int currentHP, maxHP;
         public int distance;
         public WeaponData weapon;
+        public int classCrit; // UC-08. Added to the crit formula.
 
-        public static CombatantData FromStats(StatArray stats, int currentHP, int maxHP, WeaponData weapon, int distance)
+        public static CombatantData FromStats(StatArray stats, int currentHP, int maxHP, WeaponData weapon, int distance, int classCrit = 0)
         {
             return new CombatantData
             {
@@ -96,6 +97,7 @@ namespace ProjectAstra.Core
                 maxHP = maxHP,
                 weapon = weapon,
                 distance = distance,
+                classCrit = classCrit,
             };
         }
     }

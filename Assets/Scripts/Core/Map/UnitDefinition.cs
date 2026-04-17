@@ -19,11 +19,31 @@ namespace ProjectAstra.Core
         [Header("Growth Rates (0-100)")]
         [SerializeField] private StatArray _personalGrowths;
 
+        [Header("Portrait (full HP)")]
+        [SerializeField] private Sprite _portrait;
+
+        [Header("Portrait Variants (optional — fallback to _portrait)")]
+        [SerializeField] private Sprite _woundedPortrait;     // HP < 50%
+        [SerializeField] private Sprite _criticalPortrait;    // HP < 25%
+        [SerializeField] private Sprite _deceasedPortrait;    // CurrentHP == 0
+        [SerializeField] private Sprite _stressedOverlay;     // USE-04 Tier >= 1 overlay
+
+        [Header("Identity (story)")]
+        [SerializeField] private PanchaBhuta _affinity = PanchaBhuta.None;    // SP-03
+        [SerializeField] private Personality _personality = Personality.None; // CC-01, allied NPCs only
+
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
         public StatArray BaseStats => _baseStats;
         public int BaseLevel => _baseLevel;
         public StatArray PersonalGrowths => _personalGrowths;
+        public Sprite Portrait => _portrait;
+        public Sprite WoundedPortrait => _woundedPortrait;
+        public Sprite CriticalPortrait => _criticalPortrait;
+        public Sprite DeceasedPortrait => _deceasedPortrait;
+        public Sprite StressedOverlay => _stressedOverlay;
+        public PanchaBhuta Affinity => _affinity;
+        public Personality Personality => _personality;
     }
 }

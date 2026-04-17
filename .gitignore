@@ -84,3 +84,12 @@ crashlytics-build.properties
 /Tools/output/
 /Tools/venv/
 .secrets/
+
+# Editor-time screenshots captured for verification; not shipped assets.
+/Assets/Screenshots/
+
+# Quarantined legacy files awaiting final removal.
+/.legacy/
+
+# Claude Code per-session state.
+/.claude/scheduled_tasks.lock

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -8,85 +7,424 @@ using UnityEngine.UI;
 namespace ProjectAstra.EditorTools
 {
     // ===========================================================================================
-    // Unit Info Panel (temp) — full-screen 1920×1080 info screen.
+    // Unit Info Panel — full-screen 1920×1080 multi-page info screen.
     //
-    // Target resolution: 1920×1080 (matches the Canvas reference resolution).
-    // Screen kind:       FULL_SCREEN (not a modal popup — the panel fills the whole canvas).
+    // Three pages: Stats (Personal Data), Inventory (Items), Supports (Bonds & Oaths).
+    // Shared left section (portrait, name, class, level, HP) with swappable right section per page.
     //
-    // The Figma source was originally authored at 1197×673, then rescaled to 1920×1080 via the
-    // Figma Plugin API (all child positions, sizes, stroke widths, and font sizes scaled
-    // proportionally by ~1.6037×). The ORIGINAL 1197×673 authoring values are kept in this file
-    // so the code remains readable against the original Figma design, and every dimensional
-    // value is wrapped in V2(...) or Sc(...) which multiplies by Scale at use time.
+    // Color palette: Nila Dharma (indigo/sapphire/gold from mockup 06).
+    // Layout/spacing: Rakta Mitti v2 structure (tight, large-font, stamp-style weapon ranks).
     //
-    // If the panel is ever retargeted to a new resolution, change only the `Scale` constant.
-    //
-    // See `docs/UI_WORKFLOW.md` for the full Figma-to-Unity pipeline.
+    // See docs/mockups/unit_info_06_nila_dharma.html for the visual reference.
+    // See docs/UI_WORKFLOW.md for the full Figma-to-Unity pipeline.
     // ===========================================================================================
     public static class UnitInfoPanelBuilder
     {
-        // ---- target resolution & screen kind ----
         const float CanvasWidth  = 1920f;
         const float CanvasHeight = 1080f;
         const bool  IsFullScreen = true;
 
-        // Design reference scale. Original Figma panel frame was 1197.2249×673.4375; the new
-        // target is 1920×1080. 1920 / 1197.2249 ≈ 1.6037086.
-        const float Scale = 1.6037086f;
+        // No Figma rescale needed — designing directly at 1920×1080.
+        const float Scale = 1f;
 
         // ---- paths ----
         const string SpriteDir = "Assets/UI/UnitInfoPanel/Icons/";
         const string FrameDir  = "Assets/UI/UnitInfoPanel/Sprites/";
         const string FontDir   = "Assets/UI/UnitInfoPanel/Fonts/";
 
-        // ---- colours ----
-        static readonly Color ColBorderBrown   = new Color32(0x2a, 0x18, 0x10, 0xff);
-        static readonly Color ColBorderGold    = new Color32(0xd4, 0xa1, 0x42, 0xff);
-        static readonly Color ColParchment     = new Color32(0xd4, 0xac, 0x68, 0xff);
-        static readonly Color ColFrameGold     = new Color32(0xf4, 0xd2, 0x7a, 0xff);
+        // ---- Nila Dharma palette ----
+        static readonly Color ColIndigo      = new Color32(0x0a, 0x0e, 0x2a, 0xff);
+        static readonly Color ColIndigoMid   = new Color32(0x14, 0x18, 0x40, 0xff);
+        static readonly Color ColIndigoLight = new Color32(0x1e, 0x24, 0x58, 0xff);
+        static readonly Color ColSapphire    = new Color32(0x2a, 0x4a, 0x8a, 0xff);
+        static readonly Color ColGold        = new Color32(0xc8, 0xa0, 0x40, 0xff);
+        static readonly Color ColGoldBright  = new Color32(0xe8, 0xc8, 0x60, 0xff);
+        static readonly Color ColGoldDim     = new Color32(0xc8, 0xa0, 0x40, 0x40); // 25% alpha
+        static readonly Color ColGoldFaint   = new Color32(0xc8, 0xa0, 0x40, 0x14); // 8% alpha
+        static readonly Color ColIvory       = new Color32(0xe8, 0xe0, 0xd0, 0xff);
+        static readonly Color ColSilver      = new Color32(0xa0, 0xa8, 0xb8, 0xff);
+        static readonly Color ColGreen       = new Color32(0x60, 0xc8, 0x70, 0xff);
+        static readonly Color ColRed         = new Color32(0xc8, 0x40, 0x40, 0xff);
+        static readonly Color ColDimOverlay  = new Color(0, 0, 0, 0.55f);
 
-        static readonly Color ColTextBrown     = new Color32(0x3a, 0x20, 0x08, 0xff);
-        static readonly Color ColTextBrownDk   = new Color32(0x5a, 0x36, 0x18, 0xff);
-        static readonly Color ColTextRed       = new Color32(0x96, 0x20, 0x12, 0xff);
-        static readonly Color ColTextNavy      = new Color32(0x0c, 0x18, 0x32, 0xff);
-        static readonly Color ColTextBlue      = new Color32(0x1a, 0x2c, 0x5a, 0xff);
-        static readonly Color ColTextGold      = new Color32(0xf6, 0xd9, 0x7a, 0xff);
-        static readonly Color ColTextLabel     = new Color32(0xa7, 0xc0, 0xee, 0xff);
+        // Sapphire with varying alpha for borders/separators
+        static readonly Color ColBorderSapphire = new Color32(0x2a, 0x4a, 0x8a, 0x59); // 35%
+        static readonly Color ColSepFaint       = new Color32(0x2a, 0x4a, 0x8a, 0x26); // 15%
 
         // ---- fonts (assigned in Build()) ----
         static TMP_FontAsset cinzel, cinzelDecor, cormorant, cormorantItalic;
+
+        // ---- chrome sprites (assigned in Build()) ----
+        static Sprite sprPanelFrame, sprMandalaBg, sprPortraitFrame;
+        static Sprite sprHpFillGreen, sprHpFillYellow, sprHpFillRed;
+        static Sprite sprAffinityBadge, sprAffinityIconAgni;
+        static Sprite sprBondPipLit, sprBondPipUnlit, sprBondPipEncounter;
+        static Sprite sprPageDotActive, sprPageDotInactive, sprNotifBadge;
+        static Sprite sprDiyaMemorial, sprShapathIcon, sprThresholdMark;
+        static Sprite sprAffinityAgni, sprAffinityJal, sprAffinityVayu, sprAffinityPrithvi, sprAffinityAkasha;
+        static Sprite sprIconWeapon, sprIconItem;
+
+        // ---- TMP glow materials (assigned in Build()) ----
+        static Material matCharNameGlow, matPageHeaderGlow;
+        static Material matWeaponRankAccess, matWeaponRankDefault;
+
+        // ---- UI material (desaturation for dead portraits) ----
+        static Material matDesaturated;
 
         // ==================================================================
         // entry point
         // ==================================================================
 
-        [MenuItem("Project Astra/Build Unit Info Panel (temp)")]
+        [MenuItem("Project Astra/Build Unit Info Panel")]
         public static void Build()
         {
-            // Sanity check: if the screen is declared full-screen, the outer panel
-            // dimensions (below) must equal the canvas reference resolution.
-            if (IsFullScreen && (Mathf.Abs(Sc(1197) - CanvasWidth) > 1f || Mathf.Abs(Sc(673) - CanvasHeight) > 1f))
-            {
-                Debug.LogError($"UnitInfoPanelBuilder: panel dimensions ({Sc(1197)}×{Sc(673)}) " +
-                               $"do not match canvas reference ({CanvasWidth}×{CanvasHeight}). " +
-                               "Fix the Scale constant or set IsFullScreen = false.");
-                return;
-            }
+            // §0.5 dim assertion — if CanvasWidth/Height/IsFullScreen are ever edited away
+            // from 1920×1080 full-screen without updating the canvas, catch it here.
+            if (IsFullScreen && (Mathf.Abs(CanvasWidth - 1920f) > 1f || Mathf.Abs(CanvasHeight - 1080f) > 1f))
+                Debug.LogError("UnitInfoPanel dims don't match Unity canvas reference (1920×1080). Fix constants.");
+
+            var activeScene = EditorSceneManager.GetActiveScene();
+            if (activeScene.name != "BattleMap")
+                Debug.LogWarning($"Building UnitInfoPanel into scene '{activeScene.name}' — expected BattleMap. Continuing.");
 
             cinzel          = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontDir + "Cinzel SDF.asset");
             cinzelDecor     = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontDir + "CinzelDecorative SDF.asset");
             cormorant       = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontDir + "CormorantGaramond SDF.asset");
             cormorantItalic = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontDir + "CormorantGaramondItalic SDF.asset");
 
+            // Chrome sprites (Figma source — see docs/UI_WORKFLOW.md §4.5)
+            sprPanelFrame       = LoadFrame("panel_frame.png");
+            sprMandalaBg        = LoadFrame("mandala_bg.png");
+            sprPortraitFrame    = LoadFrame("portrait_frame.png");
+            sprHpFillGreen      = LoadFrame("hp_bar_fill_green.png");
+            sprHpFillYellow     = LoadFrame("hp_bar_fill_yellow.png");
+            sprHpFillRed        = LoadFrame("hp_bar_fill_red.png");
+            sprAffinityBadge    = LoadFrame("affinity_badge.png");
+            sprAffinityIconAgni = LoadFrame("affinity_icon_agni.png");
+            sprBondPipLit       = LoadFrame("bond_pip_lit.png");
+            sprBondPipUnlit     = LoadFrame("bond_pip_unlit.png");
+            sprBondPipEncounter = LoadFrame("bond_pip_encounter.png");
+            sprPageDotActive    = LoadFrame("page_dot_active.png");
+            sprNotifBadge       = LoadFrame("notif_badge.png");
+            sprDiyaMemorial     = LoadFrame("diya_memorial.png");
+            sprShapathIcon      = LoadFrame("shapath_icon.png");
+            sprThresholdMark    = LoadFrame("threshold_mark.png");
+            sprAffinityAgni     = LoadFrame("affinity_agni.png");
+            sprAffinityJal      = LoadFrame("affinity_jal.png");
+            sprAffinityVayu     = LoadFrame("affinity_vayu.png");
+            sprAffinityPrithvi  = LoadFrame("affinity_prithvi.png");
+            sprAffinityAkasha   = LoadFrame("affinity_akasha.png");
+            sprIconWeapon       = LoadSprite("icon_weapon_generic.png");
+            sprIconItem         = LoadSprite("icon_item_generic.png");
+
+            matDesaturated      = AssetDatabase.LoadAssetAtPath<Material>("Assets/UI/UnitInfoPanel/Materials/UIDesaturated.mat");
+
+            if (sprPanelFrame == null)
+                Debug.LogWarning("panel_frame.png missing — panel will render with flat-color fallback.");
+
+            // TMP glow materials (see UnitInfoPanelMaterials.cs — run the menu item once to generate)
+            matCharNameGlow      = AssetDatabase.LoadAssetAtPath<Material>(UnitInfoPanelMaterials.CharNameGlow);
+            matPageHeaderGlow    = AssetDatabase.LoadAssetAtPath<Material>(UnitInfoPanelMaterials.PageHeaderGlow);
+            matWeaponRankAccess  = AssetDatabase.LoadAssetAtPath<Material>(UnitInfoPanelMaterials.WeaponRankAccessGlow);
+            matWeaponRankDefault = AssetDatabase.LoadAssetAtPath<Material>(UnitInfoPanelMaterials.WeaponRankDefaultUL);
+            if (matCharNameGlow == null)
+                Debug.LogWarning("Glow materials missing — run 'Project Astra/Generate UnitInfo Glow Materials' first.");
+
             var canvas = EnsureCanvas();
+
+            var existingOverlay = canvas.transform.Find("UnitInfoDimOverlay");
+            if (existingOverlay != null) Object.DestroyImmediate(existingOverlay.gameObject);
             var existing = canvas.transform.Find("UnitInfoPanel");
             if (existing != null) Object.DestroyImmediate(existing.gameObject);
 
+            var overlay = BuildDimOverlay(canvas.transform);
             var panel = BuildPanel(canvas.transform);
 
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+            // Attach runtime controller
+            var controller = panel.GetComponent<Core.UI.UnitInfoPanelUI>();
+            if (controller == null)
+                controller = panel.AddComponent<Core.UI.UnitInfoPanelUI>();
+
+            // Sub-panels — item detail & support detail (UI-02 pages 2 & 3 selection)
+            var itemDetail = BuildItemDetailSubpanel(panel.transform);
+            var supportDetail = BuildSupportDetailSubpanel(panel.transform);
+
+            // Wire sprite assets onto the controller's SerializeFields so runtime sprite-swap works.
+            WireControllerSprites(controller);
+            WireDetailReferences(controller, itemDetail, supportDetail);
+
+            // Auto-wire GridCursor._unitInfoPanelUI so the cursor's Open-Info key hits this instance.
+            WireGridCursor(controller);
+
+            EditorSceneManager.MarkSceneDirty(activeScene);
             Selection.activeGameObject = panel;
-            Debug.Log("UnitInfoPanel built.");
+            Debug.Log("UnitInfoPanel (Nila Dharma) built.");
+        }
+
+        static void WireControllerSprites(Core.UI.UnitInfoPanelUI controller)
+        {
+            var so = new SerializedObject(controller);
+            AssignSprite(so, "_hpFillGreen",     sprHpFillGreen);
+            AssignSprite(so, "_hpFillYellow",    sprHpFillYellow);
+            AssignSprite(so, "_hpFillRed",       sprHpFillRed);
+            AssignSprite(so, "_pageDotActive",   sprPageDotActive);
+            AssignSprite(so, "_pageDotInactive", sprPageDotInactive);
+            AssignSprite(so, "_bondPipLit",      sprBondPipLit);
+            AssignSprite(so, "_bondPipUnlit",    sprBondPipUnlit);
+            AssignSprite(so, "_bondPipEncounter",sprBondPipEncounter);
+            AssignSprite(so, "_notifBadge",      sprNotifBadge);
+            AssignSprite(so, "_diyaMemorial",    sprDiyaMemorial);
+            AssignSprite(so, "_shapathIcon",     sprShapathIcon);
+            AssignSprite(so, "_thresholdMark",   sprThresholdMark);
+
+            // Affinity icons indexed by PanchaBhuta enum (1..5; 0 = None unused).
+            var affProp = so.FindProperty("_affinityIcons");
+            if (affProp != null)
+            {
+                affProp.arraySize = 5;
+                affProp.GetArrayElementAtIndex(0).objectReferenceValue = sprAffinityAgni;
+                affProp.GetArrayElementAtIndex(1).objectReferenceValue = sprAffinityJal;
+                affProp.GetArrayElementAtIndex(2).objectReferenceValue = sprAffinityVayu;
+                affProp.GetArrayElementAtIndex(3).objectReferenceValue = sprAffinityPrithvi;
+                affProp.GetArrayElementAtIndex(4).objectReferenceValue = sprAffinityAkasha;
+            }
+
+            var matProp = so.FindProperty("_desaturatedMaterial");
+            if (matProp != null) matProp.objectReferenceValue = matDesaturated;
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void AssignSprite(SerializedObject so, string propName, Sprite value)
+        {
+            var prop = so.FindProperty(propName);
+            if (prop != null) prop.objectReferenceValue = value;
+        }
+
+        static Core.UI.UnitInfoItemDetailUI BuildItemDetailSubpanel(Transform parent)
+        {
+            var root = NewImage("ItemDetailPanel", parent, ColIndigo);
+            var rt = root.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = new Vector2(900, 600);
+
+            // Sapphire border ring
+            // Outer sapphire ring achieved by inset-covering the root with an inner indigo fill.
+            root.GetComponent<Image>().color = ColSapphire;
+            var innerFill = NewImage("InnerFill", rt, ColIndigo);
+            var ifRt = innerFill.GetComponent<RectTransform>();
+            ifRt.anchorMin = Vector2.zero; ifRt.anchorMax = Vector2.one;
+            ifRt.offsetMin = new Vector2(2, 2); ifRt.offsetMax = new Vector2(-2, -2);
+            innerFill.GetComponent<Image>().raycastTarget = false;
+
+            // Title
+            var title = NewText("Name", rt, "Item Name", cinzel, 40, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            title.characterSpacing = 4;
+            if (matCharNameGlow != null) title.fontMaterial = matCharNameGlow;
+            var tRt = title.rectTransform;
+            tRt.anchorMin = new Vector2(0, 1);
+            tRt.anchorMax = new Vector2(1, 1);
+            tRt.pivot = new Vector2(0.5f, 1);
+            tRt.anchoredPosition = new Vector2(0, -24);
+            tRt.sizeDelta = new Vector2(-60, 52);
+
+            // Type subtitle
+            var type = NewText("Type", rt, "WEAPON · SWORD", cinzel, 18, ColSilver,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Normal);
+            type.characterSpacing = 6;
+            var tyRt = type.rectTransform;
+            tyRt.anchorMin = new Vector2(0, 1);
+            tyRt.anchorMax = new Vector2(1, 1);
+            tyRt.pivot = new Vector2(0.5f, 1);
+            tyRt.anchoredPosition = new Vector2(0, -78);
+            tyRt.sizeDelta = new Vector2(-60, 24);
+
+            // Stat grid — 3 columns × 2 rows
+            string[] labels = { "Might", "Hit", "Crit", "Weight", "Range", "Rank" };
+            string[] fieldNames = { "MightVal", "HitVal", "CritVal", "WeightVal", "RangeVal", "RankVal" };
+            var statTmps = new TextMeshProUGUI[6];
+            for (int i = 0; i < 6; i++)
+            {
+                int col = i % 3;
+                int row = i / 3;
+                var cell = NewRect("Cell_" + labels[i], rt);
+                cell.anchorMin = new Vector2(col / 3f, 1);
+                cell.anchorMax = new Vector2((col + 1) / 3f, 1);
+                cell.pivot = new Vector2(0.5f, 1);
+                cell.anchoredPosition = new Vector2(0, -140 - row * 80);
+                cell.sizeDelta = new Vector2(0, 70);
+                var lab = NewText("Label", cell, labels[i].ToUpper(), cinzel, 16, ColSilver,
+                    TextAlignmentOptions.Top, FontStyles.Normal);
+                lab.characterSpacing = 4;
+                var lRt = lab.rectTransform;
+                lRt.anchorMin = new Vector2(0, 1); lRt.anchorMax = new Vector2(1, 1); lRt.pivot = new Vector2(0.5f, 1);
+                lRt.anchoredPosition = Vector2.zero; lRt.sizeDelta = new Vector2(0, 22);
+                var val = NewText(fieldNames[i], cell, "—", cormorant, 32, ColIvory,
+                    TextAlignmentOptions.Bottom, FontStyles.Bold);
+                var vRt = val.rectTransform;
+                vRt.anchorMin = new Vector2(0, 0); vRt.anchorMax = new Vector2(1, 0); vRt.pivot = new Vector2(0.5f, 0);
+                vRt.anchoredPosition = Vector2.zero; vRt.sizeDelta = new Vector2(0, 36);
+                statTmps[i] = val;
+            }
+
+            // Effectiveness
+            var eff = NewText("Effectiveness", rt, "", cormorantItalic, 22, ColGreen,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Italic);
+            var eRt = eff.rectTransform;
+            eRt.anchorMin = new Vector2(0, 0); eRt.anchorMax = new Vector2(1, 0); eRt.pivot = new Vector2(0.5f, 0);
+            eRt.anchoredPosition = new Vector2(0, 150); eRt.sizeDelta = new Vector2(-60, 30);
+
+            // Special
+            var spec = NewText("Special", rt, "", cormorant, 22, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Normal);
+            var sRt = spec.rectTransform;
+            sRt.anchorMin = new Vector2(0, 0); sRt.anchorMax = new Vector2(1, 0); sRt.pivot = new Vector2(0.5f, 0);
+            sRt.anchoredPosition = new Vector2(0, 110); sRt.sizeDelta = new Vector2(-60, 30);
+
+            // Description (consumable)
+            var desc = NewText("Description", rt, "", cormorant, 22, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Normal);
+            var dRt = desc.rectTransform;
+            dRt.anchorMin = new Vector2(0, 0); dRt.anchorMax = new Vector2(1, 0); dRt.pivot = new Vector2(0.5f, 0);
+            dRt.anchoredPosition = new Vector2(0, 70); dRt.sizeDelta = new Vector2(-60, 30);
+
+            var comp = root.AddComponent<Core.UI.UnitInfoItemDetailUI>();
+            var so = new SerializedObject(comp);
+            so.FindProperty("_nameText").objectReferenceValue = title;
+            so.FindProperty("_typeText").objectReferenceValue = type;
+            so.FindProperty("_mightText").objectReferenceValue  = statTmps[0];
+            so.FindProperty("_hitText").objectReferenceValue    = statTmps[1];
+            so.FindProperty("_critText").objectReferenceValue   = statTmps[2];
+            so.FindProperty("_weightText").objectReferenceValue = statTmps[3];
+            so.FindProperty("_rangeText").objectReferenceValue  = statTmps[4];
+            so.FindProperty("_rankReqText").objectReferenceValue= statTmps[5];
+            so.FindProperty("_effectivenessText").objectReferenceValue = eff;
+            so.FindProperty("_specialText").objectReferenceValue = spec;
+            so.FindProperty("_descriptionText").objectReferenceValue = desc;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            root.SetActive(false);
+            return comp;
+        }
+
+        static Core.UI.UnitInfoSupportDetailUI BuildSupportDetailSubpanel(Transform parent)
+        {
+            var root = NewImage("SupportDetailPanel", parent, ColIndigo);
+            var rt = root.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = Vector2.zero;
+            rt.sizeDelta = new Vector2(900, 640);
+
+            // Outer sapphire ring achieved by inset-covering the root with an inner indigo fill.
+            root.GetComponent<Image>().color = ColSapphire;
+            var innerFill = NewImage("InnerFill", rt, ColIndigo);
+            var ifRt = innerFill.GetComponent<RectTransform>();
+            ifRt.anchorMin = Vector2.zero; ifRt.anchorMax = Vector2.one;
+            ifRt.offsetMin = new Vector2(2, 2); ifRt.offsetMax = new Vector2(-2, -2);
+            innerFill.GetComponent<Image>().raycastTarget = false;
+
+            // Partner portrait
+            var portrait = NewImage("PartnerPortrait", rt, new Color(1, 1, 1, 0));
+            var pRt = portrait.GetComponent<RectTransform>();
+            pRt.anchorMin = new Vector2(0, 1); pRt.anchorMax = new Vector2(0, 1); pRt.pivot = new Vector2(0, 1);
+            pRt.anchoredPosition = new Vector2(40, -40);
+            pRt.sizeDelta = new Vector2(120, 120);
+            portrait.GetComponent<Image>().preserveAspect = true;
+
+            // Name
+            var name = NewText("PartnerName", rt, "Partner", cinzel, 36, ColIvory,
+                TextAlignmentOptions.TopLeft, FontStyles.Bold);
+            name.characterSpacing = 4;
+            if (matCharNameGlow != null) name.fontMaterial = matCharNameGlow;
+            var nRt = name.rectTransform;
+            nRt.anchorMin = new Vector2(0, 1); nRt.anchorMax = new Vector2(1, 1); nRt.pivot = new Vector2(0, 1);
+            nRt.anchoredPosition = new Vector2(180, -44);
+            nRt.sizeDelta = new Vector2(-220, 50);
+
+            // Bonus grid — 6 rows of "Label +N"
+            string[] bonusLabels = { "Atk", "Def", "Hit", "Avo", "Crit", "CritAvo" };
+            string[] bonusFields = { "AtkVal", "DefVal", "HitVal", "AvoVal", "CritVal", "CritAvoVal" };
+            var bonusTmps = new TextMeshProUGUI[6];
+            for (int i = 0; i < 6; i++)
+            {
+                int col = i % 3;
+                int row = i / 3;
+                var tmp = NewText(bonusFields[i], rt, bonusLabels[i] + " +0", cormorant, 28, ColGreen,
+                    TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+                var bRt = tmp.rectTransform;
+                bRt.anchorMin = new Vector2(col / 3f, 1); bRt.anchorMax = new Vector2((col + 1) / 3f, 1); bRt.pivot = new Vector2(0, 1);
+                bRt.anchoredPosition = new Vector2(32, -200 - row * 56);
+                bRt.sizeDelta = new Vector2(-44, 40);
+                bonusTmps[i] = tmp;
+            }
+
+            // Promise container
+            var promiseContainer = NewImage("PromiseContainer", rt, new Color32(0xc8, 0xa0, 0x40, 0x20));
+            var pcRt = promiseContainer.GetComponent<RectTransform>();
+            pcRt.anchorMin = new Vector2(0, 0); pcRt.anchorMax = new Vector2(1, 0); pcRt.pivot = new Vector2(0.5f, 0);
+            pcRt.anchoredPosition = new Vector2(0, 100); pcRt.sizeDelta = new Vector2(-60, 100);
+            var promise = NewText("PromiseText", pcRt, "", cormorantItalic, 22, ColGold,
+                TextAlignmentOptions.Midline, FontStyles.Italic);
+            var prRt = promise.rectTransform;
+            prRt.anchorMin = Vector2.zero; prRt.anchorMax = Vector2.one;
+            prRt.offsetMin = new Vector2(16, 8); prRt.offsetMax = new Vector2(-16, -8);
+            promise.enableWordWrapping = true;
+            promiseContainer.SetActive(false);
+
+            // Shapath icon
+            var shapath = NewImage("ShapathIcon", rt, Color.white);
+            var shRt = shapath.GetComponent<RectTransform>();
+            shRt.anchorMin = new Vector2(1, 0); shRt.anchorMax = new Vector2(1, 0); shRt.pivot = new Vector2(1, 0);
+            shRt.anchoredPosition = new Vector2(-30, 40); shRt.sizeDelta = new Vector2(36, 36);
+            if (sprShapathIcon != null) shapath.GetComponent<Image>().sprite = sprShapathIcon;
+            shapath.SetActive(false);
+
+            var comp = root.AddComponent<Core.UI.UnitInfoSupportDetailUI>();
+            var so = new SerializedObject(comp);
+            so.FindProperty("_portraitImage").objectReferenceValue = portrait.GetComponent<Image>();
+            so.FindProperty("_nameText").objectReferenceValue = name;
+            so.FindProperty("_atkText").objectReferenceValue     = bonusTmps[0];
+            so.FindProperty("_defText").objectReferenceValue     = bonusTmps[1];
+            so.FindProperty("_hitText").objectReferenceValue     = bonusTmps[2];
+            so.FindProperty("_avoText").objectReferenceValue     = bonusTmps[3];
+            so.FindProperty("_critText").objectReferenceValue    = bonusTmps[4];
+            so.FindProperty("_critAvoText").objectReferenceValue = bonusTmps[5];
+            so.FindProperty("_promiseContainer").objectReferenceValue = promiseContainer;
+            so.FindProperty("_promiseText").objectReferenceValue = promise;
+            so.FindProperty("_shapathIcon").objectReferenceValue = shapath;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            root.SetActive(false);
+            return comp;
+        }
+
+        static void WireDetailReferences(Core.UI.UnitInfoPanelUI controller,
+            Core.UI.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfoSupportDetailUI supportDetail)
+        {
+            var so = new SerializedObject(controller);
+            var itemProp = so.FindProperty("_itemDetail");
+            if (itemProp != null) itemProp.objectReferenceValue = itemDetail;
+            var supProp = so.FindProperty("_supportDetail");
+            if (supProp != null) supProp.objectReferenceValue = supportDetail;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void WireGridCursor(Core.UI.UnitInfoPanelUI controller)
+        {
+            var cursor = Object.FindObjectOfType<ProjectAstra.Core.GridCursor>();
+            if (cursor == null) { Debug.LogWarning("No GridCursor in scene — UnitInfoPanel opened-by-cursor wiring skipped."); return; }
+            var so = new SerializedObject(cursor);
+            var prop = so.FindProperty("_unitInfoPanelUI");
+            if (prop == null) { Debug.LogWarning("GridCursor._unitInfoPanelUI field not found."); return; }
+            prop.objectReferenceValue = controller;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            Debug.Log("Wired GridCursor._unitInfoPanelUI → new UnitInfoPanelUI.");
         }
 
         // ==================================================================
@@ -100,9 +438,7 @@ namespace ProjectAstra.EditorTools
                 return existing;
 
             var go = new GameObject("UICanvas",
-                typeof(Canvas),
-                typeof(CanvasScaler),
-                typeof(GraphicRaycaster));
+                typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             var c = go.GetComponent<Canvas>();
             c.renderMode = RenderMode.ScreenSpaceOverlay;
             c.sortingOrder = 10;
@@ -116,475 +452,972 @@ namespace ProjectAstra.EditorTools
         }
 
         // ==================================================================
-        // panel
+        // dim overlay
+        // ==================================================================
+
+        static GameObject BuildDimOverlay(Transform parent)
+        {
+            var go = NewImage("UnitInfoDimOverlay", parent, ColDimOverlay);
+            SetCenter(go, CanvasWidth, CanvasHeight);
+            go.GetComponent<Image>().raycastTarget = true;
+            go.SetActive(false);
+            return go;
+        }
+
+        // ==================================================================
+        // panel — outer frame
         // ==================================================================
 
         static GameObject BuildPanel(Transform parent)
         {
-            // Triple border as nested solid-color Images (Figma uses a box-shadow
-            // hack for the layered brown/gold/brown outline which doesn't translate
-            // 1:1; nesting Images is the cleanest Unity equivalent).
-            var outer = NewImage("UnitInfoPanel", parent, ColBorderBrown);
-            SetCenter(outer, Sc(1197), Sc(673));
+            // panel_frame.png (1920×1080) bakes: indigo fill + sapphire border at inset 12 + outer glow
+            //                                    + inner glow + sapphire outer ring + gold corner marks.
+            var outer = NewImage("UnitInfoPanel", parent, Color.white);
+            SetCenter(outer, CanvasWidth, CanvasHeight);
+            outer.SetActive(false);
+            var outerImg = outer.GetComponent<Image>();
+            if (sprPanelFrame != null) outerImg.sprite = sprPanelFrame;
+            else                        outerImg.color  = ColIndigo;
+            outerImg.type = Image.Type.Simple;
 
-            var gold = NewImage("BorderGold", outer.transform, ColBorderGold);
-            SetStretch(gold, Sc(4));
+            // Mandala backdrop sits inside the border, behind content.
+            if (sprMandalaBg != null)
+            {
+                var mandala = NewImage("MandalaBg", outer.transform, Color.white);
+                var mRt = mandala.GetComponent<RectTransform>();
+                mRt.anchorMin = Vector2.zero;
+                mRt.anchorMax = Vector2.one;
+                mRt.offsetMin = new Vector2(14, 14);
+                mRt.offsetMax = new Vector2(-14, -14);
+                mandala.GetComponent<Image>().sprite = sprMandalaBg;
+            }
 
-            var innerBrown = NewImage("BorderInnerBrown", gold.transform, ColBorderBrown);
-            SetStretch(innerBrown, Sc(4));
-
-            // Innermost parchment surface — uses the Figma-exported gradient sprite
-            // (node 11:2 Background). Clean, no children/text baked in.
-            var parchment = NewImage("Parchment", innerBrown.transform, Color.white);
-            SetStretch(parchment, Sc(5));
-            var parchmentImg = parchment.GetComponent<Image>();
-            parchmentImg.sprite = LoadFrame("panel_bg.png");
-            parchmentImg.type = Image.Type.Simple;
-
-            // Pure layout container for the left/right sections.
-            var content = NewRect("Content", parchment.transform);
+            // Content area — inset 32px from visible border (which is at inset 12).
+            var content = NewRect("Content", outer.transform);
             SetStretch(content, 0);
-            content.offsetMin = V2(59, 33);
-            content.offsetMax = V2(-59, -33);
+            content.offsetMin = new Vector2(44, 44);
+            content.offsetMax = new Vector2(-44, -44);
 
             BuildLeftSection(content);
-            BuildRightSection(content);
+            BuildPageContainer(content);
+            BuildPageIndicator(content);
 
             return outer;
         }
 
         // ==================================================================
-        // left section
+        // left section (shared across all pages)
         // ==================================================================
 
         static void BuildLeftSection(RectTransform parent)
         {
             var left = NewRect("LeftSection", parent);
-            left.anchorMin = new Vector2(0, 1);
+            left.anchorMin = new Vector2(0, 0);
             left.anchorMax = new Vector2(0, 1);
             left.pivot = new Vector2(0, 1);
             left.anchoredPosition = Vector2.zero;
-            left.sizeDelta = V2(409, 606);
+            left.sizeDelta = new Vector2(460, 0);
+
+            // Vertical separator line on right edge
+            var sep = NewImage("Separator", left, ColSapphire);
+            var sepRt = sep.GetComponent<RectTransform>();
+            sepRt.anchorMin = new Vector2(1, 0.05f);
+            sepRt.anchorMax = new Vector2(1, 0.95f);
+            sepRt.pivot = new Vector2(1, 0.5f);
+            sepRt.sizeDelta = new Vector2(2, 0);
+            sepRt.anchoredPosition = Vector2.zero;
 
             BuildPortraitFrame(left);
             BuildNameBlock(left);
             BuildClassBlock(left);
+
+            // Personality label — CC-01, displayed only for allied NPCs. Hidden by default.
+            var personality = NewText("PersonalityLabel", left, "PERSONALITY: VIRA",
+                cinzel, 16, ColSilver, TextAlignmentOptions.Center, FontStyles.Normal);
+            personality.characterSpacing = 4;
+            var prt = personality.rectTransform;
+            prt.anchorMin = new Vector2(0, 1);
+            prt.anchorMax = new Vector2(1, 1);
+            prt.pivot = new Vector2(0.5f, 1);
+            prt.anchoredPosition = new Vector2(0, -654); // below ClassBlock (at -466 + 180 = -646 bottom, +8px margin)
+            prt.sizeDelta = new Vector2(0, 22);
+            personality.gameObject.SetActive(false);
         }
 
         static void BuildPortraitFrame(RectTransform parent)
         {
-            // Portrait frame background — Figma node 11:3 Background:
-            // navy gradient + 2.4px gold stroke baked in, no corners, no figure.
+            // portrait_frame.png is 440×440 native: 380×380 visible + 30px halo padding.
+            // Size the GameObject to the native texture so the outer glow renders.
             var frame = NewImage("PortraitFrame", parent, Color.white);
             var rt = frame.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 1);
-            rt.anchorMax = new Vector2(0, 1);
-            rt.pivot = new Vector2(0, 1);
-            rt.anchoredPosition = Vector2.zero;
-            rt.sizeDelta = V2(409, 411);
+            rt.anchorMin = new Vector2(0.5f, 1);
+            rt.anchorMax = new Vector2(0.5f, 1);
+            rt.pivot = new Vector2(0.5f, 1);
+            rt.anchoredPosition = new Vector2(0, 12); // shift up by pad so visible area starts near the top
+            rt.sizeDelta = new Vector2(440, 440);
+
             var img = frame.GetComponent<Image>();
-            img.sprite = LoadFrame("portrait_bg.png");
+            if (sprPortraitFrame != null) img.sprite = sprPortraitFrame;
+            else                           img.color  = ColIndigoMid;
             img.type = Image.Type.Simple;
 
-            // Placeholder character silhouette — Figma node 3:189. Shown when
-            // no real portrait is assigned; swap its sprite at runtime.
-            var placeholder = NewImage("PortraitPlaceholder", rt, Color.white);
-            SetStretch(placeholder, Sc(4));
-            var placeholderImg = placeholder.GetComponent<Image>();
-            placeholderImg.sprite = LoadFrame("portrait_placeholder.png");
-            placeholderImg.preserveAspect = true;
+            // Portrait placeholder — inside the visible 380×380 area (30px halo padding).
+            var placeholder = NewImage("PortraitPlaceholder", rt, new Color(1, 1, 1, 0));
+            var placeRt = placeholder.GetComponent<RectTransform>();
+            placeRt.anchorMin = Vector2.zero;
+            placeRt.anchorMax = Vector2.one;
+            placeRt.offsetMin = new Vector2(34, 34);
+            placeRt.offsetMax = new Vector2(-34, -34);
+            placeholder.GetComponent<Image>().preserveAspect = true;
 
-            // Corner ornaments layered on top of the frame (individual children).
-            AddCorner(rt, "Corner_TL", new Vector2(0, 1), V2(8, -8),  0);
-            AddCorner(rt, "Corner_TR", new Vector2(1, 1), V2(-8, -8), 90);
-            AddCorner(rt, "Corner_BL", new Vector2(0, 0), V2(8, 8),   -90);
-            AddCorner(rt, "Corner_BR", new Vector2(1, 0), V2(-8, 8),  180);
-        }
+            // Stress overlay — stacked on top of the portrait; shown at StressTier >= 1.
+            var stressOverlay = NewImage("StressOverlay", placeRt, new Color(1, 1, 1, 0));
+            SetStretch(stressOverlay, 0);
+            stressOverlay.GetComponent<Image>().raycastTarget = false;
+            stressOverlay.SetActive(false);
 
-        static void AddCorner(RectTransform parent, string name, Vector2 anchor, Vector2 pos, float rot)
-        {
-            var go = NewImage(name, parent, ColFrameGold);
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = anchor;
-            rt.anchorMax = anchor;
-            rt.pivot = anchor;
-            rt.sizeDelta = V2(36, 36);
-            rt.anchoredPosition = pos;
-            rt.localRotation = Quaternion.Euler(0, 0, rot);
-            go.GetComponent<Image>().sprite = LoadSprite("corner_ornament_a.png");
-            go.GetComponent<Image>().preserveAspect = true;
+            // Affinity badge — sits in the bottom-right of the visible area.
+            var badge = NewImage("AffinityBadge", rt, Color.white);
+            var badgeRt = badge.GetComponent<RectTransform>();
+            badgeRt.anchorMin = new Vector2(1, 0);
+            badgeRt.anchorMax = new Vector2(1, 0);
+            badgeRt.pivot = new Vector2(1, 0);
+            badgeRt.anchoredPosition = new Vector2(-34, 34); // pull in past the halo padding
+            badgeRt.sizeDelta = new Vector2(112, 46); // sprite native size
+            var badgeImg = badge.GetComponent<Image>();
+            if (sprAffinityBadge != null) badgeImg.sprite = sprAffinityBadge;
+            else                           badgeImg.color  = new Color32(0x0a, 0x0e, 0x2a, 0xe6);
+
+            // Affinity icon — small element inside the badge
+            var affinIcon = NewImage("AffinIcon", badge.transform, Color.white);
+            var aiRt = affinIcon.GetComponent<RectTransform>();
+            aiRt.anchorMin = new Vector2(0, 0.5f);
+            aiRt.anchorMax = new Vector2(0, 0.5f);
+            aiRt.pivot = new Vector2(0, 0.5f);
+            aiRt.anchoredPosition = new Vector2(9, 0);
+            aiRt.sizeDelta = new Vector2(40, 40);
+            var aiImg = affinIcon.GetComponent<Image>();
+            if (sprAffinityIconAgni != null) aiImg.sprite = sprAffinityIconAgni;
+            else                              aiImg.color  = new Color32(0xe8, 0x60, 0x30, 0xff);
+
+            // Affinity label — right of the icon, centered in the badge's visible interior.
+            var affinLabel = NewText("AffinLabel", badge.transform, "Agni", cinzel, 14, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Normal);
+            affinLabel.characterSpacing = 3;
+            var alRt = affinLabel.rectTransform;
+            alRt.anchorMin = new Vector2(0, 0);
+            alRt.anchorMax = new Vector2(1, 1);
+            alRt.offsetMin = new Vector2(52, 6);
+            alRt.offsetMax = new Vector2(-10, -6);
         }
 
         static void BuildNameBlock(RectTransform parent)
         {
-            var nameText = NewText("UnitName", parent, "Tana", cormorantItalic, Sc(54), ColTextBrown,
-                TextAlignmentOptions.Center, FontStyles.Bold | FontStyles.Italic);
+            var nameText = NewText("UnitName", parent, "Arjuna", cinzel, 44, ColIvory,
+                TextAlignmentOptions.Center, FontStyles.Bold);
+            nameText.characterSpacing = 6;
+            if (matCharNameGlow != null) nameText.fontMaterial = matCharNameGlow;
             var rt = nameText.rectTransform;
             rt.anchorMin = new Vector2(0, 1);
             rt.anchorMax = new Vector2(1, 1);
             rt.pivot = new Vector2(0.5f, 1);
-            rt.anchoredPosition = V2(0, -424);
-            rt.sizeDelta = V2(0, 50);
+            rt.anchoredPosition = new Vector2(0, -404);
+            rt.sizeDelta = new Vector2(0, 54);
         }
 
         static void BuildClassBlock(RectTransform parent)
         {
-            var block = NewRect("ClassBlock", parent);
-            block.anchorMin = new Vector2(0, 1);
-            block.anchorMax = new Vector2(1, 1);
-            block.pivot = new Vector2(0.5f, 1);
-            block.anchoredPosition = V2(0, -484);
-            block.sizeDelta = V2(0, 122);
+            var block = NewImage("ClassBlock", parent, new Color32(0x14, 0x18, 0x40, 0x80));
+            var rt = block.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.05f, 1);
+            rt.anchorMax = new Vector2(0.95f, 1);
+            rt.pivot = new Vector2(0.5f, 1);
+            rt.anchoredPosition = new Vector2(0, -466);
+            rt.sizeDelta = new Vector2(0, 180);
 
-            var className = NewText("ClassName", block, "Wyvern Knight", cinzelDecor, Sc(28), ColTextBrown,
+            // Class name row
+            var className = NewText("ClassName", rt, "Kshatriya", cinzel, 26, ColGold,
                 TextAlignmentOptions.TopLeft, FontStyles.Bold);
-            className.characterSpacing = 4f;
+            className.characterSpacing = 4;
             var cnRt = className.rectTransform;
             cnRt.anchorMin = new Vector2(0, 1);
             cnRt.anchorMax = new Vector2(1, 1);
             cnRt.pivot = new Vector2(0, 1);
-            cnRt.anchoredPosition = V2(8, -2);
-            cnRt.sizeDelta = V2(-16, 40);
+            cnRt.anchoredPosition = new Vector2(14, -10);
+            cnRt.sizeDelta = new Vector2(-28, 34);
 
-            BuildStatRow(block, "LvRow",
-                new[] { ("LV", false), ("12", true), ("E", false), ("76", true) },
-                V2(8, -44));
+            // Lv / EXP row
+            var lvRow = NewRect("LvRow", rt);
+            lvRow.anchorMin = new Vector2(0, 1);
+            lvRow.anchorMax = new Vector2(1, 1);
+            lvRow.pivot = new Vector2(0, 1);
+            lvRow.anchoredPosition = new Vector2(14, -48);
+            lvRow.sizeDelta = new Vector2(-28, 34);
 
-            BuildStatRow(block, "HpRow",
-                new[] { ("HP", false), ("45", true), ("/", false), ("45", true) },
-                V2(8, -85));
+            var lvLayout = lvRow.gameObject.AddComponent<HorizontalLayoutGroup>();
+            lvLayout.childAlignment = TextAnchor.MiddleLeft;
+            lvLayout.spacing = 8;
+            lvLayout.childForceExpandWidth = false;
+            lvLayout.childForceExpandHeight = false;
+            lvLayout.childControlWidth = true;
+            lvLayout.childControlHeight = true;
 
-            var classIcon = NewImage("ClassIcon", block, ColTextBrown);
+            AddFittedText(lvRow, "LvLabel", "LV", cinzel, 16, ColSilver);
+            AddFittedText(lvRow, "LvValue", "12", cormorant, 28, ColIvory);
+            AddFittedText(lvRow, "ExpLabel", "EXP", cinzel, 16, ColSilver);
+            AddFittedText(lvRow, "ExpValue", "76 / 100", cormorant, 28, ColIvory);
+
+            // HP row
+            var hpRow = NewRect("HpRow", rt);
+            hpRow.anchorMin = new Vector2(0, 1);
+            hpRow.anchorMax = new Vector2(1, 1);
+            hpRow.pivot = new Vector2(0, 1);
+            hpRow.anchoredPosition = new Vector2(14, -86);
+            hpRow.sizeDelta = new Vector2(-28, 30);
+
+            var hpLayout = hpRow.gameObject.AddComponent<HorizontalLayoutGroup>();
+            hpLayout.childAlignment = TextAnchor.MiddleLeft;
+            hpLayout.spacing = 8;
+            hpLayout.childForceExpandWidth = false;
+            hpLayout.childForceExpandHeight = false;
+            hpLayout.childControlWidth = true;
+            hpLayout.childControlHeight = true;
+
+            AddFittedText(hpRow, "HpLabel", "HP", cinzel, 16, ColSilver);
+            AddFittedText(hpRow, "HpCurrent", "38", cormorant, 28, ColIvory);
+            AddFittedText(hpRow, "HpSep", "/", cormorant, 28, ColSilver);
+            AddFittedText(hpRow, "HpMax", "45", cormorant, 28, ColIvory);
+
+            // HP bar
+            var hpBarOuter = NewImage("HpBarOuter", rt, new Color(0, 0, 0, 0.5f));
+            var hbRt = hpBarOuter.GetComponent<RectTransform>();
+            hbRt.anchorMin = new Vector2(0, 1);
+            hbRt.anchorMax = new Vector2(1, 1);
+            hbRt.pivot = new Vector2(0, 1);
+            hbRt.anchoredPosition = new Vector2(14, -120);
+            hbRt.sizeDelta = new Vector2(-28, 18);
+
+            var hpBarFill = NewImage("HpBarFill", hbRt, Color.white);
+            var hfRt = hpBarFill.GetComponent<RectTransform>();
+            hfRt.anchorMin = Vector2.zero;
+            hfRt.anchorMax = Vector2.one;
+            hfRt.offsetMin = Vector2.zero;
+            hfRt.offsetMax = Vector2.zero;
+            var hpFillImg = hpBarFill.GetComponent<Image>();
+            if (sprHpFillGreen != null)
+            {
+                hpFillImg.sprite = sprHpFillGreen;
+                hpFillImg.type = Image.Type.Filled;
+                hpFillImg.fillMethod = Image.FillMethod.Horizontal;
+                hpFillImg.fillOrigin = (int)Image.OriginHorizontal.Left;
+                hpFillImg.fillAmount = 0.844f;
+            }
+            else
+            {
+                // Fallback: color tint, shrink via anchor
+                hpFillImg.color = ColGreen;
+                hfRt.anchorMax = new Vector2(0.844f, 1);
+            }
+
+            // Class icon placeholder
+            var classIcon = NewImage("ClassIcon", rt, ColGoldFaint);
             var ciRt = classIcon.GetComponent<RectTransform>();
             ciRt.anchorMin = new Vector2(1, 1);
             ciRt.anchorMax = new Vector2(1, 1);
             ciRt.pivot = new Vector2(1, 1);
-            ciRt.sizeDelta = V2(78, 78);
-            ciRt.anchoredPosition = V2(-8, -43);
-            classIcon.GetComponent<Image>().sprite = LoadSprite("class_wyvern_knight.png");
-            classIcon.GetComponent<Image>().preserveAspect = true;
-        }
-
-        static void BuildStatRow(RectTransform parent, string name, (string text, bool isValue)[] parts, Vector2 pos)
-        {
-            var row = NewRect(name, parent);
-            row.anchorMin = new Vector2(0, 1);
-            row.anchorMax = new Vector2(0, 1);
-            row.pivot = new Vector2(0, 1);
-            row.anchoredPosition = pos;
-            row.sizeDelta = V2(300, 34);
-
-            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.spacing = Sc(10);
-            layout.childForceExpandWidth = false;
-            layout.childForceExpandHeight = false;
-            layout.childControlWidth = true;
-            layout.childControlHeight = true;
-
-            foreach (var (text, isValue) in parts)
+            ciRt.sizeDelta = new Vector2(60, 60);
+            ciRt.anchoredPosition = new Vector2(-14, -10);
+            if (sprIconWeapon != null)
             {
-                var t = NewText(text, row, text,
-                    isValue ? cormorant : cinzel,
-                    Sc(25),
-                    isValue ? ColTextRed : ColTextBrownDk,
-                    TextAlignmentOptions.MidlineLeft,
-                    FontStyles.Bold);
-                if (!isValue) t.characterSpacing = 8f;
-                var fitter = t.gameObject.AddComponent<ContentSizeFitter>();
-                fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-                fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                classIcon.GetComponent<Image>().sprite = sprIconWeapon;
+                classIcon.GetComponent<Image>().preserveAspect = true;
             }
         }
 
         // ==================================================================
-        // right section
+        // page container (right section, holds 3 pages)
         // ==================================================================
 
-        static void BuildRightSection(RectTransform parent)
+        static void BuildPageContainer(RectTransform parent)
         {
-            var right = NewRect("RightSection", parent);
-            right.anchorMin = new Vector2(1, 1);
-            right.anchorMax = new Vector2(1, 1);
-            right.pivot = new Vector2(1, 1);
-            right.anchoredPosition = Vector2.zero;
-            right.sizeDelta = V2(625, 606);
+            var container = NewRect("PageContainer", parent);
+            container.anchorMin = new Vector2(0, 0);
+            container.anchorMax = new Vector2(1, 1);
+            container.pivot = new Vector2(0.5f, 0.5f);
+            container.offsetMin = new Vector2(494, 0); // 460 left col + 34 padding
+            container.offsetMax = Vector2.zero;
 
-            BuildItemsBox(right);
-            BuildEquipmentBox(right);
+            BuildStatsPage(container);
+            BuildInventoryPage(container);
+            BuildSupportsPage(container);
         }
 
-        static void BuildItemsBox(RectTransform parent)
+        // ==================================================================
+        // page 1 — Stats (Personal Data)
+        // ==================================================================
+
+        static void BuildStatsPage(RectTransform parent)
         {
-            var box = NewRect("ItemsBox", parent);
-            box.anchorMin = new Vector2(0, 1);
-            box.anchorMax = new Vector2(1, 1);
-            box.pivot = new Vector2(0.5f, 1);
-            box.anchoredPosition = Vector2.zero;
-            box.sizeDelta = V2(0, 434);
+            var page = NewRect("StatsPage", parent);
+            SetStretch(page, 0);
+            page.gameObject.SetActive(true);
 
-            BuildItemsHeader(box);
+            // Header
+            BuildPageHeader(page, "Personal Data", "1 / 3", 0);
 
-            var count = NewText("ItemsCount", box, "2 / 3", cormorant, Sc(23), ColTextRed,
-                TextAlignmentOptions.TopRight, FontStyles.Bold);
-            var cRt = count.rectTransform;
-            cRt.anchorMin = new Vector2(1, 1);
-            cRt.anchorMax = new Vector2(1, 1);
-            cRt.pivot = new Vector2(1, 1);
-            cRt.sizeDelta = V2(60, 28);
-            cRt.anchoredPosition = V2(-6, -6);
+            // Stat grid — 2 columns
+            var gridY = -60;
+            var grid = NewRect("StatGrid", page);
+            grid.anchorMin = new Vector2(0, 1);
+            grid.anchorMax = new Vector2(1, 1);
+            grid.pivot = new Vector2(0, 1);
+            grid.anchoredPosition = new Vector2(0, gridY);
+            grid.sizeDelta = new Vector2(0, 310);
 
-            BuildItemsList(box);
+            // Left column: Str, Mag, Skl, Spd, Niyati
+            string[] leftLabels = { "Str", "Mag", "Skl", "Spd", "Niyati" };
+            string[] leftValues = { "18", "6", "22", "21", "14" };
+            // Right column: Def, Res, Con, Mov
+            string[] rightLabels = { "Def", "Res", "Con", "Mov" };
+            string[] rightValues = { "11", "8", "9", "6" };
+
+            float rowH = 54;
+            for (int i = 0; i < leftLabels.Length; i++)
+            {
+                float y = -(i * rowH);
+                BuildStatRow(grid, "StatL_" + leftLabels[i], leftLabels[i], leftValues[i],
+                    new Vector2(0, y), 0f, 0.48f);
+            }
+            for (int i = 0; i < rightLabels.Length; i++)
+            {
+                float y = -(i * rowH);
+                BuildStatRow(grid, "StatR_" + rightLabels[i], rightLabels[i], rightValues[i],
+                    new Vector2(0, y), 0.52f, 1f);
+            }
+
+            // Derived stats block
+            var derivedY = gridY - 286;
+            var derived = NewImage("DerivedStats", page, new Color32(0x14, 0x18, 0x40, 0x66));
+            var dRt = derived.GetComponent<RectTransform>();
+            dRt.anchorMin = new Vector2(0, 1);
+            dRt.anchorMax = new Vector2(1, 1);
+            dRt.pivot = new Vector2(0, 1);
+            dRt.anchoredPosition = new Vector2(0, derivedY);
+            dRt.sizeDelta = new Vector2(0, 90);
+
+            var derivedTitle = NewText("DerivedTitle", dRt, "COMBAT", cinzel, 16, ColSilver,
+                TextAlignmentOptions.TopLeft, FontStyles.Normal);
+            derivedTitle.characterSpacing = 8;
+            var dtRt = derivedTitle.rectTransform;
+            dtRt.anchorMin = new Vector2(0, 1);
+            dtRt.anchorMax = new Vector2(1, 1);
+            dtRt.pivot = new Vector2(0, 1);
+            dtRt.anchoredPosition = new Vector2(14, -8);
+            dtRt.sizeDelta = new Vector2(0, 22);
+
+            string[] dLabels = { "Atk", "Hit", "Crit", "AS", "Avo" };
+            string[] dValues = { "31", "140", "15", "17", "48" };
+            float dColW = 1f / 5f;
+            for (int i = 0; i < 5; i++)
+            {
+                float xMin = i * dColW;
+                float xMax = xMin + dColW;
+                BuildDerivedStat(dRt, dLabels[i], dValues[i], xMin, xMax);
+            }
+
+            // Weapon ranks section
+            var wepY = derivedY - 100;
+            var wepTitle = NewText("WeaponTitle", page, "WEAPON PROFICIENCY", cinzel, 16, ColSilver,
+                TextAlignmentOptions.TopLeft, FontStyles.Normal);
+            wepTitle.characterSpacing = 8;
+            var wtRt = wepTitle.rectTransform;
+            wtRt.anchorMin = new Vector2(0, 1);
+            wtRt.anchorMax = new Vector2(1, 1);
+            wtRt.pivot = new Vector2(0, 1);
+            wtRt.anchoredPosition = new Vector2(0, wepY);
+            wtRt.sizeDelta = new Vector2(0, 22);
+
+            var wepGrid = NewRect("WeaponGrid", page);
+            wepGrid.anchorMin = new Vector2(0, 1);
+            wepGrid.anchorMax = new Vector2(1, 1);
+            wepGrid.pivot = new Vector2(0, 1);
+            wepGrid.anchoredPosition = new Vector2(0, wepY - 28);
+            wepGrid.sizeDelta = new Vector2(0, 200);
+
+            string[] wepNames = { "Sword", "Lance", "Bow", "Axe", "Anima", "Light", "Dark", "Staff" };
+            string[] wepRanks = { "A", "C", "B", "--", "--", "--", "--", "--" };
+            bool[] wepActive  = { true, true, true, false, false, false, false, false };
+
+            for (int i = 0; i < 8; i++)
+            {
+                int col = i % 2;
+                int row = i / 2;
+                float xMin = col * 0.5f;
+                float xMax = xMin + 0.5f;
+                float y = -(row * 44);
+                BuildWeaponRankRow(wepGrid, wepNames[i], wepRanks[i], wepActive[i], xMin, xMax, y);
+            }
+
+            // SS-12 Dharmic Threshold banner — hidden until all stat caps are reached.
+            var banner = NewImage("DharmicThresholdBanner", page, new Color32(0xc8, 0xa0, 0x40, 0x33));
+            var bRt = banner.GetComponent<RectTransform>();
+            bRt.anchorMin = new Vector2(0, 0);
+            bRt.anchorMax = new Vector2(1, 0);
+            bRt.pivot = new Vector2(0.5f, 0);
+            bRt.anchoredPosition = new Vector2(0, 42);
+            bRt.sizeDelta = new Vector2(0, 36);
+            var bannerText = NewText("BannerText", bRt, "DHARMIC THRESHOLD REACHED",
+                cinzel, 18, ColGold, TextAlignmentOptions.Midline, FontStyles.Bold);
+            bannerText.characterSpacing = 6;
+            var btRt = bannerText.rectTransform;
+            btRt.anchorMin = Vector2.zero;
+            btRt.anchorMax = Vector2.one;
+            btRt.offsetMin = Vector2.zero;
+            btRt.offsetMax = Vector2.zero;
+            if (matPageHeaderGlow != null) bannerText.fontMaterial = matPageHeaderGlow;
+            banner.SetActive(false);
         }
 
-        static void BuildItemsHeader(RectTransform parent)
+        static void BuildStatRow(RectTransform parent, string name, string label, string value,
+            Vector2 pos, float xMin, float xMax)
         {
-            var header = NewRect("ItemsHeader", parent);
-            header.anchorMin = new Vector2(0, 1);
-            header.anchorMax = new Vector2(1, 1);
-            header.pivot = new Vector2(0.5f, 1);
-            header.anchoredPosition = V2(0, -24);
-            header.sizeDelta = V2(0, 46);
+            var row = NewRect(name, parent);
+            row.anchorMin = new Vector2(xMin, 1);
+            row.anchorMax = new Vector2(xMax, 1);
+            row.pivot = new Vector2(0, 1);
+            row.anchoredPosition = new Vector2(0, pos.y);
+            row.sizeDelta = new Vector2(0, 50);
 
-            var layout = header.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.spacing = Sc(14);
+            var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            layout.spacing = 8;
+            layout.padding = new RectOffset(8, 8, 0, 0);
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
 
-            var dl = NewImage("DividerLeft", header, ColTextBrown);
-            var dlRt = dl.GetComponent<RectTransform>();
-            dlRt.sizeDelta = V2(140, 18);
-            dl.GetComponent<Image>().sprite = LoadSprite("items_divider_left.png");
-            dl.GetComponent<Image>().preserveAspect = true;
-            var dlEl = dl.AddComponent<LayoutElement>();
-            dlEl.preferredWidth = Sc(140); dlEl.preferredHeight = Sc(18);
+            var lbl = NewText("Label", row, label.ToUpper(), cinzel, 22, ColSilver,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            lbl.characterSpacing = 4;
+            var lblEl = lbl.gameObject.AddComponent<LayoutElement>();
+            lblEl.flexibleWidth = 1;
 
-            var title = NewText("ItemsTitle", header, "Items", cinzelDecor, Sc(34), ColTextNavy,
-                TextAlignmentOptions.Midline, FontStyles.Bold);
-            title.characterSpacing = 5f;
-            var tFitter = title.gameObject.AddComponent<ContentSizeFitter>();
-            tFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var val = NewText("Value", row, value, cormorant, 38, ColIvory,
+                TextAlignmentOptions.MidlineRight, FontStyles.Bold);
+            var valFit = val.gameObject.AddComponent<ContentSizeFitter>();
+            valFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            valFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            var dr = NewImage("DividerRight", header, ColTextBrown);
-            var drRt = dr.GetComponent<RectTransform>();
-            drRt.sizeDelta = V2(140, 18);
-            dr.GetComponent<Image>().sprite = LoadSprite("items_divider_right.png");
-            dr.GetComponent<Image>().preserveAspect = true;
-            var drEl = dr.AddComponent<LayoutElement>();
-            drEl.preferredWidth = Sc(140); drEl.preferredHeight = Sc(18);
+            // Modifier badge (↑+2 / ↓-1) — hidden unless a temporary modifier is active.
+            var mod = NewText("Mod", row, "", cinzel, 20, ColGreen,
+                TextAlignmentOptions.MidlineRight, FontStyles.Bold);
+            var modFit = mod.gameObject.AddComponent<ContentSizeFitter>();
+            modFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            modFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            mod.gameObject.SetActive(false);
+
+            // Dharmic threshold marker — shown when this stat reaches its class cap (SS-12).
+            var mark = NewImage("ThresholdMark", row, Color.white);
+            var markRt = mark.GetComponent<RectTransform>();
+            markRt.anchorMin = new Vector2(1, 0.5f);
+            markRt.anchorMax = new Vector2(1, 0.5f);
+            markRt.pivot = new Vector2(1, 0.5f);
+            markRt.anchoredPosition = new Vector2(-4, 0);
+            markRt.sizeDelta = new Vector2(28, 28);
+            if (sprThresholdMark != null) mark.GetComponent<Image>().sprite = sprThresholdMark;
+            mark.AddComponent<LayoutElement>().ignoreLayout = true;
+            mark.SetActive(false);
+
+            // Separator line at bottom
+            var sep = NewImage("Sep", row, ColSepFaint);
+            var sepRt = sep.GetComponent<RectTransform>();
+            sepRt.anchorMin = new Vector2(0, 0);
+            sepRt.anchorMax = new Vector2(1, 0);
+            sepRt.pivot = new Vector2(0.5f, 0);
+            sepRt.sizeDelta = new Vector2(0, 1);
+            sepRt.anchoredPosition = Vector2.zero;
+            sep.AddComponent<LayoutElement>().ignoreLayout = true;
         }
 
-        static readonly (string name, string icon, string value, string slash, string max, string equipped)[] Items =
+        static void BuildDerivedStat(RectTransform parent, string label, string value, float xMin, float xMax)
         {
-            ("Iron Lance", "icon_iron_lance.png",  "18", "/", "45", "E"),
-            ("Javelin",    "icon_javelin.png",     "12", "/", "20", ""),
-            ("Heavy Spear","icon_heavy_spear.png", "3",  "/", "16", ""),
-            ("Elixir",     "icon_elixir.png",      "3",  "/", "3",  ""),
-            ("Chest Key",  "icon_chest_key.png",   "1",  "/", "1",  ""),
-        };
+            var col = NewRect("Derived_" + label, parent);
+            col.anchorMin = new Vector2(xMin, 0);
+            col.anchorMax = new Vector2(xMax, 1);
+            col.pivot = new Vector2(0.5f, 0.5f);
+            col.offsetMin = new Vector2(0, 8);
+            col.offsetMax = new Vector2(0, -34);
 
-        static void BuildItemsList(RectTransform parent)
+            var lbl = NewText("Label", col, label.ToUpper(), cinzel, 17, ColSilver,
+                TextAlignmentOptions.Top, FontStyles.Normal);
+            lbl.characterSpacing = 3;
+            var lblRt = lbl.rectTransform;
+            lblRt.anchorMin = new Vector2(0, 1);
+            lblRt.anchorMax = new Vector2(1, 1);
+            lblRt.pivot = new Vector2(0.5f, 1);
+            lblRt.anchoredPosition = Vector2.zero;
+            lblRt.sizeDelta = new Vector2(0, 22);
+
+            var val = NewText("Value", col, value, cormorant, 34, ColIvory,
+                TextAlignmentOptions.Bottom, FontStyles.Bold);
+            var valRt = val.rectTransform;
+            valRt.anchorMin = new Vector2(0, 0);
+            valRt.anchorMax = new Vector2(1, 0);
+            valRt.pivot = new Vector2(0.5f, 0);
+            valRt.anchoredPosition = Vector2.zero;
+            valRt.sizeDelta = new Vector2(0, 38);
+        }
+
+        static void BuildWeaponRankRow(RectTransform parent, string weaponName, string rank,
+            bool accessible, float xMin, float xMax, float y)
         {
-            var list = NewRect("ItemsList", parent);
-            list.anchorMin = new Vector2(0, 1);
-            list.anchorMax = new Vector2(1, 1);
-            list.pivot = new Vector2(0.5f, 1);
-            list.anchoredPosition = V2(0, -76);
-            list.sizeDelta = V2(-12, 358);
+            var row = NewImage("Wep_" + weaponName, parent,
+                accessible ? new Color32(0xc8, 0xa0, 0x40, 0x0d) : new Color32(0x14, 0x18, 0x40, 0x4d));
+            var rt = row.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(xMin, 1);
+            rt.anchorMax = new Vector2(xMax, 1);
+            rt.pivot = new Vector2(0, 1);
+            float xPad = xMin > 0 ? 4 : 0;
+            float xPadR = xMax < 1 ? -4 : 0;
+            rt.anchoredPosition = new Vector2(xPad, y);
+            rt.sizeDelta = new Vector2(xPadR - xPad, 40);
 
-            var layout = list.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.spacing = Sc(2);
-            int pad = Mathf.RoundToInt(Sc(6));
-            layout.padding = new RectOffset(pad, pad, pad, pad);
-            layout.childForceExpandWidth = true;
+            var layout = row.AddComponent<HorizontalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            layout.spacing = 8;
+            layout.padding = new RectOffset(10, 10, 4, 4);
+            layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
 
-            for (int i = 0; i < Items.Length; i++)
-                BuildItemRow(list, Items[i], i < Items.Length - 1);
+            Color nameCol = accessible ? ColIvory : ColSilver;
+            Color rankCol = accessible ? ColGoldBright : new Color(ColSilver.r, ColSilver.g, ColSilver.b, 0.3f);
+
+            var nameT = NewText("Name", row.transform, weaponName, cormorant, 21, nameCol,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Normal);
+            var nameEl = nameT.gameObject.AddComponent<LayoutElement>();
+            nameEl.flexibleWidth = 1;
+
+            var rankT = NewText("Rank", row.transform, rank, cinzel, 30, rankCol,
+                TextAlignmentOptions.Midline, FontStyles.Bold);
+            var rankFit = rankT.gameObject.AddComponent<ContentSizeFitter>();
+            rankFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            rankFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            var rankMat = accessible ? matWeaponRankAccess : matWeaponRankDefault;
+            if (rankMat != null) rankT.fontMaterial = rankMat;
+
+            if (accessible)
+            {
+                // WEXP bar
+                var barBg = NewImage("WexpBarBg", row.transform, new Color(0, 0, 0, 0.4f));
+                var barEl = barBg.AddComponent<LayoutElement>();
+                barEl.preferredWidth = 60; barEl.preferredHeight = 8;
+
+                var barFill = NewImage("WexpFill", barBg.transform, ColGold);
+                var bfRt = barFill.GetComponent<RectTransform>();
+                bfRt.anchorMin = Vector2.zero;
+                bfRt.anchorMax = new Vector2(0.3f, 1);
+                bfRt.offsetMin = Vector2.zero;
+                bfRt.offsetMax = Vector2.zero;
+            }
         }
 
-        static void BuildItemRow(RectTransform parent,
-            (string name, string icon, string value, string slash, string max, string equipped) item,
-            bool showDivider)
+        // ==================================================================
+        // page 2 — Inventory (Items)
+        // ==================================================================
+
+        static void BuildInventoryPage(RectTransform parent)
         {
-            var row = NewRect("ItemRow_" + item.name.Replace(" ", ""), parent);
-            row.sizeDelta = V2(0, 47);
+            var page = NewRect("InventoryPage", parent);
+            SetStretch(page, 0);
+            page.gameObject.SetActive(false);
+
+            BuildPageHeader(page, "Items", "2 / 3", 1);
+
+            // Items list
+            var list = NewRect("ItemsList", page);
+            list.anchorMin = new Vector2(0, 1);
+            list.anchorMax = new Vector2(1, 1);
+            list.pivot = new Vector2(0, 1);
+            list.anchoredPosition = new Vector2(0, -60);
+            list.sizeDelta = new Vector2(0, 400);
+
+            var listLayout = list.gameObject.AddComponent<VerticalLayoutGroup>();
+            listLayout.childAlignment = TextAnchor.UpperCenter;
+            listLayout.spacing = 2;
+            listLayout.padding = new RectOffset(0, 0, 0, 0);
+            listLayout.childForceExpandWidth = true;
+            listLayout.childForceExpandHeight = false;
+            listLayout.childControlWidth = true;
+            listLayout.childControlHeight = true;
+
+            // 5 item slots
+            BuildItemRow(list, "Loha Khadga", "42 / 46", true);
+            BuildItemRow(list, "Gandiva", "28 / 30", false);
+            BuildItemRow(list, "Sanjivani", "3 / 3", false);
+            BuildEmptyItemRow(list);
+            BuildEmptyItemRow(list);
+
+            // Equipment summary
+            var equip = NewImage("EquipmentBox", page, new Color32(0x14, 0x18, 0x40, 0x66));
+            var eRt = equip.GetComponent<RectTransform>();
+            eRt.anchorMin = new Vector2(0, 0);
+            eRt.anchorMax = new Vector2(1, 0);
+            eRt.pivot = new Vector2(0, 0);
+            eRt.anchoredPosition = new Vector2(0, 0);
+            eRt.sizeDelta = new Vector2(0, 110);
+
+            var eTitle = NewText("EquipTitle", eRt, "EQUIPMENT", cinzel, 16, ColSilver,
+                TextAlignmentOptions.TopLeft, FontStyles.Normal);
+            eTitle.characterSpacing = 6;
+            var etRt = eTitle.rectTransform;
+            etRt.anchorMin = new Vector2(0, 1);
+            etRt.anchorMax = new Vector2(1, 1);
+            etRt.pivot = new Vector2(0, 1);
+            etRt.anchoredPosition = new Vector2(14, -8);
+            etRt.sizeDelta = new Vector2(0, 22);
+
+            string[] eLabels = { "Rng", "Atk", "Hit", "Crit", "Avo" };
+            string[] eValues = { "1", "31", "140", "15", "48" };
+            for (int i = 0; i < 5; i++)
+            {
+                float xMin = i / 5f;
+                float xMax = xMin + 0.2f;
+                BuildDerivedStat(eRt, eLabels[i], eValues[i], xMin, xMax);
+            }
+        }
+
+        static void BuildItemRow(RectTransform parent, string itemName, string uses, bool equipped)
+        {
+            var row = NewRect("Item_" + itemName.Replace(" ", ""), parent);
+            row.sizeDelta = new Vector2(0, 60);
 
             var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.spacing = Sc(16);
-            int padX = Mathf.RoundToInt(Sc(8));
-            int padY = Mathf.RoundToInt(Sc(5));
-            layout.padding = new RectOffset(padX, padX, padY, padY);
+            layout.spacing = 14;
+            layout.padding = new RectOffset(14, 14, 6, 6);
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
 
             var le = row.gameObject.AddComponent<LayoutElement>();
-            le.preferredHeight = Sc(47);
+            le.preferredHeight = 60;
 
-            if (showDivider)
-            {
-                var divider = NewImage("Divider", row, new Color(0.23f, 0.12f, 0.03f, 0.25f));
-                var dRt = divider.GetComponent<RectTransform>();
-                dRt.anchorMin = new Vector2(0, 0);
-                dRt.anchorMax = new Vector2(1, 0);
-                dRt.pivot = new Vector2(0.5f, 0);
-                dRt.sizeDelta = V2(0, 1);
-                dRt.anchoredPosition = Vector2.zero;
-                divider.transform.SetAsLastSibling();
-                var ignored = divider.AddComponent<LayoutElement>();
-                ignored.ignoreLayout = true;
-            }
+            // Icon placeholder
+            var icon = NewImage("Icon", row, sprIconItem != null ? Color.white : ColGoldFaint);
+            if (sprIconItem != null) icon.GetComponent<Image>().sprite = sprIconItem;
+            var iconEl = icon.AddComponent<LayoutElement>();
+            iconEl.preferredWidth = 44; iconEl.preferredHeight = 44;
 
-            var icon = NewImage("Icon", row, ColTextBrown);
-            var iRt = icon.GetComponent<RectTransform>();
-            iRt.sizeDelta = V2(30, 30);
-            icon.GetComponent<Image>().sprite = LoadSprite(item.icon);
-            icon.GetComponent<Image>().preserveAspect = true;
-            var iEl = icon.AddComponent<LayoutElement>();
-            iEl.preferredWidth = Sc(30); iEl.preferredHeight = Sc(30);
-
-            var nameText = NewText("Name", row, item.name, cinzel, Sc(27), ColTextBrown,
+            // Name
+            var nameT = NewText("Name", row, itemName, cormorant, 28, ColIvory,
                 TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
-            var nEl = nameText.gameObject.AddComponent<LayoutElement>();
-            nEl.flexibleWidth = 1;
+            var nameEl = nameT.gameObject.AddComponent<LayoutElement>();
+            nameEl.flexibleWidth = 1;
 
-            var uses = NewRect("Uses", row);
-            uses.sizeDelta = V2(130, 34);
-            var usesLayout = uses.gameObject.AddComponent<HorizontalLayoutGroup>();
-            usesLayout.childAlignment = TextAnchor.MiddleRight;
-            usesLayout.spacing = Sc(4);
-            usesLayout.childForceExpandWidth = false;
-            usesLayout.childForceExpandHeight = false;
-            usesLayout.childControlWidth = true;
-            usesLayout.childControlHeight = true;
-            var uEl = uses.gameObject.AddComponent<LayoutElement>();
-            uEl.preferredWidth = Sc(130);
+            // Uses
+            var usesT = NewText("Uses", row, uses, cormorant, 26, ColSilver,
+                TextAlignmentOptions.MidlineRight, FontStyles.Normal);
+            var usesFit = usesT.gameObject.AddComponent<ContentSizeFitter>();
+            usesFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            usesFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            AddUsesText(uses, "Value", item.value, cormorant, ColTextRed, Sc(27));
-            AddUsesText(uses, "Slash", item.slash, cormorant, new Color(0.59f, 0.13f, 0.07f, 0.55f), Sc(27));
-            AddUsesText(uses, "Max",   item.max,   cormorant, ColTextRed, Sc(27));
+            if (equipped)
+            {
+                var eqT = NewText("Equipped", row, "E", cinzel, 16, ColGreen,
+                    TextAlignmentOptions.Midline, FontStyles.Bold);
+                eqT.characterSpacing = 4;
+                var eqFit = eqT.gameObject.AddComponent<ContentSizeFitter>();
+                eqFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                eqFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            }
 
-            if (!string.IsNullOrEmpty(item.equipped))
-                AddUsesText(uses, "Equipped", item.equipped, cinzel, ColTextBlue, Sc(22));
+            // Bottom separator
+            var sep = NewImage("Sep", row, ColSepFaint);
+            var sepRt = sep.GetComponent<RectTransform>();
+            sepRt.anchorMin = new Vector2(0, 0);
+            sepRt.anchorMax = new Vector2(1, 0);
+            sepRt.pivot = new Vector2(0.5f, 0);
+            sepRt.sizeDelta = new Vector2(0, 1);
+            sep.AddComponent<LayoutElement>().ignoreLayout = true;
         }
 
-        static void AddUsesText(RectTransform parent, string name, string text, TMP_FontAsset font, Color color, float size)
+        static void BuildEmptyItemRow(RectTransform parent)
         {
-            var t = NewText(name, parent, text, font, size, color, TextAlignmentOptions.Midline, FontStyles.Bold);
-            var fitter = t.gameObject.AddComponent<ContentSizeFitter>();
-            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var row = NewRect("Item_Empty", parent);
+            row.sizeDelta = new Vector2(0, 60);
+
+            var le = row.gameObject.AddComponent<LayoutElement>();
+            le.preferredHeight = 60;
+
+            var text = NewText("EmptyText", row, "\u2014 Empty \u2014", cormorant, 22,
+                new Color(ColSilver.r, ColSilver.g, ColSilver.b, 0.25f),
+                TextAlignmentOptions.Center, FontStyles.Italic);
+            var tRt = text.rectTransform;
+            tRt.anchorMin = Vector2.zero;
+            tRt.anchorMax = Vector2.one;
+            tRt.offsetMin = Vector2.zero;
+            tRt.offsetMax = Vector2.zero;
         }
 
         // ==================================================================
-        // equipment box
+        // page 3 — Supports (Bonds & Oaths)
         // ==================================================================
 
-        static void BuildEquipmentBox(RectTransform parent)
+        static void BuildSupportsPage(RectTransform parent)
         {
-            // Equipment box background — Figma node 11:4 Background:
-            // navy gradient + 2.4px gold stroke baked in. Clean, no text baked.
-            var outer = NewImage("EquipmentBox", parent, Color.white);
-            var oRt = outer.GetComponent<RectTransform>();
-            oRt.anchorMin = new Vector2(0, 0);
-            oRt.anchorMax = new Vector2(1, 0);
-            oRt.pivot = new Vector2(0.5f, 0);
-            oRt.anchoredPosition = Vector2.zero;
-            oRt.sizeDelta = V2(0, 154);
-            var outerImg = outer.GetComponent<Image>();
-            outerImg.sprite = LoadFrame("equipment_bg.png");
-            outerImg.type = Image.Type.Simple;
+            var page = NewRect("SupportsPage", parent);
+            SetStretch(page, 0);
+            page.gameObject.SetActive(false);
 
-            var navyRt = oRt;
+            BuildPageHeader(page, "Bonds & Oaths", "3 / 3", 2);
 
-            var title = NewText("EquipmentTitle", navyRt, "Equipment", cinzelDecor, Sc(29), ColTextGold,
-                TextAlignmentOptions.TopLeft, FontStyles.Bold);
-            title.characterSpacing = 4f;
-            var ttRt = title.rectTransform;
-            ttRt.anchorMin = new Vector2(0, 1);
-            ttRt.anchorMax = new Vector2(0, 1);
-            ttRt.pivot = new Vector2(0, 1);
-            ttRt.sizeDelta = V2(440, 38);
-            ttRt.anchoredPosition = V2(24, -14);
+            // Support list
+            var list = NewRect("SupportList", page);
+            list.anchorMin = new Vector2(0, 1);
+            list.anchorMax = new Vector2(1, 1);
+            list.pivot = new Vector2(0, 1);
+            list.anchoredPosition = new Vector2(0, -60);
+            list.sizeDelta = new Vector2(0, 500);
 
-            AddEqStat(navyRt, "StatRng",  "Rng", "1",   V2(-140, -17));
-            AddEqStat(navyRt, "StatAtk",  "Atk", "31",  V2(24,   -58), anchorLeft: true);
-            AddEqStat(navyRt, "StatCrit", "Crit","15",  V2(-140, -58));
-            AddEqStat(navyRt, "StatHit",  "Hit", "140", V2(24,   -98), anchorLeft: true);
-            AddEqStat(navyRt, "StatAvo",  "Avo", "78",  V2(-140, -98));
+            var listLayout = list.gameObject.AddComponent<VerticalLayoutGroup>();
+            listLayout.childAlignment = TextAnchor.UpperCenter;
+            listLayout.spacing = 2;
+            listLayout.childForceExpandWidth = true;
+            listLayout.childForceExpandHeight = false;
+            listLayout.childControlWidth = true;
+            listLayout.childControlHeight = true;
+
+            // Hidden template — cloned at runtime per bond returned by ISupportProvider.
+            BuildSupportRowTemplate(list);
+
+            // Empty-state text — shown when no bonds exist.
+            var empty = NewText("SupportsEmptyText", page,
+                "No bonds yet.",
+                cormorantItalic, 22, new Color(ColSilver.r, ColSilver.g, ColSilver.b, 0.4f),
+                TextAlignmentOptions.Center, FontStyles.Italic);
+            var eRt = empty.rectTransform;
+            eRt.anchorMin = new Vector2(0, 1);
+            eRt.anchorMax = new Vector2(1, 1);
+            eRt.pivot = new Vector2(0.5f, 1);
+            eRt.anchoredPosition = new Vector2(0, -200);
+            eRt.sizeDelta = new Vector2(-40, 40);
+            empty.gameObject.SetActive(false);
+
+            // Camp-conversation hint
+            var note = NewText("EmptyNote", page,
+                "Further bonds may form through shared battles and camp conversations.",
+                cormorantItalic, 22, new Color(ColSilver.r, ColSilver.g, ColSilver.b, 0.2f),
+                TextAlignmentOptions.TopLeft, FontStyles.Italic);
+            var nRt = note.rectTransform;
+            nRt.anchorMin = new Vector2(0, 0);
+            nRt.anchorMax = new Vector2(1, 0);
+            nRt.pivot = new Vector2(0, 0);
+            nRt.anchoredPosition = new Vector2(12, 16);
+            nRt.sizeDelta = new Vector2(-24, 60);
         }
 
-        static void AddEqStat(RectTransform parent, string name, string label, string value, Vector2 pos, bool anchorLeft = false)
+        static void BuildSupportRowTemplate(RectTransform parent)
         {
-            var row = NewRect(name, parent);
-            if (anchorLeft)
-            {
-                row.anchorMin = new Vector2(0, 1);
-                row.anchorMax = new Vector2(0, 1);
-                row.pivot = new Vector2(0, 1);
-            }
-            else
-            {
-                row.anchorMin = new Vector2(1, 1);
-                row.anchorMax = new Vector2(1, 1);
-                row.pivot = new Vector2(0, 1);
-            }
-            row.anchoredPosition = pos;
-            row.sizeDelta = V2(130, 34);
+            var row = NewRect("SupportRowTemplate", parent);
+            row.sizeDelta = new Vector2(0, 80);
 
             var layout = row.gameObject.AddComponent<HorizontalLayoutGroup>();
             layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.spacing = Sc(14);
+            layout.spacing = 14;
+            layout.padding = new RectOffset(12, 12, 8, 8);
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
             layout.childControlWidth = true;
             layout.childControlHeight = true;
 
-            var lbl = NewText("Label", row, label, cinzel, Sc(25), ColTextLabel,
-                TextAlignmentOptions.Midline, FontStyles.Bold);
-            lbl.characterSpacing = 8f;
-            var lblFit = lbl.gameObject.AddComponent<ContentSizeFitter>();
-            lblFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            lblFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var le = row.gameObject.AddComponent<LayoutElement>();
+            le.preferredHeight = 80;
 
-            var val = NewText("Value", row, value, cormorant, Sc(25), ColTextGold,
-                TextAlignmentOptions.Midline, FontStyles.Bold);
-            var valFit = val.gameObject.AddComponent<ContentSizeFitter>();
-            valFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            valFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            // Portrait (with notif + diya children that controller toggles per bond state)
+            var portrait = NewImage("Portrait", row, ColIndigoLight);
+            var pEl = portrait.AddComponent<LayoutElement>();
+            pEl.preferredWidth = 64; pEl.preferredHeight = 64;
+            portrait.GetComponent<Image>().preserveAspect = true;
+
+            var notif = NewImage("Notif", portrait.transform, Color.white);
+            var nRt = notif.GetComponent<RectTransform>();
+            nRt.anchorMin = new Vector2(1, 1);
+            nRt.anchorMax = new Vector2(1, 1);
+            nRt.pivot = new Vector2(1, 1);
+            nRt.anchoredPosition = new Vector2(6, 6);
+            nRt.sizeDelta = new Vector2(28, 28);
+            if (sprNotifBadge != null) notif.GetComponent<Image>().sprite = sprNotifBadge;
+            notif.SetActive(false);
+
+            var diya = NewImage("DiyaMemorial", portrait.transform, Color.white);
+            var dRt = diya.GetComponent<RectTransform>();
+            dRt.anchorMin = new Vector2(1, 0);
+            dRt.anchorMax = new Vector2(1, 0);
+            dRt.pivot = new Vector2(1, 0);
+            dRt.anchoredPosition = new Vector2(4, -4);
+            dRt.sizeDelta = new Vector2(28, 28);
+            if (sprDiyaMemorial != null) diya.GetComponent<Image>().sprite = sprDiyaMemorial;
+            diya.SetActive(false);
+
+            // Name
+            var nameT = NewText("Name", row, "Partner", cormorant, 28, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            var nameEl = nameT.gameObject.AddComponent<LayoutElement>();
+            nameEl.flexibleWidth = 1;
+
+            // Bond pips — three Image children, controller swaps sprites per bond.Stage.
+            var pips = NewRect("BondPips", row);
+            var pipsLayout = pips.gameObject.AddComponent<HorizontalLayoutGroup>();
+            pipsLayout.childAlignment = TextAnchor.MiddleCenter;
+            pipsLayout.spacing = 4;
+            pipsLayout.childForceExpandWidth = false;
+            pipsLayout.childForceExpandHeight = false;
+            pipsLayout.childControlWidth = true;
+            pipsLayout.childControlHeight = true;
+            var pipsEl = pips.gameObject.AddComponent<LayoutElement>();
+            pipsEl.preferredWidth = 100;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var pip = NewImage("Pip" + i, pips.transform, Color.white);
+                var pipEl = pip.AddComponent<LayoutElement>();
+                pipEl.preferredWidth = 32; pipEl.preferredHeight = 32;
+                if (sprBondPipUnlit != null) pip.GetComponent<Image>().sprite = sprBondPipUnlit;
+            }
+
+            // Shapath icon (oath witnessed)
+            var shapath = NewImage("ShapathIcon", row, Color.white);
+            var shapathEl = shapath.AddComponent<LayoutElement>();
+            shapathEl.preferredWidth = 24; shapathEl.preferredHeight = 24;
+            if (sprShapathIcon != null) shapath.GetComponent<Image>().sprite = sprShapathIcon;
+            shapath.SetActive(false);
+
+            // Bonus teaser text
+            var bonusT = NewText("Bonus", row, "", cormorant, 19, ColGreen,
+                TextAlignmentOptions.MidlineRight, FontStyles.Italic);
+            var bonusFit = bonusT.gameObject.AddComponent<ContentSizeFitter>();
+            bonusFit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            bonusFit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // Bottom separator
+            var sep = NewImage("Sep", row, new Color32(0x2a, 0x4a, 0x8a, 0x0f));
+            var sepRt = sep.GetComponent<RectTransform>();
+            sepRt.anchorMin = new Vector2(0, 0);
+            sepRt.anchorMax = new Vector2(1, 0);
+            sepRt.pivot = new Vector2(0.5f, 0);
+            sepRt.sizeDelta = new Vector2(0, 1);
+            sep.AddComponent<LayoutElement>().ignoreLayout = true;
+
+            row.gameObject.SetActive(false); // template stays inactive; clones become visible
         }
 
         // ==================================================================
-        // scale helpers
+        // page header + page indicator
         // ==================================================================
 
-        // Scales a single length value (font size, spacing, inset, etc).
+        static void BuildPageHeader(RectTransform page, string title, string indicator, int activeDot)
+        {
+            var header = NewRect("PageHeader", page);
+            header.anchorMin = new Vector2(0, 1);
+            header.anchorMax = new Vector2(1, 1);
+            header.pivot = new Vector2(0, 1);
+            header.anchoredPosition = Vector2.zero;
+            header.sizeDelta = new Vector2(0, 50);
+
+            var titleT = NewText("Title", header, title.ToUpper(), cinzel, 38, ColIvory,
+                TextAlignmentOptions.MidlineLeft, FontStyles.Bold);
+            titleT.characterSpacing = 4;
+            if (matPageHeaderGlow != null) titleT.fontMaterial = matPageHeaderGlow;
+            var ttRt = titleT.rectTransform;
+            ttRt.anchorMin = new Vector2(0, 0);
+            ttRt.anchorMax = new Vector2(0.7f, 1);
+            ttRt.offsetMin = Vector2.zero;
+            ttRt.offsetMax = Vector2.zero;
+
+            var indT = NewText("Indicator", header, indicator, cinzel, 18, ColSilver,
+                TextAlignmentOptions.MidlineRight, FontStyles.Normal);
+            indT.characterSpacing = 4;
+            var indRt = indT.rectTransform;
+            indRt.anchorMin = new Vector2(0.7f, 0);
+            indRt.anchorMax = new Vector2(1, 1);
+            indRt.offsetMin = Vector2.zero;
+            indRt.offsetMax = Vector2.zero;
+
+            // Header rule
+            var rule = NewImage("HeaderRule", page, ColSapphire);
+            var ruleRt = rule.GetComponent<RectTransform>();
+            ruleRt.anchorMin = new Vector2(0, 1);
+            ruleRt.anchorMax = new Vector2(1, 1);
+            ruleRt.pivot = new Vector2(0, 1);
+            ruleRt.anchoredPosition = new Vector2(0, -50);
+            ruleRt.sizeDelta = new Vector2(0, 2);
+        }
+
+        static void BuildPageIndicator(RectTransform parent)
+        {
+            var dots = NewRect("PageIndicator", parent);
+            dots.anchorMin = new Vector2(0.5f, 0);
+            dots.anchorMax = new Vector2(0.5f, 0);
+            dots.pivot = new Vector2(0.5f, 0);
+            dots.anchoredPosition = new Vector2(0, 16);
+            dots.sizeDelta = new Vector2(60, 16);
+
+            var layout = dots.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = 8;
+            layout.childForceExpandWidth = false;
+            layout.childForceExpandHeight = false;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+
+            for (int i = 0; i < 3; i++)
+            {
+                bool isActive = i == 0;
+                var dot = NewImage("Dot" + i, dots, Color.white);
+                var el = dot.AddComponent<LayoutElement>();
+                var dotImg = dot.GetComponent<Image>();
+
+                if (sprPageDotActive != null)
+                {
+                    // Padded sprite: 24×24 (12×12 visible + glow halo)
+                    el.preferredWidth = 24; el.preferredHeight = 24;
+                    dotImg.sprite = isActive ? sprPageDotActive : sprPageDotInactive;
+                    dotImg.color = isActive ? Color.white : new Color(1, 1, 1, 0.3f);
+                }
+                else
+                {
+                    el.preferredWidth = 12; el.preferredHeight = 12;
+                    dotImg.color = isActive ? ColGold : new Color(ColGold.r, ColGold.g, ColGold.b, 0.3f);
+                }
+            }
+        }
+
+        // ==================================================================
+        // helpers
+        // ==================================================================
+
         static float Sc(float v) => v * Scale;
-
-        // Builds a Vector2 whose components are scaled. Used for sizeDelta,
-        // anchoredPosition, offsetMin, offsetMax — anywhere that holds a size
-        // or a pixel-space offset. Zero components stay zero (important:
-        // zero means "stretch with anchors" in sizeDelta).
-        static Vector2 V2(float x, float y) => new Vector2(x * Scale, y * Scale);
-
-        // ==================================================================
-        // low-level element helpers
-        // ==================================================================
 
         static Sprite LoadSprite(string filename) =>
             AssetDatabase.LoadAssetAtPath<Sprite>(SpriteDir + filename);
 
         static Sprite LoadFrame(string filename) =>
             AssetDatabase.LoadAssetAtPath<Sprite>(FrameDir + filename);
+
+        static void AddFittedText(RectTransform parent, string name, string text,
+            TMP_FontAsset font, float size, Color color)
+        {
+            var t = NewText(name, parent, text, font, size, color,
+                TextAlignmentOptions.Midline, FontStyles.Bold);
+            var fitter = t.gameObject.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
 
         static GameObject NewImage(string name, Transform parent, Color color)
         {

@@ -7,6 +7,10 @@ namespace ProjectAstra.Core
     {
         const int MaxNiyatiStoryDelta = 4;
 
+        // SS-11 / UC-02 — shared level + EXP constants.
+        public const int ExpPerLevel = 100;
+        public const int PromotedLevelCap = 20;
+
         public UnitDefinition Definition { get; }
         public ClassDefinition CurrentClass { get; private set; }
         public int Level { get; private set; }
@@ -15,6 +19,13 @@ namespace ProjectAstra.Core
         public int CurrentHP { get; private set; }
         public int MaxHP => Stats[StatIndex.HP];
         public HPThreshold HPThreshold { get; private set; }
+        public int CurrentEXP { get; private set; }
+
+        // USE-04 — stress / war erosion tier. 0 = no stress.
+        public int StressTier { get; private set; }
+
+        public bool IsDead => CurrentHP == 0;
+        public bool IsAtLevelCap => CurrentClass != null && CurrentClass.IsPromoted && Level >= PromotedLevelCap;
 
         public int BaseNiyati { get; private set; }
         public int NiyatiStoryDelta { get; private set; }
@@ -222,6 +233,39 @@ namespace ProjectAstra.Core
         public void ResetMovementOffset()
         {
             MovementOffset = 0;
+        }
+
+        #endregion
+
+        #region Stress (USE-04)
+
+        public void SetStressTier(int tier)
+        {
+            StressTier = Mathf.Max(0, tier);
+        }
+
+        #endregion
+
+        #region EXP (SS-11)
+
+        // Adds raw EXP. Returns true if a level-up threshold was crossed; caller is
+        // expected to invoke ApplyLevelUp() and subtract ExpPerLevel as appropriate.
+        // No-op if the unit is at the promoted level cap — caps EXP at ExpPerLevel.
+        public bool AddExp(int amount)
+        {
+            if (amount <= 0) return false;
+            if (IsAtLevelCap)
+            {
+                CurrentEXP = Mathf.Min(CurrentEXP + amount, ExpPerLevel);
+                return false;
+            }
+            CurrentEXP += amount;
+            return CurrentEXP >= ExpPerLevel;
+        }
+
+        public void ConsumeExpForLevelUp()
+        {
+            CurrentEXP = Mathf.Max(0, CurrentEXP - ExpPerLevel);
         }
 
         #endregion

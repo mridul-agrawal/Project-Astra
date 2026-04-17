@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Unit Info Panel · 01 Temple Gold</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #d4a24c;
+  --gold-soft: rgba(212,162,76,0.22);
+  --gold-faint: rgba(212,162,76,0.12);
+  --ivory: #f5e9c8;
+  --muted: #8a7a5c;
+  --copper: #c08858;
+  --green: #8de078;
+  --green-dark: #2e7a3a;
+  --bg-panel: rgba(24,14,8,0.82);
+  --bg-deep: #0a0614;
+  --border-gold: rgba(212,162,76,0.55);
+  --text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #050305; }
+body {
+  background: radial-gradient(ellipse at top, #0c0a14 0%, #050305 70%);
+  color: var(--ivory);
+  font-family: 'Cormorant Garamond', serif;
+  padding: 48px 24px 96px;
+}
+.page-title { font-family: 'Cinzel', serif; font-weight: 600; font-size: 28px; letter-spacing: 0.35em; text-transform: uppercase; text-align: center; color: var(--gold); margin-bottom: 4px; }
+.page-sub { text-align: center; font-style: italic; font-size: 17px; color: #7a6a4c; margin-bottom: 48px; }
+
+.section-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: #5a4c32; text-align: center; margin: 48px 0 16px; }
+
+/* === FRAME: 1920×1080 canvas === */
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.65;
+  position: relative; overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.85), 0 0 0 1px rgba(212,162,76,0.08);
+  margin: 0 auto 24px;
+  background: var(--bg-deep);
+}
+
+/* Full-screen panel background */
+.panel-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(14,8,4,0.95) 0%, rgba(10,6,20,0.92) 100%);
+}
+
+/* Grid overlay for subtle texture */
+.panel-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 63px, rgba(212,162,76,0.03) 63px 64px),
+              repeating-linear-gradient(90deg, transparent 0 63px, rgba(212,162,76,0.03) 63px 64px);
+  pointer-events: none;
+}
+
+/* === LAYOUT === */
+.info-layout {
+  position: absolute; inset: 40px;
+  display: flex; gap: 0;
+}
+
+/* LEFT COLUMN — portrait + identity */
+.left-col {
+  width: 520px; flex-shrink: 0;
+  display: flex; flex-direction: column;
+  padding: 24px 40px 24px 24px;
+  position: relative;
+}
+
+/* Vertical gold separator between columns */
+.left-col::after {
+  content: ''; position: absolute;
+  right: 0; top: 40px; bottom: 40px; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--border-gold), transparent);
+}
+
+/* Portrait frame */
+.portrait-frame {
+  width: 400px; height: 400px;
+  border-radius: 12px;
+  background: radial-gradient(circle at 40% 30%, #3a2818 0%, #0f0805 100%);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 6px rgba(10,6,4,1), 0 0 0 7px var(--gold-soft), inset 0 0 40px rgba(212,162,76,0.15);
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto;
+}
+.portrait-frame svg { width: 100%; height: 100%; display: block; }
+
+/* Corner bosses on portrait */
+.portrait-boss {
+  position: absolute; width: 20px; height: 20px;
+  background: radial-gradient(circle at 40% 35%, #f5d27a 0%, #d4a24c 40%, #6a3a0a 85%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px #0a0408, 0 0 6px rgba(212,162,76,0.4);
+  z-index: 5;
+}
+.portrait-boss.tl { top: -6px; left: -6px; }
+.portrait-boss.tr { top: -6px; right: -6px; }
+.portrait-boss.bl { bottom: -6px; left: -6px; }
+.portrait-boss.br { bottom: -6px; right: -6px; }
+
+.char-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900; font-size: 36px;
+  color: var(--ivory);
+  text-align: center;
+  margin-top: 20px;
+  text-shadow: var(--text-shadow), 0 0 20px rgba(212,162,76,0.25);
+  letter-spacing: 0.06em;
+}
+
+.identity-block {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  position: relative;
+}
+.identity-block::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 1px solid var(--gold-faint);
+  border-radius: 4px; pointer-events: none;
+}
+
+.id-row { display: flex; align-items: baseline; gap: 16px; margin-bottom: 6px; }
+.id-label { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 0.3em; color: var(--muted); text-transform: uppercase; }
+.id-value { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 22px; color: var(--ivory); }
+.id-value.class-name { font-family: 'Cinzel', serif; font-weight: 600; font-size: 20px; color: var(--copper); letter-spacing: 0.15em; }
+
+.hp-bar-wrap { margin-top: 10px; }
+.hp-bar-outer { height: 8px; background: rgba(0,0,0,0.6); border: 1px solid var(--gold-soft); border-radius: 2px; overflow: hidden; }
+.hp-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green-dark), var(--green)); border-radius: 1px; }
+.hp-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.hp-numbers { font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 24px; color: var(--ivory); }
+.hp-numbers .sep { color: var(--muted); margin: 0 4px; font-weight: 400; }
+
+/* Sprite placeholder */
+.char-sprite {
+  width: 64px; height: 64px;
+  margin-top: 16px;
+  background: radial-gradient(circle, rgba(212,162,76,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--gold-soft);
+}
+
+/* RIGHT COLUMN */
+.right-col {
+  flex: 1;
+  padding: 24px 24px 24px 48px;
+  display: flex; flex-direction: column;
+}
+
+/* Page header */
+.page-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.page-header-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700; font-size: 32px;
+  color: var(--ivory);
+  letter-spacing: 0.05em;
+  text-shadow: var(--text-shadow), 0 0 18px rgba(212,162,76,0.2);
+}
+.page-header-nav {
+  font-family: 'Cinzel', serif;
+  font-size: 14px; letter-spacing: 0.3em;
+  color: var(--muted);
+}
+.page-header-nav .arrow { color: var(--gold); cursor: pointer; font-size: 18px; margin: 0 6px; }
+.page-indicator { font-family: 'Cinzel', serif; font-size: 14px; color: var(--muted); letter-spacing: 0.2em; }
+
+/* Decorative underline after header */
+.header-rule {
+  height: 2px; margin: 12px 0 28px;
+  background: linear-gradient(90deg, var(--gold), rgba(212,162,76,0.3), transparent);
+}
+
+/* STAT GRID (Page 1) */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 48px;
+  flex: 1;
+}
+.stat-column { display: flex; flex-direction: column; gap: 0; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gold-faint);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label {
+  font-family: 'Cinzel', serif;
+  font-size: 16px; font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.stat-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700; font-size: 28px;
+  color: var(--ivory);
+  min-width: 48px; text-align: right;
+}
+.stat-value.positive { color: var(--green); }
+.stat-value.empty { color: #3a2f1c; }
+.stat-value .affin-icon {
+  display: inline-block; width: 20px; height: 20px;
+  background: radial-gradient(circle, #e8602a, #c84020);
+  border-radius: 50%; vertical-align: middle;
+}
+
+/* Battle record (Page 1 bottom) */
+.battle-record {
+  display: flex; gap: 40px; justify-content: center;
+  padding: 20px 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--gold-faint);
+}
+.record-item { text-align: center; }
+.record-label { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.4em; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
+.record-value { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 28px; color: var(--ivory); }
+
+/* ITEMS (Page 2) */
+.item-list { flex: 1; display: flex; flex-direction: column; gap: 0; }
+.item-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--gold-faint);
+  position: relative;
+}
+.item-row.empty {
+  border: 1px dashed rgba(212,162,76,0.12);
+  border-bottom: 1px dashed rgba(212,162,76,0.12);
+  background: rgba(0,0,0,0.15);
+  min-height: 54px;
+}
+.item-icon {
+  width: 36px; height: 36px;
+  background: var(--gold-faint);
+  border-radius: 4px; border: 1px solid var(--gold-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--gold); flex-shrink: 0;
+}
+.item-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600; font-size: 22px;
+  color: var(--ivory); flex: 1;
+}
+.item-uses {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500; font-size: 20px;
+  color: var(--muted);
+}
+.item-equipped {
+  font-family: 'Cinzel', serif;
+  font-size: 12px; letter-spacing: 0.3em;
+  color: var(--green);
+  background: rgba(141,224,120,0.1);
+  padding: 2px 8px; border-radius: 3px;
+  border: 1px solid rgba(141,224,120,0.2);
+}
+
+/* Equipment summary */
+.equip-summary {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  position: relative;
+}
+.equip-summary::before {
+  content: ''; position: absolute; inset: 4px;
+  border: 1px solid var(--gold-faint); border-radius: 4px; pointer-events: none;
+}
+.equip-title {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.35em; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.equip-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+}
+.equip-row { display: flex; justify-content: space-between; align-items: baseline; }
+.equip-label { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 0.2em; color: var(--muted); }
+.equip-value { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 24px; color: var(--ivory); }
+
+/* WEAPON RANKS (Page 3) */
+.weapon-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
+}
+.weapon-cell {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--gold-faint);
+  border-radius: 4px;
+}
+.weapon-icon {
+  width: 40px; height: 40px;
+  background: var(--gold-faint);
+  border-radius: 6px; border: 1px solid var(--gold-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold);
+  flex-shrink: 0;
+}
+.weapon-type {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; color: var(--muted); flex: 1;
+}
+.weapon-rank {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700; font-size: 28px;
+  color: var(--ivory);
+  min-width: 36px; text-align: center;
+}
+.weapon-rank.high { color: var(--green); }
+.weapon-rank.none { color: #2a1f12; font-size: 22px; }
+
+/* Support section */
+.support-section { margin-top: 32px; }
+.support-title {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.35em; color: var(--muted);
+  text-transform: uppercase; margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gold-faint);
+}
+.support-empty {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic; font-size: 18px; color: #3a2f1c;
+  padding: 16px;
+}
+
+.footer { text-align: center; font-style: italic; font-size: 14px; color: #3a2f1c; margin-top: 32px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Unit Info Panel · 01 Temple Gold · all 3 pages</p>
+
+<!-- ========== PAGE 1/3 — Personal Data ========== -->
+<div class="section-label">Page 1 / 3 — Personal Data</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-frame" style="position:relative;">
+        <span class="portrait-boss tl"></span><span class="portrait-boss tr"></span>
+        <span class="portrait-boss bl"></span><span class="portrait-boss br"></span>
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="pbg" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#0c0604"/></radialGradient>
+            <linearGradient id="psk" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient>
+          </defs>
+          <rect width="400" height="400" fill="url(#pbg)"/>
+          <ellipse cx="140" cy="100" rx="180" ry="240" fill="#f5d27a" fill-opacity="0.06"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="#2a0a14"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="none" stroke="#d4a24c" stroke-width="2"/>
+          <circle cx="80" cy="320" r="10" fill="#d4a24c"/><circle cx="320" cy="320" r="10" fill="#d4a24c"/>
+          <rect x="176" y="244" width="48" height="48" fill="url(#psk)"/>
+          <ellipse cx="200" cy="180" rx="80" ry="92" fill="url(#psk)"/>
+          <path d="M 120 170 Q 112 90 200 84 Q 288 90 280 170 Q 272 124 236 116 Q 200 108 164 116 Q 128 124 120 170 Z" fill="#140804"/>
+          <path d="M 120 132 Q 200 100 280 132 L 280 156 Q 200 124 120 156 Z" fill="#d4a24c"/>
+          <circle cx="200" cy="132" r="7" fill="#c84040"/><circle cx="200" cy="132" r="3" fill="#f5d27a"/>
+          <circle cx="128" cy="144" r="4" fill="#f5d27a"/><circle cx="272" cy="144" r="4" fill="#f5d27a"/>
+          <ellipse cx="170" cy="196" rx="8" ry="5.6" fill="#0c0604"/><ellipse cx="230" cy="196" rx="8" ry="5.6" fill="#0c0604"/>
+          <path d="M 156 180 L 184 176" stroke="#140804" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 216 176 L 244 180" stroke="#140804" stroke-width="4" stroke-linecap="round"/>
+          <path d="M 200 200 Q 196 224 200 236 Q 206 236 208 228" stroke="#6a3a1c" stroke-width="2" fill="none"/>
+          <path d="M 184 248 Q 200 252 216 248" stroke="#4a1a0a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M 194 160 L 206 160 L 200 180 Z" fill="#c84040"/>
+          <ellipse cx="164" cy="204" rx="18" ry="8" fill="#f5d8b8" fill-opacity="0.15"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:24px">Exp</span><span class="id-value">76</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row">
+            <span class="id-label">HP</span>
+            <span class="hp-numbers">45<span class="sep">/</span>45</span>
+          </div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="char-sprite">&#9876;</div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Personal Data</span>
+        <span class="page-indicator">1 / 3</span>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="stat-grid">
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Str</span><span class="stat-value">18</span></div>
+          <div class="stat-row"><span class="stat-label">Skill</span><span class="stat-value">22</span></div>
+          <div class="stat-row"><span class="stat-label">Spd</span><span class="stat-value">19</span></div>
+          <div class="stat-row"><span class="stat-label">Luck</span><span class="stat-value">14</span></div>
+          <div class="stat-row"><span class="stat-label">Def</span><span class="stat-value">12</span></div>
+          <div class="stat-row"><span class="stat-label">Res</span><span class="stat-value">8</span></div>
+        </div>
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Move</span><span class="stat-value">6</span></div>
+          <div class="stat-row"><span class="stat-label">Con</span><span class="stat-value">9</span></div>
+          <div class="stat-row"><span class="stat-label">Aid</span><span class="stat-value">11</span></div>
+          <div class="stat-row"><span class="stat-label">Trv</span><span class="stat-value empty">---</span></div>
+          <div class="stat-row"><span class="stat-label">Affin</span><span class="stat-value"><span class="affin-icon"></span></span></div>
+          <div class="stat-row"><span class="stat-label">Cond</span><span class="stat-value empty">---</span></div>
+        </div>
+      </div>
+
+      <div class="battle-record">
+        <div class="record-item"><span class="record-label">Battles</span><span class="record-value">24</span></div>
+        <div class="record-item"><span class="record-label">Wins</span><span class="record-value">20</span></div>
+        <div class="record-item"><span class="record-label">Losses</span><span class="record-value">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 2/3 — Items ========== -->
+<div class="section-label">Page 2 / 3 — Items</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-frame" style="position:relative;">
+        <span class="portrait-boss tl"></span><span class="portrait-boss tr"></span>
+        <span class="portrait-boss bl"></span><span class="portrait-boss br"></span>
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="pbg2" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#0c0604"/></radialGradient><linearGradient id="psk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs>
+          <rect width="400" height="400" fill="url(#pbg2)"/>
+          <ellipse cx="140" cy="100" rx="180" ry="240" fill="#f5d27a" fill-opacity="0.06"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="#2a0a14"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="none" stroke="#d4a24c" stroke-width="2"/>
+          <circle cx="80" cy="320" r="10" fill="#d4a24c"/><circle cx="320" cy="320" r="10" fill="#d4a24c"/>
+          <rect x="176" y="244" width="48" height="48" fill="url(#psk2)"/>
+          <ellipse cx="200" cy="180" rx="80" ry="92" fill="url(#psk2)"/>
+          <path d="M 120 170 Q 112 90 200 84 Q 288 90 280 170 Q 272 124 236 116 Q 200 108 164 116 Q 128 124 120 170 Z" fill="#140804"/>
+          <path d="M 120 132 Q 200 100 280 132 L 280 156 Q 200 124 120 156 Z" fill="#d4a24c"/>
+          <circle cx="200" cy="132" r="7" fill="#c84040"/><circle cx="200" cy="132" r="3" fill="#f5d27a"/>
+          <ellipse cx="170" cy="196" rx="8" ry="5.6" fill="#0c0604"/><ellipse cx="230" cy="196" rx="8" ry="5.6" fill="#0c0604"/>
+          <path d="M 194 160 L 206 160 L 200 180 Z" fill="#c84040"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:24px">Exp</span><span class="id-value">76</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">45<span class="sep">/</span>45</span></div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="char-sprite">&#9876;</div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title"><span class="page-header-nav"><span class="arrow">&#x276E;</span></span> Items <span class="page-header-nav"><span class="arrow">&#x276F;</span></span></span>
+        <span class="page-indicator">2 / 3</span>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="item-list">
+        <div class="item-row">
+          <div class="item-icon">&#9876;</div>
+          <span class="item-name">Loha Khadga</span>
+          <span class="item-uses">42 / 46</span>
+          <span class="item-equipped">E</span>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">&#127993;</div>
+          <span class="item-name">Gandiva</span>
+          <span class="item-uses">28 / 30</span>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">&#9878;</div>
+          <span class="item-name">Amrit Elixir</span>
+          <span class="item-uses">3 / 3</span>
+        </div>
+        <div class="item-row empty"></div>
+        <div class="item-row empty"></div>
+      </div>
+
+      <div class="equip-summary">
+        <div class="equip-title">Equipment</div>
+        <div class="equip-grid">
+          <div class="equip-row"><span class="equip-label">Rng</span><span class="equip-value">1</span></div>
+          <div class="equip-row"><span class="equip-label">Atk</span><span class="equip-value">31</span></div>
+          <div class="equip-row"><span class="equip-label">Crit</span><span class="equip-value">15</span></div>
+          <div class="equip-row"><span class="equip-label">Hit</span><span class="equip-value">140</span></div>
+          <div class="equip-row"><span class="equip-label">Avoid</span><span class="equip-value">78</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE 3/3 — Weapon & Support Level ========== -->
+<div class="section-label">Page 3 / 3 — Weapon & Support Level</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-frame" style="position:relative;">
+        <span class="portrait-boss tl"></span><span class="portrait-boss tr"></span>
+        <span class="portrait-boss bl"></span><span class="portrait-boss br"></span>
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="pbg3" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#0c0604"/></radialGradient><linearGradient id="psk3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs>
+          <rect width="400" height="400" fill="url(#pbg3)"/>
+          <ellipse cx="140" cy="100" rx="180" ry="240" fill="#f5d27a" fill-opacity="0.06"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="#2a0a14"/>
+          <path d="M 20 400 Q 20 310 110 270 Q 200 240 290 270 Q 380 310 380 400 Z" fill="none" stroke="#d4a24c" stroke-width="2"/>
+          <circle cx="80" cy="320" r="10" fill="#d4a24c"/><circle cx="320" cy="320" r="10" fill="#d4a24c"/>
+          <rect x="176" y="244" width="48" height="48" fill="url(#psk3)"/>
+          <ellipse cx="200" cy="180" rx="80" ry="92" fill="url(#psk3)"/>
+          <path d="M 120 170 Q 112 90 200 84 Q 288 90 280 170 Q 272 124 236 116 Q 200 108 164 116 Q 128 124 120 170 Z" fill="#140804"/>
+          <path d="M 120 132 Q 200 100 280 132 L 280 156 Q 200 124 120 156 Z" fill="#d4a24c"/>
+          <circle cx="200" cy="132" r="7" fill="#c84040"/><circle cx="200" cy="132" r="3" fill="#f5d27a"/>
+          <ellipse cx="170" cy="196" rx="8" ry="5.6" fill="#0c0604"/><ellipse cx="230" cy="196" rx="8" ry="5.6" fill="#0c0604"/>
+          <path d="M 194 160 L 206 160 L 200 180 Z" fill="#c84040"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:24px">Exp</span><span class="id-value">76</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">45<span class="sep">/</span>45</span></div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill"></div></div>
+        </div>
+      </div>
+      <div class="char-sprite">&#9876;</div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Weapon & Support Level</span>
+        <span class="page-indicator">3 / 3</span>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="weapon-grid">
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#9876;</div>
+          <span class="weapon-type">Sword</span>
+          <span class="weapon-rank high">A</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#9872;</div>
+          <span class="weapon-type">Lance</span>
+          <span class="weapon-rank">C</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#9935;</div>
+          <span class="weapon-type">Axe</span>
+          <span class="weapon-rank">D</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#127993;</div>
+          <span class="weapon-type">Bow</span>
+          <span class="weapon-rank high">B</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#10040;</div>
+          <span class="weapon-type">Anima</span>
+          <span class="weapon-rank none">--</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#10022;</div>
+          <span class="weapon-type">Light</span>
+          <span class="weapon-rank none">--</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#9790;</div>
+          <span class="weapon-type">Dark</span>
+          <span class="weapon-rank none">--</span>
+        </div>
+        <div class="weapon-cell">
+          <div class="weapon-icon">&#9885;</div>
+          <span class="weapon-type">Staff</span>
+          <span class="weapon-rank none">--</span>
+        </div>
+      </div>
+
+      <div class="support-section">
+        <div class="support-title">Supports</div>
+        <div class="support-empty">No supports established yet.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="footer">Unit Info Panel · Temple Gold · 1920×1080 · displayed at 65% · all 3 pages</p>
+</body>
+</html>

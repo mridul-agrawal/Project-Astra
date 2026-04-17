@@ -71,7 +71,7 @@ namespace ProjectAstra.Core
                 attacker.str, attacker.mag, atkMight,
                 WeaponTriangle.GetDamageBonus(atkAdvantage),
                 defender.def, defender.res, defTerrainDef);
-            int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, 0, defender.niyati);
+            int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, attacker.classCrit, defender.niyati);
 
             // Precompute defender stats
             int defDisplayedHit = 0, defDmg = 0, defCrit = 0;
@@ -89,7 +89,7 @@ namespace ProjectAstra.Core
                     defender.str, defender.mag, defMight,
                     WeaponTriangle.GetDamageBonus(defAdvantage),
                     attacker.def, attacker.res, atkTerrainDef);
-                defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, 0, attacker.niyati);
+                defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, defender.classCrit, attacker.niyati);
             }
 
             bool defenderFired = false;

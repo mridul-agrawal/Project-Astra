@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Unit Info Panel · 04b Dharma Sigil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --indigo: #0a0e2a;
+  --indigo-mid: #141840;
+  --indigo-light: #1e2458;
+  --sapphire: #2a4a8a;
+  --sapphire-glow: rgba(42,74,138,0.4);
+  --gold: #c8a040;
+  --gold-bright: #e8c860;
+  --gold-dim: rgba(200,160,64,0.25);
+  --gold-faint: rgba(200,160,64,0.08);
+  --ivory: #e8e0d0;
+  --silver: #a0a8b8;
+  --green: #60c870;
+  --green-dim: #3a8a4a;
+  --red: #c84040;
+  --red-dim: #8a2828;
+  --border-glow: rgba(42,74,138,0.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #030408; }
+body {
+  background: radial-gradient(ellipse at center, #08081a 0%, #030408 70%);
+  color: var(--ivory);
+  font-family: 'Cormorant Garamond', serif;
+  padding: 48px 24px 96px;
+}
+.page-title { font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 28px; letter-spacing: 0.3em; text-transform: uppercase; text-align: center; color: var(--gold); margin-bottom: 4px; }
+.page-sub { text-align: center; font-style: italic; font-size: 17px; color: #4a4a6a; margin-bottom: 48px; }
+.section-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5em; text-transform: uppercase; color: #3a3a5a; text-align: center; margin: 48px 0 16px; }
+
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.65;
+  position: relative; overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.9), 0 0 0 1px rgba(42,74,138,0.15);
+  margin: 0 auto 24px;
+  background: var(--indigo);
+}
+
+/* Deep indigo bg with mandala-like geometric overlay */
+.panel-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #080c28 0%, #0a0e2a 50%, #060a20 100%);
+}
+.panel-bg::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(42,74,138,0.06) 0%, transparent 50%),
+    radial-gradient(circle at 25% 25%, rgba(200,160,64,0.03) 0%, transparent 40%),
+    radial-gradient(circle at 75% 75%, rgba(200,160,64,0.02) 0%, transparent 30%);
+  pointer-events: none;
+}
+/* Geometric mandala pattern */
+.panel-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 6deg, rgba(42,74,138,0.015) 6deg 12deg);
+  mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 55%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 55%);
+  pointer-events: none;
+}
+
+/* Outer border — thin sapphire glow */
+.sigil-border {
+  position: absolute; inset: 14px;
+  border: 1px solid var(--sapphire);
+  box-shadow:
+    0 0 12px var(--sapphire-glow),
+    inset 0 0 12px rgba(42,74,138,0.1);
+  border-radius: 2px;
+}
+/* Gold accent corners */
+.sigil-border .sigil-corner {
+  position: absolute; width: 24px; height: 24px;
+  z-index: 2;
+}
+.sigil-corner::before, .sigil-corner::after {
+  content: ''; position: absolute; background: var(--gold);
+}
+.sigil-corner.tl { top: -1px; left: -1px; }
+.sigil-corner.tl::before { top: 0; left: 0; width: 24px; height: 1px; }
+.sigil-corner.tl::after { top: 0; left: 0; width: 1px; height: 24px; }
+.sigil-corner.tr { top: -1px; right: -1px; }
+.sigil-corner.tr::before { top: 0; right: 0; width: 24px; height: 1px; }
+.sigil-corner.tr::after { top: 0; right: 0; width: 1px; height: 24px; }
+.sigil-corner.bl { bottom: -1px; left: -1px; }
+.sigil-corner.bl::before { bottom: 0; left: 0; width: 24px; height: 1px; }
+.sigil-corner.bl::after { bottom: 0; left: 0; width: 1px; height: 24px; }
+.sigil-corner.br { bottom: -1px; right: -1px; }
+.sigil-corner.br::before { bottom: 0; right: 0; width: 24px; height: 1px; }
+.sigil-corner.br::after { bottom: 0; right: 0; width: 1px; height: 24px; }
+
+.info-layout { position: absolute; inset: 32px; display: flex; gap: 0; }
+
+.left-col {
+  width: 470px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 18px 28px 18px 18px;
+  position: relative;
+}
+.left-col::after {
+  content: ''; position: absolute;
+  right: 0; top: 30px; bottom: 30px; width: 1px;
+  background: linear-gradient(180deg, transparent, var(--sapphire), var(--gold-dim), var(--sapphire), transparent);
+}
+
+/* Portrait — octagonal frame with glow */
+.portrait-wrap {
+  position: relative; width: 380px; height: 380px;
+}
+.portrait-frame {
+  width: 380px; height: 380px;
+  clip-path: polygon(15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%, 0% 15%);
+  background: radial-gradient(circle at 40% 30%, #1a2050 0%, #080a1a 100%);
+  overflow: hidden; position: relative;
+}
+.portrait-frame svg { width: 100%; height: 100%; display: block; }
+/* Glow border */
+.portrait-glow {
+  position: absolute; inset: -3px;
+  clip-path: polygon(15% 0%, 85% 0%, 100% 15%, 100% 85%, 85% 100%, 15% 100%, 0% 85%, 0% 15%);
+  background: linear-gradient(135deg, var(--sapphire), var(--gold), var(--sapphire));
+  z-index: -1;
+  box-shadow: 0 0 20px var(--sapphire-glow);
+}
+
+/* Affinity badge */
+.affinity-badge {
+  position: absolute; bottom: 16px; right: 16px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(10,14,42,0.9);
+  border: 1px solid var(--sapphire);
+  border-radius: 14px;
+  padding: 4px 10px 4px 6px;
+  z-index: 4;
+  box-shadow: 0 0 8px var(--sapphire-glow);
+}
+.affinity-icon {
+  width: 28px; height: 28px;
+  background: radial-gradient(circle, #e86030, #c84020);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(232,96,48,0.5);
+}
+.affinity-label {
+  font-family: 'Cinzel', serif; font-size: 15px;
+  letter-spacing: 0.2em; color: var(--ivory); text-transform: uppercase;
+}
+
+.char-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900; font-size: 44px;
+  color: var(--ivory); text-align: center;
+  margin-top: 10px; letter-spacing: 0.1em;
+  text-shadow: 0 0 20px rgba(42,74,138,0.3), 0 1px 3px rgba(0,0,0,0.5);
+}
+
+.identity-block {
+  width: 100%; margin-top: 10px;
+  padding: 14px 18px;
+  background: rgba(20,24,64,0.5);
+  border: 1px solid rgba(42,74,138,0.35);
+  border-radius: 4px;
+}
+.id-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
+.id-label { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.3em; color: var(--silver); text-transform: uppercase; }
+.id-value { font-weight: 600; font-size: 28px; color: var(--ivory); }
+.id-value.class-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 26px; color: var(--gold); letter-spacing: 0.12em; }
+
+.hp-bar-wrap { margin-top: 8px; }
+.hp-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.hp-numbers { font-family: 'Cinzel', serif; font-weight: 700; font-size: 28px; color: var(--ivory); }
+.hp-numbers .sep { color: var(--silver); margin: 0 3px; }
+.hp-bar-outer { height: 16px; background: rgba(0,0,0,0.5); border: 1px solid rgba(42,74,138,0.3); border-radius: 2px; overflow: hidden; }
+.hp-bar-fill { height: 100%; border-radius: 1px; }
+.hp-bar-fill.green { background: linear-gradient(90deg, var(--green-dim), var(--green)); width: 84.4%; }
+.hp-bar-fill.yellow { background: linear-gradient(90deg, #8a7a20, #c8b040); width: 40%; }
+
+.class-icon {
+  width: 60px; height: 60px; margin-top: 8px;
+  background: var(--gold-faint); border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--gold-dim);
+}
+
+/* Right column */
+.right-col { flex: 1; padding: 18px 18px 18px 34px; display: flex; flex-direction: column; }
+
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.page-header-title {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 38px;
+  color: var(--ivory); letter-spacing: 0.06em;
+  text-shadow: 0 0 14px rgba(42,74,138,0.25);
+}
+.page-nav-group { display: flex; align-items: center; gap: 12px; }
+.page-indicator { font-family: 'Cinzel', serif; font-size: 18px; color: var(--silver); letter-spacing: 0.2em; }
+.page-dots { display: flex; gap: 6px; }
+.page-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--gold); background: transparent; }
+.page-dot.active { background: var(--gold); box-shadow: 0 0 6px rgba(200,160,64,0.5); }
+
+.header-rule {
+  height: 1px; margin: 8px 0 14px;
+  background: linear-gradient(90deg, var(--sapphire), var(--gold-dim), transparent);
+}
+
+/* ===== STATS ===== */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; }
+.stat-column { display: flex; flex-direction: column; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 11px 10px; border-bottom: 1px solid rgba(42,74,138,0.15);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { font-family: 'Cinzel', serif; font-size: 22px; font-weight: 600; letter-spacing: 0.2em; color: var(--silver); text-transform: uppercase; }
+.stat-value {
+  font-weight: 700; font-size: 38px; color: var(--ivory);
+  min-width: 44px; text-align: right;
+  display: flex; align-items: baseline; justify-content: flex-end; gap: 4px;
+}
+.stat-mod { font-size: 20px; font-weight: 600; }
+.stat-mod.buff { color: var(--green); }
+.stat-mod.debuff { color: var(--red); }
+.stat-value.buffed { color: var(--green); }
+.stat-value.debuffed { color: var(--red); }
+
+/* Derived stats — sapphire-bordered block */
+.derived-stats {
+  margin-top: 8px; padding: 14px 18px;
+  background: rgba(20,24,64,0.4);
+  border: 1px solid rgba(42,74,138,0.3);
+  border-radius: 4px;
+}
+.derived-title { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.4em; color: var(--silver); text-transform: uppercase; margin-bottom: 10px; }
+.derived-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.derived-item { text-align: center; }
+.derived-label { font-family: 'Cinzel', serif; font-size: 17px; letter-spacing: 0.15em; color: var(--silver); text-transform: uppercase; display: block; margin-bottom: 2px; }
+.derived-value { font-weight: 700; font-size: 34px; color: var(--ivory); }
+
+/* Weapon ranks — node chain */
+.weapon-ranks { margin-top: 8px; }
+.weapon-ranks-title { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.4em; color: var(--silver); text-transform: uppercase; margin-bottom: 10px; }
+.weapon-chain {
+  display: flex; flex-wrap: wrap; gap: 8px 12px;
+}
+.weapon-node {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  background: rgba(20,24,64,0.4);
+  border: 1px solid rgba(42,74,138,0.2);
+  border-radius: 20px;
+  min-width: 180px;
+}
+.weapon-node.accessible {
+  border-color: var(--gold-dim);
+  background: rgba(200,160,64,0.05);
+}
+.weapon-node-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid var(--silver);
+  flex-shrink: 0;
+}
+.weapon-node.accessible .weapon-node-dot {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 4px rgba(200,160,64,0.4);
+}
+.weapon-node-name { font-size: 21px; color: var(--silver); flex: 1; }
+.weapon-node.accessible .weapon-node-name { color: var(--ivory); }
+.weapon-node-rank {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 28px;
+  color: var(--silver); min-width: 20px; text-align: center;
+}
+.weapon-node.accessible .weapon-node-rank { color: var(--gold-bright); }
+.weapon-node-rank.none { color: rgba(160,168,184,0.25); font-size: 14px; }
+.wexp-bar { width: 70px; height: 8px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden; }
+.wexp-fill { height: 100%; background: var(--gold); border-radius: 2px; }
+.wexp-text { font-size: 14px; color: var(--silver); }
+
+/* ===== ITEMS ===== */
+.item-list { flex: 1; display: flex; flex-direction: column; gap: 0; }
+.item-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 14px; border-bottom: 1px solid rgba(42,74,138,0.12);
+}
+.item-row.empty {
+  border: 1px dashed rgba(42,74,138,0.15);
+  background: rgba(0,0,0,0.15);
+  min-height: 54px; justify-content: center;
+}
+.item-row.empty .empty-text { font-style: italic; font-size: 22px; color: rgba(160,168,184,0.25); }
+.item-icon {
+  width: 44px; height: 44px;
+  background: var(--gold-faint); border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--gold-dim); flex-shrink: 0;
+}
+.item-name { font-weight: 600; font-size: 28px; color: var(--ivory); flex: 1; }
+.item-uses { font-weight: 500; font-size: 26px; color: var(--silver); }
+.item-equipped {
+  font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.25em;
+  color: var(--green); background: rgba(96,200,112,0.08);
+  padding: 2px 8px; border-radius: 3px; border: 1px solid rgba(96,200,112,0.2);
+}
+
+.equip-summary {
+  margin-top: 14px; padding: 16px 20px;
+  background: rgba(20,24,64,0.4); border: 1px solid rgba(42,74,138,0.25);
+  border-radius: 4px;
+}
+.equip-title { font-family: 'Cinzel', serif; font-size: 16px; letter-spacing: 0.35em; color: var(--silver); text-transform: uppercase; margin-bottom: 12px; }
+.equip-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.equip-item { text-align: center; }
+.equip-label { font-family: 'Cinzel', serif; font-size: 17px; letter-spacing: 0.15em; color: var(--silver); display: block; margin-bottom: 2px; }
+.equip-value { font-weight: 700; font-size: 32px; color: var(--ivory); }
+
+/* ===== SUPPORTS — constellation style ===== */
+.support-list { display: flex; flex-direction: column; gap: 0; }
+.support-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 12px; border-bottom: 1px solid rgba(42,74,138,0.1);
+  position: relative;
+}
+.support-row.deceased { opacity: 0.4; }
+.support-portrait {
+  width: 64px; height: 64px;
+  background: radial-gradient(circle at 40% 35%, var(--indigo-light) 0%, var(--indigo) 100%);
+  border: 1.5px solid var(--sapphire); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--silver); flex-shrink: 0;
+  position: relative;
+}
+.support-portrait .diya { position: absolute; bottom: -3px; right: -3px; font-size: 12px; line-height: 1; }
+.support-portrait .notif {
+  position: absolute; top: -3px; right: -3px;
+  width: 20px; height: 20px; background: var(--red);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700; color: white;
+  box-shadow: 0 0 6px rgba(200,64,64,0.5);
+}
+.support-name { font-weight: 600; font-size: 28px; color: var(--ivory); flex: 1; }
+.support-name.deceased-name { color: var(--silver); text-decoration: line-through; text-decoration-color: rgba(160,168,184,0.3); }
+
+/* Star pips for bond level */
+.bond-stars { display: flex; gap: 4px; min-width: 90px; }
+.bond-star {
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: rgba(200,160,64,0.15);
+}
+.bond-star.lit { color: var(--gold-bright); text-shadow: 0 0 6px rgba(232,200,96,0.4); }
+.bond-star.encounter { opacity: 0.06; }
+
+.bond-bonus { font-size: 19px; color: var(--green); font-style: italic; min-width: 120px; text-align: right; }
+.bond-bonus.frozen { color: var(--silver); }
+
+.support-empty-note {
+  font-style: italic; font-size: 22px; color: rgba(160,168,184,0.2);
+  padding: 16px 12px; margin-top: 12px; border-top: 1px dotted rgba(42,74,138,0.1);
+}
+
+.footer { text-align: center; font-style: italic; font-size: 14px; color: #2a2a4a; margin-top: 32px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Unit Info Panel · 04b Dharma Sigil · celestial navigation meets character sheet</p>
+
+<!-- ============================================================ -->
+<!-- PAGE 1/3 — Personal Data                                     -->
+<!-- ============================================================ -->
+<div class="section-label">Page 1 / 3 — Personal Data</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="sigil-border">
+    <span class="sigil-corner tl"></span><span class="sigil-corner tr"></span>
+    <span class="sigil-corner bl"></span><span class="sigil-corner br"></span>
+  </div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-wrap">
+        <div class="portrait-glow"></div>
+        <div class="portrait-frame">
+          <div class="affinity-badge"><span class="affinity-icon"></span><span class="affinity-label">Agni</span></div>
+          <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="sbg1" cx="40%" cy="30%"><stop offset="0%" stop-color="#2a3060"/><stop offset="100%" stop-color="#080a1a"/></radialGradient><linearGradient id="ssk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs>
+            <rect width="380" height="380" fill="url(#sbg1)"/>
+            <ellipse cx="190" cy="120" rx="200" ry="260" fill="#c8a040" fill-opacity="0.03"/>
+            <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#0a0414"/>
+            <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="none" stroke="#2a4a8a" stroke-width="1" stroke-opacity="0.5"/>
+            <rect x="168" y="232" width="44" height="44" fill="url(#ssk1)"/>
+            <ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#ssk1)"/>
+            <path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#080a1a"/>
+            <path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8a040"/>
+            <circle cx="190" cy="126" r="6" fill="#4080c8"/><circle cx="190" cy="126" r="2.5" fill="#e8c860"/>
+            <ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#080a1a"/><ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#080a1a"/>
+            <path d="M 148 172 L 175 168" stroke="#080a1a" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 205 168 L 232 172" stroke="#080a1a" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">38<span class="sep">/</span>45</span></div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div>
+        </div>
+        <div style="margin-top:8px"><span class="class-icon">&#9876;</span></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Personal Data</span>
+        <div class="page-nav-group">
+          <span class="page-indicator">1 / 3</span>
+          <div class="page-dots"><span class="page-dot active"></span><span class="page-dot"></span><span class="page-dot"></span></div>
+        </div>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="stat-grid">
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Str</span><span class="stat-value">18</span></div>
+          <div class="stat-row"><span class="stat-label">Mag</span><span class="stat-value">6</span></div>
+          <div class="stat-row"><span class="stat-label">Skl</span><span class="stat-value">22</span></div>
+          <div class="stat-row"><span class="stat-label">Spd</span><span class="stat-value buffed">21 <span class="stat-mod buff">&#8593;+2</span></span></div>
+          <div class="stat-row"><span class="stat-label">Niyati</span><span class="stat-value">14</span></div>
+        </div>
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Def</span><span class="stat-value debuffed">11 <span class="stat-mod debuff">&#8595;-1</span></span></div>
+          <div class="stat-row"><span class="stat-label">Res</span><span class="stat-value">8</span></div>
+          <div class="stat-row"><span class="stat-label">Con</span><span class="stat-value">9</span></div>
+          <div class="stat-row"><span class="stat-label">Mov</span><span class="stat-value">6</span></div>
+          <div class="stat-row" style="border-bottom:none"></div>
+        </div>
+      </div>
+
+      <div class="derived-stats">
+        <div class="derived-title">Combat</div>
+        <div class="derived-grid">
+          <div class="derived-item"><span class="derived-label">Atk</span><span class="derived-value">31</span></div>
+          <div class="derived-item"><span class="derived-label">Hit</span><span class="derived-value">140</span></div>
+          <div class="derived-item"><span class="derived-label">Crit</span><span class="derived-value">15</span></div>
+          <div class="derived-item"><span class="derived-label">AS</span><span class="derived-value">17</span></div>
+          <div class="derived-item"><span class="derived-label">Avo</span><span class="derived-value">48</span></div>
+        </div>
+      </div>
+
+      <div class="weapon-ranks">
+        <div class="weapon-ranks-title">Weapon Proficiency</div>
+        <div class="weapon-chain">
+          <div class="weapon-node accessible"><span class="weapon-node-dot"></span><span class="weapon-node-name">Sword</span><span class="weapon-node-rank">A</span><span class="wexp-bar"><span class="wexp-fill" style="width:22%"></span></span><span class="wexp-text">45/201</span></div>
+          <div class="weapon-node accessible"><span class="weapon-node-dot"></span><span class="weapon-node-name">Lance</span><span class="weapon-node-rank">C</span><span class="wexp-bar"><span class="wexp-fill" style="width:58%"></span></span><span class="wexp-text">70/121</span></div>
+          <div class="weapon-node accessible"><span class="weapon-node-dot"></span><span class="weapon-node-name">Bow</span><span class="weapon-node-rank">B</span><span class="wexp-bar"><span class="wexp-fill" style="width:35%"></span></span><span class="wexp-text">42/121</span></div>
+          <div class="weapon-node"><span class="weapon-node-dot"></span><span class="weapon-node-name">Axe</span><span class="weapon-node-rank none">--</span></div>
+          <div class="weapon-node"><span class="weapon-node-dot"></span><span class="weapon-node-name">Anima</span><span class="weapon-node-rank none">--</span></div>
+          <div class="weapon-node"><span class="weapon-node-dot"></span><span class="weapon-node-name">Light</span><span class="weapon-node-rank none">--</span></div>
+          <div class="weapon-node"><span class="weapon-node-dot"></span><span class="weapon-node-name">Dark</span><span class="weapon-node-rank none">--</span></div>
+          <div class="weapon-node"><span class="weapon-node-dot"></span><span class="weapon-node-name">Staff</span><span class="weapon-node-rank none">--</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2/3 — Items                                             -->
+<!-- ============================================================ -->
+<div class="section-label">Page 2 / 3 — Items</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="sigil-border"><span class="sigil-corner tl"></span><span class="sigil-corner tr"></span><span class="sigil-corner bl"></span><span class="sigil-corner br"></span></div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-wrap"><div class="portrait-glow"></div><div class="portrait-frame">
+        <div class="affinity-badge"><span class="affinity-icon"></span><span class="affinity-label">Agni</span></div>
+        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sbg2" cx="40%" cy="30%"><stop offset="0%" stop-color="#2a3060"/><stop offset="100%" stop-color="#080a1a"/></radialGradient><linearGradient id="ssk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs><rect width="380" height="380" fill="url(#sbg2)"/><path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#0a0414"/><rect x="168" y="232" width="44" height="44" fill="url(#ssk2)"/><ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#ssk2)"/><path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#080a1a"/><path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8a040"/><circle cx="190" cy="126" r="6" fill="#4080c8"/><ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#080a1a"/><ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#080a1a"/><path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      </div></div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span></div>
+        <div class="hp-bar-wrap"><div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">38<span class="sep">/</span>45</span></div><div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div></div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Items</span>
+        <div class="page-nav-group"><span class="page-indicator">2 / 3</span><div class="page-dots"><span class="page-dot"></span><span class="page-dot active"></span><span class="page-dot"></span></div></div>
+      </div>
+      <div class="header-rule"></div>
+      <div class="item-list">
+        <div class="item-row"><div class="item-icon">&#9876;</div><span class="item-name">Loha Khadga</span><span class="item-uses">42 / 46</span><span class="item-equipped">E</span></div>
+        <div class="item-row"><div class="item-icon">&#127993;</div><span class="item-name">Gandiva</span><span class="item-uses">28 / 30</span></div>
+        <div class="item-row"><div class="item-icon">&#9878;</div><span class="item-name">Sanjivani</span><span class="item-uses">3 / 3</span></div>
+        <div class="item-row empty"><span class="empty-text">— Empty —</span></div>
+        <div class="item-row empty"><span class="empty-text">— Empty —</span></div>
+      </div>
+      <div class="equip-summary">
+        <div class="equip-title">Equipment</div>
+        <div class="equip-grid">
+          <div class="equip-item"><span class="equip-label">Rng</span><span class="equip-value">1</span></div>
+          <div class="equip-item"><span class="equip-label">Atk</span><span class="equip-value">31</span></div>
+          <div class="equip-item"><span class="equip-label">Hit</span><span class="equip-value">140</span></div>
+          <div class="equip-item"><span class="equip-label">Crit</span><span class="equip-value">15</span></div>
+          <div class="equip-item"><span class="equip-label">Avo</span><span class="equip-value">48</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 3/3 — Bonds & Oaths                                     -->
+<!-- ============================================================ -->
+<div class="section-label">Page 3 / 3 — Bonds & Oaths</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="sigil-border"><span class="sigil-corner tl"></span><span class="sigil-corner tr"></span><span class="sigil-corner bl"></span><span class="sigil-corner br"></span></div>
+  <div class="info-layout">
+    <div class="left-col">
+      <div class="portrait-wrap"><div class="portrait-glow"></div><div class="portrait-frame">
+        <div class="affinity-badge"><span class="affinity-icon"></span><span class="affinity-label">Agni</span></div>
+        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sbg3" cx="40%" cy="30%"><stop offset="0%" stop-color="#2a3060"/><stop offset="100%" stop-color="#080a1a"/></radialGradient><linearGradient id="ssk3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs><rect width="380" height="380" fill="url(#sbg3)"/><path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#0a0414"/><rect x="168" y="232" width="44" height="44" fill="url(#ssk3)"/><ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#ssk3)"/><path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#080a1a"/><path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8a040"/><circle cx="190" cy="126" r="6" fill="#4080c8"/><ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#080a1a"/><ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#080a1a"/><path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      </div></div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span></div>
+        <div class="hp-bar-wrap"><div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">38<span class="sep">/</span>45</span></div><div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div></div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Bonds & Oaths</span>
+        <div class="page-nav-group"><span class="page-indicator">3 / 3</span><div class="page-dots"><span class="page-dot"></span><span class="page-dot"></span><span class="page-dot active"></span></div></div>
+      </div>
+      <div class="header-rule"></div>
+      <div class="support-list">
+        <div class="support-row">
+          <div class="support-portrait">&#9792;</div>
+          <span class="support-name">Draupadi</span>
+          <div class="bond-stars"><span class="bond-star lit">&#10038;</span><span class="bond-star lit">&#10038;</span><span class="bond-star lit">&#10038;</span></div>
+          <span class="bond-bonus">+2 Atk, +10 Hit</span>
+        </div>
+        <div class="support-row">
+          <div class="support-portrait">&#9794;<span class="notif">!</span></div>
+          <span class="support-name">Bhima</span>
+          <div class="bond-stars"><span class="bond-star lit">&#10038;</span><span class="bond-star lit">&#10038;</span><span class="bond-star">&#10038;</span></div>
+          <span class="bond-bonus">+1 Def, +5 Avo</span>
+        </div>
+        <div class="support-row">
+          <div class="support-portrait">&#9794;</div>
+          <span class="support-name">Krishna</span>
+          <div class="bond-stars"><span class="bond-star lit">&#10038;</span><span class="bond-star">&#10038;</span><span class="bond-star">&#10038;</span></div>
+          <span class="bond-bonus">+5 Hit</span>
+        </div>
+        <div class="support-row">
+          <div class="support-portrait">&#9794;</div>
+          <span class="support-name">Karna</span>
+          <div class="bond-stars"><span class="bond-star encounter">&#10038;</span><span class="bond-star">&#10038;</span><span class="bond-star">&#10038;</span></div>
+          <span class="bond-bonus" style="color:var(--silver);font-style:normal">—</span>
+        </div>
+        <div class="support-row deceased">
+          <div class="support-portrait" style="filter:grayscale(1);border-color:var(--silver)">&#9794;<span class="diya">🪔</span></div>
+          <span class="support-name deceased-name">Abhimanyu</span>
+          <div class="bond-stars"><span class="bond-star lit" style="opacity:0.35">&#10038;</span><span class="bond-star" style="opacity:0.35">&#10038;</span><span class="bond-star" style="opacity:0.35">&#10038;</span></div>
+          <span class="bond-bonus frozen">Saathi — frozen</span>
+        </div>
+      </div>
+      <div class="support-empty-note">Further bonds may form through shared battles and camp conversations.</div>
+    </div>
+  </div>
+</div>
+
+<p class="footer">Unit Info Panel · Dharma Sigil · 1920×1080 · displayed at 65% · all 3 pages</p>
+</body>
+</html>

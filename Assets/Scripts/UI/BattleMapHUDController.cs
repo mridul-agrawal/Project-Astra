@@ -201,9 +201,16 @@ namespace ProjectAstra.UI
 
             if (UnitName  != null) UnitName.text  = ResolveUnitName(unit);
             if (UnitClass != null) UnitClass.text = ResolveClassName(unit);
-            if (HpValue   != null) HpValue.text   = unit.currentHP + " / " + unit.maxHP;
 
-            float frac = unit.maxHP > 0 ? (float)unit.currentHP / unit.maxHP : 0f;
+            // Prefer UnitInstance as the canonical stat source (UnitDefinition asset + runtime state).
+            // Fall back to the legacy TestUnit inspector fields only when no instance is bound,
+            // so tests and placeholder scenes still render.
+            var inst = unit.UnitInstance;
+            int currentHP = inst != null ? inst.CurrentHP : unit.currentHP;
+            int maxHP     = inst != null ? inst.MaxHP     : unit.maxHP;
+
+            if (HpValue != null) HpValue.text = currentHP + " / " + maxHP;
+            float frac = maxHP > 0 ? (float)currentHP / maxHP : 0f;
             if (HpFill != null)
             {
                 HpFill.fillAmount = frac;
@@ -275,8 +282,8 @@ namespace ProjectAstra.UI
 
         private static string ResolveClassName(TestUnit u)
         {
-            var def = u.UnitInstance != null ? u.UnitInstance.Definition : null;
-            var cls = def != null ? def.DefaultClass : null;
+            // CurrentClass reflects promotion; DefaultClass is the pre-promotion starting class.
+            var cls = u.UnitInstance != null ? u.UnitInstance.CurrentClass : null;
             if (cls != null && !string.IsNullOrEmpty(cls.ClassName)) return cls.ClassName;
             // Fallback when the unit has no UnitDefinition bound (TestUnit-only setup).
             return (u.movementType + " · " + u.faction).ToUpperInvariant();

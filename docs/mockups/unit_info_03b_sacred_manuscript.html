@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project Astra — Unit Info Panel · 03b Sacred Manuscript</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --parchment: #e8d5a8;
+  --parchment-deep: #d4b87a;
+  --parchment-shadow: #b89858;
+  --ink-brown: #2a1808;
+  --ink-light: #5a3818;
+  --ink-faint: #8a6a48;
+  --gold: #c8962a;
+  --gold-bright: #e8b840;
+  --gold-dim: rgba(200,150,42,0.3);
+  --red-ink: #8a1818;
+  --green-ink: #2a6a2a;
+  --green-stat: #3a8a3a;
+  --red-stat: #a83030;
+  --blue-ink: #1a3a6a;
+  --border-brown: #6a4a28;
+  --border-dark: #3a2210;
+  --bg-deep: #1a0e06;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: #0a0604; }
+body {
+  background: radial-gradient(ellipse at center top, #1a1008 0%, #0a0604 60%);
+  color: var(--ink-brown);
+  font-family: 'Cormorant Garamond', serif;
+  padding: 48px 24px 96px;
+}
+
+.page-title {
+  font-family: 'Cinzel Decorative', serif; font-weight: 700; font-size: 28px;
+  letter-spacing: 0.3em; text-transform: uppercase; text-align: center;
+  color: var(--gold); margin-bottom: 4px;
+}
+.page-sub { text-align: center; font-style: italic; font-size: 17px; color: #6a5a3a; margin-bottom: 48px; }
+.section-label {
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.5em;
+  text-transform: uppercase; color: #5a4a2a; text-align: center; margin: 48px 0 16px;
+}
+
+/* === 1920×1080 canvas at 65% === */
+.frame {
+  width: 1920px; height: 1080px; zoom: 0.65;
+  position: relative; overflow: hidden;
+  border-radius: 2px;
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,0.9), 0 0 0 1px rgba(200,150,42,0.08);
+  margin: 0 auto 24px;
+  background: var(--bg-deep);
+}
+
+/* Manuscript parchment background with paper grain */
+.panel-bg {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, #d8c090 0%, #c8a868 30%, #d0b878 60%, #c0a060 100%);
+}
+.panel-bg::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* Aged darkening at edges */
+.panel-bg::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(90,60,20,0.25) 80%, rgba(40,20,6,0.5) 100%);
+  pointer-events: none;
+}
+
+/* Outer ornate border (layered brown/gold/brown like illuminated manuscript frame) */
+.manuscript-border {
+  position: absolute; inset: 16px;
+  border: 4px solid var(--border-dark);
+  box-shadow:
+    inset 0 0 0 2px var(--gold),
+    inset 0 0 0 4px var(--border-dark),
+    inset 0 0 0 6px rgba(200,150,42,0.2),
+    0 0 0 2px var(--gold-dim);
+}
+/* Corner flourishes */
+.manuscript-border .corner {
+  position: absolute; width: 32px; height: 32px;
+  border: 2px solid var(--gold);
+  z-index: 2;
+}
+.manuscript-border .corner::after {
+  content: ''; position: absolute;
+  width: 8px; height: 8px; background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(232,184,64,0.5);
+}
+.corner.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.corner.tl::after { bottom: -4px; right: -4px; }
+.corner.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.corner.tr::after { bottom: -4px; left: -4px; }
+.corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.corner.bl::after { top: -4px; right: -4px; }
+.corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+.corner.br::after { top: -4px; left: -4px; }
+
+/* Layout */
+.info-layout {
+  position: absolute; inset: 36px;
+  display: flex; gap: 0;
+}
+
+/* Left column */
+.left-col {
+  width: 460px; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 28px 16px 16px;
+  position: relative;
+}
+/* Vertical gold rule */
+.left-col::after {
+  content: ''; position: absolute;
+  right: 0; top: 24px; bottom: 24px; width: 2px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    var(--gold-dim) 10%,
+    var(--gold) 30%,
+    var(--gold) 70%,
+    var(--gold-dim) 90%,
+    transparent 100%
+  );
+}
+/* Decorative node at top of rule */
+.left-col .rule-node {
+  position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px;
+  background: radial-gradient(circle at 40% 35%, var(--gold-bright), var(--gold));
+  border-radius: 50%;
+  border: 2px solid var(--border-dark);
+  box-shadow: 0 0 8px rgba(200,150,42,0.4);
+  z-index: 2;
+}
+
+/* Portrait — gilded manuscript illumination frame */
+.portrait-frame {
+  width: 380px; height: 380px;
+  position: relative;
+  background: radial-gradient(circle at 40% 35%, #5a3818 0%, #1a0a04 100%);
+  border: 3px solid var(--gold);
+  box-shadow:
+    0 0 0 6px var(--border-dark),
+    0 0 0 8px var(--gold-dim),
+    inset 0 0 30px rgba(0,0,0,0.5),
+    0 4px 16px rgba(0,0,0,0.4);
+}
+.portrait-frame svg { width: 100%; height: 100%; display: block; }
+
+/* Gilded corner ornaments — leaf/floral motif */
+.portrait-corner {
+  position: absolute; z-index: 3;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+.portrait-corner svg { width: 100%; height: 100%; }
+.portrait-corner.tl { top: -8px; left: -8px; }
+.portrait-corner.tr { top: -8px; right: -8px; transform: scaleX(-1); }
+.portrait-corner.bl { bottom: -8px; left: -8px; transform: scaleY(-1); }
+.portrait-corner.br { bottom: -8px; right: -8px; transform: scale(-1,-1); }
+
+/* Affinity badge */
+.affinity-badge {
+  position: absolute; bottom: 12px; right: 12px;
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(26,10,4,0.85);
+  border: 1px solid var(--gold);
+  border-radius: 16px;
+  padding: 4px 10px 4px 6px;
+  z-index: 4;
+}
+.affinity-icon {
+  width: 28px; height: 28px;
+  background: radial-gradient(circle, #e86030, #c84020);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(232,96,48,0.5);
+}
+.affinity-label {
+  font-family: 'Cinzel', serif;
+  font-size: 15px; letter-spacing: 0.15em;
+  color: var(--parchment); text-transform: uppercase;
+}
+
+.char-name {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 900; font-size: 44px;
+  color: var(--ink-brown);
+  text-align: center; margin-top: 10px;
+  text-shadow: 1px 1px 0 rgba(200,150,42,0.15);
+  letter-spacing: 0.08em;
+}
+
+/* Identity block — manuscript cartouche */
+.identity-block {
+  width: 100%; margin-top: 10px;
+  padding: 12px 16px;
+  background: rgba(180,140,70,0.15);
+  border: 1px solid var(--gold-dim);
+  border-radius: 4px;
+  position: relative;
+}
+.identity-block::before {
+  content: ''; position: absolute; inset: 3px;
+  border: 1px solid rgba(200,150,42,0.12); border-radius: 3px;
+  pointer-events: none;
+}
+.id-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
+.id-label {
+  font-family: 'Cinzel', serif; font-size: 16px;
+  letter-spacing: 0.35em; color: var(--ink-faint); text-transform: uppercase;
+}
+.id-value {
+  font-weight: 600; font-size: 28px; color: var(--ink-brown);
+}
+.id-value.class-name {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 26px;
+  color: var(--border-brown); letter-spacing: 0.12em;
+}
+
+/* HP bar */
+.hp-bar-wrap { margin-top: 8px; }
+.hp-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.hp-numbers {
+  font-family: 'Cinzel', serif; font-weight: 700; font-size: 28px; color: var(--ink-brown);
+}
+.hp-numbers .sep { color: var(--ink-faint); margin: 0 3px; }
+.hp-bar-outer {
+  height: 18px; background: rgba(60,40,20,0.3);
+  border: 1px solid var(--gold-dim); border-radius: 2px;
+  overflow: hidden; position: relative;
+}
+.hp-bar-fill {
+  height: 100%; border-radius: 1px;
+  transition: width 0.3s ease;
+}
+.hp-bar-fill.green { background: linear-gradient(90deg, #2a6a2a, #4a9a4a); width: 84.4%; }
+.hp-bar-fill.yellow { background: linear-gradient(90deg, #8a7a20, #c8b040); width: 40%; }
+.hp-bar-fill.red { background: linear-gradient(90deg, #6a1818, #a83030); }
+
+/* Map sprite placeholder */
+.class-icon-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+}
+.class-icon {
+  width: 60px; height: 60px;
+  background: radial-gradient(circle, rgba(200,150,42,0.12) 0%, transparent 70%);
+  border: 1px solid var(--gold-dim); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--ink-faint);
+}
+
+/* Right column */
+.right-col {
+  flex: 1;
+  padding: 16px 16px 16px 34px;
+  display: flex; flex-direction: column;
+}
+
+/* Page header with manuscript title banner */
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.page-header-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700; font-size: 40px;
+  color: var(--ink-brown);
+  letter-spacing: 0.06em;
+}
+.page-nav-group {
+  display: flex; align-items: center; gap: 12px;
+}
+.page-indicator {
+  font-family: 'Cinzel', serif; font-size: 18px;
+  color: var(--ink-faint); letter-spacing: 0.2em;
+}
+.page-dots { display: flex; gap: 6px; }
+.page-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: transparent;
+}
+.page-dot.active {
+  background: var(--gold);
+  box-shadow: 0 0 4px rgba(200,150,42,0.5);
+}
+
+/* Decorative underline — pen stroke */
+.header-rule {
+  height: 2px; margin: 8px 0 14px;
+  background: linear-gradient(90deg, var(--ink-brown), var(--gold-dim), transparent);
+  position: relative;
+}
+.header-rule::after {
+  content: '❧'; position: absolute; right: 0; top: -8px;
+  font-size: 14px; color: var(--gold);
+}
+
+/* ===== STATS PAGE ===== */
+.stat-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0 30px;
+}
+.stat-column { display: flex; flex-direction: column; }
+.stat-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 11px 8px;
+  border-bottom: 1px solid rgba(90,60,20,0.15);
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label {
+  font-family: 'Cinzel', serif; font-size: 22px; font-weight: 600;
+  letter-spacing: 0.2em; color: var(--ink-faint); text-transform: uppercase;
+}
+.stat-value {
+  font-weight: 700; font-size: 38px; color: var(--ink-brown);
+  min-width: 44px; text-align: right;
+  display: flex; align-items: baseline; justify-content: flex-end; gap: 4px;
+}
+.stat-mod {
+  font-size: 20px; font-weight: 600;
+}
+.stat-mod.buff { color: var(--green-stat); }
+.stat-mod.debuff { color: var(--red-stat); }
+.stat-value.buffed { color: var(--green-stat); }
+.stat-value.debuffed { color: var(--red-stat); }
+
+/* Derived stats — ink-bordered cartouche */
+.derived-stats {
+  margin-top: 10px; padding: 14px 18px;
+  background: rgba(100,70,30,0.1);
+  border: 1px solid rgba(90,60,20,0.25);
+  border-radius: 4px;
+}
+.derived-title {
+  font-family: 'Cinzel', serif; font-size: 16px;
+  letter-spacing: 0.4em; color: var(--ink-faint);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.derived-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
+.derived-item { text-align: center; }
+.derived-label {
+  font-family: 'Cinzel', serif; font-size: 17px;
+  letter-spacing: 0.15em; color: var(--ink-faint);
+  text-transform: uppercase; display: block; margin-bottom: 2px;
+}
+.derived-value {
+  font-weight: 700; font-size: 34px; color: var(--ink-brown);
+}
+
+/* Weapon ranks — manuscript column */
+.weapon-ranks {
+  margin-top: 10px;
+}
+.weapon-ranks-title {
+  font-family: 'Cinzel', serif; font-size: 16px;
+  letter-spacing: 0.4em; color: var(--ink-faint);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.weapon-rank-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px;
+}
+.weapon-rank-row {
+  display: flex; align-items: center; gap: 10px; padding: 6px 8px;
+  border-bottom: 1px dotted rgba(90,60,20,0.15);
+}
+.weapon-rank-icon {
+  width: 32px; height: 32px;
+  background: rgba(200,150,42,0.08); border: 1px solid var(--gold-dim);
+  border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--ink-faint); flex-shrink: 0;
+}
+.weapon-rank-name {
+  font-size: 21px; color: var(--ink-faint); flex: 1;
+}
+.weapon-rank-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-weight: 700; font-size: 30px;
+  color: var(--ink-brown); min-width: 24px; text-align: center;
+}
+.weapon-rank-letter.high { color: var(--gold); }
+.weapon-rank-letter.none { color: rgba(90,60,20,0.25); font-size: 24px; }
+/* WEXP progress bar */
+.wexp-bar {
+  width: 80px; height: 8px;
+  background: rgba(60,40,20,0.15); border-radius: 2px;
+  overflow: hidden; flex-shrink: 0;
+}
+.wexp-fill {
+  height: 100%; background: var(--gold); border-radius: 2px;
+}
+.wexp-text {
+  font-size: 14px; color: var(--ink-faint); min-width: 40px; text-align: right;
+}
+
+/* ===== ITEMS PAGE ===== */
+.item-list { flex: 1; display: flex; flex-direction: column; gap: 0; }
+.item-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 14px;
+  border-bottom: 1px solid rgba(90,60,20,0.12);
+}
+.item-row.empty {
+  border: 1px dashed rgba(90,60,20,0.15);
+  border-bottom: 1px dashed rgba(90,60,20,0.15);
+  background: rgba(180,140,70,0.04);
+  min-height: 52px;
+  justify-content: center;
+}
+.item-row.empty .empty-text {
+  font-style: italic; font-size: 22px; color: rgba(90,60,20,0.3);
+}
+.item-icon {
+  width: 44px; height: 44px;
+  background: rgba(200,150,42,0.08);
+  border: 1px solid var(--gold-dim); border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; color: var(--ink-faint); flex-shrink: 0;
+}
+.item-name {
+  font-weight: 600; font-size: 28px; color: var(--ink-brown); flex: 1;
+}
+.item-uses {
+  font-weight: 500; font-size: 26px; color: var(--ink-faint);
+}
+.item-equipped {
+  font-family: 'Cinzel', serif; font-size: 16px;
+  letter-spacing: 0.25em; color: var(--green-ink);
+  background: rgba(42,106,42,0.08);
+  padding: 2px 8px; border-radius: 3px;
+  border: 1px solid rgba(42,106,42,0.2);
+}
+
+/* Equipment summary */
+.equip-summary {
+  margin-top: 14px; padding: 16px 20px;
+  background: rgba(100,70,30,0.1);
+  border: 1px solid rgba(90,60,20,0.2);
+  border-radius: 4px;
+}
+.equip-title {
+  font-family: 'Cinzel', serif; font-size: 16px;
+  letter-spacing: 0.35em; color: var(--ink-faint);
+  text-transform: uppercase; margin-bottom: 12px;
+}
+.equip-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
+.equip-item { text-align: center; }
+.equip-label {
+  font-family: 'Cinzel', serif; font-size: 17px;
+  letter-spacing: 0.15em; color: var(--ink-faint);
+  display: block; margin-bottom: 2px;
+}
+.equip-value { font-weight: 700; font-size: 32px; color: var(--ink-brown); }
+
+/* ===== SUPPORTS PAGE ===== */
+.support-list { display: flex; flex-direction: column; gap: 0; }
+.support-row {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(90,60,20,0.12);
+  position: relative;
+}
+.support-row.deceased { opacity: 0.5; }
+.support-row.deceased .support-portrait { filter: grayscale(1); }
+.support-portrait {
+  width: 64px; height: 64px;
+  background: radial-gradient(circle at 40% 35%, #5a3818 0%, #2a1408 100%);
+  border: 2px solid var(--gold-dim); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: var(--ink-faint); flex-shrink: 0;
+  position: relative;
+}
+.support-portrait .diya {
+  position: absolute; bottom: -4px; right: -4px;
+  font-size: 12px; line-height: 1;
+}
+.support-portrait .notif {
+  position: absolute; top: -4px; right: -4px;
+  width: 16px; height: 16px;
+  background: var(--red-ink); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cinzel', serif; font-size: 10px; font-weight: 700;
+  color: var(--parchment);
+  box-shadow: 0 0 4px rgba(138,24,24,0.6);
+}
+.support-name {
+  font-weight: 600; font-size: 28px; color: var(--ink-brown); flex: 1;
+}
+.support-name.deceased-name { color: var(--ink-faint); text-decoration: line-through; text-decoration-color: rgba(90,60,20,0.3); }
+
+/* Bond pips as lotus flowers */
+.bond-pips {
+  display: flex; gap: 5px; align-items: center; min-width: 90px;
+}
+.bond-pip {
+  width: 22px; height: 22px;
+  opacity: 0.15;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; line-height: 1;
+  color: var(--gold);
+}
+.bond-pip.lit {
+  opacity: 1;
+  color: var(--gold-bright);
+  text-shadow: 0 0 6px rgba(232,184,64,0.4);
+}
+.bond-pip.encounter {
+  opacity: 0.08;
+}
+
+.bond-bonus {
+  font-size: 19px; color: var(--green-ink);
+  font-style: italic;
+  min-width: 120px; text-align: right;
+}
+.bond-bonus.frozen {
+  color: var(--ink-faint);
+}
+
+.support-empty-note {
+  font-style: italic; font-size: 22px;
+  color: rgba(90,60,20,0.35); padding: 16px 12px;
+  border-top: 1px dotted rgba(90,60,20,0.1);
+  margin-top: 12px;
+}
+
+.footer { text-align: center; font-style: italic; font-size: 14px; color: #4a3a1a; margin-top: 32px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Project Astra</h1>
+<p class="page-sub">Unit Info Panel · 03b Sacred Manuscript · an ancient dharmic text come to life (improved sizing)</p>
+
+<!-- ============================================================ -->
+<!-- PAGE 1/3 — Personal Data                                     -->
+<!-- ============================================================ -->
+<div class="section-label">Page 1 / 3 — Personal Data</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="manuscript-border">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+  </div>
+  <div class="info-layout">
+    <div class="left-col">
+      <span class="rule-node"></span>
+      <div class="portrait-frame">
+        <div class="portrait-corner tl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner tr"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner bl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner br"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="affinity-badge">
+          <span class="affinity-icon"></span>
+          <span class="affinity-label">Agni</span>
+        </div>
+        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="pbg1" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#1a0a04"/></radialGradient>
+            <linearGradient id="psk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient>
+          </defs>
+          <rect width="380" height="380" fill="url(#pbg1)"/>
+          <ellipse cx="130" cy="95" rx="170" ry="230" fill="#c8962a" fill-opacity="0.04"/>
+          <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#2a0a14"/>
+          <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="none" stroke="#c8962a" stroke-width="1.5" stroke-opacity="0.6"/>
+          <rect x="168" y="232" width="44" height="44" fill="url(#psk1)"/>
+          <ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#psk1)"/>
+          <path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#140804"/>
+          <path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8962a"/>
+          <circle cx="190" cy="126" r="6" fill="#c84040"/><circle cx="190" cy="126" r="2.5" fill="#e8b840"/>
+          <ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#0c0604"/>
+          <ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#0c0604"/>
+          <path d="M 148 172 L 175 168" stroke="#140804" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M 205 168 L 232 172" stroke="#140804" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row">
+          <span class="id-label">Class</span>
+          <span class="id-value class-name">Kshatriya</span>
+        </div>
+        <div class="id-row">
+          <span class="id-label">Lv</span><span class="id-value">12</span>
+          <span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span>
+        </div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row">
+            <span class="id-label">HP</span>
+            <span class="hp-numbers">38<span class="sep">/</span>45</span>
+          </div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div>
+        </div>
+        <div class="class-icon-row">
+          <span class="class-icon">&#9876;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Personal Data</span>
+        <div class="page-nav-group">
+          <span class="page-indicator">1 / 3</span>
+          <div class="page-dots">
+            <span class="page-dot active"></span>
+            <span class="page-dot"></span>
+            <span class="page-dot"></span>
+          </div>
+        </div>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="stat-grid">
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Str</span><span class="stat-value">18</span></div>
+          <div class="stat-row"><span class="stat-label">Mag</span><span class="stat-value">6</span></div>
+          <div class="stat-row"><span class="stat-label">Skl</span><span class="stat-value">22</span></div>
+          <div class="stat-row"><span class="stat-label">Spd</span><span class="stat-value buffed">21 <span class="stat-mod buff">&#8593;+2</span></span></div>
+          <div class="stat-row"><span class="stat-label">Niyati</span><span class="stat-value">14</span></div>
+        </div>
+        <div class="stat-column">
+          <div class="stat-row"><span class="stat-label">Def</span><span class="stat-value debuffed">11 <span class="stat-mod debuff">&#8595;-1</span></span></div>
+          <div class="stat-row"><span class="stat-label">Res</span><span class="stat-value">8</span></div>
+          <div class="stat-row"><span class="stat-label">Con</span><span class="stat-value">9</span></div>
+          <div class="stat-row"><span class="stat-label">Mov</span><span class="stat-value">6</span></div>
+          <div class="stat-row" style="border-bottom:none"></div>
+        </div>
+      </div>
+
+      <div class="derived-stats">
+        <div class="derived-title">Combat</div>
+        <div class="derived-grid">
+          <div class="derived-item"><span class="derived-label">Atk</span><span class="derived-value">31</span></div>
+          <div class="derived-item"><span class="derived-label">Hit</span><span class="derived-value">140</span></div>
+          <div class="derived-item"><span class="derived-label">Crit</span><span class="derived-value">15</span></div>
+          <div class="derived-item"><span class="derived-label">AS</span><span class="derived-value">17</span></div>
+          <div class="derived-item"><span class="derived-label">Avo</span><span class="derived-value">48</span></div>
+        </div>
+      </div>
+
+      <div class="weapon-ranks">
+        <div class="weapon-ranks-title">Weapon Proficiency</div>
+        <div class="weapon-rank-grid">
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#9876;</span>
+            <span class="weapon-rank-name">Sword</span>
+            <span class="weapon-rank-letter high">A</span>
+            <span class="wexp-bar"><span class="wexp-fill" style="width:22%"></span></span>
+            <span class="wexp-text">45/201</span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#9872;</span>
+            <span class="weapon-rank-name">Lance</span>
+            <span class="weapon-rank-letter">C</span>
+            <span class="wexp-bar"><span class="wexp-fill" style="width:58%"></span></span>
+            <span class="wexp-text">70/121</span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#127993;</span>
+            <span class="weapon-rank-name">Bow</span>
+            <span class="weapon-rank-letter high">B</span>
+            <span class="wexp-bar"><span class="wexp-fill" style="width:35%"></span></span>
+            <span class="wexp-text">42/121</span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#9935;</span>
+            <span class="weapon-rank-name">Axe</span>
+            <span class="weapon-rank-letter none">--</span>
+            <span class="wexp-bar"></span>
+            <span class="wexp-text"></span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#10040;</span>
+            <span class="weapon-rank-name">Anima</span>
+            <span class="weapon-rank-letter none">--</span>
+            <span class="wexp-bar"></span>
+            <span class="wexp-text"></span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#10022;</span>
+            <span class="weapon-rank-name">Light</span>
+            <span class="weapon-rank-letter none">--</span>
+            <span class="wexp-bar"></span>
+            <span class="wexp-text"></span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#9790;</span>
+            <span class="weapon-rank-name">Dark</span>
+            <span class="weapon-rank-letter none">--</span>
+            <span class="wexp-bar"></span>
+            <span class="wexp-text"></span>
+          </div>
+          <div class="weapon-rank-row">
+            <span class="weapon-rank-icon">&#9885;</span>
+            <span class="weapon-rank-name">Staff</span>
+            <span class="weapon-rank-letter none">--</span>
+            <span class="wexp-bar"></span>
+            <span class="wexp-text"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2/3 — Items                                             -->
+<!-- ============================================================ -->
+<div class="section-label">Page 2 / 3 — Items</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="manuscript-border">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+  </div>
+  <div class="info-layout">
+    <div class="left-col">
+      <span class="rule-node"></span>
+      <div class="portrait-frame">
+        <div class="portrait-corner tl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner tr"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner bl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner br"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="affinity-badge"><span class="affinity-icon"></span><span class="affinity-label">Agni</span></div>
+        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="pbg2" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#1a0a04"/></radialGradient><linearGradient id="psk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs>
+          <rect width="380" height="380" fill="url(#pbg2)"/><ellipse cx="130" cy="95" rx="170" ry="230" fill="#c8962a" fill-opacity="0.04"/>
+          <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#2a0a14"/>
+          <rect x="168" y="232" width="44" height="44" fill="url(#psk2)"/><ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#psk2)"/>
+          <path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#140804"/>
+          <path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8962a"/>
+          <circle cx="190" cy="126" r="6" fill="#c84040"/>
+          <ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#0c0604"/><ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#0c0604"/>
+          <path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">38<span class="sep">/</span>45</span></div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Items</span>
+        <div class="page-nav-group">
+          <span class="page-indicator">2 / 3</span>
+          <div class="page-dots"><span class="page-dot"></span><span class="page-dot active"></span><span class="page-dot"></span></div>
+        </div>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="item-list">
+        <div class="item-row">
+          <div class="item-icon">&#9876;</div>
+          <span class="item-name">Loha Khadga</span>
+          <span class="item-uses">42 / 46</span>
+          <span class="item-equipped">E</span>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">&#127993;</div>
+          <span class="item-name">Gandiva</span>
+          <span class="item-uses">28 / 30</span>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">&#9878;</div>
+          <span class="item-name">Sanjivani</span>
+          <span class="item-uses">3 / 3</span>
+        </div>
+        <div class="item-row empty"><span class="empty-text">— Empty —</span></div>
+        <div class="item-row empty"><span class="empty-text">— Empty —</span></div>
+      </div>
+
+      <div class="equip-summary">
+        <div class="equip-title">Equipment</div>
+        <div class="equip-grid">
+          <div class="equip-item"><span class="equip-label">Rng</span><span class="equip-value">1</span></div>
+          <div class="equip-item"><span class="equip-label">Atk</span><span class="equip-value">31</span></div>
+          <div class="equip-item"><span class="equip-label">Hit</span><span class="equip-value">140</span></div>
+          <div class="equip-item"><span class="equip-label">Crit</span><span class="equip-value">15</span></div>
+          <div class="equip-item"><span class="equip-label">Avo</span><span class="equip-value">48</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 3/3 — Bonds & Oaths                                     -->
+<!-- ============================================================ -->
+<div class="section-label">Page 3 / 3 — Bonds & Oaths</div>
+<div class="frame">
+  <div class="panel-bg"></div>
+  <div class="manuscript-border">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+  </div>
+  <div class="info-layout">
+    <div class="left-col">
+      <span class="rule-node"></span>
+      <div class="portrait-frame">
+        <div class="portrait-corner tl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner tr"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner bl"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="portrait-corner br"><svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 26 Q2 2 26 2" fill="none" stroke="#c8962a" stroke-width="2.5"/><circle cx="4" cy="4" r="3" fill="#e8b840"/><path d="M8 20 Q12 14 8 8 Q16 12 22 8 Q18 16 22 22 Q14 18 8 20Z" fill="#c8962a" fill-opacity="0.6"/></svg></div>
+        <div class="affinity-badge"><span class="affinity-icon"></span><span class="affinity-label">Agni</span></div>
+        <svg viewBox="0 0 380 380" xmlns="http://www.w3.org/2000/svg">
+          <defs><radialGradient id="pbg3" cx="40%" cy="30%"><stop offset="0%" stop-color="#6a3e1a"/><stop offset="100%" stop-color="#1a0a04"/></radialGradient><linearGradient id="psk3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8986a"/><stop offset="100%" stop-color="#8a5630"/></linearGradient></defs>
+          <rect width="380" height="380" fill="url(#pbg3)"/><ellipse cx="130" cy="95" rx="170" ry="230" fill="#c8962a" fill-opacity="0.04"/>
+          <path d="M 16 380 Q 16 295 105 258 Q 190 230 275 258 Q 364 295 364 380 Z" fill="#2a0a14"/>
+          <rect x="168" y="232" width="44" height="44" fill="url(#psk3)"/><ellipse cx="190" cy="172" rx="76" ry="88" fill="url(#psk3)"/>
+          <path d="M 114 162 Q 107 85 190 80 Q 273 85 266 162 Q 258 118 224 110 Q 190 103 156 110 Q 122 118 114 162 Z" fill="#140804"/>
+          <path d="M 114 126 Q 190 96 266 126 L 266 148 Q 190 118 114 148 Z" fill="#c8962a"/>
+          <circle cx="190" cy="126" r="6" fill="#c84040"/>
+          <ellipse cx="162" cy="186" rx="7.5" ry="5" fill="#0c0604"/><ellipse cx="218" cy="186" rx="7.5" ry="5" fill="#0c0604"/>
+          <path d="M 176 236 Q 190 240 204 236" stroke="#4a1a0a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="char-name">Arjuna</div>
+      <div class="identity-block">
+        <div class="id-row"><span class="id-label">Class</span><span class="id-value class-name">Kshatriya</span></div>
+        <div class="id-row"><span class="id-label">Lv</span><span class="id-value">12</span><span class="id-label" style="margin-left:20px">Exp</span><span class="id-value">76 / 100</span></div>
+        <div class="hp-bar-wrap">
+          <div class="hp-row"><span class="id-label">HP</span><span class="hp-numbers">38<span class="sep">/</span>45</span></div>
+          <div class="hp-bar-outer"><div class="hp-bar-fill green" style="width:84.4%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="page-header">
+        <span class="page-header-title">Bonds & Oaths</span>
+        <div class="page-nav-group">
+          <span class="page-indicator">3 / 3</span>
+          <div class="page-dots"><span class="page-dot"></span><span class="page-dot"></span><span class="page-dot active"></span></div>
+        </div>
+      </div>
+      <div class="header-rule"></div>
+
+      <div class="support-list">
+        <!-- Bandhan (3 pips) -->
+        <div class="support-row">
+          <div class="support-portrait">&#9792;</div>
+          <span class="support-name">Draupadi</span>
+          <div class="bond-pips">
+            <span class="bond-pip lit">&#10048;</span>
+            <span class="bond-pip lit">&#10048;</span>
+            <span class="bond-pip lit">&#10048;</span>
+          </div>
+          <span class="bond-bonus">+2 Atk, +10 Hit</span>
+        </div>
+        <!-- Vishwas (2 pips) + conversation available -->
+        <div class="support-row">
+          <div class="support-portrait">&#9794;
+            <span class="notif">!</span>
+          </div>
+          <span class="support-name">Bhima</span>
+          <div class="bond-pips">
+            <span class="bond-pip lit">&#10048;</span>
+            <span class="bond-pip lit">&#10048;</span>
+            <span class="bond-pip">&#10048;</span>
+          </div>
+          <span class="bond-bonus">+1 Def, +5 Avo</span>
+        </div>
+        <!-- Saathi (1 pip) -->
+        <div class="support-row">
+          <div class="support-portrait">&#9794;</div>
+          <span class="support-name">Krishna</span>
+          <div class="bond-pips">
+            <span class="bond-pip lit">&#10048;</span>
+            <span class="bond-pip">&#10048;</span>
+            <span class="bond-pip">&#10048;</span>
+          </div>
+          <span class="bond-bonus">+5 Hit</span>
+        </div>
+        <!-- Encounter (faint) -->
+        <div class="support-row">
+          <div class="support-portrait">&#9794;</div>
+          <span class="support-name">Karna</span>
+          <div class="bond-pips">
+            <span class="bond-pip encounter">&#10048;</span>
+            <span class="bond-pip">&#10048;</span>
+            <span class="bond-pip">&#10048;</span>
+          </div>
+          <span class="bond-bonus" style="color:var(--ink-faint);font-style:normal">—</span>
+        </div>
+        <!-- Deceased -->
+        <div class="support-row deceased">
+          <div class="support-portrait" style="filter:grayscale(1)">&#9794;
+            <span class="diya">🪔</span>
+          </div>
+          <span class="support-name deceased-name">Abhimanyu</span>
+          <div class="bond-pips">
+            <span class="bond-pip lit" style="opacity:0.4">&#10048;</span>
+            <span class="bond-pip" style="opacity:0.4">&#10048;</span>
+            <span class="bond-pip" style="opacity:0.4">&#10048;</span>
+          </div>
+          <span class="bond-bonus frozen">Saathi — frozen</span>
+        </div>
+      </div>
+
+      <div class="support-empty-note">
+        Further bonds may form through shared battles and camp conversations.
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="footer">Unit Info Panel · Sacred Manuscript · 1920×1080 · displayed at 65% · all 3 pages (improved sizing)</p>
+</body>
+</html>

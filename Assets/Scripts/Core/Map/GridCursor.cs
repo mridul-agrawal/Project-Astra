@@ -30,6 +30,7 @@ namespace ProjectAstra.Core
         [SerializeField] private ToastNotificationUI _toastUI;
         [SerializeField] private TradeUI _tradeUI;
         [SerializeField] private ConvoyUI _convoyUI;
+        [SerializeField] private UnitInfoPanelUI _unitInfoPanelUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -125,6 +126,7 @@ namespace ProjectAstra.Core
                 InputManager.Instance.OnCancel += HandleCancel;
                 InputManager.Instance.OnNextUnit += HandleNextUnit;
                 InputManager.Instance.OnPrevUnit += HandlePrevUnit;
+                InputManager.Instance.OnOpenUnitInfo += HandleOpenUnitInfo;
             }
         }
 
@@ -137,6 +139,7 @@ namespace ProjectAstra.Core
                 InputManager.Instance.OnCancel -= HandleCancel;
                 InputManager.Instance.OnNextUnit -= HandleNextUnit;
                 InputManager.Instance.OnPrevUnit -= HandlePrevUnit;
+                InputManager.Instance.OnOpenUnitInfo -= HandleOpenUnitInfo;
             }
         }
 
@@ -283,6 +286,7 @@ namespace ProjectAstra.Core
             if (ConfirmDialogUI.HasInputFocus) return false;
             if (TradeUI.HasInputFocus) return false;
             if (ConvoyUI.HasInputFocus) return false;
+            if (UnitInfoPanelUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;
             return true;
         }
@@ -305,6 +309,17 @@ namespace ProjectAstra.Core
             if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
             var prev = TurnManager.Instance.UnitRegistry.GetPrevUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
             if (prev != null) SetPosition(prev.gridPosition);
+        }
+
+        private void HandleOpenUnitInfo()
+        {
+            if (!CanCursorMove()) return;
+            if (_currentMode == CursorMode.Locked) return;
+
+            TestUnit unit = FindUnitAt(_gridPosition);
+            if (unit == null) return;
+
+            _unitInfoPanelUI?.Show(unit, ProjectAstra.Core.UI.UnitInfoContext.BattleMap);
         }
 
         private void UpdatePathArrow()
@@ -859,9 +874,10 @@ namespace ProjectAstra.Core
         {
             if (unit.UnitInstance != null)
             {
+                int classCrit = unit.UnitInstance.CurrentClass != null ? unit.UnitInstance.CurrentClass.CritBonus : 0;
                 return CombatantData.FromStats(unit.UnitInstance.Stats,
                     unit.UnitInstance.CurrentHP, unit.UnitInstance.MaxHP,
-                    unit.equippedWeapon, distance);
+                    unit.equippedWeapon, distance, classCrit);
             }
 
             var stats = StatArray.From(unit.maxHP, 8, 3, 7, 9, 5, 2, 6, 5);

@@ -21,6 +21,9 @@ namespace ProjectAstra.Core
         [SerializeField] private StatArray _statCaps;
         [SerializeField] private int _hpGainOnLevelUp = 2;
 
+        [Tooltip("UC-08. Class-level crit bonus folded into the Crit formula.")]
+        [SerializeField] private int _critBonus;
+
         [Header("Promotion")]
         [SerializeField] private bool _canPromote;
         [SerializeField] private bool _isPromoted;
@@ -43,6 +46,7 @@ namespace ProjectAstra.Core
         public StatArray StatGrowthModifiers => _statGrowthModifiers;
         public StatArray StatCaps => _statCaps;
         public int HPGainOnLevelUp => _hpGainOnLevelUp;
+        public int CritBonus => _critBonus;
         public bool CanPromote => _canPromote;
         public bool IsPromoted => _isPromoted;
         public ClassDefinition[] PromotionTargets => _promotionTargets;
