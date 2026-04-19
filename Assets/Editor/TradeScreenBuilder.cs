@@ -616,17 +616,24 @@ namespace ProjectAstra.EditorTools
 
         static void AddRowBorder(Transform row, Color color)
         {
-            var border = NewImage("Border", row, Color.clear);
-            SetStretch(border.GetComponent<RectTransform>(), 0);
-            var img = border.GetComponent<Image>();
-            img.color = color;
-            img.raycastTarget = false;
-            // No sliced sprite: simulate a 1px outline by nesting an indigo fill slightly inset.
-            // Cheap but effective for this pass; can swap to a 9-sliced border sprite later.
-            var innerFill = NewImage("InnerFill", border.transform, Color.clear);
-            var irt = innerFill.GetComponent<RectTransform>();
-            SetStretch(irt, 1);
-            innerFill.GetComponent<Image>().raycastTarget = false;
+            // Hollow 1px outline via 4 edge strips so the row's bg tint stays visible through the interior.
+            AddBorderEdge(row, color, new Vector2(0, 1), new Vector2(1, 1), 0, -1, 0, 0); // top
+            AddBorderEdge(row, color, new Vector2(0, 0), new Vector2(1, 0), 0, 0, 0, 1);  // bottom
+            AddBorderEdge(row, color, new Vector2(0, 0), new Vector2(0, 1), 0, 0, 1, 0);  // left
+            AddBorderEdge(row, color, new Vector2(1, 0), new Vector2(1, 1), -1, 0, 0, 0); // right
+        }
+
+        static void AddBorderEdge(Transform row, Color color, Vector2 anchorMin, Vector2 anchorMax,
+            float offsetMinX, float offsetMinY, float offsetMaxX, float offsetMaxY)
+        {
+            var edge = NewImage("BorderEdge", row, color);
+            var rt = edge.GetComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.offsetMin = new Vector2(offsetMinX, offsetMinY);
+            rt.offsetMax = new Vector2(offsetMaxX, offsetMaxY);
+            edge.GetComponent<Image>().raycastTarget = false;
         }
 
         // ==================================================================
