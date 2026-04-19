@@ -382,6 +382,19 @@ When a future Claude Code session is asked "create the X UI screen":
     **Every mockup must include:**
     - All interactive states for every interactive element (§4.6 — default / hover / pressed / focused / selected / disabled). Shown either as a state-gallery at the bottom of the HTML or via a toggle. If an element doesn't show its states, the mockup is not finished.
     - Exact CSS values for every visual effect (§4.5 — `text-shadow`, `box-shadow`, `filter: drop-shadow`, `filter: blur`). These are the literal source of truth for the Unity implementation; Unity will read them back out of the HTML when generating TMP material presets and sprite-padding specs.
+
+    **Alternate tool — Claude Design.** You can generate the concept in Claude Design instead of the `frontend-design` skill and export as HTML. The export is a bundler wrapper (loader JS + base64/gzip asset manifest + JSON-encoded template), so raw `Read`/`Grep` won't see the real CSS/JSX. Unpack it first:
+
+    ```bash
+    node scripts/unpack_claude_design_bundle.js "docs/mockups/<ExportName>.html"
+    # writes docs/mockups/<ExportName>.unpacked/<ExportName>.unpacked.html + assets/
+    ```
+
+    After unpack, treat the `.jsx` / `.js` files — not the `.html` — as the concept source of truth. Effect values live as JSX inline styles (still literal rgba/px, still grep-able); text is live DOM; interactive states are typically a `state` prop on each component. Two differences from a `frontend-design` mockup to expect:
+
+    - **Ornaments arrive as code-generated SVG components**, not raster images. The unpacker extracts zero PNGs because there are none. Re-author ornaments in Figma as vectors: paste the SVG path `d=` attributes from the JSX into Figma vector shapes via `mcp__figma__use_figma`, then export PNGs from Figma at 2× per §4.4. Net result is crisper than a raster-first path, because nothing was rasterized in the concept.
+    - **Variants may ship on a pan/zoom "design canvas"** rather than as separate files. Still pick one direction before Figma authoring per the standard rule. If you need a flat per-variant screenshot for review, open the unpacked HTML in a browser, scroll/zoom to an artboard, and capture.
+
 3. **Figma phase:**
     - If a Figma file doesn't exist yet, create one via `mcp__figma__create_new_file` + `use_figma` for authoring. Follow the layer rules in §2 from the start.
     - If a file exists but doesn't follow the rules, restructure it via `use_figma` (add `Background` rects, clear parent frame visuals). Never edit Figma files by hand.
