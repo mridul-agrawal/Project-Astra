@@ -28,7 +28,7 @@ namespace ProjectAstra.Core
         [SerializeField] private InventoryMenuUI _inventoryMenuUI;
         [SerializeField] private ConfirmDialogUI _confirmDialogUI;
         [SerializeField] private ToastNotificationUI _toastUI;
-        [SerializeField] private TradeUI _tradeUI;
+        [SerializeField] private TradeScreenUI _tradeUI;
         [SerializeField] private ConvoyUI _convoyUI;
         [SerializeField] private UnitInfoPanelUI _unitInfoPanelUI;
 
@@ -284,7 +284,7 @@ namespace ProjectAstra.Core
             if (UnitActionMenuUI.HasInputFocus) return false;
             if (InventoryMenuUI.HasInputFocus) return false;
             if (ConfirmDialogUI.HasInputFocus) return false;
-            if (TradeUI.HasInputFocus) return false;
+            if (TradeScreenUI.HasInputFocus) return false;
             if (ConvoyUI.HasInputFocus) return false;
             if (UnitInfoPanelUI.HasInputFocus) return false;
             if (_unitMover != null && _unitMover.IsMoving) return false;

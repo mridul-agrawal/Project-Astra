@@ -257,14 +257,9 @@ namespace ProjectAstra.Core.Editor
             }
             InventoryAcquisition.PromptHandler = fullPrompt;
 
-            var tradeUI = Object.FindAnyObjectByType<TradeUI>();
-            if (tradeUI == null)
-            {
-                var go = new GameObject("TradeUI");
-                go.transform.SetParent(canvas.transform, false);
-                tradeUI = go.AddComponent<TradeUI>();
-                Undo.RegisterCreatedObjectUndo(go, "Create TradeUI");
-            }
+            // TradeScreenUI is built via "Project Astra/Build Trade Screen (runtime)" — that
+            // menu item generates the full Indigo Codex canvas and auto-wires GridCursor._tradeUI.
+            var tradeUI = Object.FindAnyObjectByType<TradeScreenUI>();
 
             var convoyUI = Object.FindAnyObjectByType<ConvoyUI>();
             if (convoyUI == null)

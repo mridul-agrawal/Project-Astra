@@ -60,8 +60,13 @@ namespace ProjectAstra.EditorTools
         // entry point
         // ==================================================================
 
-        [MenuItem("Project Astra/Build Trade Screen (temp)")]
-        public static void Build()
+        [MenuItem("Project Astra/Build Trade Screen (demo)")]
+        public static void BuildDemo() => Build(populateDemoData: true, attachRuntimeController: false);
+
+        [MenuItem("Project Astra/Build Trade Screen (runtime)")]
+        public static void BuildRuntime() => Build(populateDemoData: false, attachRuntimeController: true);
+
+        public static void Build(bool populateDemoData, bool attachRuntimeController)
         {
             if (IsFullScreen && (Mathf.Abs(CanvasWidth - 1920f) > 1f || Mathf.Abs(CanvasHeight - 1080f) > 1f))
                 Debug.LogError("TradeScreen dims don't match Unity canvas reference (1920×1080). Fix constants.");
@@ -114,9 +119,56 @@ namespace ProjectAstra.EditorTools
             BuildDimOverlay(canvas.transform);
             var screen = BuildScreen(canvas.transform);
 
+            if (populateDemoData) ApplyDemoData(screen.transform);
+
+            if (attachRuntimeController) AttachRuntimeController(screen);
+
             EditorSceneManager.MarkSceneDirty(activeScene);
             Selection.activeGameObject = screen;
-            Debug.Log("TradeScreen (Indigo Codex) built.");
+            Debug.Log("TradeScreen (Indigo Codex) built." +
+                      (populateDemoData ? " Demo data populated." : "") +
+                      (attachRuntimeController ? " Runtime controller attached." : ""));
+        }
+
+        static void AttachRuntimeController(GameObject screen)
+        {
+            // Screen + dim overlay start hidden; TradeScreenUI.Show() toggles them on.
+            screen.SetActive(false);
+            var parent = screen.transform.parent;
+            var overlay = parent != null ? parent.Find("TradeScreenDimOverlay") : null;
+            if (overlay != null) overlay.gameObject.SetActive(false);
+
+            // Clean up the legacy placeholder TradeUI GameObject (script-missing after deletion).
+            if (parent != null)
+            {
+                var legacy = parent.Find("TradeUI");
+                if (legacy != null) Object.DestroyImmediate(legacy.gameObject);
+            }
+
+            var controller = screen.GetComponent<ProjectAstra.Core.UI.TradeScreenUI>()
+                ?? screen.AddComponent<ProjectAstra.Core.UI.TradeScreenUI>();
+
+            // Auto-wire to GridCursor if present — saves a manual drag-and-drop step.
+            var cursor = Object.FindFirstObjectByType<ProjectAstra.Core.GridCursor>();
+            if (cursor != null)
+            {
+                var so = new SerializedObject(cursor);
+                var prop = so.FindProperty("_tradeUI");
+                if (prop != null)
+                {
+                    prop.objectReferenceValue = controller;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                    Debug.Log("Auto-wired GridCursor._tradeUI → TradeScreenUI on " + screen.name);
+                }
+                else
+                {
+                    Debug.LogWarning("GridCursor._tradeUI field not found — wire manually.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("No GridCursor in scene — wire TradeScreenUI reference manually.");
+            }
         }
 
         // ==================================================================
@@ -148,7 +200,7 @@ namespace ProjectAstra.EditorTools
             var go = NewImage("TradeScreenDimOverlay", parent, ColDimOverlay);
             SetCenter(go, CanvasWidth, CanvasHeight);
             go.GetComponent<Image>().raycastTarget = true;
-            go.SetActive(false); // activated by the runtime controller when trade opens
+            // Demo leaves it visible; runtime path deactivates via AttachRuntimeController.
             return go;
         }
 
@@ -173,8 +225,99 @@ namespace ProjectAstra.EditorTools
             BuildCenterSpine(rt);
             BuildPanel(rt, side: "right");
             BuildActionBar(rt);
+            BuildItemTooltip(rt);
 
             return screen;
+        }
+
+        // ==================================================================
+        // item tooltip — appears above the action bar while hovering a filled slot
+        // ==================================================================
+
+        static void BuildItemTooltip(RectTransform parent)
+        {
+            // Sits just above the action bar, below the panels' inventory rows.
+            var tooltip = NewRect("ItemTooltip", parent);
+            tooltip.anchorMin = new Vector2(0.5f, 0);
+            tooltip.anchorMax = new Vector2(0.5f, 0);
+            tooltip.pivot = new Vector2(0.5f, 0);
+            tooltip.anchoredPosition = new Vector2(0, 112);
+            tooltip.sizeDelta = new Vector2(1500, 180);
+
+            // Semi-transparent indigo backdrop.
+            var bg = NewImage("Background", tooltip, new Color(ColInkDeep.r, ColInkDeep.g, ColInkDeep.b, 0.92f));
+            SetStretch(bg.GetComponent<RectTransform>(), 0);
+            bg.GetComponent<Image>().raycastTarget = false;
+
+            // Brass border — 4 edges.
+            BuildNamedBorderEdge(tooltip, "BorderTop",    new Vector2(0, 1), new Vector2(1, 1), 0, -1, 0, 0);
+            BuildNamedBorderEdge(tooltip, "BorderBottom", new Vector2(0, 0), new Vector2(1, 0), 0, 0, 0, 1);
+            BuildNamedBorderEdge(tooltip, "BorderLeft",   new Vector2(0, 0), new Vector2(0, 1), 0, 0, 1, 0);
+            BuildNamedBorderEdge(tooltip, "BorderRight",  new Vector2(1, 0), new Vector2(1, 1), -1, 0, 0, 0);
+            var edgeColor = new Color(ColBrass.r, ColBrass.g, ColBrass.b, 0.6f);
+            foreach (var e in new[] { "BorderTop", "BorderBottom", "BorderLeft", "BorderRight" })
+            {
+                var img = tooltip.Find(e)?.GetComponent<Image>();
+                if (img != null) img.color = edgeColor;
+            }
+
+            // Name (large italic).
+            var nameT = NewText("Name", tooltip, "",
+                cormorantItalic, 36, ColParchmentHi, TextAlignmentOptions.Left, FontStyles.Italic);
+            var nrt = nameT.rectTransform;
+            nrt.anchorMin = new Vector2(0, 1);
+            nrt.anchorMax = new Vector2(1, 1);
+            nrt.pivot = new Vector2(0, 1);
+            nrt.anchoredPosition = new Vector2(32, -20);
+            nrt.sizeDelta = new Vector2(-64, 44);
+
+            // Type (uppercase subtitle to the right of Name).
+            var typeT = NewText("Type", tooltip, "",
+                cinzel, 14, ColBrassLite, TextAlignmentOptions.Right, FontStyles.Normal);
+            typeT.characterSpacing = 6;
+            var trt = typeT.rectTransform;
+            trt.anchorMin = new Vector2(0, 1);
+            trt.anchorMax = new Vector2(1, 1);
+            trt.pivot = new Vector2(1, 1);
+            trt.anchoredPosition = new Vector2(-32, -30);
+            trt.sizeDelta = new Vector2(-64, 18);
+
+            // Stats row (Mt / Hit / Crit / Wt / Rng / Rank) — one line.
+            var statsT = NewText("Stats", tooltip, "",
+                cinzel, 18, ColParchment, TextAlignmentOptions.Left, FontStyles.Normal);
+            statsT.characterSpacing = 3;
+            statsT.richText = true;
+            var srt = statsT.rectTransform;
+            srt.anchorMin = new Vector2(0, 1);
+            srt.anchorMax = new Vector2(1, 1);
+            srt.pivot = new Vector2(0, 1);
+            srt.anchoredPosition = new Vector2(32, -80);
+            srt.sizeDelta = new Vector2(-64, 28);
+
+            // Effectiveness (e.g. "Effective vs. Cavalry").
+            var effT = NewText("Effectiveness", tooltip, "",
+                cormorant, 16, ColBrassLite, TextAlignmentOptions.Left, FontStyles.Italic);
+            var ert2 = effT.rectTransform;
+            ert2.anchorMin = new Vector2(0, 1);
+            ert2.anchorMax = new Vector2(1, 1);
+            ert2.pivot = new Vector2(0, 1);
+            ert2.anchoredPosition = new Vector2(32, -110);
+            ert2.sizeDelta = new Vector2(-64, 22);
+
+            // Description / special (wraps).
+            var descT = NewText("Description", tooltip, "",
+                cormorant, 16, new Color(ColParchment.r, ColParchment.g, ColParchment.b, 0.82f),
+                TextAlignmentOptions.Left, FontStyles.Normal);
+            descT.enableWordWrapping = true;
+            var drt = descT.rectTransform;
+            drt.anchorMin = new Vector2(0, 0);
+            drt.anchorMax = new Vector2(1, 0);
+            drt.pivot = new Vector2(0, 0);
+            drt.anchoredPosition = new Vector2(32, 16);
+            drt.sizeDelta = new Vector2(-64, 40);
+
+            // Starts hidden; runtime shows on hover of a filled slot.
+            tooltip.gameObject.SetActive(false);
         }
 
         // ==================================================================
@@ -454,6 +597,110 @@ namespace ProjectAstra.EditorTools
             new ItemRow("shield",  "Iron Aegis",    1, RowState.Default),
         };
 
+        // Populates the pre-built template with the mockup's demo data. Only runs for
+        // the demo menu item — the runtime menu item skips this so TradeScreenUI owns
+        // population at runtime.
+        static void ApplyDemoData(Transform screen)
+        {
+            ApplyDemoSide(screen, "LeftPanel",  isLeft: true,  LeftItems);
+            ApplyDemoSide(screen, "RightPanel", isLeft: false, RightItems);
+        }
+
+        static void ApplyDemoSide(Transform screen, string panelName, bool isLeft, ItemRow[] items)
+        {
+            var rowsRoot = FindDeep(screen, panelName + "/Content/InventoryRows");
+            if (rowsRoot == null) return;
+            for (int i = 0; i < items.Length && i < 5; i++)
+            {
+                var row = rowsRoot.Find("Row_" + i);
+                if (row == null) continue;
+                ApplyDemoRow(row, items[i]);
+            }
+        }
+
+        static void ApplyDemoRow(Transform row, ItemRow item)
+        {
+            bool empty = item.State == RowState.Empty;
+            SetChildActive(row, "EmptyLabel",       empty);
+            SetChildActive(row, "DashedTop",        empty);
+            SetChildActive(row, "Sigil",            !empty);
+            SetChildActive(row, "ItemName",         !empty);
+            SetChildActive(row, "Qty",              !empty);
+
+            var vs = item.State switch
+            {
+                RowState.Hover    => ProjectAstra.Core.UI.TradeRowVisualState.Hover,
+                RowState.Pressed  => ProjectAstra.Core.UI.TradeRowVisualState.Pressed,
+                RowState.Focused  => ProjectAstra.Core.UI.TradeRowVisualState.Focused,
+                RowState.Selected => ProjectAstra.Core.UI.TradeRowVisualState.Selected,
+                RowState.Disabled => ProjectAstra.Core.UI.TradeRowVisualState.Disabled,
+                _ => ProjectAstra.Core.UI.TradeRowVisualState.Default,
+            };
+            ProjectAstra.Core.UI.TradeScreenRowVisuals.SetRowState(row, vs);
+            if (empty) return;
+
+            var sigilImg = row.Find("Sigil")?.GetComponent<Image>();
+            if (sigilImg != null)
+            {
+                sigilImg.sprite = GetSigilSprite(item.Sigil);
+                sigilImg.color = item.State == RowState.Disabled
+                    ? new Color(ColBrass.r, ColBrass.g, ColBrass.b, 0.4f)
+                    : Color.white;
+            }
+
+            Color textCol = item.State == RowState.Disabled
+                ? new Color(ColParchment.r, ColParchment.g, ColParchment.b, 0.35f)
+                : (item.State == RowState.Pressed || item.State == RowState.Selected
+                    ? ColParchmentHi : ColParchment);
+
+            var nameT = row.Find("ItemName")?.GetComponent<TextMeshProUGUI>();
+            if (nameT != null)
+            {
+                nameT.text = item.Name;
+                nameT.color = textCol;
+                nameT.fontStyle = item.State == RowState.Disabled
+                    ? FontStyles.Normal | FontStyles.Strikethrough
+                    : FontStyles.Normal;
+            }
+
+            var qtyT = row.Find("Qty")?.GetComponent<TextMeshProUGUI>();
+            if (qtyT != null)
+            {
+                qtyT.text = item.Qty.ToString();
+                qtyT.color = textCol;
+            }
+        }
+
+        static void SetChildActive(Transform parent, string name, bool active)
+        {
+            var child = parent.Find(name);
+            if (child != null) child.gameObject.SetActive(active);
+        }
+
+        static Transform FindDeep(Transform root, string path)
+        {
+            var parts = path.Split('/');
+            Transform current = root;
+            foreach (var p in parts)
+            {
+                if (current == null) return null;
+                current = FindChildRecursive(current, p);
+            }
+            return current;
+        }
+
+        static Transform FindChildRecursive(Transform parent, string name)
+        {
+            for (int i = 0; i < parent.childCount; i++)
+            {
+                var c = parent.GetChild(i);
+                if (c.name == name) return c;
+                var found = FindChildRecursive(c, name);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
         static void BuildInventoryRows(RectTransform parent, bool isLeft)
         {
             var rowsRoot = NewRect("InventoryRows", parent);
@@ -463,10 +710,9 @@ namespace ProjectAstra.EditorTools
             rowsRoot.anchoredPosition = new Vector2(0, -(280 + 24 + 30));
             rowsRoot.sizeDelta = new Vector2(0, 52 * 5 + 4 * 4);
 
-            var items = isLeft ? LeftItems : RightItems;
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < 5; i++)
             {
-                var row = BuildItemRow(rowsRoot, items[i], isLeft, index: i);
+                var row = BuildItemRow(rowsRoot, isLeft, index: i);
                 var rrt = row.GetComponent<RectTransform>();
                 rrt.anchorMin = new Vector2(0, 1);
                 rrt.anchorMax = new Vector2(1, 1);
@@ -476,42 +722,27 @@ namespace ProjectAstra.EditorTools
             }
         }
 
-        static GameObject BuildItemRow(RectTransform parent, ItemRow item, bool isLeft, int index)
+        // Produces a row with every element pre-allocated (sigil, name, qty, diamond,
+        // caret, empty label, dashed top, background, 4 border edges). Runtime / demo
+        // code toggles visibility + colors via TradeScreenRowVisuals.
+        static GameObject BuildItemRow(RectTransform parent, bool isLeft, int index)
         {
-            var row = NewRect($"Row_{index}_{item.State}", parent).gameObject;
+            var row = NewRect($"Row_{index}", parent).gameObject;
             var rowRt = row.GetComponent<RectTransform>();
             rowRt.sizeDelta = new Vector2(0, 52);
 
-            // Background — transparent by default, colored for hover/selected/focused/pressed
+            // Background (tints applied per state; Color.clear == default/disabled).
             var bg = NewImage("Background", row.transform, Color.clear);
             SetStretch(bg.GetComponent<RectTransform>(), 0);
-            var bgImg = bg.GetComponent<Image>();
-            bgImg.raycastTarget = true;
+            bg.GetComponent<Image>().raycastTarget = true;
 
-            ApplyRowStateVisuals(row.transform, bgImg, item.State, isLeft);
+            // 4 hollow edge strips — TradeScreenRowVisuals recolors them per state.
+            BuildNamedBorderEdge(row.transform, "BorderTop",    new Vector2(0, 1), new Vector2(1, 1), 0, -1, 0, 0);
+            BuildNamedBorderEdge(row.transform, "BorderBottom", new Vector2(0, 0), new Vector2(1, 0), 0, 0, 0, 1);
+            BuildNamedBorderEdge(row.transform, "BorderLeft",   new Vector2(0, 0), new Vector2(0, 1), 0, 0, 1, 0);
+            BuildNamedBorderEdge(row.transform, "BorderRight",  new Vector2(1, 0), new Vector2(1, 1), -1, 0, 0, 0);
 
-            // Empty row: just show the italic "— empty —" label
-            if (item.State == RowState.Empty)
-            {
-                var emptyT = NewText("EmptyLabel", row.transform, "— empty —",
-                    cormorantItalic, 18, new Color(ColParchment.r, ColParchment.g, ColParchment.b, 0.25f),
-                    isLeft ? TextAlignmentOptions.Left : TextAlignmentOptions.Right,
-                    FontStyles.Italic);
-                var ert = emptyT.rectTransform;
-                SetStretch(ert, 0);
-                ert.offsetMin = new Vector2(14, 0);
-                ert.offsetMax = new Vector2(-14, 0);
-                // Dashed top border
-                var dash = NewImage("DashedTop", row.transform, new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.2f));
-                var drt = dash.GetComponent<RectTransform>();
-                drt.anchorMin = new Vector2(0, 1); drt.anchorMax = new Vector2(1, 1);
-                drt.pivot = new Vector2(0.5f, 1);
-                drt.anchoredPosition = new Vector2(0, 0);
-                drt.sizeDelta = new Vector2(0, 1);
-                return row;
-            }
-
-            // Sigil icon
+            // Sigil icon (no sprite until populated).
             var sigil = NewImage("Sigil", row.transform, Color.white);
             var srt = sigil.GetComponent<RectTransform>();
             srt.anchorMin = new Vector2(isLeft ? 0 : 1, 0.5f);
@@ -519,24 +750,13 @@ namespace ProjectAstra.EditorTools
             srt.pivot = new Vector2(isLeft ? 0 : 1, 0.5f);
             srt.anchoredPosition = new Vector2(isLeft ? 14 : -14, 0);
             srt.sizeDelta = new Vector2(28, 28);
-            var sigilImg = sigil.GetComponent<Image>();
-            sigilImg.sprite = GetSigilSprite(item.Sigil);
-            sigilImg.raycastTarget = false;
-            sigilImg.color = item.State == RowState.Disabled
-                ? new Color(ColBrass.r, ColBrass.g, ColBrass.b, 0.4f)
-                : Color.white;
+            sigil.GetComponent<Image>().raycastTarget = false;
 
-            // Item name
-            Color textCol = item.State == RowState.Disabled
-                ? new Color(ColParchment.r, ColParchment.g, ColParchment.b, 0.35f)
-                : (item.State == RowState.Pressed || item.State == RowState.Selected
-                    ? ColParchmentHi : ColParchment);
-
-            var nameT = NewText("ItemName", row.transform, item.Name,
-                cormorant, 22, textCol,
+            // Item name (blank until populated).
+            var nameT = NewText("ItemName", row.transform, "",
+                cormorant, 22, ColParchment,
                 isLeft ? TextAlignmentOptions.Left : TextAlignmentOptions.Right,
                 FontStyles.Normal);
-            if (item.State == RowState.Disabled) nameT.fontStyle |= FontStyles.Strikethrough;
             nameT.characterSpacing = 2;
             var nrt = nameT.rectTransform;
             nrt.anchorMin = new Vector2(isLeft ? 0 : 1, 0.5f);
@@ -545,9 +765,9 @@ namespace ProjectAstra.EditorTools
             nrt.anchoredPosition = new Vector2(isLeft ? 14 + 28 + 12 : -(14 + 56 + 12), 0);
             nrt.sizeDelta = new Vector2(400, 30);
 
-            // Qty
-            var qtyT = NewText("Qty", row.transform, item.Qty.ToString(),
-                cinzel, 18, textCol,
+            // Qty (blank until populated).
+            var qtyT = NewText("Qty", row.transform, "",
+                cinzel, 18, ColParchment,
                 isLeft ? TextAlignmentOptions.Right : TextAlignmentOptions.Left,
                 FontStyles.Bold);
             var qrt = qtyT.rectTransform;
@@ -557,8 +777,8 @@ namespace ProjectAstra.EditorTools
             qrt.anchoredPosition = new Vector2(isLeft ? -14 : 14, 0);
             qrt.sizeDelta = new Vector2(56, 24);
 
-            // Selected row gets a vermillion diamond marker
-            if (item.State == RowState.Selected && sprSelectionDiamond != null)
+            // Selection diamond — hidden until row is Selected.
+            if (sprSelectionDiamond != null)
             {
                 var diamond = NewImage("SelectionDiamond", row.transform, Color.white);
                 var drt = diamond.GetComponent<RectTransform>();
@@ -568,10 +788,12 @@ namespace ProjectAstra.EditorTools
                 drt.anchoredPosition = new Vector2(isLeft ? -8 : 8, 0);
                 drt.sizeDelta = new Vector2(14, 14);
                 diamond.GetComponent<Image>().sprite = sprSelectionDiamond;
+                diamond.GetComponent<Image>().raycastTarget = false;
+                diamond.SetActive(false);
             }
 
-            // Focused row gets a glowing vertical caret
-            if (item.State == RowState.Focused && sprFocusCaret != null)
+            // Focus caret — hidden until row is Focused.
+            if (sprFocusCaret != null)
             {
                 var caret = NewImage("FocusCaret", row.transform, Color.white);
                 var crt = caret.GetComponent<RectTransform>();
@@ -585,48 +807,37 @@ namespace ProjectAstra.EditorTools
                 var img = caret.GetComponent<Image>();
                 img.sprite = sprFocusCaret;
                 img.preserveAspect = false;
+                caret.SetActive(false);
             }
+
+            // Empty-slot label + dashed top. Visible by default; Populate() hides when a real item is assigned.
+            var emptyT = NewText("EmptyLabel", row.transform, "— empty —",
+                cormorantItalic, 18, new Color(ColParchment.r, ColParchment.g, ColParchment.b, 0.25f),
+                isLeft ? TextAlignmentOptions.Left : TextAlignmentOptions.Right,
+                FontStyles.Italic);
+            var ert = emptyT.rectTransform;
+            SetStretch(ert, 0);
+            ert.offsetMin = new Vector2(14, 0);
+            ert.offsetMax = new Vector2(-14, 0);
+
+            var dash = NewImage("DashedTop", row.transform, new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.2f));
+            var drtDash = dash.GetComponent<RectTransform>();
+            drtDash.anchorMin = new Vector2(0, 1); drtDash.anchorMax = new Vector2(1, 1);
+            drtDash.pivot = new Vector2(0.5f, 1);
+            drtDash.anchoredPosition = new Vector2(0, 0);
+            drtDash.sizeDelta = new Vector2(0, 1);
 
             return row;
         }
 
-        static void ApplyRowStateVisuals(Transform row, Image bgImg, RowState state, bool isLeft)
-        {
-            switch (state)
-            {
-                case RowState.Hover:
-                    bgImg.color = new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.10f);
-                    AddRowBorder(row, new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.30f));
-                    break;
-                case RowState.Pressed:
-                    bgImg.color = new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.22f);
-                    AddRowBorder(row, ColBrassLite);
-                    break;
-                case RowState.Focused:
-                    bgImg.color = new Color(ColBrassLite.r, ColBrassLite.g, ColBrassLite.b, 0.14f);
-                    AddRowBorder(row, ColBrassLite);
-                    break;
-                case RowState.Selected:
-                    bgImg.color = new Color(ColVermillion.r, ColVermillion.g, ColVermillion.b, 0.35f);
-                    AddRowBorder(row, ColVermillion);
-                    break;
-                // Default, Disabled, Empty — transparent
-            }
-        }
-
-        static void AddRowBorder(Transform row, Color color)
-        {
-            // Hollow 1px outline via 4 edge strips so the row's bg tint stays visible through the interior.
-            AddBorderEdge(row, color, new Vector2(0, 1), new Vector2(1, 1), 0, -1, 0, 0); // top
-            AddBorderEdge(row, color, new Vector2(0, 0), new Vector2(1, 0), 0, 0, 0, 1);  // bottom
-            AddBorderEdge(row, color, new Vector2(0, 0), new Vector2(0, 1), 0, 0, 1, 0);  // left
-            AddBorderEdge(row, color, new Vector2(1, 0), new Vector2(1, 1), -1, 0, 0, 0); // right
-        }
-
-        static void AddBorderEdge(Transform row, Color color, Vector2 anchorMin, Vector2 anchorMax,
+        // Creates a 1px edge strip on a specific side — used by BuildItemRow to pre-allocate
+        // the 4 named edges (BorderTop/Bottom/Left/Right). Runtime recolors these via
+        // TradeScreenRowVisuals instead of creating/destroying edges per state change.
+        static void BuildNamedBorderEdge(Transform row, string edgeName,
+            Vector2 anchorMin, Vector2 anchorMax,
             float offsetMinX, float offsetMinY, float offsetMaxX, float offsetMaxY)
         {
-            var edge = NewImage("BorderEdge", row, color);
+            var edge = NewImage(edgeName, row, Color.clear);
             var rt = edge.GetComponent<RectTransform>();
             rt.anchorMin = anchorMin;
             rt.anchorMax = anchorMax;
@@ -792,7 +1003,7 @@ namespace ProjectAstra.EditorTools
         static GameObject BuildButton(RectTransform parent, string label, string shortcut,
             ButtonState state, bool vermillion)
         {
-            var btn = NewRect($"Btn_{label}_{state}{(vermillion ? "_vermillion" : "")}", parent).gameObject;
+            var btn = NewRect($"Btn_{label}", parent).gameObject;
             var brt = btn.GetComponent<RectTransform>();
             brt.sizeDelta = new Vector2(140, 44);
 
