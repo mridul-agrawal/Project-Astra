@@ -302,6 +302,36 @@ namespace ProjectAstra.Core.Editor
                 Undo.RegisterCreatedObjectUndo(go, "Create ConvoyUI");
             }
 
+            // Instantiate the Supply Convoy popup prefab into the scene once (same pattern as
+            // UnitInfoPanel / InventoryPopup). ConvoyUI.Show() just toggles SetActive.
+            var supplyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/UI/SupplyConvoy/SupplyConvoy.prefab");
+            GameObject supplyInstance = null;
+            var existingSupply = canvas.transform.Find("SupplyConvoy");
+            if (existingSupply != null) supplyInstance = existingSupply.gameObject;
+            if (supplyInstance == null && supplyPrefab != null)
+            {
+                supplyInstance = (GameObject)PrefabUtility.InstantiatePrefab(supplyPrefab, canvas.transform);
+                supplyInstance.name = "SupplyConvoy";
+                supplyInstance.SetActive(false);
+                Undo.RegisterCreatedObjectUndo(supplyInstance, "Create SupplyConvoy instance");
+            }
+            if (supplyInstance != null)
+            {
+                var so = new SerializedObject(convoyUI);
+                var prop = so.FindProperty("_popupInstance");
+                if (prop != null && prop.objectReferenceValue != supplyInstance)
+                {
+                    prop.objectReferenceValue = supplyInstance;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+            else if (supplyPrefab == null)
+            {
+                Debug.LogWarning("CursorSceneSetup: SupplyConvoy prefab missing — run " +
+                    "'Project Astra/Build Supply Convoy (prefab)' to generate it.");
+            }
+
             // Ensure ConvoyBootstrap exists so Convoy.Current is initialized at runtime.
             if (Object.FindAnyObjectByType<ConvoyBootstrap>() == null)
             {

@@ -1,0 +1,1222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Project Astra — Supply Convoy · Indigo Codex mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* -------------------------------------------------------------
+   INDIGO CODEX — shared tokens (verbatim from the brief)
+   ------------------------------------------------------------- */
+:root{
+  --parchment:#f2e6c4;
+  --parchmentSel:#fff5d8;
+  --parchDim:#c9b98a;
+  --ink:#1a140f;
+  --inkDeep:#3d2a1a;
+  --brass:#c9993a;
+  --brassLite:#e8c66a;
+  --brassGlow:#fde49a;
+  --vermillion:#b0382a;
+  --wine:#6b1e2e;
+  --indigoHi:#1a1540;
+  --indigo:#0f0b2e;
+  --indigoLo:#08061c;
+
+  /* Literal effect tokens (Unity-reproducible) */
+  --sh-label:  0 0 6px rgba(253,228,154,0.35), 0 1px 0 rgba(0,0,0,0.65);
+  --sh-item:   0 1px 0 rgba(0,0,0,0.55);
+  --sh-active: 0 0 10px rgba(176,56,42,0.55), 0 0 2px rgba(253,228,154,0.9);
+  --sh-brassRule: 0 1px 0 rgba(253,228,154,0.45), 0 -1px 0 rgba(26,20,15,0.75);
+  --shadow-panel: 0 0 0 1px #c9993a, 0 0 0 2px #1a140f, 0 18px 48px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(253,228,154,0.15);
+  --shadow-panel-inset: inset 0 0 36px rgba(8,6,28,0.85), inset 0 0 0 1px rgba(201,153,58,0.35);
+  --glow-selection: 0 0 0 1px #fde49a, 0 0 18px -2px rgba(176,56,42,0.8), inset 0 0 24px rgba(176,56,42,0.25);
+  --blur-behind: blur(18px) saturate(0.8) brightness(0.55);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#0a0818;color:var(--parchment);font-family:'EB Garamond',serif}
+body{
+  background:
+    radial-gradient(ellipse at 20% 10%, #14103a 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, #1a1036 0%, transparent 60%),
+    #05040f;
+  min-height:100vh;
+  padding:48px 24px 120px;
+}
+
+.page-head{
+  max-width:1920px; margin:0 auto 40px;
+  display:flex; align-items:baseline; justify-content:space-between;
+  padding-bottom:16px; border-bottom:1px solid rgba(201,153,58,0.35);
+}
+.page-head h1{
+  font-family:'Cinzel',serif; font-weight:600; margin:0;
+  font-size:22px; letter-spacing:.28em; color:var(--brassLite);
+  text-shadow:var(--sh-label);
+}
+.page-head .meta{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--parchDim); letter-spacing:.18em;}
+
+.picker{
+  max-width:1920px; margin:0 auto 32px;
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+.picker button{
+  font-family:'Cinzel',serif; letter-spacing:.22em; font-size:11px;
+  background:linear-gradient(180deg,#1a1540,#0f0b2e);
+  color:var(--parchment);
+  border:1px solid rgba(201,153,58,0.55);
+  padding:10px 18px; cursor:pointer;
+  text-transform:uppercase;
+}
+.picker button.on{
+  background:linear-gradient(180deg,#b0382a,#6b1e2e);
+  color:var(--brassGlow);
+  box-shadow:var(--glow-selection);
+}
+
+.canvas-wrap{
+  max-width:1920px; margin:0 auto;
+  display:flex; flex-direction:column; gap:80px;
+}
+.canvas-label{
+  font-family:'Cinzel',serif; letter-spacing:.3em; font-size:14px;
+  color:var(--brassLite); text-shadow:var(--sh-label);
+  display:flex; gap:16px; align-items:baseline;
+}
+.canvas-label small{
+  font-family:'EB Garamond',serif; font-style:italic; letter-spacing:.02em;
+  color:var(--parchDim); font-size:14px; text-transform:none;
+}
+
+/* Fixed 1920x1080 canvases, scaled responsively */
+.canvas{
+  position:relative;
+  width:1920px; height:1080px;
+  transform-origin:top left;
+  margin-bottom:24px;
+  outline:1px solid rgba(201,153,58,0.25);
+  box-shadow:0 40px 120px -30px rgba(0,0,0,0.9);
+  overflow:hidden;
+}
+
+/* ============================================================
+   BLURRED BATTLEMAP BEHIND — simple placeholder
+   ============================================================ */
+.battlemap{
+  position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(201,153,58,0.05) 0 2px, transparent 2px 24px),
+    repeating-linear-gradient(-45deg,
+      rgba(176,56,42,0.04) 0 1px, transparent 1px 28px),
+    radial-gradient(ellipse at 30% 40%, #261a42 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, #3d2a1a 0%, transparent 55%),
+    linear-gradient(135deg,#0f0b2e 0%,#08061c 100%);
+  filter:var(--blur-behind);
+  opacity:.9;
+}
+.battlemap::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(8,6,28,0.3), rgba(8,6,28,0.75));
+}
+
+/* ============================================================
+   SHARED CHROME — kirtimukha sigils, filigree corners, rules
+   ============================================================ */
+.corner{
+  position:absolute; width:42px; height:42px; pointer-events:none;
+}
+.corner svg{width:100%;height:100%;display:block}
+.corner.tl{top:8px;left:8px}
+.corner.tr{top:8px;right:8px;transform:scaleX(-1)}
+.corner.bl{bottom:8px;left:8px;transform:scaleY(-1)}
+.corner.br{bottom:8px;right:8px;transform:scale(-1,-1)}
+
+.brass-rule{
+  height:2px;
+  background:linear-gradient(90deg,
+    transparent 0%, var(--brass) 8%, var(--brassGlow) 50%, var(--brass) 92%, transparent 100%);
+  box-shadow:var(--sh-brassRule);
+}
+
+.hairline{height:1px;background:linear-gradient(90deg,transparent,rgba(201,153,58,.5),transparent)}
+
+/* ============================================================
+   HEADER CARTOUCHE
+   ============================================================ */
+.cartouche{
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  width:980px; height:72px;
+  display:flex; align-items:center; justify-content:center; gap:28px;
+  background:linear-gradient(180deg, rgba(15,11,46,0.92), rgba(8,6,28,0.92));
+  border:1px solid var(--brass);
+  box-shadow: 0 0 0 1px rgba(26,20,15,0.9), 0 0 24px -4px rgba(253,228,154,0.15), inset 0 0 18px rgba(8,6,28,0.8);
+  clip-path: polygon(0 0, 24px 50%, 0 100%, 100% 100%, calc(100% - 24px) 50%, 100% 0);
+}
+.cartouche .sigil{ width:34px; height:34px; color:var(--brassLite); opacity:.9}
+.cartouche h2{
+  font-family:'Cinzel',serif; font-weight:600; margin:0;
+  font-size:22px; letter-spacing:.42em;
+  color:var(--brassGlow); text-shadow:var(--sh-label);
+}
+.cartouche .sub{
+  font-family:'EB Garamond',serif; font-style:italic; font-size:15px;
+  color:var(--parchDim); letter-spacing:.04em;
+}
+
+/* ============================================================
+   FOOTER HINTS
+   ============================================================ */
+.footer-hints{
+  position:absolute; left:0; right:0; bottom:0;
+  height:58px;
+  display:flex; align-items:center; justify-content:center; gap:42px;
+  background:linear-gradient(180deg, rgba(8,6,28,0) 0%, rgba(8,6,28,0.85) 60%);
+  border-top:1px solid rgba(201,153,58,0.4);
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:.22em;
+  color:var(--parchDim); text-transform:uppercase;
+}
+.footer-hints .hint{display:flex;align-items:center;gap:10px}
+.keycap{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:28px; height:24px; padding:0 7px;
+  background:linear-gradient(180deg,#1a1540,#08061c);
+  border:1px solid var(--brass);
+  border-radius:3px;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  color:var(--brassGlow); letter-spacing:0;
+  box-shadow: inset 0 1px 0 rgba(253,228,154,0.2), 0 1px 0 rgba(0,0,0,0.7);
+}
+.keycap.pressed{
+  background:linear-gradient(180deg,#08061c,#1a1540);
+  color:var(--brassLite);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
+  transform:translateY(1px);
+}
+
+/* ============================================================
+   LEFT COLUMN — portrait + dialogue + sub-menu + lord inventory
+   ============================================================ */
+.left-col{
+  position:absolute; top:120px; left:40px;
+  width:620px; height:900px;
+  display:flex; flex-direction:column; gap:18px;
+}
+
+.panel{
+  position:relative;
+  background:linear-gradient(180deg, #1a1540 0%, #0f0b2e 60%, #08061c 100%);
+  border:1px solid var(--brass);
+  box-shadow:var(--shadow-panel);
+}
+.panel::before{ /* paisley motif wash */
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(201,153,58,0.06) 0%, transparent 30%),
+    radial-gradient(circle at 85% 80%, rgba(176,56,42,0.05) 0%, transparent 35%);
+  pointer-events:none;
+}
+
+.portrait{
+  position:relative; height:440px;
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:18px;
+}
+.portrait .slab{
+  position:absolute; inset:14px;
+  background:
+    radial-gradient(ellipse at 50% 35%, #2a1f5a 0%, #140f3a 60%, #08061c 100%);
+  border:1px solid rgba(201,153,58,0.55);
+  box-shadow: inset 0 0 48px rgba(8,6,28,0.9), inset 0 0 0 1px rgba(26,20,15,0.8);
+  overflow:hidden;
+}
+.portrait .slab::before{
+  content:""; position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(135deg,
+      rgba(201,153,58,0.04) 0 2px,
+      transparent 2px 16px);
+}
+.portrait .silhouette{
+  position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+  width:320px; height:380px;
+  background:
+    radial-gradient(ellipse at 50% 25%, rgba(26,20,15,0.9) 0%, rgba(26,20,15,0.4) 45%, transparent 60%),
+    linear-gradient(180deg, transparent 0%, rgba(8,6,28,0.9) 100%);
+  clip-path: polygon(
+    35% 100%, 35% 60%, 28% 55%, 26% 40%, 32% 25%, 40% 15%,
+    50% 10%, 60% 15%, 68% 25%, 74% 40%, 72% 55%, 65% 60%,
+    65% 100%);
+}
+.portrait .portrait-label{
+  position:absolute; left:24px; bottom:24px;
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:.32em;
+  color:var(--brassLite); text-shadow:var(--sh-label);
+}
+.portrait .portrait-name{
+  position:absolute; right:24px; bottom:22px;
+  font-family:'Cormorant Garamond',serif; font-weight:600;
+  font-size:28px; color:var(--parchment); letter-spacing:.05em;
+  text-shadow: 0 0 8px rgba(176,56,42,0.4), 0 1px 0 rgba(0,0,0,0.8);
+}
+
+/* Dialogue bubble */
+.bubble{
+  position:relative;
+  background:linear-gradient(180deg, #f2e6c4 0%, #e0d0a2 100%);
+  color:var(--ink);
+  border:1px solid var(--brass);
+  padding:16px 22px 18px;
+  box-shadow:
+    0 0 0 1px #1a140f,
+    0 10px 24px -6px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,245,216,0.7);
+}
+.bubble .speaker{
+  font-family:'Cinzel',serif; font-size:10px; letter-spacing:.3em;
+  color:var(--vermillion); text-transform:uppercase;
+  margin-bottom:4px;
+}
+.bubble p{
+  margin:0; font-family:'EB Garamond',serif; font-style:italic;
+  font-size:22px; line-height:1.25; color:var(--inkDeep);
+}
+.bubble::after{
+  content:""; position:absolute; top:-9px; left:48px;
+  width:16px; height:9px;
+  background:linear-gradient(180deg, transparent 50%, #f2e6c4 50%);
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  border-left:1px solid var(--brass);
+  border-right:1px solid var(--brass);
+}
+
+/* GIVE / TAKE sub-menu */
+.submenu{
+  display:flex; gap:12px; margin-top:6px;
+}
+.sm-btn{
+  position:relative;
+  flex:1; height:52px;
+  background:linear-gradient(180deg, #1a1540, #0f0b2e);
+  border:1px solid var(--brass);
+  color:var(--parchment);
+  font-family:'Cinzel',serif; font-weight:600;
+  font-size:15px; letter-spacing:.35em; text-transform:uppercase;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  cursor:pointer;
+  box-shadow: inset 0 1px 0 rgba(253,228,154,0.15), 0 4px 12px -4px rgba(0,0,0,0.6);
+  transition:all 120ms ease;
+}
+.sm-btn .gem{
+  width:8px;height:8px;background:var(--brass);
+  transform:rotate(45deg);
+  box-shadow: 0 0 6px rgba(253,228,154,0.5);
+}
+.sm-btn:hover{
+  background:linear-gradient(180deg, #241a4e, #140f3a);
+  border-color:var(--brassLite);
+  color:var(--parchmentSel);
+}
+.sm-btn.active{
+  background:linear-gradient(180deg, #b0382a, #6b1e2e);
+  color:var(--brassGlow);
+  border-color:var(--brassGlow);
+  box-shadow:var(--glow-selection);
+}
+.sm-btn.active .gem{ background:var(--brassGlow); box-shadow:0 0 10px var(--brassGlow)}
+
+/* Lord inventory */
+.lord-inv{ padding:18px 20px 22px; position:relative; }
+.lord-inv .inv-head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:12px;
+}
+.lord-inv h3{
+  margin:0; font-family:'Cinzel',serif; font-weight:600;
+  font-size:13px; letter-spacing:.34em; color:var(--brassLite);
+  text-shadow:var(--sh-label); text-transform:uppercase;
+}
+.lord-inv .cap{
+  font-family:'JetBrains Mono',monospace; font-size:14px;
+  color:var(--parchment); letter-spacing:.08em;
+}
+.lord-inv .cap .slash{color:var(--parchDim)}
+
+.slot{
+  position:relative;
+  display:grid;
+  grid-template-columns: 36px 1fr 96px 72px;
+  gap:14px; align-items:center;
+  height:44px; padding:0 14px;
+  border-top:1px solid rgba(201,153,58,0.25);
+}
+.slot:last-child{border-bottom:1px solid rgba(201,153,58,0.25)}
+.slot .sigil{ color:var(--brassLite); display:flex; align-items:center; justify-content:center}
+.slot .name{
+  font-family:'Cormorant Garamond',serif; font-weight:600;
+  font-size:21px; color:var(--parchment); letter-spacing:.02em;
+  text-shadow:var(--sh-item);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.slot .rank{
+  font-family:'Cinzel',serif; font-size:9px; letter-spacing:.24em;
+  color:var(--parchDim); justify-self:end;
+}
+.slot .uses{
+  font-family:'JetBrains Mono',monospace; font-size:15px;
+  color:var(--parchmentSel); justify-self:end; letter-spacing:.04em;
+}
+.slot .uses .total{ color:var(--parchDim)}
+.slot .bar{
+  position:absolute; left:14px; right:14px; bottom:6px;
+  height:1px; background:rgba(201,153,58,0.2);
+}
+.slot .bar::before{
+  content:""; display:block; height:100%;
+  background:linear-gradient(90deg, var(--brass), var(--brassGlow));
+  width:var(--dur, 80%);
+}
+.slot.equipped::before{
+  content:"★"; position:absolute; left:-2px; top:50%; transform:translateY(-50%);
+  color:var(--brassGlow); font-size:14px;
+  text-shadow:0 0 8px var(--brassGlow);
+}
+.slot.equipped{
+  background:linear-gradient(90deg, rgba(201,153,58,0.08), transparent 70%);
+  border-bottom:1px solid var(--brassLite);
+}
+.slot.equipped .name{ color:var(--brassGlow)}
+.slot.focused{
+  background:linear-gradient(90deg, rgba(176,56,42,0.22), rgba(176,56,42,0.05) 80%);
+  box-shadow: inset 0 0 0 1px rgba(176,56,42,0.8), inset 0 0 16px rgba(176,56,42,0.25);
+}
+.slot.focused::after{
+  content:"▸"; position:absolute; left:-14px; top:50%; transform:translateY(-50%);
+  color:var(--vermillion); font-size:16px;
+  text-shadow:0 0 6px rgba(176,56,42,0.8);
+}
+.slot.depleted .name{ color:var(--vermillion)}
+.slot.depleted .uses{ color:var(--vermillion); text-shadow:0 0 6px rgba(176,56,42,0.6)}
+.slot.depleted .bar::before{ background:linear-gradient(90deg, var(--wine), var(--vermillion)); --dur:10% !important}
+.slot.empty .name{ font-style:italic; color:var(--parchDim); font-weight:400}
+.slot.empty .sigil, .slot.empty .uses, .slot.empty .rank, .slot.empty .bar{ opacity:.2}
+
+/* ============================================================
+   RIGHT COLUMN — convoy
+   ============================================================ */
+.right-col{
+  position:absolute; top:120px; right:40px;
+  width:1180px; height:900px;
+  display:flex; flex-direction:column;
+}
+.convoy-head{
+  display:flex; align-items:center; justify-content:space-between;
+  height:72px; padding:0 26px;
+  background:linear-gradient(180deg,#1a1540,#0f0b2e);
+  border:1px solid var(--brass);
+  border-bottom:none;
+  box-shadow: inset 0 1px 0 rgba(253,228,154,0.18);
+}
+.convoy-head h3{
+  margin:0; font-family:'Cinzel',serif; font-weight:600;
+  font-size:18px; letter-spacing:.4em; color:var(--brassGlow);
+  text-shadow:var(--sh-label); text-transform:uppercase;
+}
+.convoy-head .stock{
+  display:flex; align-items:baseline; gap:14px;
+}
+.convoy-head .stock .lbl{
+  font-family:'Cinzel',serif; font-size:11px; letter-spacing:.3em;
+  color:var(--parchDim); text-transform:uppercase;
+}
+.convoy-head .stock .num{
+  font-family:'JetBrains Mono',monospace; font-weight:500;
+  font-size:28px; color:var(--parchmentSel); letter-spacing:.05em;
+  text-shadow:0 0 10px rgba(253,228,154,0.25);
+}
+.convoy-head .stock .num .slash, .convoy-head .stock .num .total{ color:var(--parchDim); font-size:22px}
+.convoy-head .stock.warn .num{ color:var(--vermillion); text-shadow:0 0 10px rgba(176,56,42,0.6)}
+
+.tabstrip{
+  display:grid; grid-template-columns: repeat(10, 1fr);
+  height:62px;
+  background:linear-gradient(180deg,#0f0b2e,#08061c);
+  border:1px solid var(--brass);
+  border-bottom:none;
+}
+.tab{
+  position:relative;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  border-right:1px solid rgba(201,153,58,0.3);
+  color:var(--parchDim);
+  cursor:pointer;
+  transition: all 120ms ease;
+}
+.tab:last-child{border-right:none}
+.tab .ico{ width:22px; height:22px; display:block}
+.tab .lbl{ font-family:'Cinzel',serif; font-size:9px; letter-spacing:.2em; text-transform:uppercase; display:none}
+.tab:hover{ color:var(--parchment); background:rgba(26,21,64,0.7)}
+.tab.focused{ box-shadow: inset 0 0 0 1px var(--vermillion), inset 0 0 18px rgba(176,56,42,0.25); color:var(--parchment)}
+.tab.active{
+  color:var(--brassGlow);
+  background:linear-gradient(180deg, rgba(176,56,42,0.35), rgba(107,30,46,0.55));
+  box-shadow: inset 0 -3px 0 0 var(--brassGlow), inset 0 0 24px rgba(176,56,42,0.3);
+}
+.tab.active .ico{ filter: drop-shadow(0 0 6px rgba(253,228,154,0.7))}
+.tab .count{
+  position:absolute; top:6px; right:8px;
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  color:var(--parchDim);
+}
+.tab.active .count{ color:var(--brassGlow)}
+
+.convoy-list{
+  position:relative;
+  flex:1;
+  background:linear-gradient(180deg,#0f0b2e 0%,#08061c 100%);
+  border:1px solid var(--brass);
+  box-shadow:var(--shadow-panel-inset);
+  display:flex;
+}
+.rows{
+  flex:1; padding:6px 14px 6px 18px;
+  overflow:hidden;
+}
+.row{
+  position:relative;
+  display:grid;
+  grid-template-columns: 42px 1fr 88px 92px 120px;
+  gap:18px; align-items:center;
+  height:64px;
+  padding:0 14px;
+  border-bottom:1px solid rgba(201,153,58,0.18);
+}
+.row:last-child{border-bottom:none}
+.row .sigil{ color:var(--brassLite); display:flex; align-items:center; justify-content:center}
+.row .name{
+  font-family:'Cormorant Garamond',serif; font-weight:600;
+  font-size:24px; color:var(--parchment); letter-spacing:.02em;
+  text-shadow:var(--sh-item);
+}
+.row .name .sub{
+  display:block;
+  font-family:'EB Garamond',serif; font-style:italic; font-weight:400;
+  font-size:13px; color:var(--parchDim); margin-top:-2px;
+  letter-spacing:.02em;
+}
+.row .rank-chip{
+  justify-self:start;
+  font-family:'Cinzel',serif; font-size:10px; font-weight:600;
+  letter-spacing:.22em; text-transform:uppercase;
+  padding:4px 10px;
+  border:1px solid var(--brass);
+  color:var(--brassLite);
+  background:rgba(26,21,64,0.6);
+}
+.row .rank-chip.silver{ color:#d5cfc2; border-color:#d5cfc2}
+.row .rank-chip.killer{ color:var(--vermillion); border-color:var(--vermillion); background:rgba(176,56,42,0.12)}
+.row .uses{
+  font-family:'JetBrains Mono',monospace; font-size:18px;
+  color:var(--parchmentSel); justify-self:end; letter-spacing:.04em;
+}
+.row .uses .slash,.row .uses .total{ color:var(--parchDim)}
+.row .durability{
+  position:relative;
+  width:120px; height:4px;
+  background:rgba(201,153,58,0.15);
+}
+.row .durability::before{
+  content:""; display:block; height:100%;
+  background:linear-gradient(90deg,var(--brass),var(--brassGlow));
+  width:var(--d, 75%);
+}
+
+.row:hover{ background:linear-gradient(90deg, rgba(201,153,58,0.1), rgba(201,153,58,0.02))}
+.row.focused{
+  background:linear-gradient(90deg, rgba(176,56,42,0.28), rgba(176,56,42,0.04) 90%);
+  box-shadow: inset 0 0 0 1px var(--vermillion), inset 0 0 28px rgba(176,56,42,0.2);
+}
+.row.focused::before{
+  content:"▸"; position:absolute; left:-4px; top:50%; transform:translateY(-50%);
+  color:var(--vermillion); font-size:20px; text-shadow:0 0 8px rgba(176,56,42,0.9);
+}
+.row.focused .name{ color:var(--parchmentSel); text-shadow: 0 0 10px rgba(253,228,154,0.35), 0 1px 0 rgba(0,0,0,0.6)}
+.row.depleted .name{ color:var(--vermillion)}
+.row.depleted .uses{ color:var(--vermillion); text-shadow:0 0 6px rgba(176,56,42,0.6)}
+.row.depleted .durability::before{ background:linear-gradient(90deg,var(--wine),var(--vermillion)); width:8%}
+.row.disabled{ opacity:.35; filter:saturate(.4)}
+.row.disabled .name{ color:var(--parchDim)}
+
+/* Scroll rail */
+.scrollrail{
+  width:14px; margin:12px 12px 12px 0;
+  background:linear-gradient(180deg,#08061c,#0f0b2e);
+  border:1px solid rgba(201,153,58,0.4);
+  position:relative;
+}
+.scrollrail::before, .scrollrail::after{
+  content:""; position:absolute; left:-4px; width:22px; height:12px;
+  background:
+    radial-gradient(ellipse at 50% 50%, var(--brassLite) 0%, var(--brass) 60%, transparent 70%);
+  border:1px solid var(--brass);
+}
+.scrollrail::before{ top:-6px }
+.scrollrail::after{ bottom:-6px }
+.scrollrail .thumb{
+  position:absolute; left:2px; right:2px; top:18%; height:34%;
+  background:linear-gradient(180deg,var(--brass),var(--brassLite));
+  box-shadow: 0 0 8px rgba(253,228,154,0.5);
+}
+
+/* ============================================================
+   STATE GALLERY (shared across variants)
+   ============================================================ */
+.gallery{
+  max-width:1920px; margin:120px auto 0;
+  padding:32px;
+  background:linear-gradient(180deg, rgba(26,21,64,0.4), rgba(8,6,28,0.6));
+  border:1px solid rgba(201,153,58,0.4);
+}
+.gallery h2{
+  margin:0 0 8px; font-family:'Cinzel',serif; font-size:18px;
+  letter-spacing:.34em; color:var(--brassGlow); text-shadow:var(--sh-label);
+}
+.gallery p.intro{
+  margin:0 0 28px; max-width:900px; color:var(--parchDim);
+  font-family:'EB Garamond',serif; font-size:16px; font-style:italic;
+}
+.gallery h3{
+  margin:28px 0 14px; font-family:'Cinzel',serif; font-size:12px;
+  letter-spacing:.3em; color:var(--brassLite); text-transform:uppercase;
+  border-bottom:1px solid rgba(201,153,58,0.3); padding-bottom:8px;
+}
+.state-row{ display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start}
+.state-cell{
+  background:linear-gradient(180deg,#0f0b2e,#08061c);
+  border:1px solid rgba(201,153,58,0.4);
+  padding:18px; min-width:240px;
+}
+.state-cell .tag{
+  display:block; font-family:'Cinzel',serif; font-size:10px;
+  letter-spacing:.28em; color:var(--parchDim);
+  text-transform:uppercase; margin-bottom:12px;
+}
+.state-cell .tag b{ color:var(--brassLite); font-weight:600}
+
+/* Token readout table */
+.tokens{
+  max-width:1920px; margin:40px auto 0;
+  padding:24px 32px;
+  background:rgba(8,6,28,0.7);
+  border:1px solid rgba(201,153,58,0.3);
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  color:var(--parchment); line-height:1.9;
+}
+.tokens h3{
+  margin:0 0 12px; font-family:'Cinzel',serif; font-size:12px;
+  letter-spacing:.3em; color:var(--brassGlow);
+}
+.tokens .tk{ display:grid; grid-template-columns: 260px 1fr; gap:16px}
+.tokens .tk span:first-child{ color:var(--brassLite)}
+.tokens .tk span:last-child{ color:var(--parchDim); word-break:break-all}
+
+/* ============================================================
+   VARIATION B — parchment-forward overrides
+   ============================================================ */
+.canvas.b{ background:#2a1f12}
+.canvas.b .battlemap{
+  background:
+    radial-gradient(ellipse at 30% 40%, #4a3420 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, #6b1e2e 0%, transparent 55%),
+    linear-gradient(135deg,#3d2a1a 0%,#1a140f 100%);
+}
+.canvas.b .right-col .convoy-head,
+.canvas.b .right-col .tabstrip,
+.canvas.b .right-col .convoy-list{
+  background:linear-gradient(180deg, #f2e6c4, #e0d0a2);
+  border-color:var(--wine);
+}
+.canvas.b .convoy-head h3{ color:var(--wine); text-shadow: 0 1px 0 rgba(255,245,216,0.8)}
+.canvas.b .convoy-head .stock .num{ color:var(--inkDeep); text-shadow:none}
+.canvas.b .convoy-head .stock .num .slash,
+.canvas.b .convoy-head .stock .num .total{ color:#8a7246}
+.canvas.b .convoy-head .stock .lbl{ color:var(--wine)}
+.canvas.b .tab{ color:#8a7246; border-color:rgba(107,30,46,0.3)}
+.canvas.b .tab:hover{ background:rgba(201,153,58,0.2); color:var(--ink)}
+.canvas.b .tab.active{
+  background:linear-gradient(180deg, rgba(176,56,42,0.9), rgba(107,30,46,0.95));
+  color:var(--brassGlow);
+  box-shadow: inset 0 -3px 0 0 var(--brassGlow), inset 0 0 18px rgba(0,0,0,0.3);
+}
+.canvas.b .row{ border-bottom-color:rgba(107,30,46,0.18)}
+.canvas.b .row .name{ color:var(--inkDeep); text-shadow:none}
+.canvas.b .row .name .sub{ color:#6b5a38}
+.canvas.b .row .uses{ color:var(--wine)}
+.canvas.b .row .uses .slash, .canvas.b .row .uses .total{ color:#8a7246}
+.canvas.b .row .rank-chip{ color:var(--wine); border-color:var(--wine); background:rgba(242,230,196,0.4)}
+.canvas.b .row .rank-chip.silver{ color:#5a5040; border-color:#8a7246}
+.canvas.b .row .rank-chip.killer{ background:rgba(176,56,42,0.2); color:var(--vermillion); border-color:var(--vermillion)}
+.canvas.b .row .durability{ background:rgba(107,30,46,0.2)}
+.canvas.b .row:hover{ background:linear-gradient(90deg, rgba(201,153,58,0.2), transparent)}
+.canvas.b .row.focused{
+  background:linear-gradient(90deg, rgba(176,56,42,0.25), rgba(176,56,42,0.05) 90%);
+  box-shadow: inset 0 0 0 1px var(--vermillion);
+}
+.canvas.b .row.focused .name{ color:var(--vermillion)}
+.canvas.b .row.focused::before{ color:var(--vermillion)}
+.canvas.b .scrollrail{ background:rgba(107,30,46,0.15)}
+.canvas.b .cartouche{
+  background:linear-gradient(180deg, #f2e6c4, #e0d0a2);
+  border-color:var(--wine);
+}
+.canvas.b .cartouche h2{ color:var(--wine); text-shadow:0 1px 0 rgba(255,245,216,0.8)}
+.canvas.b .cartouche .sub{ color:var(--inkDeep)}
+.canvas.b .cartouche .sigil{ color:var(--wine)}
+
+/* ============================================================
+   VARIATION C — monastery-archive overrides
+   ============================================================ */
+.canvas.c{ background:#1a140f}
+.canvas.c .battlemap{
+  background:
+    repeating-linear-gradient(0deg, rgba(201,153,58,0.04) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(201,153,58,0.03) 0 1px, transparent 1px 40px),
+    radial-gradient(ellipse at 30% 50%, #3d2a1a 0%, transparent 60%),
+    linear-gradient(135deg,#1a140f 0%,#08061c 100%);
+}
+.canvas.c .panel,
+.canvas.c .convoy-head,
+.canvas.c .tabstrip,
+.canvas.c .convoy-list{
+  background:linear-gradient(180deg, #231810 0%, #1a140f 100%);
+  border-color:#8a7246;
+}
+.canvas.c .cartouche{
+  background:linear-gradient(180deg, #231810, #1a140f);
+  border-color:#8a7246;
+}
+.canvas.c .cartouche h2{ color:#d5c89a; letter-spacing:.5em}
+.canvas.c .cartouche .sub{ color:#8a7246}
+.canvas.c .portrait .slab{
+  background:radial-gradient(ellipse at 50% 35%, #3d2a1a 0%, #231810 60%, #1a140f 100%);
+  border-color:rgba(138,114,70,0.6);
+}
+.canvas.c .convoy-head h3{ color:#d5c89a; text-shadow:none; letter-spacing:.5em}
+.canvas.c .convoy-head .stock .num{ color:#d5c89a; text-shadow:none}
+.canvas.c .tab.active{
+  background:linear-gradient(180deg, rgba(201,153,58,0.2), rgba(138,114,70,0.3));
+  color:#d5c89a; box-shadow: inset 0 -2px 0 0 var(--brassLite);
+}
+.canvas.c .row .name{ color:#e0d0a2; font-family:'Cormorant Garamond',serif; font-weight:500}
+.canvas.c .row .name .sub{ color:#8a7246}
+.canvas.c .row .uses{ color:#d5c89a}
+.canvas.c .row.focused{
+  background:linear-gradient(90deg, rgba(201,153,58,0.15), transparent 90%);
+  box-shadow: inset 0 0 0 1px var(--brassLite);
+}
+.canvas.c .row.focused::before{ color:var(--brassLite); text-shadow:0 0 8px rgba(253,228,154,0.7)}
+.canvas.c .row.focused .name{ color:var(--brassGlow)}
+.canvas.c .row.depleted .name, .canvas.c .row.depleted .uses{ color:var(--vermillion)}
+.canvas.c .sm-btn.active{
+  background:linear-gradient(180deg, #3d2a1a, #1a140f);
+  color:var(--brassGlow);
+  border-color:var(--brassGlow);
+  box-shadow: 0 0 0 1px var(--brassGlow), 0 0 16px rgba(253,228,154,0.3), inset 0 0 12px rgba(201,153,58,0.2);
+}
+.canvas.c .bubble{
+  background:linear-gradient(180deg, #e8dcb8, #d5c69a);
+  color:var(--ink);
+}
+
+/* -------- scale wrapper -------- */
+.scale-host{
+  width:100%;
+  aspect-ratio: 1920 / 1080;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(201,153,58,0.35);
+}
+.scale-host .canvas{
+  position:absolute; top:0; left:0;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>PROJECT ASTRA · SUPPLY CONVOY · INDIGO CODEX MOCKUPS</h1>
+  <div class="meta">1920 × 1080 · v01 · 3 VARIANTS</div>
+</div>
+
+<div class="picker" id="picker">
+  <button data-v="a" class="on">Variation A — Indigo</button>
+  <button data-v="b">Variation B — Parchment</button>
+  <button data-v="c">Variation C — Monastery</button>
+  <button data-v="all">View all three</button>
+</div>
+
+<div class="canvas-wrap" id="wrap">
+
+  <!-- =====================  VARIATION A  ===================== -->
+  <div class="variant" data-v="a">
+    <div class="canvas-label">VARIATION A · INDIGO DOMINANT <small>— vermillion reserved for active selection only</small></div>
+    <div class="scale-host"><div class="canvas a" id="canvasA"></div></div>
+  </div>
+
+  <!-- =====================  VARIATION B  ===================== -->
+  <div class="variant" data-v="b" hidden>
+    <div class="canvas-label">VARIATION B · PARCHMENT FORWARD <small>— brass &amp; cream convoy panel, indigo reserved for the portrait slab</small></div>
+    <div class="scale-host"><div class="canvas b" id="canvasB"></div></div>
+  </div>
+
+  <!-- =====================  VARIATION C  ===================== -->
+  <div class="variant" data-v="c" hidden>
+    <div class="canvas-label">VARIATION C · MONASTERY ARCHIVE <small>— ink-brown ground, cold brass, typography-led hierarchy</small></div>
+    <div class="scale-host"><div class="canvas c" id="canvasC"></div></div>
+  </div>
+
+  <!-- STATE GALLERY -->
+  <div class="gallery" id="gallery"></div>
+
+  <!-- TOKEN READOUT -->
+  <div class="tokens" id="tokens"></div>
+</div>
+
+<!-- SVG symbol library -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- corner filigree: 4-fold paisley + kirtimukha arc -->
+    <symbol id="filigree" viewBox="0 0 42 42">
+      <g fill="none" stroke="currentColor" stroke-width="1">
+        <path d="M1 1 L18 1 M1 1 L1 18" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M1 1 L14 14" opacity=".55"/>
+        <path d="M6 1 Q14 6 14 14 Q6 14 1 6" />
+        <circle cx="3.5" cy="3.5" r="1.2" fill="currentColor"/>
+        <path d="M18 1 Q22 4 22 8" opacity=".6"/>
+        <path d="M1 18 Q4 22 8 22" opacity=".6"/>
+      </g>
+    </symbol>
+
+    <!-- kirtimukha sigil for cartouche (stylised mandala face, geometric only) -->
+    <symbol id="kirtimukha" viewBox="0 0 40 40">
+      <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <circle cx="20" cy="20" r="14"/>
+        <circle cx="20" cy="20" r="9" opacity=".6"/>
+        <path d="M20 6 L20 34 M6 20 L34 20 M10 10 L30 30 M30 10 L10 30" opacity=".35"/>
+        <path d="M20 8 Q14 14 12 20 Q14 26 20 32 Q26 26 28 20 Q26 14 20 8" />
+        <circle cx="20" cy="20" r="2" fill="currentColor"/>
+      </g>
+    </symbol>
+
+    <!-- category icons (code-generated geometric glyphs) -->
+    <symbol id="ic-all" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/></g></symbol>
+    <symbol id="ic-sword" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M12 2 L12 17"/><path d="M7 17 L17 17"/><path d="M12 17 L12 22"/><path d="M10 20 L14 20"/><path d="M12 2 L14 5 L12 6 L10 5 Z" fill="currentColor" opacity=".3"/></g></symbol>
+    <symbol id="ic-lance" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M4 20 L20 4"/><path d="M14 4 L20 4 L20 10"/><path d="M17 7 L15 9"/><circle cx="4" cy="20" r="1.3" fill="currentColor"/></g></symbol>
+    <symbol id="ic-axe" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5 22 L16 6"/><path d="M14 4 Q20 4 20 10 Q15 10 13 8 Q12 6 14 4 Z" fill="currentColor" opacity=".25"/><path d="M14 4 Q20 4 20 10 Q15 10 13 8 Q12 6 14 4"/></g></symbol>
+    <symbol id="ic-bow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 4 Q18 12 6 20"/><path d="M6 4 L6 20"/><path d="M6 12 L20 12"/><path d="M17 9 L20 12 L17 15"/></g></symbol>
+    <symbol id="ic-anima" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="8"/><path d="M4 12 Q12 4 20 12 Q12 20 4 12 Z" opacity=".6"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/></g></symbol>
+    <symbol id="ic-light" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="3.5" fill="currentColor" opacity=".25"/><path d="M12 2 L12 6 M12 18 L12 22 M2 12 L6 12 M18 12 L22 12 M5 5 L7.5 7.5 M16.5 16.5 L19 19 M5 19 L7.5 16.5 M16.5 7.5 L19 5"/></g></symbol>
+    <symbol id="ic-dark" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="8"/><path d="M12 4 A8 8 0 0 1 12 20 A5 5 0 0 0 12 4 Z" fill="currentColor" opacity=".8"/></g></symbol>
+    <symbol id="ic-staff" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><path d="M8 22 L14 4"/><circle cx="15" cy="4" r="3"/><path d="M13 4 L17 4 M15 2 L15 6" opacity=".6"/></g></symbol>
+    <symbol id="ic-consumable" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 3 L15 3 L15 7 L17 10 L17 20 Q17 21 16 21 L8 21 Q7 21 7 20 L7 10 L9 7 Z"/><path d="M9 13 L15 13" opacity=".6"/><path d="M9 16 L13 16" opacity=".6"/></g></symbol>
+
+    <!-- inventory row sigils (smaller, filled variants) -->
+    <symbol id="sg-sword" viewBox="0 0 24 24"><path d="M11 2 L13 2 L13 17 L15 17 L15 19 L13 19 L13 22 L11 22 L11 19 L9 19 L9 17 L11 17 Z" fill="currentColor"/></symbol>
+    <symbol id="sg-lance" viewBox="0 0 24 24"><g fill="currentColor"><path d="M18 2 L22 2 L22 6 L8 20 L4 22 L6 18 L20 4 Z"/></g></symbol>
+    <symbol id="sg-axe" viewBox="0 0 24 24"><g fill="currentColor"><path d="M14 3 L21 3 L21 10 L16 11 L12 8 Z" opacity=".9"/><rect x="7" y="20" width="12" height="2" transform="rotate(-55 13 21)"/></g></symbol>
+    <symbol id="sg-bow" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3 Q20 12 6 21"/><path d="M6 3 L6 21"/></g></symbol>
+    <symbol id="sg-staff" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="15" cy="5" r="3"/><rect x="7" y="7" width="2" height="16" transform="rotate(-18 8 15)"/></g></symbol>
+    <symbol id="sg-potion" viewBox="0 0 24 24"><g fill="currentColor"><path d="M10 2 L14 2 L14 6 L17 11 L17 21 Q17 22 16 22 L8 22 Q7 22 7 21 L7 11 L10 6 Z" opacity=".9"/></g></symbol>
+    <symbol id="sg-anima" viewBox="0 0 24 24"><g fill="currentColor"><path d="M12 2 Q20 7 20 12 Q20 17 12 22 Q4 17 4 12 Q4 7 12 2 Z" opacity=".25"/><circle cx="12" cy="12" r="3" /></g></symbol>
+  </defs>
+</svg>
+
+<script>
+/* ============================================================
+   DATA — same scenario rendered into each variant
+   ============================================================ */
+const lord = {
+  name:'Arjun Rāṇā',
+  title:'LORD · BHĀRATA HOUSE',
+  bubbleGive: { who:'ARJUN · LORD', text:'“I can spare this one. Keep it with the convoy.”' },
+  bubbleTake: { who:'ARJUN · LORD', text:'“The convoy has what I need. Mark it to my side.”' },
+  mode:'give', // or 'take'
+  inv:[
+    { kind:'equipped', sigil:'sg-lance', name:'Vel of Skanda', rank:'SILVER · A', uses:10, max:30, dur:33 },
+    { kind:'normal',   sigil:'sg-sword', name:'Pāśupata',      rank:'KILLER · B', uses:12, max:25, dur:48 },
+    { kind:'depleted', sigil:'sg-bow',   name:'Gāṇḍīva',       rank:'STEEL · C',  uses:2,  max:40, dur:5 },
+    { kind:'empty',    sigil:'',         name:'— empty slot —', rank:'',           uses:null, max:null, dur:0 },
+    { kind:'empty',    sigil:'',         name:'— empty slot —', rank:'',           uses:null, max:null, dur:0 },
+  ]
+};
+
+const convoy = [
+  { cat:'sword', sigil:'sg-sword', name:'Sūrya-Kriti',     sub:'Silver sword · grants +2 Skl when equipped', rank:'SILVER', rankClass:'silver', uses:38, max:40, dur:95, focused:true },
+  { cat:'sword', sigil:'sg-sword', name:'Khaṇḍa',          sub:'Steel sword · standard issue',               rank:'STEEL · E', rankClass:'', uses:32, max:45, dur:71 },
+  { cat:'sword', sigil:'sg-sword', name:'Nakṣatra Edge',   sub:'Killer · +30 crit',                          rank:'KILLER · B', rankClass:'killer', uses:14, max:20, dur:70 },
+  { cat:'lance', sigil:'sg-lance', name:'Vel of Agni',     sub:'Brave lance · 2-hit',                        rank:'SILVER', rankClass:'silver', uses:2,  max:25, dur:8, depleted:true },
+  { cat:'lance', sigil:'sg-lance', name:'Āyasī Śūla',      sub:'Iron lance · +2 might vs cavalry',           rank:'IRON · E', rankClass:'', uses:40, max:45, dur:89 },
+  { cat:'bow',   sigil:'sg-bow',   name:'Śārṅga',          sub:'Divine bow · effective vs flyers',           rank:'SILVER · A', rankClass:'silver', uses:18, max:30, dur:60 },
+  { cat:'staff', sigil:'sg-staff', name:'Chikitsā',        sub:'Heal 14 HP · magic +2',                      rank:'RANK C', rankClass:'', uses:20, max:30, dur:66 },
+  { cat:'potion',sigil:'sg-potion',name:'Soma Draught',    sub:'Elixir · restore all HP',                    rank:'ELIXIR', rankClass:'', uses:1,  max:1,  dur:100 },
+];
+
+/* ============================================================
+   TEMPLATE BUILDERS
+   ============================================================ */
+function cornerSet(){
+  return `
+    <span class="corner tl"><svg><use href="#filigree"/></svg></span>
+    <span class="corner tr"><svg><use href="#filigree"/></svg></span>
+    <span class="corner bl"><svg><use href="#filigree"/></svg></span>
+    <span class="corner br"><svg><use href="#filigree"/></svg></span>
+  `;
+}
+
+function cartouche(title, sub){
+  return `
+    <div class="cartouche">
+      <svg class="sigil"><use href="#kirtimukha"/></svg>
+      <div style="text-align:center">
+        <h2>${title}</h2>
+        <div class="sub">${sub}</div>
+      </div>
+      <svg class="sigil"><use href="#kirtimukha"/></svg>
+    </div>
+  `;
+}
+
+function footerHints(){
+  return `
+    <div class="footer-hints">
+      <div class="hint"><span class="keycap">▲</span><span class="keycap">▼</span><span>choose</span></div>
+      <div class="hint"><span class="keycap">◀</span><span class="keycap">▶</span><span>category</span></div>
+      <div class="hint"><span class="keycap">⏎</span><span>confirm</span></div>
+      <div class="hint"><span class="keycap">Tab</span><span>switch panel</span></div>
+      <div class="hint"><span class="keycap">i</span><span>inspect</span></div>
+      <div class="hint"><span class="keycap">⎋</span><span>back · consumes turn</span></div>
+    </div>
+  `;
+}
+
+function portraitPanel(bubble){
+  return `
+    <div class="panel portrait">
+      ${cornerSet()}
+      <div class="slab">
+        <div class="silhouette"></div>
+      </div>
+      <div class="portrait-label">PORTRAIT · BUST ART PENDING</div>
+      <div class="portrait-name">${lord.name}</div>
+    </div>
+    <div class="bubble">
+      <div class="speaker">${bubble.who}</div>
+      <p>${bubble.text}</p>
+    </div>
+    <div class="submenu">
+      <button class="sm-btn ${lord.mode==='give'?'active':''}"><span class="gem"></span>Give</button>
+      <button class="sm-btn ${lord.mode==='take'?'active':''}"><span class="gem"></span>Take</button>
+    </div>
+  `;
+}
+
+function lordInvPanel(){
+  const filled = lord.inv.filter(i=>i.kind!=='empty').length;
+  return `
+    <div class="panel lord-inv">
+      ${cornerSet()}
+      <div class="inv-head">
+        <h3>Satchel · ${lord.title}</h3>
+        <div class="cap">${filled}<span class="slash"> / </span>5</div>
+      </div>
+      ${lord.inv.map(i=>{
+        if(i.kind==='empty'){
+          return `<div class="slot empty">
+            <span class="sigil"></span>
+            <span class="name">${i.name}</span>
+            <span class="rank"></span>
+            <span class="uses"></span>
+            <span class="bar"></span>
+          </div>`;
+        }
+        return `<div class="slot ${i.kind==='equipped'?'equipped':''} ${i.kind==='depleted'?'depleted':''}" style="--dur:${i.dur}%">
+          <span class="sigil"><svg width="22" height="22"><use href="#${i.sigil}"/></svg></span>
+          <span class="name">${i.name}</span>
+          <span class="rank">${i.rank}</span>
+          <span class="uses">${i.uses}<span class="slash"> / </span><span class="total">${i.max}</span></span>
+          <span class="bar"></span>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function tab(cat, icon, label, count, {active=false, focused=false}={}){
+  return `<button class="tab ${active?'active':''} ${focused?'focused':''}">
+    <svg class="ico"><use href="#${icon}"/></svg>
+    <span class="count">${count}</span>
+  </button>`;
+}
+
+function tabstrip(activeCat){
+  const cats = [
+    ['all','ic-all','All',42],
+    ['sword','ic-sword','Sword',8],
+    ['lance','ic-lance','Lance',6],
+    ['axe','ic-axe','Axe',4],
+    ['bow','ic-bow','Bow',5],
+    ['anima','ic-anima','Anima',3],
+    ['light','ic-light','Light',2],
+    ['dark','ic-dark','Dark',1],
+    ['staff','ic-staff','Staff',7],
+    ['potion','ic-consumable','Cons.',6],
+  ];
+  return `<div class="tabstrip">${cats.map(([c,i,l,n])=>tab(c,i,l,n,{active:c===activeCat})).join('')}</div>`;
+}
+
+function convoyRow(r){
+  return `<div class="row ${r.focused?'focused':''} ${r.depleted?'depleted':''} ${r.disabled?'disabled':''}" style="--d:${r.dur}%">
+    <span class="sigil"><svg width="28" height="28"><use href="#${r.sigil}"/></svg></span>
+    <span class="name">${r.name}<span class="sub">${r.sub}</span></span>
+    <span class="rank-chip ${r.rankClass||''}">${r.rank}</span>
+    <span class="uses">${r.uses}<span class="slash"> / </span><span class="total">${r.max}</span></span>
+    <span class="durability"></span>
+  </div>`;
+}
+
+function convoyPanel(stockNum=42, warn=false){
+  return `
+    <div class="convoy-head">
+      ${cornerSet()}
+      <h3>Satchel · Rasadāra Convoy</h3>
+      <div class="stock ${warn?'warn':''}">
+        <span class="lbl">Stock</span>
+        <span class="num">${String(stockNum).padStart(2,'0')}<span class="slash"> / </span><span class="total">100</span></span>
+      </div>
+    </div>
+    ${tabstrip('sword')}
+    <div class="convoy-list">
+      <div class="rows">
+        ${convoy.map(convoyRow).join('')}
+      </div>
+      <div class="scrollrail"><div class="thumb"></div></div>
+    </div>
+  `;
+}
+
+/* ============================================================
+   BUILD EACH VARIANT
+   ============================================================ */
+function buildCanvas(el){
+  el.innerHTML = `
+    <div class="battlemap"></div>
+    ${cartouche('QUARTERMASTER · RASADĀRA','rasa-dāra · keeper of the stores')}
+    <div class="left-col">
+      ${portraitPanel(lord.bubbleGive)}
+      ${lordInvPanel()}
+    </div>
+    <div class="right-col">
+      ${convoyPanel(42,false)}
+    </div>
+    ${footerHints()}
+  `;
+}
+
+buildCanvas(document.getElementById('canvasA'));
+buildCanvas(document.getElementById('canvasB'));
+buildCanvas(document.getElementById('canvasC'));
+
+/* ============================================================
+   SCALE FITTING — 1920x1080 canvases fit their scale-host
+   ============================================================ */
+function fitAll(){
+  document.querySelectorAll('.scale-host').forEach(host=>{
+    const canvas = host.querySelector('.canvas');
+    const w = host.clientWidth;
+    const scale = w / 1920;
+    canvas.style.transform = `scale(${scale})`;
+    canvas.style.width = '1920px';
+    canvas.style.height = '1080px';
+  });
+}
+window.addEventListener('resize', fitAll);
+requestAnimationFrame(fitAll);
+
+/* ============================================================
+   PICKER
+   ============================================================ */
+const picker = document.getElementById('picker');
+picker.addEventListener('click',(e)=>{
+  const b = e.target.closest('button'); if(!b) return;
+  picker.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const v = b.dataset.v;
+  document.querySelectorAll('.variant').forEach(el=>{
+    el.hidden = (v!=='all' && el.dataset.v!==v);
+  });
+  requestAnimationFrame(fitAll);
+});
+
+/* ============================================================
+   STATE GALLERY
+   ============================================================ */
+const galleryHTML = `
+  <h2>STATE GALLERY · EVERY INTERACTIVE ELEMENT</h2>
+  <p class="intro">Every interactive element per UI_WORKFLOW. All effects below use literal CSS values — the token readout at the bottom lists them verbatim for Unity TMP-Glow / sprite-bake translation. Rendered in Variation A chrome; Variation B &amp; C inherit the same topology with only color overrides noted in-canvas above.</p>
+
+  <h3>1 · Give / Take Sub-menu Button</h3>
+  <div class="state-row" id="sg-submenu"></div>
+
+  <h3>2 · Category Tab</h3>
+  <div class="state-row" id="sg-tab"></div>
+
+  <h3>3 · Convoy Row</h3>
+  <div class="state-row" id="sg-row" style="flex-direction:column;align-items:stretch;gap:12px"></div>
+
+  <h3>4 · Lord Inventory Slot</h3>
+  <div class="state-row" id="sg-slot" style="flex-direction:column;align-items:stretch;gap:12px"></div>
+
+  <h3>5 · Confirm / Keybind Glyph</h3>
+  <div class="state-row" id="sg-keycap"></div>
+`;
+document.getElementById('gallery').innerHTML = galleryHTML;
+
+// sub-menu states
+{
+  const host = document.getElementById('sg-submenu');
+  const makeBtn = (cls,label,extra='')=>`<button class="sm-btn ${cls}" ${extra}><span class="gem"></span>${label}</button>`;
+  host.innerHTML = `
+    <div class="state-cell"><span class="tag">State · <b>default</b></span><div style="width:240px">${makeBtn('','Give')}</div></div>
+    <div class="state-cell"><span class="tag">State · <b>hover</b></span><div style="width:240px"><button class="sm-btn" style="background:linear-gradient(180deg,#241a4e,#140f3a);border-color:var(--brassLite);color:var(--parchmentSel)"><span class="gem"></span>Give</button></div></div>
+    <div class="state-cell"><span class="tag">State · <b>pressed</b></span><div style="width:240px"><button class="sm-btn" style="background:linear-gradient(180deg,#08061c,#1a1540);transform:translateY(1px);box-shadow:inset 0 2px 6px rgba(0,0,0,0.6)"><span class="gem"></span>Give</button></div></div>
+    <div class="state-cell"><span class="tag">State · <b>focused (keyboard)</b></span><div style="width:240px"><button class="sm-btn" style="box-shadow:0 0 0 2px var(--vermillion),inset 0 0 18px rgba(176,56,42,0.2)"><span class="gem"></span>Give</button></div></div>
+    <div class="state-cell"><span class="tag">State · <b>active-selected</b></span><div style="width:240px">${makeBtn('active','Give')}</div></div>
+    <div class="state-cell"><span class="tag">State · <b>disabled</b> <em style="color:var(--parchDim);font-weight:400;letter-spacing:.04em;text-transform:none">(convoy empty)</em></span><div style="width:240px"><button class="sm-btn" style="opacity:.35;filter:saturate(.5);cursor:not-allowed"><span class="gem"></span>Give</button></div></div>
+  `;
+}
+
+// tab states
+{
+  const host = document.getElementById('sg-tab');
+  const wrap = inner => `<div style="width:120px;height:62px;display:flex">${inner}</div>`;
+  host.innerHTML = `
+    <div class="state-cell"><span class="tag">State · <b>default</b></span>${wrap(tab('sword','ic-sword','Sword',8))}</div>
+    <div class="state-cell"><span class="tag">State · <b>hover</b></span>${wrap(`<button class="tab" style="color:var(--parchment);background:rgba(26,21,64,0.7)"><svg class="ico"><use href="#ic-sword"/></svg><span class="count">8</span></button>`)}</div>
+    <div class="state-cell"><span class="tag">State · <b>focused</b></span>${wrap(tab('sword','ic-sword','Sword',8,{focused:true}))}</div>
+    <div class="state-cell"><span class="tag">State · <b>active · selected</b></span>${wrap(tab('sword','ic-sword','Sword',8,{active:true}))}</div>
+  `;
+}
+
+// row states
+{
+  const host = document.getElementById('sg-row');
+  const mk = (mods, row) => `<div class="state-cell" style="padding:0"><span class="tag" style="padding:14px 18px 0;display:block">${mods}</span>
+    <div class="convoy-list" style="border:none;box-shadow:none;background:linear-gradient(180deg,#0f0b2e,#08061c)"><div class="rows" style="padding:0 18px 14px">${row}</div></div></div>`;
+  const base = {cat:'sword',sigil:'sg-sword',name:'Sūrya-Kriti',sub:'Silver sword · grants +2 Skl when equipped',rank:'SILVER',rankClass:'silver',uses:38,max:40,dur:95};
+  host.innerHTML = [
+    mk('State · <b>default</b>', convoyRow(base)),
+    mk('State · <b>hover</b>', convoyRow({...base, hover:true}).replace('class="row ', 'class="row " style="background:linear-gradient(90deg, rgba(201,153,58,0.1), rgba(201,153,58,0.02))" ')),
+    mk('State · <b>focused</b>', convoyRow({...base, focused:true})),
+    mk('State · <b>disabled</b> <em style="text-transform:none;color:var(--parchDim);letter-spacing:.04em">— lord inventory full + mode = TAKE</em>', convoyRow({...base, disabled:true})),
+    mk('State · <b>depleted</b> <em style="text-transform:none;color:var(--parchDim);letter-spacing:.04em">— uses ≤ 3</em>', convoyRow({...base, name:'Vel of Agni', sub:'Brave lance · 2-hit', uses:2, max:25, dur:8, depleted:true})),
+  ].join('');
+}
+
+// slot states
+{
+  const host = document.getElementById('sg-slot');
+  const mk = (mods, slotHTML) => `<div class="state-cell" style="padding:0">
+    <span class="tag" style="padding:14px 18px 0;display:block">${mods}</span>
+    <div class="panel lord-inv" style="border:none;box-shadow:none;background:linear-gradient(180deg,#1a1540,#0f0b2e);padding:8px 20px 16px">${slotHTML}</div>
+  </div>`;
+  const baseSlot = (kind='normal', extra={}) => {
+    const data = {
+      normal:{cls:'',name:'Pāśupata',sigil:'sg-sword',rank:'KILLER · B',uses:12,max:25,dur:48},
+      focused:{cls:'focused',name:'Pāśupata',sigil:'sg-sword',rank:'KILLER · B',uses:12,max:25,dur:48},
+      equipped:{cls:'equipped',name:'Vel of Skanda',sigil:'sg-lance',rank:'SILVER · A',uses:10,max:30,dur:33},
+      depleted:{cls:'depleted',name:'Gāṇḍīva',sigil:'sg-bow',rank:'STEEL · C',uses:2,max:40,dur:5},
+      empty:{cls:'empty',name:'— empty slot —',sigil:'',rank:'',uses:'',max:'',dur:0},
+    }[kind];
+    if(kind==='empty') return `<div class="slot empty"><span class="sigil"></span><span class="name">${data.name}</span><span class="rank"></span><span class="uses"></span><span class="bar"></span></div>`;
+    return `<div class="slot ${data.cls}" style="--dur:${data.dur}%">
+      <span class="sigil"><svg width="22" height="22"><use href="#${data.sigil}"/></svg></span>
+      <span class="name">${data.name}</span>
+      <span class="rank">${data.rank}</span>
+      <span class="uses">${data.uses}<span class="slash"> / </span><span class="total">${data.max}</span></span>
+      <span class="bar"></span>
+    </div>`;
+  };
+  host.innerHTML = [
+    mk('State · <b>default</b>', baseSlot('normal')),
+    mk('State · <b>focused</b>', baseSlot('focused')),
+    mk('State · <b>equipped</b> <em style="text-transform:none;color:var(--parchDim);letter-spacing:.04em">— star glyph + brass underline</em>', baseSlot('equipped')),
+    mk('State · <b>depleted</b>', baseSlot('depleted')),
+    mk('State · <b>empty slot</b>', baseSlot('empty')),
+  ].join('');
+}
+
+// keycap states
+{
+  const host = document.getElementById('sg-keycap');
+  host.innerHTML = `
+    <div class="state-cell"><span class="tag">State · <b>default</b></span><div style="display:flex;gap:8px;align-items:center"><span class="keycap">⏎</span><span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.22em;color:var(--parchDim);text-transform:uppercase">Confirm</span></div></div>
+    <div class="state-cell"><span class="tag">State · <b>pressed</b></span><div style="display:flex;gap:8px;align-items:center"><span class="keycap pressed">⏎</span><span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.22em;color:var(--brassGlow);text-transform:uppercase">Confirm</span></div></div>
+  `;
+}
+
+/* ============================================================
+   TOKEN READOUT — literal CSS values
+   ============================================================ */
+const tokens = [
+  ['Palette · parchment','#f2e6c4'],
+  ['Palette · parchmentSel','#fff5d8'],
+  ['Palette · parchDim','#c9b98a'],
+  ['Palette · ink','#1a140f'],
+  ['Palette · inkDeep','#3d2a1a'],
+  ['Palette · brass','#c9993a'],
+  ['Palette · brassLite','#e8c66a'],
+  ['Palette · brassGlow','#fde49a'],
+  ['Palette · vermillion','#b0382a'],
+  ['Palette · wine','#6b1e2e'],
+  ['Palette · indigoHi','#1a1540'],
+  ['Palette · indigo','#0f0b2e'],
+  ['Palette · indigoLo','#08061c'],
+  ['—','—'],
+  ['text-shadow · label','0 0 6px rgba(253,228,154,0.35), 0 1px 0 rgba(0,0,0,0.65)'],
+  ['text-shadow · item name','0 1px 0 rgba(0,0,0,0.55)'],
+  ['text-shadow · active item','0 0 10px rgba(253,228,154,0.35), 0 1px 0 rgba(0,0,0,0.6)'],
+  ['text-shadow · brass rule','0 1px 0 rgba(253,228,154,0.45), 0 -1px 0 rgba(26,20,15,0.75)'],
+  ['text-shadow · vermillion glow','0 0 10px rgba(176,56,42,0.6)'],
+  ['text-shadow · equipped star','0 0 8px rgba(253,228,154,1.0)'],
+  ['—','—'],
+  ['box-shadow · panel','0 0 0 1px #c9993a, 0 0 0 2px #1a140f, 0 18px 48px -12px rgba(0,0,0,0.75), inset 0 1px 0 rgba(253,228,154,0.15)'],
+  ['box-shadow · panel inset','inset 0 0 36px rgba(8,6,28,0.85), inset 0 0 0 1px rgba(201,153,58,0.35)'],
+  ['box-shadow · selection glow','0 0 0 1px #fde49a, 0 0 18px -2px rgba(176,56,42,0.8), inset 0 0 24px rgba(176,56,42,0.25)'],
+  ['box-shadow · row focused','inset 0 0 0 1px #b0382a, inset 0 0 28px rgba(176,56,42,0.2)'],
+  ['box-shadow · tab active underline','inset 0 -3px 0 0 #fde49a, inset 0 0 24px rgba(176,56,42,0.3)'],
+  ['box-shadow · keycap default','inset 0 1px 0 rgba(253,228,154,0.2), 0 1px 0 rgba(0,0,0,0.7)'],
+  ['box-shadow · keycap pressed','inset 0 2px 4px rgba(0,0,0,0.7)'],
+  ['—','—'],
+  ['filter · battlemap blur','blur(18px) saturate(0.8) brightness(0.55)'],
+  ['filter · active tab icon','drop-shadow(0 0 6px rgba(253,228,154,0.7))'],
+  ['—','—'],
+  ['type · header · CARTOUCHE','Cinzel 600 · 22px · letter-spacing 0.42em'],
+  ['type · panel label','Cinzel 600 · 13–18px · letter-spacing 0.3–0.5em · uppercase'],
+  ['type · item display name','Cormorant Garamond 600 · 24px · letter-spacing 0.02em'],
+  ['type · sub-description (convoy)','EB Garamond 400 italic · 13px'],
+  ['type · numeric readout','JetBrains Mono 500 · 18px item / 28px stock · letter-spacing 0.04–0.05em'],
+  ['type · dialogue bubble','EB Garamond 400 italic · 22px · line-height 1.25'],
+  ['type · footer hint','Cinzel 400 · 11px · letter-spacing 0.22em · uppercase'],
+];
+document.getElementById('tokens').innerHTML = `
+  <h3>LITERAL CSS TOKEN READOUT · VERBATIM FOR UNITY TMP / SPRITE-BAKE</h3>
+  ${tokens.map(([k,v])=> k==='—' ? `<div class="tk" style="border-top:1px dashed rgba(201,153,58,0.25);margin:8px 0;padding-top:8px"></div>` : `<div class="tk"><span>${k}</span><span>${v}</span></div>`).join('')}
+`;
+</script>
+
+</body>
+</html>
