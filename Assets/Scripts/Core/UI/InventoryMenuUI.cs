@@ -7,25 +7,32 @@ using TMPro;
 namespace ProjectAstra.Core.UI
 {
     /// <summary>
-    /// Lists a unit's 5 inventory slots with item name and uses, and routes selection
-    /// into a slot sub-menu (Equip / Use / Discard). Built dynamically; navigation
-    /// follows the same Up/Down/Confirm/Cancel pattern as UnitActionMenuUI.
+    /// Drives the Indigo Codex inventory popup — a five-slot modal that lists a unit's
+    /// inventory, previews the selected item's stats, and routes Confirm into the
+    /// Equip / Use / Discard / Cancel sub-menu. Visuals come from the
+    /// InventoryPopup.prefab built by InventoryPopupBuilder; this controller only binds
+    /// live data and handles input. Navigation semantics match the original primitive UI
+    /// so GridCursor, UnitActionMenuUI, and ConfirmDialogUI integrations are unchanged.
     /// </summary>
     public class InventoryMenuUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }
 
-        private static readonly Color PanelColor = new(0.18f, 0.18f, 0.4f, 0.92f);
-        private static readonly Color BorderColor = new(0.55f, 0.45f, 0.3f, 1f);
-        private static readonly Color TextNormal = Color.white;
-        private static readonly Color TextSelected = new(1f, 1f, 0.6f, 1f);
-        private static readonly Color TextEmpty = new(0.55f, 0.55f, 0.6f, 1f);
-        private static readonly Color TextBroken = new(0.85f, 0.4f, 0.4f, 1f);
+        [SerializeField] private GameObject _popupInstance;
 
-        const float OptionHeight = 28f;
-        const float PanelPadding = 12f;
-        const float BorderWidth = 3f;
-        const float PanelWidth = 280f;
+        // Row-state text colors — empty/depleted cases use distinct palette entries
+        // matching the mockup JSX so rows in the same list feel visually coherent.
+        private static readonly Color NameNormal   = new(0.95f, 0.90f, 0.77f, 1f);   // #f2e6c4
+        private static readonly Color NameSelected = new(1.00f, 0.96f, 0.85f, 1f);   // #fff5d8
+        private static readonly Color NameEmpty    = new(0.95f, 0.90f, 0.77f, 0.32f);
+        private static readonly Color NameDepleted = new(0.69f, 0.22f, 0.16f, 1f);   // vermillion
+        private static readonly Color KindNormal   = new(0.79f, 0.72f, 0.54f, 1f);   // parchDim
+        private static readonly Color KindSelected = new(0.99f, 0.89f, 0.60f, 1f);   // brassGlow
+        private static readonly Color SigilBrass   = new(0.91f, 0.78f, 0.42f, 1f);   // brassLite
+        private static readonly Color SigilGlow    = new(0.99f, 0.89f, 0.60f, 1f);   // brassGlow
+        private static readonly Color SigilEmpty   = new(0.79f, 0.60f, 0.23f, 0.35f);
+        private static readonly Color BarBrass     = new(0.79f, 0.60f, 0.23f, 1f);   // brass
+        private static readonly Color BarVermillion = new(0.69f, 0.22f, 0.16f, 1f);
 
         private UnitInventory _inventory;
         private TestUnit _unit;
@@ -34,9 +41,7 @@ namespace ProjectAstra.Core.UI
         private Action _onConsumableUsed;
         private Action _onClose;
 
-        private GameObject _root;
-        private readonly List<TextMeshProUGUI> _slotTexts = new();
-        private TextMeshProUGUI _cursorIndicator;
+        private InventoryPopupRefs _refs;
         private int _selectedIndex;
         private bool _slotSubMenuOpen;
 
@@ -52,7 +57,7 @@ namespace ProjectAstra.Core.UI
             _slotSubMenuOpen = false;
 
             EnsureSlotSubMenu();
-            BuildUI();
+            ActivateUI();
             UpdateSelection();
 
             HasInputFocus = true;
@@ -76,8 +81,7 @@ namespace ProjectAstra.Core.UI
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            if (_root != null) Destroy(_root);
-            _slotTexts.Clear();
+            if (_popupInstance != null) _popupInstance.SetActive(false);
         }
 
         private void OnDestroy()
@@ -131,7 +135,7 @@ namespace ProjectAstra.Core.UI
         {
             _slotSubMenuOpen = true;
 
-            // Temporarily release main menu input so the sub-menu owns it.
+            // Release main menu input so the sub-menu owns Up/Down/Confirm/Cancel.
             if (InputManager.Instance != null)
             {
                 InputManager.Instance.OnCursorMove -= Navigate;
@@ -250,144 +254,271 @@ namespace ProjectAstra.Core.UI
             UpdateSelection();
         }
 
-        #region UI construction
+        #region UI binding
 
-        private void BuildUI()
+        private void ActivateUI()
         {
-            if (_root != null) Destroy(_root);
-            _slotTexts.Clear();
-
-            var canvas = GetComponentInParent<Canvas>();
-            if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
-            if (canvas == null) return;
-
-            float panelHeight = (UnitInventory.Capacity + 1) * OptionHeight + PanelPadding * 2;
-
-            _root = new GameObject("InventoryMenu");
-            _root.transform.SetParent(canvas.transform, false);
-            var rootRect = _root.AddComponent<RectTransform>();
-            rootRect.anchorMin = new Vector2(0f, 0.5f);
-            rootRect.anchorMax = new Vector2(0f, 0.5f);
-            rootRect.pivot = new Vector2(0f, 0.5f);
-            rootRect.anchoredPosition = new Vector2(20f, 0f);
-            rootRect.sizeDelta = new Vector2(PanelWidth + BorderWidth * 2, panelHeight + BorderWidth * 2);
-
-            _root.AddComponent<Image>().color = BorderColor;
-
-            var panel = new GameObject("Panel");
-            panel.transform.SetParent(_root.transform, false);
-            var panelRect = panel.AddComponent<RectTransform>();
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.offsetMin = new Vector2(BorderWidth, BorderWidth);
-            panelRect.offsetMax = new Vector2(-BorderWidth, -BorderWidth);
-            panel.AddComponent<Image>().color = PanelColor;
-
-            // Header
-            var headerGo = new GameObject("Header");
-            headerGo.transform.SetParent(panel.transform, false);
-            var headerRect = headerGo.AddComponent<RectTransform>();
-            headerRect.anchorMin = new Vector2(0f, 1f);
-            headerRect.anchorMax = new Vector2(1f, 1f);
-            headerRect.pivot = new Vector2(0f, 1f);
-            headerRect.anchoredPosition = new Vector2(PanelPadding, -PanelPadding);
-            headerRect.sizeDelta = new Vector2(-PanelPadding * 2, OptionHeight);
-
-            var headerText = headerGo.AddComponent<TextMeshProUGUI>();
-            headerText.text = $"{_unit.name} — Items";
-            headerText.fontSize = 18;
-            headerText.fontStyle = FontStyles.Bold;
-            headerText.alignment = TextAlignmentOptions.MidlineLeft;
-            headerText.color = new Color(1f, 0.85f, 0.5f, 1f);
-            headerText.enableWordWrapping = false;
-
-            for (int i = 0; i < UnitInventory.Capacity; i++)
+            if (_popupInstance == null)
             {
-                var rowGo = new GameObject($"Slot{i}");
-                rowGo.transform.SetParent(panel.transform, false);
-                var rowRect = rowGo.AddComponent<RectTransform>();
-                rowRect.anchorMin = new Vector2(0f, 1f);
-                rowRect.anchorMax = new Vector2(1f, 1f);
-                rowRect.pivot = new Vector2(0f, 1f);
-                rowRect.anchoredPosition = new Vector2(PanelPadding + 20f, -PanelPadding - OptionHeight - i * OptionHeight);
-                rowRect.sizeDelta = new Vector2(-PanelPadding * 2 - 20f, OptionHeight);
-
-                var tmp = rowGo.AddComponent<TextMeshProUGUI>();
-                tmp.fontSize = 16;
-                tmp.fontStyle = FontStyles.Bold;
-                tmp.alignment = TextAlignmentOptions.MidlineLeft;
-                tmp.enableWordWrapping = false;
-
-                _slotTexts.Add(tmp);
+                Debug.LogError("InventoryMenuUI: _popupInstance not wired. Run the scene setup " +
+                    "menu or re-run 'Project Astra/Build Inventory Popup (prefab)'.");
+                return;
             }
 
+            if (_refs == null) _refs = _popupInstance.GetComponent<InventoryPopupRefs>();
+            if (_refs == null)
+            {
+                Debug.LogError("InventoryMenuUI: popup instance has no InventoryPopupRefs — rebuild the prefab.");
+                return;
+            }
+
+            _popupInstance.SetActive(true);
+            // Ensure the popup sits on top of anything else added to the canvas after setup.
+            _popupInstance.transform.SetAsLastSibling();
+
+            BindUnitInfo();
             UpdateSlotLabels();
+        }
 
-            // Cursor indicator
-            var cursorGo = new GameObject("Cursor");
-            cursorGo.transform.SetParent(panel.transform, false);
-            var cursorRect = cursorGo.AddComponent<RectTransform>();
-            cursorRect.anchorMin = new Vector2(0f, 1f);
-            cursorRect.anchorMax = new Vector2(0f, 1f);
-            cursorRect.pivot = new Vector2(0f, 0.5f);
-            cursorRect.sizeDelta = new Vector2(20f, OptionHeight);
-            cursorRect.anchoredPosition = new Vector2(PanelPadding, -PanelPadding - OptionHeight - OptionHeight * 0.5f);
+        private void BindUnitInfo()
+        {
+            if (_refs.unitName != null) _refs.unitName.text = _unit != null ? _unit.name : "—";
+            if (_refs.unitClass != null) _refs.unitClass.text = ClassLabel(_unit);
 
-            _cursorIndicator = cursorGo.AddComponent<TextMeshProUGUI>();
-            _cursorIndicator.text = "\u25B6";
-            _cursorIndicator.fontSize = 16;
-            _cursorIndicator.alignment = TextAlignmentOptions.Center;
-            _cursorIndicator.color = TextSelected;
-            _cursorIndicator.enableWordWrapping = false;
+            int hp = _unit != null ? _unit.currentHP : 0;
+            int maxHp = _unit != null ? _unit.maxHP : 1;
+            if (_refs.hpNumbers != null) _refs.hpNumbers.text = $"{hp} / {maxHp}";
+            if (_refs.hpFill != null)
+            {
+                float frac = maxHp > 0 ? Mathf.Clamp01((float)hp / maxHp) : 0f;
+                var rt = _refs.hpFill.rectTransform;
+                rt.sizeDelta = new Vector2(288f * frac, rt.sizeDelta.y);
+            }
 
-            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            if (_refs.inventoryCount != null)
+            {
+                int occupied = _inventory != null ? _inventory.OccupiedCount : 0;
+                _refs.inventoryCount.text = $"{occupied} / {UnitInventory.Capacity}";
+            }
+        }
+
+        private static string ClassLabel(TestUnit unit)
+        {
+            if (unit == null) return "—";
+            var cls = unit.UnitInstance?.CurrentClass;
+            if (cls != null && !string.IsNullOrEmpty(cls.ClassName)) return cls.ClassName.ToUpperInvariant();
+            return unit.faction == Faction.Player ? "ALLIED UNIT" : unit.faction.ToString().ToUpperInvariant();
         }
 
         private void UpdateSlotLabels()
         {
-            int equippedSlot = _inventory.EquippedWeaponSlot;
-            for (int i = 0; i < _slotTexts.Count; i++)
+            if (_refs == null) return;
+            int equippedSlot = _inventory != null ? _inventory.EquippedWeaponSlot : -1;
+
+            for (int i = 0; i < _refs.rows.Length; i++)
             {
-                var slot = _inventory.GetSlot(i);
-                _slotTexts[i].text = FormatSlot(i, slot, i == equippedSlot);
-                _slotTexts[i].color = ColorForSlot(slot);
+                var rowRefs = _refs.rows[i];
+                var slot = _inventory != null ? _inventory.GetSlot(i) : InventoryItem.None;
+                ApplySlotToRow(rowRefs, i, slot, i == equippedSlot);
             }
         }
 
-        private static string FormatSlot(int index, InventoryItem item, bool equipped)
+        private void ApplySlotToRow(InventoryPopupRefs.RowRefs row, int slotIndex,
+            InventoryItem item, bool equipped)
         {
-            string mark = equipped ? "★" : " ";
-            if (item.IsEmpty) return $"{mark} {index + 1}. —";
+            if (row == null || row.root == null) return;
 
-            string uses = item.Indestructible
-                ? "∞"
-                : $"{item.CurrentUses}/{item.MaxUses}";
-            return $"{mark} {index + 1}. {item.DisplayName}  ({uses})";
+            bool empty    = item.IsEmpty;
+            bool depleted = !empty && item.IsDepleted;
+
+            // Sigil + background sprite per state (selected overlay applied later by UpdateSelection).
+            if (empty)
+            {
+                row.background.sprite = row.sprEmpty;
+                row.sigil.sprite = null;
+                row.sigil.color = SigilEmpty;
+                row.nameText.text = "— vacant —";
+                row.nameText.color = NameEmpty;
+                row.nameText.fontStyle = FontStyles.Italic;
+                row.kindText.text = "";
+                row.usesText.text = "·  /  ·";
+                row.usesText.color = NameEmpty;
+                row.durabilityTrack.gameObject.SetActive(false);
+                row.durabilityFill.gameObject.SetActive(false);
+            }
+            else
+            {
+                row.background.sprite = depleted ? row.sprDepleted : row.sprDefault;
+                row.sigil.sprite = SigilFor(item);
+                row.sigil.color = SigilBrass;
+                row.nameText.text = equipped ? $"★ {item.DisplayName}" : item.DisplayName;
+                row.nameText.color = depleted ? NameDepleted : NameNormal;
+                row.nameText.fontStyle = FontStyles.Bold;
+                row.kindText.text = KindLabel(item);
+                row.kindText.color = KindNormal;
+                row.usesText.text = item.Indestructible ? "∞" : $"{item.CurrentUses} / {item.MaxUses}";
+                row.usesText.color = depleted ? NameDepleted : NameNormal;
+
+                row.durabilityTrack.gameObject.SetActive(true);
+                row.durabilityFill.gameObject.SetActive(true);
+                float frac = item.Indestructible || item.MaxUses == 0
+                    ? 1f
+                    : Mathf.Clamp01((float)item.CurrentUses / item.MaxUses);
+                var fillRt = row.durabilityFill.rectTransform;
+                fillRt.sizeDelta = new Vector2(80f * frac, fillRt.sizeDelta.y);
+                row.durabilityFill.color = depleted ? BarVermillion : BarBrass;
+            }
+
+            row.selectionCaret.gameObject.SetActive(false);
         }
 
-        private static Color ColorForSlot(InventoryItem item)
+        private static string KindLabel(InventoryItem item)
         {
-            if (item.IsEmpty) return TextEmpty;
-            if (item.IsDepleted) return TextBroken;
-            return TextNormal;
+            switch (item.kind)
+            {
+                case ItemKind.Weapon:
+                    return item.weapon.weaponType + (item.weapon.brave ? " · Brave" : "");
+                case ItemKind.Consumable:
+                    return item.consumable.type == ConsumableType.Vulnerary
+                        ? "Elixir · restorative"
+                        : "Stat Boost · " + item.consumable.targetStat;
+                default:
+                    return "";
+            }
+        }
+
+        private Sprite SigilFor(InventoryItem item)
+        {
+            if (item.kind == ItemKind.Consumable) return _refs.sigilConsumable;
+            if (item.kind != ItemKind.Weapon) return null;
+            return item.weapon.weaponType switch
+            {
+                WeaponType.Sword => _refs.sigilSword,
+                WeaponType.Lance => _refs.sigilLance,
+                WeaponType.Axe   => _refs.sigilAxe,
+                WeaponType.Bow   => _refs.sigilBow,
+                WeaponType.Staff => _refs.sigilStaff,
+                _                => _refs.sigilSword, // tomes fall back to sword sigil for now
+            };
         }
 
         private void UpdateSelection()
         {
-            for (int i = 0; i < _slotTexts.Count; i++)
+            if (_refs == null) return;
+
+            for (int i = 0; i < _refs.rows.Length; i++)
             {
-                var slot = _inventory.GetSlot(i);
-                var baseColor = ColorForSlot(slot);
-                _slotTexts[i].color = i == _selectedIndex ? TextSelected : baseColor;
+                var row = _refs.rows[i];
+                if (row == null || row.root == null) continue;
+
+                bool selected = i == _selectedIndex;
+                var slot = _inventory != null ? _inventory.GetSlot(i) : InventoryItem.None;
+                bool empty = slot.IsEmpty;
+                bool depleted = !empty && slot.IsDepleted;
+
+                row.selectionCaret.gameObject.SetActive(selected && !empty);
+
+                if (selected && !empty)
+                {
+                    row.background.sprite = row.sprSelected;
+                    row.nameText.color = NameSelected;
+                    row.kindText.color = KindSelected;
+                    row.sigil.color = SigilGlow;
+                    row.usesText.color = NameSelected;
+                }
+                else if (empty)
+                {
+                    row.background.sprite = row.sprEmpty;
+                }
+                else
+                {
+                    row.background.sprite = depleted ? row.sprDepleted : row.sprDefault;
+                    row.nameText.color = depleted ? NameDepleted : NameNormal;
+                    row.kindText.color = KindNormal;
+                    row.sigil.color = SigilBrass;
+                    row.usesText.color = depleted ? NameDepleted : NameNormal;
+                }
             }
 
-            if (_cursorIndicator != null)
+            BindStatsPanel(_inventory != null ? _inventory.GetSlot(_selectedIndex) : InventoryItem.None);
+        }
+
+        private void BindStatsPanel(InventoryItem item)
+        {
+            if (_refs == null) return;
+
+            if (item.IsEmpty)
             {
-                var rect = _cursorIndicator.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(
-                    PanelPadding,
-                    -PanelPadding - OptionHeight - _selectedIndex * OptionHeight - OptionHeight * 0.5f);
+                if (_refs.statsGroup != null) _refs.statsGroup.alpha = 0.45f;
+                _refs.selectedItemName.text = "— select an item —";
+                _refs.selectedItemKind.text = "";
+                SetStat(_refs.statAtk, null);
+                SetStat(_refs.statHit, null);
+                SetStat(_refs.statRng, null);
+                SetStat(_refs.statWt,  null);
+                _refs.itemDescription.text = "";
+                _refs.provText.text = "";
+                return;
             }
+
+            if (_refs.statsGroup != null) _refs.statsGroup.alpha = 1f;
+            _refs.selectedItemName.text = item.DisplayName;
+
+            if (item.kind == ItemKind.Weapon)
+            {
+                var w = item.weapon;
+                _refs.selectedItemKind.text = $"{w.weaponType.ToString().ToUpperInvariant()} · {w.tier.ToString().ToUpperInvariant()}";
+                SetStat(_refs.statAtk, w.might);
+                SetStat(_refs.statHit, w.hit);
+                SetStat(_refs.statRng, FormatRange(w.minRange, w.maxRange));
+                SetStat(_refs.statWt,  w.weight);
+                _refs.itemDescription.text = DescribeWeapon(w);
+                _refs.provText.text = w.characterLocked && !string.IsNullOrEmpty(w.ownerUnitId)
+                    ? $"Bound to {w.ownerUnitId}"
+                    : $"{w.minRank} rank required";
+            }
+            else // Consumable
+            {
+                var c = item.consumable;
+                _refs.selectedItemKind.text = c.type == ConsumableType.Vulnerary
+                    ? "ELIXIR · RESTORATIVE"
+                    : "STAT BOOST";
+                SetStat(_refs.statAtk, null);
+                SetStat(_refs.statHit, null);
+                SetStat(_refs.statRng, null);
+                SetStat(_refs.statWt,  null);
+                _refs.itemDescription.text = DescribeConsumable(c);
+                _refs.provText.text = $"{c.currentUses} / {c.maxUses} uses remaining";
+            }
+        }
+
+        private static void SetStat(TextMeshProUGUI field, object value)
+        {
+            if (field == null) return;
+            field.text = value == null ? "—" : value.ToString();
+        }
+
+        private static string FormatRange(int min, int max)
+            => min == max ? min.ToString() : $"{min}–{max}";
+
+        private static string DescribeWeapon(WeaponData w)
+        {
+            if (w.staffEffect != StaffEffect.None)
+                return w.staffEffect == StaffEffect.AreaOfEffect
+                    ? "Restores HP to every ally within range. Consumes a use per cast."
+                    : "Channels divine energy to mend a single ally's wounds.";
+            if (w.IsEffectiveAgainst(ClassType.Cavalry) || w.IsEffectiveAgainst(ClassType.Armoured))
+                return "Shaped to cleave specific enemy types — strike hard when the target fits.";
+            return w.brave
+                ? "Strikes twice per attack. Weight tires the wielder across rounds."
+                : $"Standard {w.weaponType.ToString().ToLowerInvariant()}. Reliable in open combat.";
+        }
+
+        private static string DescribeConsumable(ConsumableData c)
+        {
+            return c.type == ConsumableType.Vulnerary
+                ? $"Restores {c.magnitude} HP when used. Field-tested across campaigns."
+                : $"Permanently boosts {c.targetStat} by {c.magnitude} when consumed.";
         }
 
         #endregion

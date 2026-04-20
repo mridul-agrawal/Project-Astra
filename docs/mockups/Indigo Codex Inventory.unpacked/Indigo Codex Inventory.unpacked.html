@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Inventory 01 — Indigo Codex Leaf</title>
+<style>/* =========================================================================
+   Project Astra — Mythic Tactical UI
+   Core design tokens: color, type, spacing, ornament
+   ========================================================================= */
+
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/8b78d4f7-456b-4220-9973-47886e5d2c00.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/e60f0178-36fe-4af5-aacd-daf7de298655.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/cde1999e-9f3c-4c80-9c51-205d1fe41559.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/1cb5e6e0-db26-44ce-ac8b-1cfc404c728a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/66d69942-3b29-49e6-92cb-4d8706ced92d.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/8b78d4f7-456b-4220-9973-47886e5d2c00.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/e60f0178-36fe-4af5-aacd-daf7de298655.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/cde1999e-9f3c-4c80-9c51-205d1fe41559.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/1cb5e6e0-db26-44ce-ac8b-1cfc404c728a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/66d69942-3b29-49e6-92cb-4d8706ced92d.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/8b78d4f7-456b-4220-9973-47886e5d2c00.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/e60f0178-36fe-4af5-aacd-daf7de298655.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/cde1999e-9f3c-4c80-9c51-205d1fe41559.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/1cb5e6e0-db26-44ce-ac8b-1cfc404c728a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/66d69942-3b29-49e6-92cb-4d8706ced92d.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/8b78d4f7-456b-4220-9973-47886e5d2c00.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/e60f0178-36fe-4af5-aacd-daf7de298655.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/cde1999e-9f3c-4c80-9c51-205d1fe41559.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/1cb5e6e0-db26-44ce-ac8b-1cfc404c728a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Cormorant Garamond';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/66d69942-3b29-49e6-92cb-4d8706ced92d.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/c97d4fec-f272-459a-a2fa-4ec1662f6817.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fcd87274-0330-4ffa-8fbe-3f81d62d3e9c.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/d46b7cfe-ee09-4d6c-a0b8-c4282b49ec15.woff2") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/81bd080f-7ac2-47c8-bec4-f5a94aa34115.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/dfa73971-6d5b-4d7e-a956-e8895684e074.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/d0df6e65-7950-4f2c-974d-7ffb4dd9ee18.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/32273eaf-557f-47d0-ab68-9c19069b960e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/c97d4fec-f272-459a-a2fa-4ec1662f6817.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fcd87274-0330-4ffa-8fbe-3f81d62d3e9c.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/d46b7cfe-ee09-4d6c-a0b8-c4282b49ec15.woff2") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/81bd080f-7ac2-47c8-bec4-f5a94aa34115.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/dfa73971-6d5b-4d7e-a956-e8895684e074.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/d0df6e65-7950-4f2c-974d-7ffb4dd9ee18.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/32273eaf-557f-47d0-ab68-9c19069b960e.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/cddadf87-370c-4168-aacb-f2062bb13a8c.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/38716753-9506-42bb-92a4-8541bbcdbad0.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/5b5ed5c5-a312-46d8-9bf6-8e5fe2206bc2.woff2") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/b84ada75-1e83-42de-8088-bfecf4e286b1.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/9838a3bc-0211-4e41-b6f6-e1c1e01dcdc1.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/d3f0e091-cb51-43bc-ac19-9adf2d7116f4.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/c5b9f044-ba55-4217-a300-7f8252d48957.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/cddadf87-370c-4168-aacb-f2062bb13a8c.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/38716753-9506-42bb-92a4-8541bbcdbad0.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/5b5ed5c5-a312-46d8-9bf6-8e5fe2206bc2.woff2") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/b84ada75-1e83-42de-8088-bfecf4e286b1.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/9838a3bc-0211-4e41-b6f6-e1c1e01dcdc1.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/d3f0e091-cb51-43bc-ac19-9adf2d7116f4.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/c5b9f044-ba55-4217-a300-7f8252d48957.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/cddadf87-370c-4168-aacb-f2062bb13a8c.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/38716753-9506-42bb-92a4-8541bbcdbad0.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/5b5ed5c5-a312-46d8-9bf6-8e5fe2206bc2.woff2") format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/b84ada75-1e83-42de-8088-bfecf4e286b1.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/9838a3bc-0211-4e41-b6f6-e1c1e01dcdc1.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/d3f0e091-cb51-43bc-ac19-9adf2d7116f4.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/c5b9f044-ba55-4217-a300-7f8252d48957.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/022da86b-c319-4e3e-ac99-731434391d93.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/021a98b3-0882-4b41-97e2-5df7a0a5d824.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/80a25e94-3b70-46e7-bfc0-552d1a881879.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/a1fc46d1-3e46-4684-916d-bfec2ef2fe66.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/e2eefc62-1cbe-4430-b838-1fc78074b8a3.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/4f6bed0b-f375-42da-b11c-b6235d575db4.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/022da86b-c319-4e3e-ac99-731434391d93.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/021a98b3-0882-4b41-97e2-5df7a0a5d824.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/80a25e94-3b70-46e7-bfc0-552d1a881879.woff2") format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/a1fc46d1-3e46-4684-916d-bfec2ef2fe66.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/e2eefc62-1cbe-4430-b838-1fc78074b8a3.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/4f6bed0b-f375-42da-b11c-b6235d575db4.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/bb1a5532-8c43-48e3-ad3d-7c47ae8ada0f.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/7db61583-90ef-4c50-ba78-499dd0b2fa3e.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/c109466f-e806-407c-9e8b-9d30fd653532.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/5e89bc9b-5c1b-46aa-afcd-d9988d6b2b61.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/db139588-5ed7-40cc-bf4c-77dc46bedbb4.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/5ec10799-44f3-4ea0-8180-9c62900e147c.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/aae8b118-9aab-4202-af78-381e1e9bfe02.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/d4023522-e802-4068-9d64-9401cf186d56.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/4a02db24-3fef-4f86-9bed-55546725360a.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/8d5b6d93-ebb7-4f23-99aa-fc78e02fd228.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* cyrillic-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/514f5447-5180-439b-8e67-ad7354ed6add.woff2") format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/24bf10af-6104-452c-8745-9e38292bfeaf.woff2") format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/ff0049d8-eec6-43c2-b85e-f77de98a634a.woff2") format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/6f757425-9136-454b-af8d-29217c40113b.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Spectral SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/f5499716-71f9-4549-bbd3-a8361fd0ea83.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/86cdbb32-261c-4b8a-a2d6-aa0fa68120cf.woff2") format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/5aa70486-d11e-4208-b873-7fc91a3b5445.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/6e3f15ed-7987-4783-9ff9-b562740433fc.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fd6f05e1-8611-4d19-8348-a7382e75e942.woff2") format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/bc864631-8e04-482c-a0ed-af4b7fac02f4.woff2") format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Tiro Devanagari Sanskrit';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/dfc10965-a047-47cc-82c1-905d20151c72.woff2") format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+:root {
+  /* -----------------------------------------------------------------------
+     COLOR — manuscript materials
+     No pure white, no pure black. Every surface is tinted.
+     ----------------------------------------------------------------------- */
+
+  /* Parchment surfaces (warmest → coolest) */
+  --astra-ritual-white: #fbf5e4;    /* paper backing */
+  --astra-palm-leaf:    #efe2c3;    /* primary canvas */
+  --astra-aged:         #e3cf9f;    /* panel fills */
+  --astra-aged-deep:    #cdb582;    /* inset wells */
+  --astra-margin:       #b89c6b;    /* deep parchment, margins of old manuscripts */
+
+  /* Inks */
+  --astra-ink:          #1a140f;    /* lamp black — body text */
+  --astra-ink-deep:     #3d2a1a;    /* deep brown — headers */
+  --astra-ink-soft:     #5c4328;    /* tertiary text */
+  --astra-ash:          #7a6f5c;    /* disabled, spent */
+
+  /* Sacred accents */
+  --astra-vermilion:    #b8321a;    /* sindoor, damage, faction red */
+  --astra-vermilion-dim:#8f2511;    /* pressed vermilion */
+  --astra-indigo:       #1f2a5a;    /* counsel, information, lore */
+  --astra-indigo-dim:   #14204a;
+  --astra-turmeric:     #d4a017;    /* selection, XP */
+  --astra-turmeric-dim: #a87d0f;
+  --astra-copper:       #9c5a2b;    /* ornament strokes, frames */
+  --astra-copper-dim:   #6f3e1b;
+  --astra-gold-leaf:    #c89b3c;    /* astra-tier, rare rewards */
+  --astra-gold-hi:      #e3ba5a;    /* gilt highlight */
+  --astra-kusha:        #5a6b3a;    /* healing, verdant terrain */
+
+  /* Semantic tokens — refer to the palette above */
+  --astra-bg:           var(--astra-palm-leaf);
+  --astra-bg-panel:     var(--astra-aged);
+  --astra-bg-inset:     var(--astra-aged-deep);
+  --astra-fg:           var(--astra-ink);
+  --astra-fg-muted:     var(--astra-ink-soft);
+  --astra-fg-dim:       var(--astra-ash);
+  --astra-border:       var(--astra-copper);
+  --astra-border-dim:   var(--astra-copper-dim);
+  --astra-accent:       var(--astra-vermilion);
+  --astra-info:         var(--astra-indigo);
+  --astra-select:       var(--astra-turmeric);
+  --astra-rare:         var(--astra-gold-leaf);
+  --astra-heal:         var(--astra-kusha);
+
+  /* -----------------------------------------------------------------------
+     TYPOGRAPHY
+     ----------------------------------------------------------------------- */
+
+  --astra-font-display:  'Cormorant Garamond', 'Tiro Devanagari Sanskrit', 'Georgia', serif;
+  --astra-font-devanagari:'Tiro Devanagari Sanskrit', 'Cormorant Garamond', serif;
+  --astra-font-body:     'EB Garamond', 'Georgia', 'Times New Roman', serif;
+  --astra-font-label:    'Spectral SC', 'EB Garamond', serif;
+  --astra-font-mono:     'JetBrains Mono', ui-monospace, monospace;
+
+  /* Type scale — manuscript proportions, slightly wider than a typical UI scale */
+  --astra-size-xxs:  10px;   /* tabular data sub-labels */
+  --astra-size-xs:   12px;   /* small-caps labels */
+  --astra-size-sm:   14px;   /* secondary body, tooltips */
+  --astra-size-md:   16px;   /* body default */
+  --astra-size-lg:   19px;   /* dialogue, lead paragraphs */
+  --astra-size-xl:   24px;   /* section titles */
+  --astra-size-2xl:  32px;   /* panel titles */
+  --astra-size-3xl:  44px;   /* chapter titles */
+  --astra-size-4xl:  64px;   /* screen titles */
+  --astra-size-5xl:  96px;   /* chapter card hero */
+
+  --astra-lh-tight:  1.15;
+  --astra-lh-snug:   1.3;
+  --astra-lh-body:   1.55;
+  --astra-lh-loose:  1.75;
+
+  --astra-tracking-tight:  -0.01em;
+  --astra-tracking-normal: 0;
+  --astra-tracking-wide:   0.08em;  /* small-caps labels */
+  --astra-tracking-xwide:  0.22em;  /* structural labels: ACT · COUNSEL */
+
+  /* -----------------------------------------------------------------------
+     SPACING — 8px base
+     ----------------------------------------------------------------------- */
+  --astra-s-0:  0;
+  --astra-s-1:  4px;
+  --astra-s-2:  8px;
+  --astra-s-3:  12px;
+  --astra-s-4:  16px;
+  --astra-s-5:  24px;
+  --astra-s-6:  32px;
+  --astra-s-7:  48px;
+  --astra-s-8:  64px;
+  --astra-s-9:  96px;
+
+  /* -----------------------------------------------------------------------
+     ORNAMENT — cartouches, rules, halos
+     ----------------------------------------------------------------------- */
+  --astra-frame-hair:   1px;
+  --astra-frame-double: 3px;   /* inset distance for double-rule frame */
+  --astra-cartouche:    28px;  /* corner cartouche size */
+  --astra-cartouche-overhang: 8px;
+
+  --astra-halo-soft:   0 0 16px rgba(212,160,23,0.35);
+  --astra-halo-astra:  0 0 24px rgba(212,160,23,0.45), 0 0 48px rgba(31,42,90,0.25);
+
+  /* -----------------------------------------------------------------------
+     MOTION
+     ----------------------------------------------------------------------- */
+  --astra-ease:        cubic-bezier(0.2, 0.7, 0.2, 1);
+  --astra-dur-quick:   180ms;
+  --astra-dur-panel:   400ms;
+  --astra-dur-reveal:  800ms;
+}
+
+/* =========================================================================
+   Semantic element styles
+   ========================================================================= */
+
+html, body {
+  background: var(--astra-bg);
+  color: var(--astra-fg);
+  font-family: var(--astra-font-body);
+  font-size: var(--astra-size-md);
+  line-height: var(--astra-lh-body);
+  font-feature-settings: "liga", "kern", "onum";
+}
+
+h1, .astra-h1 {
+  font-family: var(--astra-font-display);
+  font-weight: 600;
+  font-size: var(--astra-size-4xl);
+  line-height: var(--astra-lh-tight);
+  letter-spacing: var(--astra-tracking-tight);
+  color: var(--astra-ink-deep);
+  margin: 0;
+}
+
+h2, .astra-h2 {
+  font-family: var(--astra-font-display);
+  font-weight: 500;
+  font-size: var(--astra-size-3xl);
+  line-height: var(--astra-lh-snug);
+  color: var(--astra-ink-deep);
+  margin: 0;
+}
+
+h3, .astra-h3 {
+  font-family: var(--astra-font-display);
+  font-weight: 500;
+  font-size: var(--astra-size-2xl);
+  line-height: var(--astra-lh-snug);
+  color: var(--astra-ink-deep);
+  margin: 0;
+}
+
+h4, .astra-h4 {
+  font-family: var(--astra-font-body);
+  font-weight: 600;
+  font-variant: small-caps;
+  font-size: var(--astra-size-lg);
+  letter-spacing: var(--astra-tracking-wide);
+  color: var(--astra-ink);
+  margin: 0;
+}
+
+p, .astra-p {
+  font-family: var(--astra-font-body);
+  font-size: var(--astra-size-md);
+  line-height: var(--astra-lh-body);
+  color: var(--astra-ink);
+  margin: 0;
+}
+
+.astra-lead {
+  font-family: var(--astra-font-body);
+  font-size: var(--astra-size-lg);
+  line-height: var(--astra-lh-loose);
+  font-style: italic;
+  color: var(--astra-ink-deep);
+}
+
+.astra-label {
+  font-family: var(--astra-font-label);
+  font-size: var(--astra-size-xs);
+  letter-spacing: var(--astra-tracking-xwide);
+  text-transform: uppercase;
+  color: var(--astra-ink);
+}
+
+.astra-stat {
+  font-family: var(--astra-font-mono);
+  font-size: var(--astra-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--astra-ink);
+}
+
+.astra-devanagari {
+  font-family: var(--astra-font-devanagari);
+}
+
+.astra-danda::after { content: " ।"; color: var(--astra-copper); }
+
+/* =========================================================================
+   ORNAMENT UTILITIES — corner cartouche frame, mandala divider
+   These are styled here so preview cards and UI kits share one source.
+   ========================================================================= */
+
+.astra-frame {
+  position: relative;
+  background: var(--astra-bg-panel);
+  border: var(--astra-frame-hair) solid var(--astra-border);
+  background-image:
+    repeating-linear-gradient(
+      23deg,
+      rgba(0,0,0,0.012) 0 2px,
+      transparent 2px 5px
+    ),
+    repeating-linear-gradient(
+      -47deg,
+      rgba(0,0,0,0.008) 0 3px,
+      transparent 3px 7px
+    );
+}
+
+.astra-frame::before,
+.astra-frame::after,
+.astra-frame > .astra-cartouche-tl,
+.astra-frame > .astra-cartouche-tr,
+.astra-frame > .astra-cartouche-bl,
+.astra-frame > .astra-cartouche-br {
+  /* corner cartouches are added via the four divs for full SVG control;
+     see ornament.css utilities in assets/ornament.svg */
+}
+
+.astra-double-rule {
+  box-shadow: inset 0 0 0 1px var(--astra-border),
+              inset 0 0 0 4px var(--astra-bg-panel),
+              inset 0 0 0 5px var(--astra-border-dim);
+  border: none;
+}
+
+.astra-paper {
+  background-color: var(--astra-palm-leaf);
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(156,90,43,0.05) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 90%, rgba(31,42,90,0.04) 0%, transparent 50%),
+    repeating-linear-gradient(
+      92deg,
+      rgba(58,40,20,0.025) 0 1px,
+      transparent 1px 3px
+    ),
+    repeating-linear-gradient(
+      4deg,
+      rgba(58,40,20,0.015) 0 2px,
+      transparent 2px 6px
+    );
+}
+</style>
+<style>
+  html, body { margin: 0; padding: 0; background: #05030a; overflow: hidden; }
+  #stage { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #canvas { width: 1920px; height: 1080px; transform-origin: center; position: relative; }
+</style>
+</head>
+<body>
+
+
+<div id="stage"><div id="canvas"><div id="root"></div></div></div>
+
+<script src="./assets/6ea7ad36-32b3-405d-828d-0919834ded90.js"></script>
+<script src="./assets/dc5cd329-5b69-487f-b167-5a651e6bfba5.js"></script>
+<script src="./assets/a38951f1-b3a6-4fbd-bf4b-10f5d544c0b1.js"></script>
+<script type="text/babel" src="./assets/ed57f1fb-80a2-4afe-97e2-41749481ffca.js"></script>
+
+<script type="text/babel">
+const C = {
+  night:     '#05030a',
+  indigo:    '#0f0b2e',
+  indigoHi:  '#1a1540',
+  indigoLo:  '#08061c',
+  parchment: '#f2e6c4',
+  parchDim:  '#c9b98a',
+  brass:     '#c9993a',
+  brassLite: '#e8c66a',
+  brassGlow: '#fde49a',
+  vermillion:'#b0382a',
+};
+
+// ----- Inventory row (left panel) ---------------------------------------
+function Row({ item, selected, emptyIdx }) {
+  if (!item) {
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: '46px 1fr auto',
+        alignItems: 'center', gap: 14,
+        height: 58, padding: '0 22px',
+        borderTop: '1px dashed rgba(232,198,106,0.22)',
+        borderBottom: '1px dashed rgba(232,198,106,0.12)',
+      }}>
+        <div style={{
+          width: 32, height: 32, border: `1px dashed ${C.brass}`, borderRadius: 2, opacity: 0.35,
+          margin: '0 auto',
+        }} />
+        <div style={{
+          fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic', fontSize: 22,
+          color: 'rgba(242,230,196,0.32)', letterSpacing: 0.5,
+        }}>— vacant —</div>
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 13,
+          color: 'rgba(242,230,196,0.3)', letterSpacing: 1,
+        }}>· / ·</div>
+      </div>
+    );
+  }
+  const low = item.uses <= 3;
+  const color = selected ? '#fff5d8' : C.parchment;
+  return (
+    <div style={{
+      position: 'relative',
+      display: 'grid', gridTemplateColumns: '46px 1fr auto',
+      alignItems: 'center', gap: 14,
+      height: 58, padding: '0 22px',
+      background: selected
+        ? `linear-gradient(90deg, rgba(176,56,42,0.45) 0%, rgba(176,56,42,0.18) 100%)`
+        : 'transparent',
+      borderTop: `1px solid ${selected ? C.brassLite : 'rgba(232,198,106,0.18)'}`,
+      borderBottom: `1px solid ${selected ? C.brassLite : 'rgba(232,198,106,0.08)'}`,
+      boxShadow: selected
+        ? `inset 0 0 0 1px rgba(232,198,106,0.35), 0 0 24px rgba(232,198,106,0.18)`
+        : 'none',
+    }}>
+      {/* selection caret (left) */}
+      {selected && (
+        <div style={{
+          position: 'absolute', left: -16, top: '50%', transform: 'translateY(-50%)',
+          display: 'flex', alignItems: 'center', gap: 3,
+        }}>
+          <div style={{
+            width: 0, height: 0,
+            borderTop: '9px solid transparent', borderBottom: '9px solid transparent',
+            borderLeft: `12px solid ${C.vermillion}`,
+            filter: `drop-shadow(0 0 6px rgba(232,198,106,0.7))`,
+          }} />
+        </div>
+      )}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <AstraSigil
+          type={item.sigil}
+          color={selected ? C.brassGlow : C.brassLite}
+          size={34}
+        />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+        <div style={{
+          fontFamily: 'Cormorant Garamond, serif', fontWeight: 500, fontSize: 26,
+          color, letterSpacing: 0.2, fontStyle: 'italic',
+        }}>{item.name}</div>
+        <div style={{
+          fontFamily: 'Cinzel, Cormorant Garamond, serif', fontSize: 11, letterSpacing: 3,
+          textTransform: 'uppercase',
+          color: selected ? C.brassGlow : C.parchDim, marginTop: 4,
+        }}>{item.kind}</div>
+      </div>
+      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <div style={{
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 500,
+          fontVariantNumeric: 'tabular-nums', color,
+          letterSpacing: 0.5,
+        }}>
+          <span>{String(item.uses).padStart(2, '0')}</span>
+          <span style={{ color: selected ? C.brassGlow : C.brass, margin: '0 4px' }}>/</span>
+          <span style={{ color: selected ? C.brassGlow : C.parchDim }}>{item.max}</span>
+        </div>
+        <div style={{
+          marginTop: 4, width: 80, height: 3, background: 'rgba(0,0,0,0.5)',
+          border: '0.5px solid rgba(232,198,106,0.3)',
+        }}>
+          <div style={{
+            height: '100%', width: `${(item.uses/item.max)*100}%`,
+            background: low ? C.vermillion : (selected ? C.brassGlow : C.brass),
+            boxShadow: selected ? `0 0 6px ${C.brassGlow}` : 'none',
+          }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ----- Stat pill (right panel) ------------------------------------------
+function Stat({ label, value, accent }) {
+  return (
+    <div style={{
+      position: 'relative',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: '18px 0 14px',
+      background: `linear-gradient(180deg, rgba(232,198,106,0.05), rgba(0,0,0,0.2))`,
+      border: `1px solid rgba(232,198,106,0.35)`,
+      boxShadow: `inset 0 0 0 2px ${C.indigoHi}, inset 0 0 0 3px rgba(232,198,106,0.25)`,
+    }}>
+      <div style={{
+        fontFamily: 'Cinzel, serif', fontSize: 11, letterSpacing: 5,
+        color: C.brassLite, textTransform: 'uppercase', marginBottom: 6,
+      }}>{label}</div>
+      <div style={{
+        fontFamily: 'Cormorant Garamond, serif', fontWeight: 600, fontSize: 64,
+        color: accent || '#fff5d8', lineHeight: 1,
+        fontVariantNumeric: 'tabular-nums',
+        textShadow: `0 0 16px rgba(253,228,154,0.35)`,
+      }}>{value}</div>
+      {/* decorative underline */}
+      <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ width: 16, height: 1, background: C.brass }} />
+        <div style={{ width: 4, height: 4, transform: 'rotate(45deg)', background: C.brassLite }} />
+        <div style={{ width: 16, height: 1, background: C.brass }} />
+      </div>
+    </div>
+  );
+}
+
+// ----- Panel frame ------------------------------------------------------
+function PanelFrame({ children, flex = 1 }) {
+  return (
+    <div style={{
+      flex,
+      position: 'relative',
+      background: `
+        radial-gradient(ellipse at 50% 0%, rgba(232,198,106,0.08), transparent 60%),
+        linear-gradient(180deg, ${C.indigoHi} 0%, ${C.indigo} 60%, ${C.indigoLo} 100%)
+      `,
+      border: `2px solid ${C.brass}`,
+      boxShadow: `
+        inset 0 0 0 4px ${C.indigoLo},
+        inset 0 0 0 5px ${C.brass},
+        0 24px 60px rgba(0,0,0,0.7),
+        0 0 0 1px rgba(232,198,106,0.25)
+      `,
+    }}>
+      {/* corner filigrees */}
+      <div style={{ position: 'absolute', top: 10, left: 10 }}><CornerFiligree color={C.brassLite} rotation={0} /></div>
+      <div style={{ position: 'absolute', top: 10, right: 10 }}><CornerFiligree color={C.brassLite} rotation={90} /></div>
+      <div style={{ position: 'absolute', bottom: 10, right: 10 }}><CornerFiligree color={C.brassLite} rotation={180} /></div>
+      <div style={{ position: 'absolute', bottom: 10, left: 10 }}><CornerFiligree color={C.brassLite} rotation={270} /></div>
+      {children}
+    </div>
+  );
+}
+
+// ----- Dim battle map backdrop ------------------------------------------
+function BattleMapBackdrop() {
+  // Hint at a grid-based tactical map, then dim it.
+  const tiles = [];
+  const cols = 30, rows = 17, size = 64;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const biome = (Math.sin(c * 1.3 + r * 0.9) + Math.cos(c * 0.5 - r * 1.1)) * 0.5;
+      let fill = '#2a3a1a';
+      if (biome > 0.4) fill = '#3a4a22';
+      else if (biome < -0.3) fill = '#1e2a12';
+      tiles.push(
+        <rect key={`${r}-${c}`} x={c*size} y={r*size} width={size} height={size}
+          fill={fill} stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
+      );
+    }
+  }
+  return (
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      <svg width="1920" height="1080" style={{ position: 'absolute', inset: 0 }}>
+        {tiles}
+        {/* a river snakes across */}
+        <path d="M -20 620 Q 400 560 700 680 Q 1000 800 1400 720 Q 1700 660 1960 720"
+          stroke="#2d4460" strokeWidth="42" fill="none" opacity="0.8" />
+        {/* a unit marker */}
+        <g transform="translate(900, 520)">
+          <rect x="-24" y="-24" width="48" height="48" fill="rgba(31,42,90,0.6)" stroke="#c9993a" strokeWidth="1.5" />
+          <circle cx="0" cy="-4" r="10" fill="#b0382a" stroke="#e8c66a" strokeWidth="1" />
+        </g>
+      </svg>
+      {/* dim overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: `
+          radial-gradient(ellipse at 50% 50%, rgba(5,3,10,0.55) 0%, rgba(5,3,10,0.9) 80%),
+          linear-gradient(180deg, rgba(15,11,46,0.65), rgba(5,3,10,0.85))
+        `,
+      }} />
+    </div>
+  );
+}
+
+// ----- Screen -----------------------------------------------------------
+function Screen() {
+  const items = [
+    { sigil: 'sword',      name: 'Loha Khaḍga',   kind: 'Sword · Iron',   uses: 35, max: 45 },
+    { sigil: 'axe',        name: 'Hasta Kuṭhāra', kind: 'Axe · Hand',     uses: 22, max: 25 },
+    { sigil: 'bow',        name: 'Vajra Dhanuṣ',  kind: 'Bow · Thunder',  uses: 40, max: 40 },
+    { sigil: 'consumable', name: 'Amṛta Kalaśa',  kind: 'Vial · Heal',    uses:  2, max:  3 },
+    null,
+  ];
+  const selectedIdx = 0;
+  const stats = { atk: 14, hit: 92, crit: 3, avoid: 18 };
+
+  return (
+    <div style={{ position: 'relative', width: 1920, height: 1080, fontFamily: 'EB Garamond, serif' }}>
+      <BattleMapBackdrop />
+
+      {/* modal container ~ 48% of canvas */}
+      <div style={{
+        position: 'absolute', left: 160, top: 140, width: 1600, height: 800,
+        display: 'flex', flexDirection: 'column', gap: 0,
+      }}>
+        {/* header cartouche */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 28,
+          marginBottom: 22,
+        }}>
+          <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${C.brass})` }} />
+          <Kirtimukha size={52} color={C.brassLite} />
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              fontFamily: 'Cinzel, serif', fontSize: 16, letterSpacing: 12,
+              color: C.brassLite, textTransform: 'uppercase',
+            }}>Satchel · Śastrāgāra</div>
+            <ButiBand width={240} height={14} color={C.brass} opacity={0.85} />
+          </div>
+          <Kirtimukha size={52} color={C.brassLite} />
+          <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${C.brass}, transparent)` }} />
+        </div>
+
+        {/* three-panel body: portrait | inventory | stats */}
+        <div style={{ display: 'flex', gap: 22, height: 700 }}>
+          {/* far-left — portrait panel */}
+          <PanelFrame flex={0.78}>
+            <div style={{
+              padding: '32px 24px 24px',
+              display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box',
+            }}>
+              {/* Bearer label */}
+              <div style={{
+                textAlign: 'center', paddingBottom: 14, marginBottom: 16,
+                borderBottom: `1px solid ${C.brass}`,
+              }}>
+                <div style={{
+                  fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: 5,
+                  color: C.brassLite, textTransform: 'uppercase',
+                }}>Bearer of the Satchel</div>
+                <div style={{
+                  marginTop: 6,
+                  fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic',
+                  fontSize: 42, color: C.parchment, lineHeight: 1,
+                  textShadow: '0 0 18px rgba(232,198,106,0.25)',
+                }}>Nīla</div>
+                <div style={{
+                  marginTop: 4,
+                  fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic',
+                  fontSize: 16, color: C.parchDim, letterSpacing: 1,
+                }}>dharmayodhā · the young vow-keeper</div>
+              </div>
+
+              {/* Portrait placeholder — arched cartouche with diagonal stripe + label */}
+              <div style={{
+                flex: 1, position: 'relative',
+                border: `1.5px solid ${C.brass}`,
+                background: `
+                  linear-gradient(160deg, #2a2560 0%, #1a1540 55%, #0f0b2e 100%)
+                `,
+                boxShadow: 'inset 0 0 0 2px rgba(232,198,106,0.2), inset 0 0 40px rgba(0,0,0,0.55)',
+                overflow: 'hidden',
+              }}>
+                {/* diagonal stripe placeholder weave */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  backgroundImage: 'repeating-linear-gradient(135deg, transparent 0 10px, rgba(232,198,106,0.08) 10px 11px)',
+                }} />
+                {/* archway silhouette hinting a seated figure area */}
+                <svg width="100%" height="100%" viewBox="0 0 260 500" preserveAspectRatio="xMidYMid meet"
+                  style={{ position: 'absolute', inset: 0 }}>
+                  <defs>
+                    <linearGradient id="portraitGlow" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(232,198,106,0.18)" />
+                      <stop offset="100%" stopColor="rgba(232,198,106,0)" />
+                    </linearGradient>
+                  </defs>
+                  {/* ogee arch */}
+                  <path d="M 40 480 L 40 180 Q 40 80 100 70 Q 120 66 130 30 Q 140 66 160 70 Q 220 80 220 180 L 220 480 Z"
+                    fill="none" stroke={C.brassLite} strokeWidth="1.2" opacity="0.55" />
+                  <path d="M 50 470 L 50 185 Q 50 90 105 80 Q 123 76 130 50 Q 137 76 155 80 Q 210 90 210 185 L 210 470 Z"
+                    fill="url(#portraitGlow)" />
+                  {/* bust silhouette */}
+                  <ellipse cx="130" cy="220" rx="38" ry="46" fill="rgba(232,198,106,0.1)" stroke={C.brass} strokeWidth="0.8" opacity="0.6" />
+                  <path d="M 78 470 L 78 360 Q 78 300 130 295 Q 182 300 182 360 L 182 470 Z"
+                    fill="rgba(232,198,106,0.08)" stroke={C.brass} strokeWidth="0.8" opacity="0.55" />
+                </svg>
+                {/* corner filigrees on portrait frame */}
+                <div style={{ position: 'absolute', top: 8, left: 8 }}><CornerFiligree color={C.brassLite} rotation={0} size={32} opacity={0.75} /></div>
+                <div style={{ position: 'absolute', top: 8, right: 8 }}><CornerFiligree color={C.brassLite} rotation={90} size={32} opacity={0.75} /></div>
+                <div style={{ position: 'absolute', bottom: 8, right: 8 }}><CornerFiligree color={C.brassLite} rotation={180} size={32} opacity={0.75} /></div>
+                <div style={{ position: 'absolute', bottom: 8, left: 8 }}><CornerFiligree color={C.brassLite} rotation={270} size={32} opacity={0.75} /></div>
+                {/* mono placeholder label */}
+                <div style={{
+                  position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center',
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 10,
+                  color: 'rgba(242,230,196,0.55)', letterSpacing: 2,
+                }}>[ portrait · Nīla ]</div>
+                <div style={{
+                  position: 'absolute', bottom: 14, left: 0, right: 0, textAlign: 'center',
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 9,
+                  color: 'rgba(242,230,196,0.35)', letterSpacing: 1.5,
+                }}>drop hi-res bust · 3:4</div>
+              </div>
+
+              {/* vital stats strip under portrait */}
+              <div style={{
+                marginTop: 14, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
+                background: 'rgba(0,0,0,0.35)',
+                border: `1px solid rgba(232,198,106,0.3)`,
+              }}>
+                {[['Lv', 14], ['HP', '28/28'], ['Cls', 'Śūra']].map(([k, v], i) => (
+                  <div key={k} style={{
+                    padding: '10px 6px', textAlign: 'center',
+                    borderRight: i < 2 ? `1px solid rgba(232,198,106,0.22)` : 'none',
+                  }}>
+                    <div style={{
+                      fontFamily: 'Cinzel, serif', fontSize: 9, letterSpacing: 3,
+                      color: C.brassLite, textTransform: 'uppercase',
+                    }}>{k}</div>
+                    <div style={{
+                      marginTop: 2, fontFamily: 'Cormorant Garamond, serif',
+                      fontSize: 20, color: C.parchment, lineHeight: 1,
+                    }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </PanelFrame>
+
+          {/* middle — inventory list */}
+          <PanelFrame flex={1.35}>
+            <div style={{ padding: '32px 28px 28px' }}>
+              {/* inventory header ribbon */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                borderBottom: `1px solid ${C.brass}`, paddingBottom: 14, marginBottom: 14,
+              }}>
+                <div style={{
+                  width: 38, height: 38, display: 'flex',
+                  alignItems: 'center', justifyContent: 'center',
+                  background: C.indigoLo, border: `1.5px solid ${C.brassLite}`,
+                }}>
+                  <AstraSigil type="sword" color={C.brassGlow} size={24} />
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: 4,
+                    color: C.brassLite, textTransform: 'uppercase',
+                  }}>Satchel contents</div>
+                  <div style={{
+                    fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic',
+                    fontSize: 26, color: C.parchment, lineHeight: 1,
+                  }}>Śastrāgāra <span style={{ color: C.parchDim, fontStyle: 'normal', fontSize: 18 }}>· armory</span></div>
+                </div>
+                <div style={{ flex: 1 }} />
+                <div style={{
+                  fontFamily: 'Cinzel, serif', fontSize: 11, letterSpacing: 3,
+                  color: C.brassLite, textTransform: 'uppercase',
+                }}>Carried <span style={{ color: C.parchment }}>4</span>/5</div>
+              </div>
+
+              {/* rows */}
+              <div>
+                {items.map((it, i) => (
+                  <Row key={i} item={it} selected={i === selectedIdx} emptyIdx={i} />
+                ))}
+              </div>
+
+              {/* footer prompt */}
+              <div style={{
+                marginTop: 18, paddingTop: 12,
+                borderTop: `1px solid rgba(232,198,106,0.25)`,
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: 3,
+                color: C.parchDim, textTransform: 'uppercase',
+              }}>
+                <span>▲ ▼ choose</span>
+                <span>A <span style={{ color: C.brassLite }}>equip</span></span>
+                <span>Y <span style={{ color: C.brassLite }}>use</span></span>
+                <span>X <span style={{ color: C.brassLite }}>drop</span></span>
+                <span>B <span style={{ color: C.brassLite }}>back</span></span>
+              </div>
+            </div>
+          </PanelFrame>
+
+          {/* right — stat preview */}
+          <PanelFrame flex={1}>
+            <div style={{
+              padding: '32px 28px 28px',
+              display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box',
+            }}>
+              {/* header: unit + weapon */}
+              <div style={{
+                textAlign: 'center',
+                borderBottom: `1px solid ${C.brass}`, paddingBottom: 16, marginBottom: 18,
+              }}>
+                <div style={{
+                  fontFamily: 'Cinzel, serif', fontSize: 10, letterSpacing: 5,
+                  color: C.brassLite, textTransform: 'uppercase',
+                }}>With Weapon Equipped</div>
+                <div style={{
+                  marginTop: 6,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16,
+                }}>
+                  <AstraSigil type="sword" color={C.brassGlow} size={36} />
+                  <div style={{
+                    fontFamily: 'Cormorant Garamond, serif', fontWeight: 600, fontSize: 54,
+                    color: C.parchment, fontStyle: 'italic', lineHeight: 1, letterSpacing: 0.5,
+                    textShadow: `0 0 20px rgba(232,198,106,0.25)`,
+                  }}>Nīla</div>
+                  <AstraSigil type="sword" color={C.brassGlow} size={36} />
+                </div>
+                <div style={{
+                  marginTop: 10, fontFamily: 'Cormorant Garamond, serif', fontStyle: 'italic',
+                  fontSize: 20, color: C.brassLite,
+                }}>wielding · <span style={{ color: C.parchment }}>Loha Khaḍga</span></div>
+              </div>
+
+              {/* 2x2 stat grid */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, flex: 1,
+              }}>
+                <Stat label="Atk"   value={stats.atk}   />
+                <Stat label="Hit"   value={stats.hit}   />
+                <Stat label="Crit"  value={stats.crit}  accent={stats.crit < 5 ? C.parchDim : '#fff5d8'} />
+                <Stat label="Avoid" value={stats.avoid} />
+              </div>
+
+              {/* provenance footer */}
+              <div style={{
+                marginTop: 16, padding: '12px 14px',
+                background: 'rgba(0,0,0,0.35)',
+                border: `1px solid rgba(232,198,106,0.3)`,
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}>
+                <div style={{
+                  width: 6, height: 6, transform: 'rotate(45deg)', background: C.brassLite,
+                  boxShadow: `0 0 6px ${C.brassLite}`,
+                }} />
+                <div style={{
+                  fontFamily: 'Cormorant Garamond, serif', fontSize: 16, fontStyle: 'italic',
+                  color: C.parchDim, lineHeight: 1.35,
+                }}>
+                  <span style={{ color: C.brassLite }}>iron-forged blade · </span>
+                  projected against current target
+                </div>
+              </div>
+            </div>
+          </PanelFrame>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ----- fit to viewport --------------------------------------------------
+function fit() {
+  const el = document.getElementById('canvas');
+  const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  el.style.transform = `scale(${s})`;
+}
+window.addEventListener('resize', fit);
+fit();
+ReactDOM.createRoot(document.getElementById('root')).render(<Screen />);
+</script>
+
+
+</body></html>

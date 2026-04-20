@@ -229,6 +229,38 @@ namespace ProjectAstra.Core.Editor
                 Undo.RegisterCreatedObjectUndo(go, "Create InventoryMenuUI");
             }
 
+            // Instantiate the Indigo Codex inventory popup into the scene once — same pattern
+            // as UnitInfoPanel: live GameObject sits under the canvas, disabled by default,
+            // Show/Hide flips SetActive instead of re-instantiating every open.
+            var popupPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/UI/InventoryPopup/InventoryPopup.prefab");
+            GameObject popupInstance = null;
+            var existingPopup = canvas.transform.Find("InventoryPopup");
+            if (existingPopup != null) popupInstance = existingPopup.gameObject;
+            if (popupInstance == null && popupPrefab != null)
+            {
+                popupInstance = (GameObject)PrefabUtility.InstantiatePrefab(popupPrefab, canvas.transform);
+                popupInstance.name = "InventoryPopup";
+                popupInstance.SetActive(false);
+                Undo.RegisterCreatedObjectUndo(popupInstance, "Create InventoryPopup instance");
+            }
+
+            if (popupInstance != null)
+            {
+                var so = new SerializedObject(inventoryMenu);
+                var prop = so.FindProperty("_popupInstance");
+                if (prop != null && prop.objectReferenceValue != popupInstance)
+                {
+                    prop.objectReferenceValue = popupInstance;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+            else if (popupPrefab == null)
+            {
+                Debug.LogWarning("CursorSceneSetup: InventoryPopup prefab missing — run " +
+                    "'Project Astra/Build Inventory Popup (prefab)' to generate it.");
+            }
+
             var confirmDialog = Object.FindAnyObjectByType<ConfirmDialogUI>();
             if (confirmDialog == null)
             {
