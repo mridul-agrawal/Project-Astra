@@ -1,0 +1,11 @@
+Title: The permadeath memory test, or why I still remember a unit I lost fifteen years ago
+
+I've been trying to figure out why permadeath in the GBA Fire Emblems sticks in my memory so much more than permadeath in the modern games, and I keep coming back to one weird observation about myself. I lost a unit in chapter 14 of FE7 something like fifteen years ago, and I can still tell you his name, his class, and what weapon he was holding when he died. I finished Three Houses twice without touching Divine Pulse and I honestly couldn't name a single character I lost on either run.
+
+The obvious answer is nostalgia, and I don't want to dismiss that, but I don't think it fully explains it. If it were purely nostalgia I would remember the good moments more clearly, not the failures. I should remember cool boss kills and dramatic support scenes, not some random archer getting chunked by a cavalier in chapter 8. But I remember the archer better than I remember the boss.
+
+My best guess is that permadeath in the GBA games felt like something that happened to me as the player, not to the character. The screen would freeze, the death quote would play, and the game would just continue without them. You'd scroll past their empty slot in the prep screen for the rest of the run, and that absence did more emotional work than any cutscene could. It felt like a wound in the game state itself, not a scripted beat.
+
+Modern FE has higher production values around death. The animations are more elaborate, the music swells, the camera lingers. And somehow all of that polish ends up making death feel more like a cutscene and less like a real consequence. The production is doing the emotional work for you instead of leaving room for you to do it yourself.
+
+Does anyone else remember GBA unit deaths more vividly than modern ones? And if so, what do you think is actually doing the work? Is it the minimalism, the UI, the stat transparency, or are we just all nostalgia-brained together?

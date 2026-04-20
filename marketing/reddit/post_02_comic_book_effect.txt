@@ -1,0 +1,15 @@
+Title: The "comic book effect" and why GBA sprite characters feel more detailed in my head than 3D models do
+
+I've been thinking about this for a while and I want to try to put it into words, even though I'm not totally sure it'll land. Bear with me on it.
+
+When you read a comic book, what you're technically doing is looking at a series of still images on a page. But your brain doesn't actually process it that way when you're reading. What it does is play a movie, filling in all the motion and sound between the panels without you ever consciously noticing. The space between panel one and panel two, what comic artists call the gutter, is where your imagination is quietly doing most of the work.
+
+I think pixel art does the exact same thing to your brain. When I watch a GBA FE combat animation, I'm not really processing a tiny sprite doing a lance thrust. My brain is filling in everything the sprite leaves out, so the character I'm actually seeing in my head is fully drawn, fully detailed, and fully real. The sprite is just giving me enough information to build the rest myself, and that's where the magic happens.
+
+3D FE doesn't leave that space open for me in the same way. It renders everything itself and hands me a finished picture, complete with the character model, the animation, the camera angle, and the voice line. There's nothing left for me to fill in, and the strange thing is that the more detail the game gives me, the less alive the characters actually end up feeling. It's like the act of imagining them was part of what made them feel real in the first place.
+
+This is probably why Hector, Eliwood, and Lyn still feel like fully-formed people in my memory even though their sprites are barely sixteen pixels tall. My brain spent hours building them, so they belong to me in a way a 3D model never will. Meanwhile there are characters from Three Houses I spent the entire game with who I couldn't describe to you from memory now, even though I saw their faces in high fidelity every time they spoke.
+
+I think it's the same reason an old radio drama can be scarier than a horror movie. Imagination beats fidelity every time, as long as the artist knows where to leave the right gaps.
+
+Does anyone else feel like pixel characters end up being somehow more detailed in your head than 3D ones? Or is this just elaborate cope for nostalgia bias?

@@ -1,0 +1,13 @@
+Title: When did I start skipping combat animations, and why?
+
+One of the things that quietly bothers me when I compare modern FE to the GBA games is that I used to watch every single combat animation in FE7, even after I'd seen them a thousand times, and now I skip every single animation in Three Houses within the first hour of play. Same genre, same core loop, same developer, opposite relationship to the animations. Something changed and I've been trying to figure out what.
+
+I don't think the newer animations are bad in any objective sense. The motion is fluid, the choreography is fine, the sound design is there. But I find myself reaching for the skip button almost reflexively, in a way I never did with the older games. There's a part of my brain that has decided these animations aren't worth my time, and I don't fully understand why it decided that.
+
+The theory I keep coming back to is that GBA animations had weight because they were the only moment where the combat actually became visual. The grid view gave you the numbers and the positioning, and the combat animation was the payoff, the comic book splash page where the number finally became a lance going through a guy. The animation was doing narrative work that nothing else in the game was doing, which is why it felt worth watching.
+
+In Three Houses the 3D grid is already showing you a version of the combat before you commit. The units swing weapons at each other right there on the tactical map, and the dedicated combat animation ends up being almost redundant. It's showing me a second, slower version of something I just saw. There's no new information and no new spectacle, just a longer version of the same event.
+
+If that's the actual reason, it's kind of a design paradox. The nicer-looking tactical view ends up cannibalizing the combat animations, which is the one place the older games put the most art into. The series got technically more impressive and lost the moment that used to be the best part of every turn.
+
+Anyone else feel like the GBA combat animations earned your attention in a way modern ones don't? Or did you always skip them and I'm just the weird one for having watched?

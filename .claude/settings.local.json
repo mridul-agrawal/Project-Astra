@@ -125,7 +125,21 @@
       "Bash(grep -A 20 \"m_LocalScale: {x: 0, y: 0, z: 0}\")",
       "Bash(awk:*)",
       "mcp__figma__whoami",
-      "mcp__figma__create_new_file"
+      "mcp__figma__create_new_file",
+      "Bash(grep -o \"--[a-z-]*:[s]*#[0-9a-f]\\\\{6\\\\}\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -E \"parchment|ink|brass|shadow|glow\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -E \"\\\\-\\\\-astra|parchment:|brass:|ink:|shadow:|filter:\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -B 2 -A 8 \"selected\\\\|empty\\\\|depleted\\\\|default\\\\|state\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -B 2 -A 4 \"backdrop\\\\|frame\\\\|footer\\\\|action\\\\|hint\\\\|Equip\\\\|Use\\\\|Discard\\\\|Cancel\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -B 2 -A 8 \"footer\\\\|StatsPanel\\\\|damage\\\\|defense\\\\|stat\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep -v \"^--$\")",
+      "Bash(grep -B 5 -A 20 \"function Stat\\\\|const C = {\" \"C:\\\\\\\\Unity Projects\\\\\\\\Project Astra\\\\\\\\docs\\\\\\\\mockups\\\\\\\\Indigo Codex Inventory.unpacked\\\\\\\\Indigo Codex Inventory.unpacked.html\")",
+      "Bash(grep *)",
+      "Bash(read f *)",
+      "Bash(ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name,r_frame_rate -of default=noprint_wrappers=1 'C:/Unity Projects/Project Astra/Recordings/__TRACKED_VAR__')",
+      "Bash(ffprobe -v error -show_entries format=duration \"C:/Unity Projects/Project Astra/Recordings/devlog_2026-04-08_17-18-56.webm\")",
+      "Bash(ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name -of default=noprint_wrappers=1 \"C:/Unity Projects/Project Astra/marketing/devlog_timelapse_v01.mp4\")",
+      "Bash(ffprobe *)"
     ]
   }
 }

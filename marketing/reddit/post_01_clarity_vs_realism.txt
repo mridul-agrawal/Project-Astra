@@ -1,0 +1,11 @@
+Title: Anyone else feel like modern FE traded soul for visual fidelity?
+
+I grew up playing the GBA Fire Emblem games as a kid, and I've gone back and replayed them as an adult too. They still hit the same way they did the first time, and I've never really been able to put my finger on why. There's something about how they were designed that feels almost perfect to me, but every time I try to explain it I end up waving my hands.
+
+I recently started Three Houses and it feels like a completely different game, in a way that goes beyond just being a new entry. The graphics are objectively better on paper. The models look fine, the cutscenes are nice, the world is more detailed. But something about the experience feels off to me. I find myself wanting to skip the combat animations instead of watching them, I can't read maps at a glance the way I could in the GBA games, and the terrain feels more like atmosphere than information.
+
+The comparison that keeps coming back to me is chess. The most popular form of digital chess that people actually play isn't the ultra-realistic 3D version with wooden pieces and dynamic lighting. It's the simple flat 2D top-down board, because in a game that lives or dies on positional clarity, you want every piece to be instantly legible and anything more than that becomes noise. FE is basically chess with stories layered on top, so it feels strange to me that the series has been trending toward realism when realism actively works against the thing that makes tactical games click in the first place.
+
+I also think there's a broader problem where a lot of modern games chase realism as a default even when nobody actually asked for it. Road Rash on the PS1 is still the most fun arcade racer I've ever played, and Forza Horizon looks incredible but I bounce off it within an hour. Those are different kinds of games with different goals, but the underlying instinct is the same one: the assumption that more visual fidelity automatically means a better experience, which I don't think is actually true for tactical games at all.
+
+So I'm curious whether other people feel the same way or if I'm just being nostalgia-brained about it. Is it the clarity? Is it the animation punch of the GBA combat sequences? Is it that sprites age better than low-poly 3D ever will? Maybe all three at once?

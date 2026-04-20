@@ -1,0 +1,13 @@
+Title: I remember FE7 maps by vibe alone. I can't picture a single Three Houses map.
+
+If you asked me to describe specific maps from FE7 I could go on for a while. The desert one with Nergal's cryptic dialogue. The fog of war one where everyone collectively panicked the first time. The boat map. The Black Fang fortress. The one with the ballista you have to steal. Even the ones I hated have a specific shape in my head that I can point to.
+
+I finished Three Houses twice and I cannot describe a single map to you. Not one. I remember that there were maps, obviously. I remember that some had rain and some had bridges and some had reinforcements. But if you asked me to sketch the rough layout of a single named chapter, I genuinely would not be able to.
+
+This can't be purely a memory problem on my end, because I can still remember the geography of maps from games I've only played once for twenty hours. So something about these specific maps is actively refusing to stick, and I've been trying to pin down what.
+
+Part of it might be that the GBA maps were read top-down in a single clean frame. You saw the whole thing at once as a grid. It was a picture you could hold in your head the way you hold a crossword, because it was a fixed image with fixed boundaries. Three Houses maps rotate, they have camera angles, they have elevation, they have fog of war, and you almost never see the whole thing in one clean top-down shot. The map is never a single image in your head, it's an experience, and experiences don't compress into memory the way pictures do.
+
+Another part might be that GBA maps were genuinely more distinctive in their silhouettes. You could tell the difference between two maps at a glance even without context, because each one had a specific skeleton. Three Houses maps blur together because the engine flattens them into a similar visual vocabulary, and distinct geometry gets lost under the shared art style.
+
+Does anyone else have sharper memory of older FE maps than modern ones? And if so, do you think it's the top-down view, the art, or something about the maps themselves being designed differently?

@@ -1,0 +1,13 @@
+Title: I beat FE7 on hard mode as a kid barely speaking English. I bounce off Three Houses hard mode as an adult. Something changed.
+
+When I was a kid I beat Fire Emblem 7 on hard mode. I barely spoke English at the time. I had no access to a guide, no YouTube, no wiki, no forums. I just played the game, died a lot, restarted a lot, and eventually finished it. I thought this was a normal way to experience a difficult game because it was the only way I knew how to play.
+
+I tried Three Houses on Maddening last year as a fully grown adult who has played hundreds of tactical games, and I restarted the first hard map three times before giving up and dropping the difficulty. I'm not going to pretend that was purely the game's fault, but it wasn't purely my fault either. Something about how the older games teach and how the newer games teach is different, and I think the older approach is actually easier to learn from even though it looks harsher on paper.
+
+The GBA games taught by killing you. You would do something wrong, a unit would die, and the game would say nothing. You'd have to restart the chapter, pay attention to what went wrong, and try again. The teaching was embedded in the failure itself, which meant that by the time you beat a chapter you understood exactly why you had failed the earlier attempts. You didn't need a tutorial to learn that leaving your healer in range of a ballista was bad, because you had already lost her once and felt it.
+
+Modern FE tries to protect you from that feedback loop. Divine Pulse lets you undo individual mistakes without restarting. Casual Mode removes the sting of death entirely. Tooltips explain systems before you've actually bumped into them. The result is that you end up knowing what the systems are without ever having internalized why they matter. You can read the textbook, but you've never had to fail the exam, so the lessons don't settle in.
+
+I think difficulty in games isn't actually about numbers, it's about how much the game is willing to let you suffer long enough to actually learn something. The GBA games trusted players to figure it out. Modern games are scared of losing players to frustration, and they end up losing them to blandness instead.
+
+Does anyone else find older FE easier to internalize even though it's mechanically harder? Or have I just been ruined by nostalgia into thinking pain was pedagogy?

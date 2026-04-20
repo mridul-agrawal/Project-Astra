@@ -1,0 +1,13 @@
+Title: Into the Breach made me realize FE might be hiding something it shouldn't hide
+
+I played Into the Breach for the first time a few months ago after years of playing FE, and it actually changed how I think about tactics games in general. If you haven't played it, ITB is a tactical game where every enemy telegraphs its exact next move. You see precisely what every enemy is going to do before you take your turn. No hidden damage, no surprise reinforcements, no fog of war, full transparency.
+
+The thing that surprised me is that this made ITB feel more tactical, not less. With every variable visible, every decision I made felt like a real puzzle with a real solution. I couldn't blame RNG when things went wrong. I couldn't blame surprises. If I lost a mech it was because I had made a bad call with complete information, which was brutal but also weirdly satisfying in a way FE rarely is. The game was respecting me enough to show me everything, and then asking me to solve it.
+
+Coming back to FE after ITB, I started noticing how much of FE's tension actually comes from what the game doesn't tell you. Hit rates that famously lie about themselves. Reinforcements that drop out of nowhere on a specific turn you couldn't have known about. Enemy behavior that changes based on triggers you can't see. The game hides a lot of its state from you and expects you to play around the hidden state as part of the tactical challenge.
+
+I genuinely don't know how to feel about this. Some of FE's best moments come from exactly this hidden information, from the moment a reinforcement drops and the room goes quiet because nobody was ready. But some of its worst moments come from the same place too, from the feeling that the game cheated you instead of challenged you, and from the knowledge that a perfect run of a chapter requires foreknowledge no first-time player could have.
+
+It makes me wonder whether FE could be more tactical, not less, if it leaned harder into transparency. Telegraph enemy intents the way ITB does. Show actual hit rates instead of the displayed lie. Warn about reinforcements a turn in advance. Would that make it a sharper tactics game or would it ruin the emotional arc of each chapter by making everything legible?
+
+Anyone else played both ITB and FE and thought about this? I can't tell if I'm onto something real or if I'm just mashing two genres together that were never meant to be compared.
