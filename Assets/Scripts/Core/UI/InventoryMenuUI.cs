@@ -96,6 +96,13 @@ namespace ProjectAstra.Core.UI
             var go = new GameObject("InventorySlotSubMenu");
             go.transform.SetParent(transform, false);
             _slotSubMenu = go.AddComponent<UnitActionMenuUI>();
+
+            // Copy the visual-asset wiring (bg sprite, cursor, divider, font, glow material)
+            // from the scene-wired action menu on the GridCursor. Without this the sub-menu's
+            // _optionFont is null → UpdateSelection's fontMaterial reset throws NRE inside TMP.
+            var template = FindAnyObjectByType<UnitActionMenuUI>(FindObjectsInactive.Include);
+            if (template != null && template != _slotSubMenu)
+                _slotSubMenu.CopyAssetsFrom(template);
         }
 
         #region Input handling

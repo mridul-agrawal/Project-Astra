@@ -289,9 +289,12 @@ namespace ProjectAstra.Core.Editor
             }
             InventoryAcquisition.PromptHandler = fullPrompt;
 
-            // TradeScreenUI is built via "Project Astra/Build Trade Screen (runtime)" — that
-            // menu item generates the full Indigo Codex canvas and auto-wires GridCursor._tradeUI.
-            var tradeUI = Object.FindAnyObjectByType<TradeScreenUI>();
+            // TradeScreenUI lives directly on the (inactive) Canvas/TradeScreen prefab instance
+            // that starts SetActive(false) so Show() can toggle it on. Plain
+            // FindAnyObjectByType<T>() defaults to FindObjectsInactive.Exclude and returns null
+            // for inactive GameObjects, which previously clobbered _tradeUI → null on every
+            // setup run and killed the Trade action silently. Include inactive so it's found.
+            var tradeUI = Object.FindAnyObjectByType<TradeScreenUI>(FindObjectsInactive.Include);
 
             var convoyUI = Object.FindAnyObjectByType<ConvoyUI>();
             if (convoyUI == null)
@@ -347,7 +350,11 @@ namespace ProjectAstra.Core.Editor
                 so.FindProperty("_inventoryMenuUI").objectReferenceValue = inventoryMenu;
                 so.FindProperty("_confirmDialogUI").objectReferenceValue = confirmDialog;
                 so.FindProperty("_toastUI").objectReferenceValue = toast;
-                so.FindProperty("_tradeUI").objectReferenceValue = tradeUI;
+                // Only overwrite _tradeUI if we actually found one — never clobber a wired
+                // reference with null, since the Trade Screen Build menu item sometimes
+                // wires it out-of-band and we want that wiring to survive.
+                if (tradeUI != null)
+                    so.FindProperty("_tradeUI").objectReferenceValue = tradeUI;
                 so.FindProperty("_convoyUI").objectReferenceValue = convoyUI;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }

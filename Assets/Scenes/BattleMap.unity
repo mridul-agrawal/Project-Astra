@@ -19853,7 +19853,7 @@ MonoBehaviour:
   _inventoryMenuUI: {fileID: 394328760}
   _confirmDialogUI: {fileID: 1963929594}
   _toastUI: {fileID: 40113046}
-  _tradeUI: {fileID: 0}
+  _tradeUI: {fileID: 2038906738}
   _convoyUI: {fileID: 848863361}
   _unitInfoPanelUI: {fileID: 934369861}
   _spriteRenderer: {fileID: 2111737127}

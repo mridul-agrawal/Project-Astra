@@ -25,6 +25,18 @@ namespace ProjectAstra.Core.UI
         [SerializeField] private TMP_FontAsset _optionFont;
         [SerializeField] private Material _selectedGlowMat;
 
+        // Runtime asset transfer — used when a consumer (e.g. InventoryMenuUI) spawns a
+        // sub-menu at runtime and needs it to look identical to the scene-wired template.
+        public void CopyAssetsFrom(UnitActionMenuUI template)
+        {
+            if (template == null) return;
+            _bgSprite        = template._bgSprite;
+            _cursorSprite    = template._cursorSprite;
+            _dividerSprite   = template._dividerSprite;
+            _optionFont      = template._optionFont;
+            _selectedGlowMat = template._selectedGlowMat;
+        }
+
         // Warrior's Command palette
         static readonly Color ColTextDefault  = new Color32(0xf5, 0xd8, 0xb8, 0xff);
         static readonly Color ColTextSelected = new Color32(0xf5, 0xd8, 0xb8, 0xff);
@@ -296,8 +308,9 @@ namespace ProjectAstra.Core.UI
 
                 if (selected && !disabled && _selectedGlowMat != null)
                     _optionTexts[i].fontMaterial = _selectedGlowMat;
-                else
-                    _optionTexts[i].fontMaterial = _optionFont != null ? _optionFont.material : null;
+                else if (_optionFont != null)
+                    _optionTexts[i].fontMaterial = _optionFont.material;
+                // else: leave material as-is; assigning null to TMP.fontMaterial throws NRE.
 
                 if (i < _accentBars.Count)
                     _accentBars[i].SetActive(selected && !disabled);
