@@ -94,6 +94,13 @@ namespace ProjectAstra.Core
             }
         }
 
+        // Offensive-staff hit formula (Sleep, Silence): per FE GBA convention.
+        // Keep this here so CombatForecastUI + later runtime use a single source.
+        public static int ComputeStaffHit(int casterMag, int casterSkl, int targetRes)
+        {
+            return Mathf.Clamp(30 + casterMag * 5 + casterSkl - targetRes * 5, 0, 100);
+        }
+
         public static bool ApplyHeal(
             TestUnit healer, TestUnit target, ref WeaponData staff,
             out int amountHealed, out string failReason)

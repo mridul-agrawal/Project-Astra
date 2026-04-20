@@ -31,6 +31,7 @@ namespace ProjectAstra.Core
         [SerializeField] private TradeScreenUI _tradeUI;
         [SerializeField] private ConvoyUI _convoyUI;
         [SerializeField] private UnitInfoPanelUI _unitInfoPanelUI;
+        [SerializeField] private CombatForecastUI _combatForecastUI;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -274,6 +275,8 @@ namespace ProjectAstra.Core
             _gridPosition = _targetTiles[_targetIndex];
             SnapToGridPosition();
             OnCursorMoved?.Invoke(_gridPosition);
+
+            UpdateCombatForecastForCurrentTarget();
         }
 
         private bool CanCursorMove()
@@ -630,6 +633,8 @@ namespace ProjectAstra.Core
 
         private void OnActionCancelled()
         {
+            _combatForecastUI?.Hide();
+
             if (_unitMover != null)
                 _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
 
@@ -661,6 +666,25 @@ namespace ProjectAstra.Core
 
             SetPosition(_targetTiles[0]);
             SetMode(CursorMode.Targeting);
+
+            UpdateCombatForecastForCurrentTarget();
+        }
+
+        private void UpdateCombatForecastForCurrentTarget()
+        {
+            if (_combatForecastUI == null || _selectedUnit == null) return;
+            if (_currentMode != CursorMode.Targeting) { _combatForecastUI.Hide(); return; }
+
+            var target = FindUnitAt(_gridPosition);
+            if (target == null) { _combatForecastUI.Hide(); return; }
+
+            int distance = Mathf.Abs(_selectedUnit.gridPosition.x - target.gridPosition.x)
+                         + Mathf.Abs(_selectedUnit.gridPosition.y - target.gridPosition.y);
+
+            if (_isHealTargeting)
+                _combatForecastUI.ShowStaffHeal(_selectedUnit, target);
+            else
+                _combatForecastUI.ShowCombat(_selectedUnit, target, distance);
         }
 
         private List<Vector2Int> FindEnemiesInAttackRange()
@@ -735,10 +759,14 @@ namespace ProjectAstra.Core
 
             SetPosition(_targetTiles[0]);
             SetMode(CursorMode.Targeting);
+
+            UpdateCombatForecastForCurrentTarget();
         }
 
         private void TryCommitHeal()
         {
+            _combatForecastUI?.Hide();
+
             var target = FindUnitAt(_gridPosition);
             if (target == null)
             {
@@ -800,6 +828,8 @@ namespace ProjectAstra.Core
 
         private void TryCommitAttack()
         {
+            _combatForecastUI?.Hide();
+
             var defender = FindUnitAt(_gridPosition);
             if (defender == null)
             {
