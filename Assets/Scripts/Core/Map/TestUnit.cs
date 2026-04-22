@@ -42,6 +42,8 @@ namespace ProjectAstra.Core
         private Color _normalColor;
 
         public UnitInstance UnitInstance => _unitInstance;
+        /// <summary>Serialized UnitDefinition reference — accessible before Start binds a UnitInstance.</summary>
+        public UnitDefinition UnitDefinition => _unitDefinition;
         public WeaponRankTracker WeaponRankTracker { get; set; }
         public WeaponType[] AllowedWeaponTypes => _allowedWeaponTypes;
 

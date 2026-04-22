@@ -16,12 +16,13 @@ MonoBehaviour:
   _classType: 0
   _movementRange: 5
   _movementType: 0
-  _weaponWhitelist: 00000000
+  _weaponWhitelist: 0000000002000000
   _statGrowthModifiers:
     _values: 000000000500000000000000050000000000000000000000000000000000000005000000
   _statCaps:
     _values: 3c0000001900000014000000190000001900000019000000160000000f0000001e000000
   _hpGainOnLevelUp: 2
+  _critBonus: 0
   _canPromote: 1
   _isPromoted: 0
   _promotionTargets: []

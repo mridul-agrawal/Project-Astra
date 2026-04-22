@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Project Astra · War's Ledger — UI Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* -------------------------------------------------------------
+     Project Astra — War's Ledger
+     Parchment-dominant full-screen modal. 1920×1080 canvas.
+     Two variations (A: warm cream / B: cold vellum).
+     ------------------------------------------------------------- */
+
+  :root {
+    /* Variation A — Aged parchment · warm cream (baseline) */
+    --parchment:    #f2e6c4;
+    --parchmentSel: #fff5d8;
+    --parchDim:     #c9b98a;
+    --inkDeep:      #3d2a1a;
+    --ink:          #1a140f;
+    --brass:        #c9993a;
+    --brassLite:    #e8c66a;
+    --vermillion:   #b0382a;
+    --wine:         #6b1e2e;
+    --hairline:     rgba(61, 42, 26, 0.22);  /* thin ink-brown */
+    --brassRule:    rgba(201, 153, 58, 0.55);
+    --indigoWash:   #1a1430;
+  }
+
+  .vb {
+    /* Variation B — Cold vellum · bluish cream */
+    --parchment:    #e8ddbf;
+    --parchmentSel: #f3eacd;
+    --parchDim:     #b4a986;
+    --inkDeep:      #2b1e2a;
+    --ink:          #1a1430;
+    --brass:        #8e6a3a;      /* steel-brown */
+    --brassLite:    #b08a54;
+    --vermillion:   #94362a;
+    --wine:         #5a1c2a;
+    --hairline:     rgba(26, 20, 48, 0.22);
+    --brassRule:    rgba(142, 106, 58, 0.55);
+    --indigoWash:   #0e1028;
+  }
+
+  /* ---------- page shell (documentation, not the game UI) ---------- */
+  html, body {
+    margin: 0;
+    background: #0e0a14;
+    color: #ded3bf;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .doc {
+    max-width: 2040px;
+    margin: 0 auto;
+    padding: 56px 60px 140px;
+  }
+  .doc h1 {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.32em;
+    color: #e8dcc0;
+    margin: 0 0 4px;
+  }
+  .doc h1 .dim { color: #7a6d56; font-weight: 400; }
+  .doc .sub {
+    color: #7a6d56;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    margin-bottom: 44px;
+  }
+  .doc h2 {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.38em;
+    color: #c9b98a;
+    margin: 72px 0 6px;
+    text-transform: uppercase;
+  }
+  .doc h2 .n {
+    color: #c9993a;
+    margin-right: 12px;
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: 0.04em;
+  }
+  .doc .h2sub {
+    color: #6f6349;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    margin-bottom: 28px;
+    max-width: 1100px;
+  }
+
+  /* ---------- the canvas (1920×1080), one per variation & state --------- */
+  .canvas {
+    width: 1920px;
+    height: 1080px;
+    position: relative;
+    overflow: hidden;
+    /* dim indigo wash bleeding behind the parchment margins */
+    background:
+      radial-gradient(ellipse 55% 75% at 50% 50%, transparent 48%, rgba(26,20,48,0.55) 100%),
+      #070410;
+    margin-bottom: 40px;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .canvas.vb {
+    background:
+      radial-gradient(ellipse 55% 75% at 50% 50%, transparent 48%, rgba(14,16,40,0.65) 100%),
+      #050410;
+  }
+
+  /* the parchment sheet itself — centred, inset ~80px from canvas */
+  .sheet {
+    position: absolute;
+    inset: 64px 120px 64px 120px;
+    background:
+      /* foxing: four subtle aged corners. These strings appear verbatim in the token readout. */
+      radial-gradient(circle at 6% 4%,   rgba(130, 92, 40, 0.18) 0%, transparent 22%),
+      radial-gradient(circle at 96% 6%,  rgba(130, 92, 40, 0.14) 0%, transparent 20%),
+      radial-gradient(circle at 4% 97%,  rgba(110, 78, 34, 0.16) 0%, transparent 24%),
+      radial-gradient(circle at 97% 95%, rgba(110, 78, 34, 0.13) 0%, transparent 22%),
+      /* very faint vertical grain */
+      linear-gradient(100deg, rgba(255,245,216,0.00) 0%, rgba(255,245,216,0.35) 40%, rgba(255,245,216,0.00) 100%),
+      var(--parchment);
+    box-shadow:
+      0 2px 0 rgba(0,0,0,0.05) inset,
+      0 -1px 0 rgba(255,255,255,0.35) inset,
+      0 40px 120px rgba(0,0,0,0.55),
+      0 0 0 1px rgba(61, 42, 26, 0.12);
+    color: var(--ink);
+    padding: 72px 96px 88px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  .vb .sheet {
+    background:
+      radial-gradient(circle at 6% 4%,   rgba(80, 76, 110, 0.18) 0%, transparent 22%),
+      radial-gradient(circle at 96% 6%,  rgba(80, 76, 110, 0.14) 0%, transparent 20%),
+      radial-gradient(circle at 4% 97%,  rgba(60, 56, 90, 0.16) 0%, transparent 24%),
+      radial-gradient(circle at 97% 95%, rgba(60, 56, 90, 0.13) 0%, transparent 22%),
+      linear-gradient(100deg, rgba(243,234,205,0.00) 0%, rgba(243,234,205,0.30) 40%, rgba(243,234,205,0.00) 100%),
+      var(--parchment);
+  }
+
+  /* ---------- chapter meta (top of sheet) ---------- */
+  .meta {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.44em;
+    color: var(--inkDeep);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .eyebrow .num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--inkDeep);
+  }
+  .chapter-title {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 34px;
+    color: var(--inkDeep);
+    margin-top: 10px;
+    letter-spacing: 0.005em;
+  }
+  .brass-rule {
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, var(--brassRule) 20%, var(--brassRule) 80%, transparent 100%);
+    margin: 22px auto 0;
+    width: 62%;
+  }
+
+  /* ---------- three-column band ---------- */
+  .columns {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    gap: 0;
+    margin-top: 34px;
+    position: relative;
+  }
+  .columns::before,
+  .columns::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    bottom: 48px;
+    width: 1px;
+    background: var(--hairline);
+  }
+  .columns::before { left: 33.2%; }
+  .columns::after  { left: 66.6%; }
+
+  .col {
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+  }
+  .col:first-child { padding-left: 16px; }
+  .col:last-child  { padding-right: 16px; }
+
+  .col-head {
+    margin-bottom: 40px;
+  }
+  .col-deva {
+    font-family: "Noto Serif Devanagari", serif;
+    font-weight: 600;
+    font-size: 32px;
+    color: var(--inkDeep);
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  .col-en {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--parchDim);
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+  .col-head-rule {
+    height: 1px;
+    background: var(--brassRule);
+    margin-top: 18px;
+    opacity: 0.9;
+  }
+
+  /* ---------- left column entries (fell) ---------- */
+  .fell-entry {
+    margin-bottom: 26px;
+  }
+  .fell-name {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--inkDeep);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .bullet {
+    color: var(--vermillion);
+    font-size: 9px;
+    transform: translateY(-3px);
+    display: inline-block;
+  }
+  .fell-epitaph {
+    font-family: "EB Garamond", serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    opacity: 0.78;
+    margin-top: 4px;
+    padding-left: 24px;
+    line-height: 1.45;
+    max-width: 32ch;
+  }
+  .fell-foot {
+    margin-top: auto;
+    font-family: "EB Garamond", serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink);
+    opacity: 0.7;
+    padding-top: 30px;
+    border-top: 1px solid var(--hairline);
+    max-width: 36ch;
+  }
+
+  /* ---------- middle column (commitments) ---------- */
+  .commit-entry {
+    margin-bottom: 22px;
+  }
+  .commit-text {
+    font-family: "EB Garamond", serif;
+    font-size: 16px;
+    color: var(--inkDeep);
+    line-height: 1.5;
+    display: inline;
+  }
+  .commit-resolve {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--inkDeep);
+    margin-left: 4px;
+    /* subtle vermillion underline under kept commitments — very sparingly */
+  }
+  .commit-resolve.kept {
+    border-bottom: 1px solid var(--vermillion);
+    padding-bottom: 1px;
+  }
+  .commit-sep {
+    height: 1px;
+    width: 60%;
+    background: var(--brassRule);
+    opacity: 0.35;
+    margin: 22px auto;
+  }
+
+  /* ---------- right column (the living) ---------- */
+  .live-entry {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--inkDeep);
+    margin-bottom: 18px;
+    line-height: 1.4;
+  }
+  .live-entry .state {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .live-note {
+    font-family: "EB Garamond", serif;
+    font-style: italic;
+    font-size: 13px;
+    opacity: 0.65;
+    margin-left: 6px;
+  }
+
+  /* ---------- footer (CONTINUE) ---------- */
+  .footer {
+    margin-top: 36px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .continue {
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    color: var(--parchDim);
+    text-transform: uppercase;
+    padding: 10px 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: none; /* Ledger is not animated */
+  }
+  .continue .key {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 0;
+  }
+  .continue.focused {
+    color: var(--inkDeep);
+    text-shadow: 0 0 0.4px var(--inkDeep); /* thicken, not glow */
+  }
+  .continue.focused .key {
+    color: var(--vermillion);
+  }
+  .continue.focused::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--inkDeep);
+  }
+  .continue.pressed {
+    color: var(--inkDeep);
+    transform: translateY(1px);
+  }
+  .continue.pressed .key {
+    color: var(--vermillion);
+  }
+  .continue.pressed::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--vermillion);
+  }
+
+  /* ---------- state-gallery frames (scaled down) ---------- */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 40px;
+    margin-top: 16px;
+  }
+  .gframe {
+    background: #0a0812;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+    border-radius: 2px;
+  }
+  .gframe .scaler {
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+  }
+  /* 0.496x ≈ fits 952px wide; we'll use aspect-ratio wrapper */
+  .gwrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1920 / 1080;
+    overflow: hidden;
+  }
+  .gwrap .scaler {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: top left;
+    transform: scale(calc(100% / 1920 * 1));
+  }
+  /* we set the scale via JS based on container width */
+
+  .gcap {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 2px 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: #8a7d62;
+    letter-spacing: 0.04em;
+  }
+  .gcap .lbl {
+    color: #d4c39a;
+    font-family: "Cinzel", serif;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 11px;
+  }
+
+  /* ---------- interactive states strip (small, not full canvas) ---------- */
+  .states-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(255,255,255,0.04);
+    padding: 2px;
+    max-width: 1400px;
+  }
+  .state-cell {
+    background: var(--parchment);
+    padding: 44px 56px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+  }
+  .state-cell .tag {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--parchDim);
+    text-transform: uppercase;
+  }
+
+  /* ---------- token readout ---------- */
+  .tokens {
+    background: #0a0812;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 28px 32px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: #b9ac8d;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .tokens .tk-section {
+    color: #c9993a;
+    display: block;
+    margin: 16px 0 4px;
+    letter-spacing: 0.08em;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .tokens .tk-section:first-child { margin-top: 0; }
+  .tokens .k { color: #e8dcc0; }
+  .tokens .v { color: #8aa7c9; }
+  .tokens .c { color: #6f6349; font-style: italic; }
+
+  /* avoid any unintended transitions on Ledger content */
+  .sheet, .sheet * {
+    transition: none !important;
+    animation: none !important;
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <h1>PROJECT ASTRA <span class="dim">·</span> WAR'S LEDGER</h1>
+  <div class="sub">Full-screen modal takeover · 1920 × 1080 · parchment-dominant · tonally distinct from the Indigo Codex suite (Trade / Inventory / Supply / Combat Forecast).</div>
+
+  <!-- =================================================================
+       PRIMARY — Variation A (warm cream) · Full Ledger
+       ================================================================= -->
+  <h2><span class="n">01 ·</span> Variation A — Aged parchment · warm cream <span style="color:#6f6349; letter-spacing:0.06em; font-weight:400; font-size:11px; margin-left:10px;">baseline · full ledger</span></h2>
+  <div class="h2sub">The document appears after a chapter where named deaths, named civilians, resolved commitments, or a named commander were present. Ambient battle music fades to near-silence. No timer. Dismiss with Confirm.</div>
+
+  <div class="canvas" id="primary-a">
+    <div class="sheet">
+      <div class="meta">
+        <div class="eyebrow">CHAPTER <span class="num">04</span></div>
+        <div class="chapter-title">The Burning of Suvarnapur</div>
+        <div class="brass-rule"></div>
+      </div>
+
+      <div class="columns">
+        <!-- LEFT: those who fell -->
+        <div class="col">
+          <div class="col-head">
+            <div class="col-deva">जो गिरे</div>
+            <div class="col-en">Those Who Fell</div>
+            <div class="col-head-rule"></div>
+          </div>
+
+          <div class="fell-entry">
+            <div class="fell-name"><span class="bullet">◆</span>Aruna, Cleric</div>
+            <div class="fell-epitaph">Vidyā told me once she had never seen the sea.</div>
+          </div>
+          <div class="fell-entry">
+            <div class="fell-name"><span class="bullet">◆</span>Rakshasa-Pati, Asura Warden</div>
+            <div class="fell-epitaph">Commander of the Eastern Wall, sworn to protect the border villages.</div>
+          </div>
+          <div class="fell-entry">
+            <div class="fell-name"><span class="bullet">◆</span>Ruchi</div>
+            <div class="fell-epitaph">Found in the ruins of her own house.</div>
+          </div>
+
+          <div class="fell-foot">And 47 others whose names are not recorded.</div>
+        </div>
+
+        <!-- MIDDLE: what was kept / what was not -->
+        <div class="col">
+          <div class="col-head">
+            <div class="col-deva">क्या निभाया, क्या नहीं</div>
+            <div class="col-en">What Was Kept and What Was Not</div>
+            <div class="col-head-rule"></div>
+          </div>
+
+          <div class="commit-entry">
+            <span class="commit-text">Protect Suvarnapur village.</span>
+            <span class="commit-resolve">Not kept.</span>
+          </div>
+          <div class="commit-sep"></div>
+          <div class="commit-entry">
+            <span class="commit-text">Recruit Vidyā from the Templar Order.</span>
+            <span class="commit-resolve kept">Kept.</span>
+          </div>
+          <div class="commit-sep"></div>
+          <div class="commit-entry">
+            <span class="commit-text">Prevent civilian casualties.</span>
+            <span class="commit-resolve">Not kept.</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: the living -->
+        <div class="col">
+          <div class="col-head">
+            <div class="col-deva">जो बचे</div>
+            <div class="col-en">The Living</div>
+            <div class="col-head-rule"></div>
+          </div>
+
+          <div class="live-entry">Saraswatī <span class="state">· Safe.</span></div>
+          <div class="live-entry">Bhīma's younger brother <span class="state">· Displaced.</span><div class="live-note">fate currently unknown</div></div>
+          <div class="live-entry">Keshava <span class="state">· Lost.</span></div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="continue focused"><span class="key">⏎</span> Continue</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       PRIMARY — Variation B (cold vellum)
+       ================================================================= -->
+  <h2><span class="n">02 ·</span> Variation B — Cold vellum · bluish cream <span style="color:#6f6349; letter-spacing:0.06em; font-weight:400; font-size:11px; margin-left:10px;">quieter · monastic</span></h2>
+  <div class="h2sub">Same layout, cooler ground (#e8ddbf), body ink with faint indigo tinge (#1a1430), brass accents shifted toward a steel-brown (#8e6a3a). Third indigo-dominant variation deliberately not produced — the Ledger's purpose is to stand apart from the Indigo Codex.</div>
+
+  <div class="canvas vb" id="primary-b">
+    <div class="sheet vb-inner"></div><!-- filled by clone below -->
+  </div>
+
+  <!-- =================================================================
+       STATE GALLERY — 5 edge cases
+       ================================================================= -->
+  <h2><span class="n">03 ·</span> State Gallery <span style="color:#6f6349; letter-spacing:0.06em; font-weight:400; font-size:11px; margin-left:10px;">five required states · variation A</span></h2>
+  <div class="h2sub">Layout must hold under asymmetric content. The document is allowed to read unbalanced — asymmetry is part of the weight.</div>
+
+  <div class="gallery" id="gallery">
+
+    <div>
+      <div class="gwrap"><div class="scaler"><div class="canvas" style="margin:0;">
+        <div class="sheet" data-state="full">
+          <div class="meta">
+            <div class="eyebrow">CHAPTER <span class="num">04</span></div>
+            <div class="chapter-title">The Burning of Suvarnapur</div>
+            <div class="brass-rule"></div>
+          </div>
+          <div class="columns">
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो गिरे</div><div class="col-en">Those Who Fell</div><div class="col-head-rule"></div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Aruna, Cleric</div><div class="fell-epitaph">Vidyā told me once she had never seen the sea.</div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Rakshasa-Pati, Asura Warden</div><div class="fell-epitaph">Commander of the Eastern Wall, sworn to protect the border villages.</div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Ruchi</div><div class="fell-epitaph">Found in the ruins of her own house.</div></div>
+              <div class="fell-foot">And 47 others whose names are not recorded.</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">क्या निभाया, क्या नहीं</div><div class="col-en">What Was Kept and What Was Not</div><div class="col-head-rule"></div></div>
+              <div class="commit-entry"><span class="commit-text">Protect Suvarnapur village.</span> <span class="commit-resolve">Not kept.</span></div>
+              <div class="commit-sep"></div>
+              <div class="commit-entry"><span class="commit-text">Recruit Vidyā from the Templar Order.</span> <span class="commit-resolve kept">Kept.</span></div>
+              <div class="commit-sep"></div>
+              <div class="commit-entry"><span class="commit-text">Prevent civilian casualties.</span> <span class="commit-resolve">Not kept.</span></div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो बचे</div><div class="col-en">The Living</div><div class="col-head-rule"></div></div>
+              <div class="live-entry">Saraswatī <span class="state">· Safe.</span></div>
+              <div class="live-entry">Bhīma's younger brother <span class="state">· Displaced.</span><div class="live-note">fate currently unknown</div></div>
+              <div class="live-entry">Keshava <span class="state">· Lost.</span></div>
+            </div>
+          </div>
+          <div class="footer"><div class="continue"><span class="key">⏎</span> Continue</div></div>
+        </div>
+      </div></div></div>
+      <div class="gcap"><span class="lbl">01 · Full Ledger</span><span>all three columns populated · default footer</span></div>
+    </div>
+
+    <div>
+      <div class="gwrap"><div class="scaler"><div class="canvas" style="margin:0;">
+        <div class="sheet">
+          <div class="meta">
+            <div class="eyebrow">CHAPTER <span class="num">07</span></div>
+            <div class="chapter-title">The Passage at Dawn</div>
+            <div class="brass-rule"></div>
+          </div>
+          <div class="columns">
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो गिरे</div><div class="col-en">Those Who Fell</div><div class="col-head-rule"></div></div>
+              <div class="fell-foot" style="margin-top: 0; padding-top: 0; border-top: none;">And 12 others whose names are not recorded.</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">क्या निभाया, क्या नहीं</div><div class="col-en">What Was Kept and What Was Not</div><div class="col-head-rule"></div></div>
+              <div class="commit-entry"><span class="commit-text">Cross the Yamuna before sundown.</span> <span class="commit-resolve kept">Kept.</span></div>
+              <div class="commit-sep"></div>
+              <div class="commit-entry"><span class="commit-text">Spare the Asura scouts at the ford.</span> <span class="commit-resolve kept">Kept.</span></div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो बचे</div><div class="col-en">The Living</div><div class="col-head-rule"></div></div>
+              <div class="live-entry">Nalini, ferry-master <span class="state">· Safe.</span></div>
+              <div class="live-entry">Her two children <span class="state">· Safe.</span></div>
+            </div>
+          </div>
+          <div class="footer"><div class="continue"><span class="key">⏎</span> Continue</div></div>
+        </div>
+      </div></div></div>
+      <div class="gcap"><span class="lbl">02 · Left Empty</span><span>no named deaths · unnamed count only</span></div>
+    </div>
+
+    <div>
+      <div class="gwrap"><div class="scaler"><div class="canvas" style="margin:0;">
+        <div class="sheet">
+          <div class="meta">
+            <div class="eyebrow">CHAPTER <span class="num">11</span></div>
+            <div class="chapter-title">Below the Brass Gate</div>
+            <div class="brass-rule"></div>
+          </div>
+          <div class="columns">
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो गिरे</div><div class="col-en">Those Who Fell</div><div class="col-head-rule"></div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Dronacharya the Elder</div><div class="fell-epitaph">He said the gate would hold. It did not.</div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Samrat-Kala, Asura Captain</div><div class="fell-epitaph">Bearer of the iron standard, unmourned by his own.</div></div>
+              <div class="fell-foot">And 21 others whose names are not recorded.</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">क्या निभाया, क्या नहीं</div><div class="col-en">What Was Kept and What Was Not</div><div class="col-head-rule"></div></div>
+              <!-- intentionally empty — no commitments resolved -->
+              <div style="font-family:'EB Garamond', serif; font-style:italic; font-size:14px; color:var(--ink); opacity:0.5; margin-top:8px;">&nbsp;</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो बचे</div><div class="col-en">The Living</div><div class="col-head-rule"></div></div>
+              <div class="live-entry">The smithwright's apprentice <span class="state">· Safe.</span></div>
+              <div class="live-entry">Old Ishani <span class="state">· Displaced.</span></div>
+              <div class="live-entry">The boy who carried the water <span class="state">· Lost.</span></div>
+            </div>
+          </div>
+          <div class="footer"><div class="continue"><span class="key">⏎</span> Continue</div></div>
+        </div>
+      </div></div></div>
+      <div class="gcap"><span class="lbl">03 · Middle Empty</span><span>no commitments resolved this chapter</span></div>
+    </div>
+
+    <div>
+      <div class="gwrap"><div class="scaler"><div class="canvas" style="margin:0;">
+        <div class="sheet">
+          <div class="meta">
+            <div class="eyebrow">CHAPTER <span class="num">09</span></div>
+            <div class="chapter-title">The Bridge That Was Not Guarded</div>
+            <div class="brass-rule"></div>
+          </div>
+          <div class="columns">
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो गिरे</div><div class="col-en">Those Who Fell</div><div class="col-head-rule"></div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Ajan, Vanguard</div><div class="fell-epitaph">He served faithfully.</div></div>
+              <div class="fell-entry"><div class="fell-name"><span class="bullet">◆</span>Virata-Sena, Asura Outrider</div><div class="fell-epitaph">Rider of the long plains; his horse was found and his body was not.</div></div>
+              <div class="fell-foot">And 33 others whose names are not recorded.</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">क्या निभाया, क्या नहीं</div><div class="col-en">What Was Kept and What Was Not</div><div class="col-head-rule"></div></div>
+              <div class="commit-entry"><span class="commit-text">Hold the bridge until dusk.</span> <span class="commit-resolve kept">Kept.</span></div>
+              <div class="commit-sep"></div>
+              <div class="commit-entry"><span class="commit-text">Send word to the northern column.</span> <span class="commit-resolve">Not kept.</span></div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो बचे</div><div class="col-en">The Living</div><div class="col-head-rule"></div></div>
+              <!-- deliberately empty -->
+            </div>
+          </div>
+          <div class="footer"><div class="continue"><span class="key">⏎</span> Continue</div></div>
+        </div>
+      </div></div></div>
+      <div class="gcap"><span class="lbl">04 · Right Empty</span><span>civilian thread inactive · header still renders</span></div>
+    </div>
+
+    <div>
+      <div class="gwrap"><div class="scaler"><div class="canvas" style="margin:0;">
+        <div class="sheet">
+          <div class="meta">
+            <div class="eyebrow">CHAPTER <span class="num">01</span></div>
+            <!-- no authored chapter title — line omitted per spec -->
+            <div class="brass-rule" style="margin-top: 18px;"></div>
+          </div>
+          <div class="columns">
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो गिरे</div><div class="col-en">Those Who Fell</div><div class="col-head-rule"></div></div>
+              <div class="fell-foot" style="margin-top:0; padding-top:0; border-top:none;">And 3 others whose names are not recorded.</div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">क्या निभाया, क्या नहीं</div><div class="col-en">What Was Kept and What Was Not</div><div class="col-head-rule"></div></div>
+              <div class="commit-entry"><span class="commit-text">Reach the shrine before nightfall.</span> <span class="commit-resolve kept">Kept.</span></div>
+            </div>
+            <div class="col">
+              <div class="col-head"><div class="col-deva">जो बचे</div><div class="col-en">The Living</div><div class="col-head-rule"></div></div>
+              <!-- early chapter, thread not yet activated -->
+            </div>
+          </div>
+          <div class="footer"><div class="continue"><span class="key">⏎</span> Continue</div></div>
+        </div>
+      </div></div></div>
+      <div class="gcap"><span class="lbl">05 · Early Chapter</span><span>sparse · establishes the visual grammar</span></div>
+    </div>
+
+  </div>
+
+  <!-- =================================================================
+       INTERACTIVE STATES — the only interactive element
+       ================================================================= -->
+  <h2><span class="n">04 ·</span> Interactive States <span style="color:#6f6349; letter-spacing:0.06em; font-weight:400; font-size:11px; margin-left:10px;">⏎ continue · only interactive element</span></h2>
+  <div class="h2sub">Three states. No hover (Ledger is keyboard/controller-only by tonal intent). Focused = focus-brought-here by keyboard arrival. Pressed = Confirm is being held. The rest of the document is static text — no cursor, no selection highlight.</div>
+
+  <div class="states-strip">
+    <div class="state-cell">
+      <div class="tag">01 · Default</div>
+      <div class="continue"><span class="key">⏎</span> Continue</div>
+    </div>
+    <div class="state-cell">
+      <div class="tag">02 · Focused</div>
+      <div class="continue focused"><span class="key">⏎</span> Continue</div>
+    </div>
+    <div class="state-cell">
+      <div class="tag">03 · Pressed</div>
+      <div class="continue pressed"><span class="key">⏎</span> Continue</div>
+    </div>
+  </div>
+
+  <!-- =================================================================
+       TOKEN READOUT — verbatim CSS effect values for Unity port
+       ================================================================= -->
+  <h2><span class="n">05 ·</span> Token Readout <span style="color:#6f6349; letter-spacing:0.06em; font-weight:400; font-size:11px; margin-left:10px;">verbatim CSS effect values · for TMP SDF + sprite bake</span></h2>
+  <div class="h2sub">Every text-shadow, box-shadow, filter: drop-shadow, filter: blur, and foxing radial-gradient string used anywhere in the Ledger, listed verbatim. Unity port reproduces these exactly; "close enough" is not acceptable. Sprite PNG alpha bakes must allow adequate padding for any shadow blur radius.</div>
+
+  <div class="tokens" id="tokens">
+<span class="tk-section">/* 01 · COLOR TOKENS — Variation A (warm cream) */</span>
+<span class="k">--parchment</span>:    <span class="v">#f2e6c4</span>;
+<span class="k">--parchmentSel</span>: <span class="v">#fff5d8</span>;
+<span class="k">--parchDim</span>:     <span class="v">#c9b98a</span>;
+<span class="k">--inkDeep</span>:      <span class="v">#3d2a1a</span>;
+<span class="k">--ink</span>:          <span class="v">#1a140f</span>;
+<span class="k">--brass</span>:        <span class="v">#c9993a</span>;
+<span class="k">--brassLite</span>:    <span class="v">#e8c66a</span>;
+<span class="k">--vermillion</span>:   <span class="v">#b0382a</span>;
+<span class="k">--wine</span>:         <span class="v">#6b1e2e</span>;
+<span class="k">--hairline</span>:     <span class="v">rgba(61, 42, 26, 0.22)</span>  <span class="c">/* column dividers */</span>
+<span class="k">--brassRule</span>:    <span class="v">rgba(201, 153, 58, 0.55)</span>  <span class="c">/* chapter rule / commit separators */</span>
+
+<span class="tk-section">/* 02 · COLOR TOKENS — Variation B (cold vellum) */</span>
+<span class="k">--parchment</span>:    <span class="v">#e8ddbf</span>;
+<span class="k">--parchmentSel</span>: <span class="v">#f3eacd</span>;
+<span class="k">--parchDim</span>:     <span class="v">#b4a986</span>;
+<span class="k">--inkDeep</span>:      <span class="v">#2b1e2a</span>;
+<span class="k">--ink</span>:          <span class="v">#1a1430</span>  <span class="c">/* faint indigo tinge */</span>
+<span class="k">--brass</span>:        <span class="v">#8e6a3a</span>  <span class="c">/* steel-brown replacement */</span>
+<span class="k">--brassLite</span>:    <span class="v">#b08a54</span>;
+<span class="k">--vermillion</span>:   <span class="v">#94362a</span>;
+<span class="k">--hairline</span>:     <span class="v">rgba(26, 20, 48, 0.22)</span>;
+<span class="k">--brassRule</span>:    <span class="v">rgba(142, 106, 58, 0.55)</span>;
+
+<span class="tk-section">/* 03 · CANVAS BACKDROP — dim indigo wash behind parchment margins */</span>
+<span class="k">background</span>:
+  <span class="v">radial-gradient(ellipse 55% 75% at 50% 50%, transparent 48%, rgba(26,20,48,0.55) 100%)</span>,
+  <span class="v">#070410</span>;
+<span class="k">background (vb)</span>:
+  <span class="v">radial-gradient(ellipse 55% 75% at 50% 50%, transparent 48%, rgba(14,16,40,0.65) 100%)</span>,
+  <span class="v">#050410</span>;
+
+<span class="tk-section">/* 04 · PARCHMENT SHEET — foxing gradients (var A) */</span>
+<span class="c">/* four subtle aged-corner spots — list each radial-gradient() verbatim */</span>
+<span class="k">foxing-tl</span>:  <span class="v">radial-gradient(circle at 6% 4%,   rgba(130, 92, 40, 0.18) 0%, transparent 22%)</span>
+<span class="k">foxing-tr</span>:  <span class="v">radial-gradient(circle at 96% 6%,  rgba(130, 92, 40, 0.14) 0%, transparent 20%)</span>
+<span class="k">foxing-bl</span>:  <span class="v">radial-gradient(circle at 4% 97%,  rgba(110, 78, 34, 0.16) 0%, transparent 24%)</span>
+<span class="k">foxing-br</span>:  <span class="v">radial-gradient(circle at 97% 95%, rgba(110, 78, 34, 0.13) 0%, transparent 22%)</span>
+<span class="k">grain</span>:     <span class="v">linear-gradient(100deg, rgba(255,245,216,0.00) 0%, rgba(255,245,216,0.35) 40%, rgba(255,245,216,0.00) 100%)</span>
+
+<span class="tk-section">/* 05 · PARCHMENT SHEET — foxing gradients (var B · cold vellum) */</span>
+<span class="k">foxing-tl</span>:  <span class="v">radial-gradient(circle at 6% 4%,   rgba(80, 76, 110, 0.18) 0%, transparent 22%)</span>
+<span class="k">foxing-tr</span>:  <span class="v">radial-gradient(circle at 96% 6%,  rgba(80, 76, 110, 0.14) 0%, transparent 20%)</span>
+<span class="k">foxing-bl</span>:  <span class="v">radial-gradient(circle at 4% 97%,  rgba(60, 56, 90, 0.16) 0%, transparent 24%)</span>
+<span class="k">foxing-br</span>:  <span class="v">radial-gradient(circle at 97% 95%, rgba(60, 56, 90, 0.13) 0%, transparent 22%)</span>
+<span class="k">grain</span>:     <span class="v">linear-gradient(100deg, rgba(243,234,205,0.00) 0%, rgba(243,234,205,0.30) 40%, rgba(243,234,205,0.00) 100%)</span>
+
+<span class="tk-section">/* 06 · PARCHMENT SHEET — box shadows */</span>
+<span class="k">box-shadow</span>:
+  <span class="v">0 2px 0 rgba(0,0,0,0.05) inset</span>,
+  <span class="v">0 -1px 0 rgba(255,255,255,0.35) inset</span>,
+  <span class="v">0 40px 120px rgba(0,0,0,0.55)</span>,     <span class="c">/* drop under sheet — 120px blur, pad PNG 136px */</span>
+  <span class="v">0 0 0 1px rgba(61, 42, 26, 0.12)</span>;    <span class="c">/* hairline edge */</span>
+
+<span class="tk-section">/* 07 · CANVAS WRAPPER — doc-page drop shadow */</span>
+<span class="k">box-shadow</span>:
+  <span class="v">0 30px 90px rgba(0,0,0,0.55)</span>,           <span class="c">/* 90px blur, pad PNG 106px */</span>
+  <span class="v">0 0 0 1px rgba(255,255,255,0.04)</span>;
+
+<span class="tk-section">/* 08 · BRASS HAIRLINES (chapter rule · commit separators · column-head rule) */</span>
+<span class="k">chapter-rule</span>:        <span class="v">linear-gradient(to right, transparent 0%, rgba(201,153,58,0.55) 20%, rgba(201,153,58,0.55) 80%, transparent 100%)</span> <span class="c">· 1px tall · 62% width</span>
+<span class="k">col-head-rule</span>:       <span class="v">solid 1px rgba(201,153,58,0.55)</span> <span class="c">· 100% col width</span>
+<span class="k">commit-separator</span>:    <span class="v">solid 1px rgba(201,153,58,0.55)</span> · <span class="v">opacity 0.35</span> · <span class="c">60% width, centred</span>
+<span class="k">column-divider</span>:      <span class="v">solid 1px rgba(61, 42, 26, 0.22)</span> <span class="c">· ink-brown, not brass — document rule not chrome</span>
+
+<span class="tk-section">/* 09 · TEXT-SHADOW — only on focused CONTINUE (thickening, not glow) */</span>
+<span class="k">.continue.focused</span>:     <span class="v">text-shadow: 0 0 0.4px #3d2a1a</span>   <span class="c">/* sub-pixel thickener — Unity: bake with 0.4px TMP outline */</span>
+
+<span class="tk-section">/* 10 · FILTER / BLUR / ANIMATION — intentionally none */</span>
+<span class="c">/* The Ledger declares: no filter: blur(), no filter: drop-shadow() beyond the sheet's own box-shadow,</span>
+<span class="c">   no keyframe animations, no transitions. This is not an oversight — it is the design.</span>
+<span class="c">   Unity port: no TMP Glow, no URP bloom pass on this canvas. Static ink only. */</span>
+
+<span class="tk-section">/* 11 · TYPOGRAPHY — Unity TMP asset list */</span>
+<span class="k">Cinzel 500</span>               <span class="c">· Latin · section labels · uppercase · tracking 0.32–0.44em</span>
+<span class="k">Cormorant Garamond 600</span>   <span class="c">· Latin · unit / civilian names · tracking 0</span>
+<span class="k">Cormorant Garamond 600i</span>  <span class="c">· Latin · chapter narrative title</span>
+<span class="k">EB Garamond 400i</span>         <span class="c">· Latin · epitaphs · commitments · civilian status notes</span>
+<span class="k">JetBrains Mono 500</span>        <span class="c">· Latin · chapter number · unnamed-dead count</span>
+<span class="k">Noto Serif Devanagari 600</span> <span class="c">· Devanagari · column headers (28–36px) · SDF generated from this face</span>
+  </div>
+
+  <div class="sub" style="margin-top:48px;">
+    End of mockup · Ledger grants nothing · takes nothing · only records.
+  </div>
+
+</div>
+
+<script>
+  // Clone the primary-a sheet into primary-b, keeping structure identical.
+  (function mirrorSheetIntoB() {
+    const a = document.querySelector('#primary-a .sheet');
+    const b = document.querySelector('#primary-b .sheet');
+    if (!a || !b) return;
+    b.innerHTML = a.innerHTML;
+    // Give B a focused-default continue too (different from A which shows focused).
+    const cont = b.querySelector('.continue');
+    if (cont) { cont.classList.remove('focused'); }
+  })();
+
+  // Scale each gallery .scaler to fit its wrapper.
+  function fitScalers() {
+    document.querySelectorAll('.gwrap').forEach(wrap => {
+      const w = wrap.clientWidth;
+      const scale = w / 1920;
+      const scaler = wrap.querySelector('.scaler');
+      if (scaler) scaler.style.transform = `scale(${scale})`;
+    });
+  }
+  window.addEventListener('resize', fitScalers);
+  window.addEventListener('load', fitScalers);
+  fitScalers();
+</script>
+</body>
+</html>

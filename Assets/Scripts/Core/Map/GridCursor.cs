@@ -33,6 +33,9 @@ namespace ProjectAstra.Core
         [SerializeField] private UnitInfoPanelUI _unitInfoPanelUI;
         [SerializeField] private CombatForecastUI _combatForecastUI;
 
+        [Header("UM-01 War's Ledger")]
+        [SerializeField] private UnitDeathEventChannel _deathEventChannel;
+
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private Sprite _idleSprite;
@@ -949,7 +952,7 @@ namespace ProjectAstra.Core
             Debug.Log($"[Combat] Result: {attacker.name} HP={result.AttackerHPAfter}, {defender.name} HP={result.DefenderHPAfter}");
         }
 
-        private static void ApplyCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
+        private void ApplyCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
         {
             if (attacker.UnitInstance != null)
                 attacker.UnitInstance.SetCurrentHP(result.AttackerHPAfter);
@@ -963,12 +966,12 @@ namespace ProjectAstra.Core
 
             if (result.DefenderDied)
             {
-                defender.gameObject.SetActive(false);
+                UnitDeathHook.HandleDeath(defender, attacker, _deathEventChannel);
                 if (defender.isLord) Convoy.Current = NullConvoy.Instance;
             }
             if (result.AttackerDied)
             {
-                attacker.gameObject.SetActive(false);
+                UnitDeathHook.HandleDeath(attacker, defender, _deathEventChannel);
                 if (attacker.isLord) Convoy.Current = NullConvoy.Instance;
             }
         }

@@ -21,7 +21,17 @@ namespace ProjectAstra.Core
             GameState.CombatAnimation,
             GameState.Dialogue,
             GameState.SaveMenu,
-            GameState.SettingsMenu
+            GameState.SettingsMenu,
+            GameState.WarLedger,
+        };
+
+        // Overlay states whose UI prefab already lives in the parent scene
+        // (e.g. WarLedger is instantiated into BattleMap.unity by CursorSceneSetup
+        // and driven via GameStateEventChannel). For these, SceneLoader must NOT
+        // destroy the base scene and must NOT hunt Resources/Overlays/ for a prefab.
+        private static readonly HashSet<GameState> InSceneOverlays = new()
+        {
+            GameState.WarLedger,
         };
 
         private void Awake()
@@ -57,6 +67,11 @@ namespace ProjectAstra.Core
 
             if (IsOverlayState(args.NewState))
             {
+                // In-scene overlays (e.g. WarLedger) live inside the base scene already
+                // and handle their own Show/Hide off GameStateEventChannel. Nothing to
+                // instantiate here — silently skip the Resources lookup.
+                if (InSceneOverlays.Contains(args.NewState)) return;
+
                 var prefab = Resources.Load<GameObject>($"Overlays/{args.NewState}");
                 if (prefab != null)
                     _activeOverlay = Instantiate(prefab);

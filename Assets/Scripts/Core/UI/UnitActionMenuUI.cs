@@ -37,11 +37,25 @@ namespace ProjectAstra.Core.UI
             _selectedGlowMat = template._selectedGlowMat;
         }
 
-        // Warrior's Command palette
-        static readonly Color ColTextDefault  = new Color32(0xf5, 0xd8, 0xb8, 0xff);
-        static readonly Color ColTextSelected = new Color32(0xf5, 0xd8, 0xb8, 0xff);
-        static readonly Color ColTextDisabled = new Color32(0x4a, 0x2a, 0x1a, 0xff);
-        static readonly Color ColEmberBar     = new Color32(0xd4, 0x6a, 0x2c, 0xff);
+        // Warrior's Command palette (default). ApplyPalette overrides these per-instance
+        // so spawners can reskin the menu (e.g. InventoryMenuUI → Indigo Codex parchment).
+        static readonly Color DefaultTextDefault  = new Color32(0xf5, 0xd8, 0xb8, 0xff);
+        static readonly Color DefaultTextSelected = new Color32(0xf5, 0xd8, 0xb8, 0xff);
+        static readonly Color ColTextDisabled     = new Color32(0x4a, 0x2a, 0x1a, 0xff);
+        static readonly Color DefaultEmberBar     = new Color32(0xd4, 0x6a, 0x2c, 0xff);
+
+        Color _colTextDefault  = DefaultTextDefault;
+        Color _colTextSelected = DefaultTextSelected;
+        Color _colAccentBar    = DefaultEmberBar;
+        Color _colBgTint       = Color.white;
+
+        public void ApplyPalette(Color bgTint, Color textDefault, Color textSelected, Color accentBar)
+        {
+            _colBgTint       = bgTint;
+            _colTextDefault  = textDefault;
+            _colTextSelected = textSelected;
+            _colAccentBar    = accentBar;
+        }
 
         const float OptionHeight = 52f;
         const float DividerHeight = 8f;
@@ -187,7 +201,7 @@ namespace ProjectAstra.Core.UI
             var bgImg = _root.AddComponent<Image>();
             bgImg.sprite = _bgSprite;
             bgImg.type = _bgSprite != null ? Image.Type.Sliced : Image.Type.Simple;
-            bgImg.color = Color.white;
+            bgImg.color = _colBgTint;
             bgImg.pixelsPerUnitMultiplier = 1f;
 
             _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
@@ -237,7 +251,7 @@ namespace ProjectAstra.Core.UI
             barRect.anchoredPosition = Vector2.zero;
             barRect.sizeDelta = new Vector2(3f, 0f);
             var barImg = bar.AddComponent<Image>();
-            barImg.color = ColEmberBar;
+            barImg.color = _colAccentBar;
             bar.SetActive(false);
             _accentBars.Add(bar);
 
@@ -270,7 +284,7 @@ namespace ProjectAstra.Core.UI
             tmp.fontSize = 26;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.MidlineLeft;
-            tmp.color = disabled ? ColTextDisabled : ColTextDefault;
+            tmp.color = disabled ? ColTextDisabled : _colTextDefault;
             tmp.enableWordWrapping = false;
             tmp.overflowMode = TextOverflowModes.Overflow;
             tmp.characterSpacing = 4f;
@@ -304,7 +318,7 @@ namespace ProjectAstra.Core.UI
                 bool disabled = IsDisabled(i);
 
                 _optionTexts[i].color = disabled ? ColTextDisabled
-                    : selected ? ColTextSelected : ColTextDefault;
+                    : selected ? _colTextSelected : _colTextDefault;
 
                 if (selected && !disabled && _selectedGlowMat != null)
                     _optionTexts[i].fontMaterial = _selectedGlowMat;

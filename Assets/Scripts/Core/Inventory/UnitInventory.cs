@@ -117,6 +117,17 @@ namespace ProjectAstra.Core
             RaiseChanged();
         }
 
+        /// <summary>
+        /// Wipes every slot. Used by the UM-01 death hook — a dead unit's items
+        /// are lost, not sent to the convoy (FE GBA standard). Fires
+        /// OnInventoryChanged exactly once even if the inventory was already empty.
+        /// </summary>
+        public void Clear()
+        {
+            for (int i = 0; i < Capacity; i++) _slots[i] = InventoryItem.None;
+            RaiseChanged();
+        }
+
         public void SetSlot(int index, InventoryItem item)
         {
             if (index < 0 || index >= Capacity) return;

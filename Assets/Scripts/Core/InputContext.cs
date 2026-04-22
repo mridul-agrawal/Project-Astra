@@ -60,6 +60,10 @@ namespace ProjectAstra.Core
 
             { GameState.ChapterClear, CursorAndMenuActions },
 
+            // WarLedger is Confirm-only by spec — it is a document, not a menu.
+            // Dismissal is the one allowed input; no Cancel/Back.
+            { GameState.WarLedger, new HashSet<string> { Confirm } },
+
             { GameState.GameOver, CursorAndMenuActions },
 
             { GameState.SaveMenu, CursorAndMenuActions },
