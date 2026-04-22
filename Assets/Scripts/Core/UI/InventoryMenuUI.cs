@@ -97,12 +97,20 @@ namespace ProjectAstra.Core.UI
             go.transform.SetParent(transform, false);
             _slotSubMenu = go.AddComponent<UnitActionMenuUI>();
 
-            // Copy the visual-asset wiring (bg sprite, cursor, divider, font, glow material)
-            // from the scene-wired action menu on the GridCursor. Without this the sub-menu's
-            // _optionFont is null → UpdateSelection's fontMaterial reset throws NRE inside TMP.
+            // Borrow the cursor/divider/font/glow material from the scene-wired
+            // Warrior's Command action menu — without a font the sub-menu's TMP
+            // fontMaterial reset NRE's. Then tint the panel into Indigo Codex
+            // parchment so the sub-menu matches the popup that spawned it, instead
+            // of inheriting Warrior's Command ember chrome.
             var template = FindAnyObjectByType<UnitActionMenuUI>(FindObjectsInactive.Include);
             if (template != null && template != _slotSubMenu)
                 _slotSubMenu.CopyAssetsFrom(template);
+
+            _slotSubMenu.ApplyPalette(
+                bgTint:       new Color(0.95f, 0.90f, 0.77f, 1f),  // parchment #f2e6c4
+                textDefault:  new Color(0.24f, 0.16f, 0.10f, 1f),  // inkDeep #3d2a1a
+                textSelected: new Color(0.69f, 0.22f, 0.16f, 1f),  // vermillion #b0382a
+                accentBar:    new Color(0.79f, 0.60f, 0.23f, 1f)); // brass #c9993a
         }
 
         #region Input handling

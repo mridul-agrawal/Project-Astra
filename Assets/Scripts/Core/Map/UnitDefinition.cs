@@ -32,6 +32,12 @@ namespace ProjectAstra.Core
         [SerializeField] private PanchaBhuta _affinity = PanchaBhuta.None;    // SP-03
         [SerializeField] private Personality _personality = Personality.None; // CC-01, allied NPCs only
 
+        [Header("Enemy commander metadata (UM-01 War's Ledger)")]
+        [Tooltip("Mark enemy UnitDefinitions that should fire a named-enemy death event. Player characters always count as named via UnitId.")]
+        [SerializeField] private bool _isNamedCommander;
+        [Tooltip("One-line identity line shown in the Ledger's left column when this unit dies. Example: \"Commander of the Eastern Wall, sworn to protect the border villages.\"")]
+        [SerializeField, TextArea] private string _oneLineIdentity;
+
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
@@ -45,5 +51,7 @@ namespace ProjectAstra.Core
         public Sprite StressedOverlay => _stressedOverlay;
         public PanchaBhuta Affinity => _affinity;
         public Personality Personality => _personality;
+        public bool IsNamedCommander => _isNamedCommander;
+        public string OneLineIdentity => _oneLineIdentity;
     }
 }

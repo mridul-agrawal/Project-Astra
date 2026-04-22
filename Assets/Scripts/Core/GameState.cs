@@ -11,6 +11,7 @@ namespace ProjectAstra.Core
         BattleMapPaused,
         CombatAnimation,
         Dialogue,
+        WarLedger,
         ChapterClear,
         GameOver,
         SaveMenu,

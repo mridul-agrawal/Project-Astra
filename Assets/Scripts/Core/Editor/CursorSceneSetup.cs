@@ -1,6 +1,8 @@
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
 
 namespace ProjectAstra.Core.Editor
@@ -30,6 +32,7 @@ namespace ProjectAstra.Core.Editor
             SetupPhaseBanner(assets);
             SetupCameraController(mapRenderer);
             SetupInventoryUIBindings();
+            SetupWarLedgerSubsystems();
 
             MarkSceneDirty();
             Debug.Log("GridCursor, TestUnits, TurnManager, PhaseBanner, CameraController, and Inventory UI added to scene.");
@@ -374,6 +377,53 @@ namespace ProjectAstra.Core.Editor
                     "'Project Astra/Build Combat Forecast (prefab)' to generate it.");
             }
 
+            // War's Ledger — persistent prefab instance driven by GameState.WarLedger.
+            var ledgerUI = Object.FindAnyObjectByType<WarLedgerUI>();
+            if (ledgerUI == null)
+            {
+                var lgo = new GameObject("WarLedgerUI");
+                lgo.transform.SetParent(canvas.transform, false);
+                ledgerUI = lgo.AddComponent<WarLedgerUI>();
+                Undo.RegisterCreatedObjectUndo(lgo, "Create WarLedgerUI");
+            }
+
+            var ledgerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/UI/WarLedger/WarLedger.prefab");
+            GameObject ledgerInstance = null;
+            var existingLedger = canvas.transform.Find("WarLedger");
+            if (existingLedger != null) ledgerInstance = existingLedger.gameObject;
+            if (ledgerInstance == null && ledgerPrefab != null)
+            {
+                ledgerInstance = (GameObject)PrefabUtility.InstantiatePrefab(ledgerPrefab, canvas.transform);
+                ledgerInstance.name = "WarLedger";
+                ledgerInstance.SetActive(false);
+                Undo.RegisterCreatedObjectUndo(ledgerInstance, "Create WarLedger instance");
+            }
+            if (ledgerInstance != null)
+            {
+                var so = new SerializedObject(ledgerUI);
+                var prop = so.FindProperty("_popupInstance");
+                if (prop != null && prop.objectReferenceValue != ledgerInstance)
+                {
+                    prop.objectReferenceValue = ledgerInstance;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+                // Wire the GameStateEventChannel (assets.stateChannel loaded at the top)
+                var stateProp = so.FindProperty("_stateChannel");
+                if (stateProp != null && stateProp.objectReferenceValue == null)
+                {
+                    var stateChan = AssetDatabase.LoadAssetAtPath<GameStateEventChannel>(
+                        "Assets/ScriptableObjects/Core/GameStateChanged.asset");
+                    if (stateChan != null) stateProp.objectReferenceValue = stateChan;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+            else if (ledgerPrefab == null)
+            {
+                Debug.LogWarning("CursorSceneSetup: WarLedger prefab missing — run " +
+                    "'Project Astra/Build War Ledger (prefab)' to generate it.");
+            }
+
             // Ensure ConvoyBootstrap exists so Convoy.Current is initialized at runtime.
             if (Object.FindAnyObjectByType<ConvoyBootstrap>() == null)
             {
@@ -399,6 +449,73 @@ namespace ProjectAstra.Core.Editor
                 if (forecastProp != null) forecastProp.objectReferenceValue = forecastUI;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
+        }
+
+        // ==============================================================
+        // UM-01 War's Ledger — subsystem wiring
+        // ==============================================================
+
+        private const string DeathChannelAssetPath =
+            "Assets/ScriptableObjects/Core/UnitDeathEventChannel.asset";
+
+        private static void SetupWarLedgerSubsystems()
+        {
+            var channel = EnsureDeathEventChannel();
+
+            EnsureComponent<DeathRegistry>("DeathRegistry", c => {
+                var so = new SerializedObject(c);
+                so.FindProperty("_deathChannel").objectReferenceValue = channel;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            });
+
+            EnsureComponent<CommitmentTracker>("CommitmentTracker", null);
+
+            EnsureComponent<ChapterMeta>("ChapterMeta", null);
+
+            EnsureComponent<BattleVictoryWatcher>("BattleVictoryWatcher", c => {
+                var so = new SerializedObject(c);
+                so.FindProperty("_deathChannel").objectReferenceValue = channel;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            });
+
+            // Wire the channel onto GridCursor so the death hook has something to fire.
+            var cursor = Object.FindAnyObjectByType<GridCursor>();
+            if (cursor != null)
+            {
+                var so = new SerializedObject(cursor);
+                var prop = so.FindProperty("_deathEventChannel");
+                if (prop != null && prop.objectReferenceValue != channel)
+                {
+                    prop.objectReferenceValue = channel;
+                    so.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+        }
+
+        private static UnitDeathEventChannel EnsureDeathEventChannel()
+        {
+            var channel = AssetDatabase.LoadAssetAtPath<UnitDeathEventChannel>(DeathChannelAssetPath);
+            if (channel != null) return channel;
+
+            Directory.CreateDirectory(Path.GetDirectoryName(DeathChannelAssetPath));
+            channel = ScriptableObject.CreateInstance<UnitDeathEventChannel>();
+            AssetDatabase.CreateAsset(channel, DeathChannelAssetPath);
+            AssetDatabase.SaveAssets();
+            Debug.Log($"CursorSceneSetup: created {DeathChannelAssetPath}");
+            return channel;
+        }
+
+        private static T EnsureComponent<T>(string goName, System.Action<T> configure)
+            where T : MonoBehaviour
+        {
+            var existing = Object.FindAnyObjectByType<T>(FindObjectsInactive.Include);
+            if (existing != null) return existing;
+
+            var go = new GameObject(goName);
+            var c = go.AddComponent<T>();
+            configure?.Invoke(c);
+            Undo.RegisterCreatedObjectUndo(go, $"Create {goName}");
+            return c;
         }
 
         private static void SetupTurnManager(SceneAssets assets)
