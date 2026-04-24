@@ -74,6 +74,11 @@ namespace ProjectAstra.Core
         private List<TestUnit> _cachedAdjacentAllies = new();
         private bool _isHealTargeting;
 
+        // Canto — cavalry/flying units re-enter movement mode after a primary action.
+        private bool _isCantoMode;
+        private int _preCantoMovementPoints;
+        private ActionChoice? _lastActionChoice;
+
         private enum ActionChoice { Attack, Heal, Fortify, Item, Trade, Supply, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
@@ -461,7 +466,33 @@ namespace ProjectAstra.Core
 
         private void OnMovementComplete()
         {
+            if (_isCantoMode)
+            {
+                FinalizeCanto();
+                return;
+            }
             ShowActionMenu();
+        }
+
+        private void FinalizeCanto()
+        {
+            _isCantoMode = false;
+            if (_selectedUnit != null)
+                _selectedUnit.movementPoints = _preCantoMovementPoints;
+            _lastActionChoice = null;
+
+            if (_selectedUnit != null)
+            {
+                if (TurnManager.Instance != null)
+                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
+                else
+                    _selectedUnit.MarkActed();
+            }
+
+            _memorizedPosition = null;
+            ResetUnitTilesMode();
+
+            TurnManager.Instance?.CheckAutoEndPlayerPhase();
         }
 
         private void ShowActionMenu()
@@ -543,9 +574,12 @@ namespace ProjectAstra.Core
         {
             if (index < 0 || index >= _cachedActionChoices.Count)
             {
+                _lastActionChoice = ActionChoice.Wait;
                 CompleteAction();
                 return;
             }
+
+            _lastActionChoice = _cachedActionChoices[index];
 
             switch (_cachedActionChoices[index])
             {
@@ -815,6 +849,8 @@ namespace ProjectAstra.Core
 
         private void CompleteAction()
         {
+            if (TryEnterCanto()) return;
+
             if (_selectedUnit != null)
             {
                 if (TurnManager.Instance != null)
@@ -827,6 +863,33 @@ namespace ProjectAstra.Core
             ResetUnitTilesMode();
 
             TurnManager.Instance?.CheckAutoEndPlayerPhase();
+        }
+
+        private bool TryEnterCanto()
+        {
+            if (_isCantoMode) return false;
+            if (_selectedUnit == null) return false;
+            if (_lastActionChoice == ActionChoice.Wait || _lastActionChoice == null) return false;
+
+            var cls = _selectedUnit.UnitInstance?.CurrentClass;
+            if (cls == null || !cls.HasCanto) return false;
+
+            int costPaid = _currentReachability.CostMap != null
+                && _currentReachability.CostMap.TryGetValue(_selectedUnit.gridPosition, out var c) ? c : 0;
+            int remaining = _selectedUnit.movementPoints - costPaid;
+            if (remaining <= 0) return false;
+
+            _preCantoMovementPoints = _selectedUnit.movementPoints;
+            _selectedUnit.movementPoints = remaining;
+            _isCantoMode = true;
+
+            EnterUnitSelectedMode();
+
+            // Ensure confirming on the unit's own tile is a legal "stay put" exit.
+            if (_validMoveTiles != null && !_validMoveTiles.Contains(_selectedUnit.gridPosition))
+                _validMoveTiles.Add(_selectedUnit.gridPosition);
+
+            return true;
         }
 
         private void TryCommitAttack()
@@ -1006,6 +1069,7 @@ namespace ProjectAstra.Core
             switch (_currentMode)
             {
                 case CursorMode.UnitSelected:
+                    if (_isCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
                     DeselectUnit();
                     break;
                 case CursorMode.Targeting:
@@ -1022,6 +1086,8 @@ namespace ProjectAstra.Core
 
         private void ResetUnitTilesMode()
         {
+            _isCantoMode = false;
+            _lastActionChoice = null;
             _selectedUnit = null;
             _validMoveTiles = null;
             _targetTiles = null;
