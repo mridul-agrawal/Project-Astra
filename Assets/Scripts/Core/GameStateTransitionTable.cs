@@ -90,6 +90,9 @@ namespace ProjectAstra.Core
 
                 new TransitionEntry(GameState.SettingsMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SettingsMenu, GameState.MainMenu),
+
+                new TransitionEntry(GameState.BattleMap, GameState.LevelUpScreen),
+                new TransitionEntry(GameState.LevelUpScreen, GameState.BattleMap),
             };
         }
 

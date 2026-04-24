@@ -15,6 +15,7 @@ namespace ProjectAstra.Core
         ChapterClear,
         GameOver,
         SaveMenu,
-        SettingsMenu
+        SettingsMenu,
+        LevelUpScreen
     }
 }

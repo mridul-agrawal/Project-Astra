@@ -974,6 +974,28 @@ namespace ProjectAstra.Core
                 UnitDeathHook.HandleDeath(attacker, defender, _deathEventChannel);
                 if (attacker.isLord) Convoy.Current = NullConvoy.Instance;
             }
+
+            GrantCombatExp(attacker, defender, result);
+        }
+
+        private static void GrantCombatExp(TestUnit attacker, TestUnit defender, CombatResult result)
+        {
+            if (ExpGranter.Instance == null) return;
+            if (attacker.UnitInstance == null || defender.UnitInstance == null) return;
+
+            if (result.AttackerFired && !result.AttackerDied)
+            {
+                int exp = ExpMath.ComputeCombatExp(
+                    attacker.UnitInstance, defender.UnitInstance, result.DefenderDied);
+                ExpGranter.Instance.Grant(attacker, exp);
+            }
+
+            if (result.DefenderFired && !result.DefenderDied)
+            {
+                int exp = ExpMath.ComputeCombatExp(
+                    defender.UnitInstance, attacker.UnitInstance, result.AttackerDied);
+                ExpGranter.Instance.Grant(defender, exp);
+            }
         }
 
         internal void HandleCancel()

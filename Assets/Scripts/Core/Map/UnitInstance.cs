@@ -27,6 +27,11 @@ namespace ProjectAstra.Core
         public bool IsDead => CurrentHP == 0;
         public bool IsAtLevelCap => CurrentClass != null && CurrentClass.IsPromoted && Level >= PromotedLevelCap;
 
+        // SS-11. Internal level used by the EXP scaling formula: promoted units
+        // carry +20 to represent the 20 unpromoted levels gained pre-promotion,
+        // so they gain less EXP against low-level enemies.
+        public int EffectiveLevel => CurrentClass != null && CurrentClass.IsPromoted ? Level + 20 : Level;
+
         public int BaseNiyati { get; private set; }
         public int NiyatiStoryDelta { get; private set; }
         public NiyatiSymbol NiyatiSymbol { get; private set; }

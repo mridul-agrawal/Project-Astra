@@ -69,6 +69,10 @@ namespace ProjectAstra.Core
             { GameState.SaveMenu, CursorAndMenuActions },
 
             { GameState.SettingsMenu, CursorAndMenuActions },
+
+            // LevelUpScreen is Confirm-only — the modal cannot be cancelled
+            // (FE GBA convention: rolled stats are locked once the screen shows).
+            { GameState.LevelUpScreen, new HashSet<string> { Confirm } },
         };
 
         public static HashSet<string> GetAllowedActions(GameState state)

@@ -118,7 +118,7 @@ namespace ProjectAstra.Core
             ApplyHealing(target, amountHealed);
             staff.ConsumeDurability();
 
-            // TODO: UM-03 — grant staff experience here
+            GrantHealExp(healer, target);
 
             return true;
         }
@@ -160,9 +160,20 @@ namespace ProjectAstra.Core
 
             staff.ConsumeDurability();
 
-            // TODO: UM-03 — grant staff experience here (scale by number of units healed)
+            foreach (var (unit, _) in healed)
+                GrantHealExp(healer, unit);
 
             return true;
+        }
+
+        private static void GrantHealExp(TestUnit healer, TestUnit healed)
+        {
+            if (ExpGranter.Instance == null) return;
+            if (healer == null || healed == null) return;
+            if (healer.UnitInstance == null || healed.UnitInstance == null) return;
+
+            int exp = ExpMath.ComputeHealExp(healer.UnitInstance, healed.UnitInstance);
+            ExpGranter.Instance.Grant(healer, exp);
         }
 
         private static int GetMag(TestUnit unit)
