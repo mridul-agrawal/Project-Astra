@@ -17,13 +17,11 @@ namespace ProjectAstra.Core
         }
 
         /// <summary>
-        /// Returns terrain DEF and AVO bonuses for a given movement type.
-        /// Flying units receive no terrain bonuses (they hover above the ground).
+        /// Returns terrain DEF and AVO bonuses. Applied uniformly across movement types —
+        /// flying units are immune to movement costs, not to terrain cover.
         /// </summary>
         public static (int def, int avo) GetTerrainBonuses(TerrainStats stats, MovementType moveType)
         {
-            if (moveType == MovementType.Flying)
-                return (0, 0);
             return (stats.defenceBonus, stats.avoidBonus);
         }
 

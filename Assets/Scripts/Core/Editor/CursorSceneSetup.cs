@@ -142,16 +142,18 @@ namespace ProjectAstra.Core.Editor
             var karna = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Karna.asset");
             var priya = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Priya.asset");
 
+            var pegasusKnight = AssetDatabase.LoadAssetAtPath<ClassDefinition>("Assets/ScriptableObjects/Units/Classes/PegasusKnight.asset");
+
             CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, unitDef: arjun);
             CreateUnit("PlayerUnit2", unitSprite, new Vector2Int(4, 3), Faction.Player, 4, MovementType.Foot, unitDef: karna);
-            CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted, unitDef: priya);
+            CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted, unitDef: priya, classOverride: pegasusKnight);
             CreateUnit("EnemyUnit1",  unitSprite, new Vector2Int(6, 5), Faction.Enemy,  3, MovementType.Foot);
             CreateUnit("EnemyUnit2",  unitSprite, new Vector2Int(7, 4), Faction.Enemy,  4, MovementType.Armoured);
         }
 
         private static void CreateUnit(string name, Sprite sprite, Vector2Int pos, Faction faction,
             int movementPoints, MovementType movementType,
-            UnitDefinition unitDef = null)
+            UnitDefinition unitDef = null, ClassDefinition classOverride = null)
         {
             var unitGO = new GameObject(name);
 
@@ -164,10 +166,11 @@ namespace ProjectAstra.Core.Editor
             unit.attackRangeMin = 1;
             unit.attackRangeMax = 1;
 
-            if (unitDef != null)
+            if (unitDef != null || classOverride != null)
             {
                 var so = new SerializedObject(unit);
-                so.FindProperty("_unitDefinition").objectReferenceValue = unitDef;
+                if (unitDef != null) so.FindProperty("_unitDefinition").objectReferenceValue = unitDef;
+                if (classOverride != null) so.FindProperty("_classOverride").objectReferenceValue = classOverride;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
 

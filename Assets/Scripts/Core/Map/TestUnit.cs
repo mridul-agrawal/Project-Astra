@@ -39,6 +39,8 @@ namespace ProjectAstra.Core
 
         [Header("Unit System (optional)")]
         [SerializeField] private UnitDefinition _unitDefinition;
+        [Tooltip("Optional class override — when set, the unit is spawned in this class instead of the definition's DefaultClass. Useful for scene-level overrides (e.g. promoting a test unit to a Flying class without editing the character asset).")]
+        [SerializeField] private ClassDefinition _classOverride;
 
         private UnitInstance _unitInstance;
         private UnitInventory _inventory;
@@ -94,10 +96,21 @@ namespace ProjectAstra.Core
                 _normalColor = _spriteRenderer.color;
 
             if (_unitDefinition != null && _unitInstance == null)
-                BindUnitInstance(new UnitInstance(_unitDefinition));
+            {
+                var instance = _classOverride != null
+                    ? new UnitInstance(_unitDefinition, _classOverride, _unitDefinition.BaseLevel, _unitDefinition.BaseStats)
+                    : new UnitInstance(_unitDefinition);
+                BindUnitInstance(instance);
+            }
 
             if (_unitDefinition != null && _unitDefinition.IsLord)
                 isLord = true;
+
+            if (movementType == MovementType.Flying && _spriteRenderer != null
+                && _spriteRenderer.GetComponent<FlyingHoverAnimator>() == null)
+            {
+                _spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
+            }
 
             SnapToGridPosition();
         }
