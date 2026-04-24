@@ -28964,6 +28964,7 @@ MonoBehaviour:
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 0}
+  _classOverride: {fileID: 0}
 --- !u!114 &1057541517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43864,6 +43865,7 @@ MonoBehaviour:
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 11400000, guid: 77b0b5ce412237347a8e81f50d27e400, type: 2}
+  _classOverride: {fileID: 11400000, guid: f08d9f780209b1541bf1e8ed3b42e553, type: 2}
 --- !u!114 &1646132338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48024,6 +48026,7 @@ MonoBehaviour:
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 11400000, guid: d3f1b7fa0391d7a4f8c3707b94986492, type: 2}
+  _classOverride: {fileID: 0}
 --- !u!114 &1805699397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53211,6 +53214,7 @@ MonoBehaviour:
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 11400000, guid: 21dbed90cf67e094db83f36e66765ddd, type: 2}
+  _classOverride: {fileID: 0}
 --- !u!114 &1965340244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58152,6 +58156,7 @@ MonoBehaviour:
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
   _unitDefinition: {fileID: 11400000, guid: 4f29fa27463b3854a928a52f29fe3663, type: 2}
+  _classOverride: {fileID: 0}
 --- !u!114 &2100872772
 MonoBehaviour:
   m_ObjectHideFlags: 0

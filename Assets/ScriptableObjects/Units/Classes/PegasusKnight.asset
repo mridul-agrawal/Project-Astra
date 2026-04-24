@@ -16,7 +16,7 @@ MonoBehaviour:
   _classType: 2
   _movementRange: 7
   _movementType: 3
-  _weaponWhitelist: 01000000
+  _weaponWhitelist: 0100000007000000
   _statGrowthModifiers:
     _values: fbffffff00000000050000000500000005000000fbffffff0a0000000000000000000000
   _statCaps:
