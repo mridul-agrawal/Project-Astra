@@ -26,6 +26,8 @@ namespace ProjectAstra.Core
             var def = victim.UnitInstance?.Definition;
             var classDef = victim.UnitInstance?.CurrentClass;
 
+            bool lordDeath = victim.isLord || (def != null && def.IsLord);
+
             var args = new UnitDeathEventArgs
             {
                 unitId           = def != null ? def.UnitId : victim.name,
@@ -38,6 +40,8 @@ namespace ProjectAstra.Core
                 tileCoordinates  = victim.gridPosition,
                 activeSupports   = new List<UnitSupportSnapshot>(),
                 oneLineIdentity  = def != null ? def.OneLineIdentity : "",
+                isLord           = lordDeath,
+                victim           = victim,
             };
 
             // Unregister BEFORE raising so listeners (e.g. BattleVictoryWatcher)
@@ -49,7 +53,10 @@ namespace ProjectAstra.Core
 
             if (victim.Inventory != null) victim.Inventory.Clear();
 
-            victim.gameObject.SetActive(false);
+            // Lord fade + dialogue + GameOver is driven by LordDeathWatcher; keep
+            // the sprite visible so the watcher's coroutine can fade it.
+            if (!lordDeath)
+                victim.gameObject.SetActive(false);
 
             channel?.Raise(args);
         }

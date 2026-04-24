@@ -53,6 +53,16 @@ namespace ProjectAstra.Core
         // One-line identity authored on UnitDefinition for named enemies; empty
         // for player / generic / civilian entries.
         public string oneLineIdentity;
+
+        // UM-02: true when the victim was the player's Lord. Drives LordDeathWatcher
+        // to pre-empt the faction-wipe path and play the Lord's authored last-words
+        // sequence before transitioning to GameOver.
+        public bool isLord;
+
+        // Transient reference to the dying unit so LordDeathWatcher can fade the
+        // sprite before hiding. Not serialized (NonSerialized so the struct stays
+        // Unity-serializable for the payload fields above).
+        [NonSerialized] public TestUnit victim;
     }
 
     [CreateAssetMenu(fileName = "UnitDeathEventChannel",

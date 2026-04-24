@@ -142,7 +142,7 @@ namespace ProjectAstra.Core.Editor
             var karna = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Karna.asset");
             var priya = AssetDatabase.LoadAssetAtPath<UnitDefinition>("Assets/ScriptableObjects/Units/Characters/Priya.asset");
 
-            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, isLord: true, unitDef: arjun);
+            CreateUnit("PlayerUnit1", unitSprite, new Vector2Int(2, 2), Faction.Player, 3, MovementType.Foot, unitDef: arjun);
             CreateUnit("PlayerUnit2", unitSprite, new Vector2Int(4, 3), Faction.Player, 4, MovementType.Foot, unitDef: karna);
             CreateUnit("PlayerUnit3", unitSprite, new Vector2Int(3, 1), Faction.Player, 5, MovementType.Mounted, unitDef: priya);
             CreateUnit("EnemyUnit1",  unitSprite, new Vector2Int(6, 5), Faction.Enemy,  3, MovementType.Foot);
@@ -150,14 +150,14 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void CreateUnit(string name, Sprite sprite, Vector2Int pos, Faction faction,
-            int movementPoints, MovementType movementType, bool isLord = false,
+            int movementPoints, MovementType movementType,
             UnitDefinition unitDef = null)
         {
             var unitGO = new GameObject(name);
 
             var unit = unitGO.AddComponent<TestUnit>();
             unit.faction = faction;
-            unit.isLord = isLord;
+            unit.isLord = unitDef != null && unitDef.IsLord;
             unit.gridPosition = pos;
             unit.movementPoints = movementPoints;
             unit.movementType = movementType;

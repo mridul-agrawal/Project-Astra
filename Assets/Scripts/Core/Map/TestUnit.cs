@@ -13,6 +13,10 @@ namespace ProjectAstra.Core
 
         [Header("Unit Identity")]
         public Faction faction = Faction.Player;
+        // Source of truth is UnitDefinition.IsLord — synced in Start. Serialized here so
+        // scene-only test units (no definition) can still flag themselves.
+        // TODO(UM-02-followups): cannot-dismiss guard + mandatory-deployment guard land
+        // when roster and deployment systems ship.
         public bool isLord;
 
         [Header("Unit Stats")]
@@ -91,6 +95,9 @@ namespace ProjectAstra.Core
 
             if (_unitDefinition != null && _unitInstance == null)
                 BindUnitInstance(new UnitInstance(_unitDefinition));
+
+            if (_unitDefinition != null && _unitDefinition.IsLord)
+                isLord = true;
 
             SnapToGridPosition();
         }

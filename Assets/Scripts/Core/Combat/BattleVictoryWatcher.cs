@@ -46,6 +46,12 @@ namespace ProjectAstra.Core
         private void OnUnitDied(UnitDeathEventArgs args)
         {
             if (_concluded) return;
+
+            // UM-02: Lord death pre-empts the faction-wipe path. LordDeathWatcher
+            // owns the conclusion (fade → last-words dialogue → GameOver); this
+            // watcher steps aside so both handlers don't race to RequestTransition.
+            if (args.isLord) { _concluded = true; return; }
+
             if (TurnManager.Instance == null) return;
 
             bool anyPlayer = TurnManager.Instance.UnitRegistry.HasUnitsOfFaction(Faction.Player);
