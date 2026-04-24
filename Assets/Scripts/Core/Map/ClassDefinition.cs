@@ -31,6 +31,10 @@ namespace ProjectAstra.Core
         [SerializeField] private ClassDefinition _baseClass;
         [SerializeField] private StatArray _promotionBonuses;
 
+        [Header("EXP (Experience Scaling)")]
+        [Tooltip("Divisor in the FE GBA EXP formula. Higher = less EXP per action. FE GBA canon: Myrmidon ≈ 2, most classes ≈ 3, Lord typically 1.0 so the protagonist levels faster.")]
+        [SerializeField, Min(0.1f)] private float _expPowerFactor = 1f;
+
         [Header("Abilities")]
         [SerializeField] private string[] _classAbilities;
 
@@ -52,6 +56,7 @@ namespace ProjectAstra.Core
         public ClassDefinition[] PromotionTargets => _promotionTargets;
         public ClassDefinition BaseClass => _baseClass;
         public StatArray PromotionBonuses => _promotionBonuses;
+        public float ExpPowerFactor => _expPowerFactor;
         public string[] ClassAbilities => _classAbilities;
         public string MapSpriteId => _mapSpriteId;
         public string CombatAnimationSetId => _combatAnimationSetId;

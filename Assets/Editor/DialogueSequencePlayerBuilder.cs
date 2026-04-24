@@ -46,13 +46,16 @@ namespace ProjectAstra.EditorTools
 
             rootGo.AddComponent<GraphicRaycaster>();
 
-            var dim = new GameObject("DimBackground", typeof(RectTransform));
-            dim.transform.SetParent(rootGo.transform, false);
-            dim.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.75f);
-            StretchFull(dim.GetComponent<RectTransform>());
-
             var overlayGo = new GameObject("OverlayRoot", typeof(RectTransform));
             overlayGo.transform.SetParent(rootGo.transform, false);
+
+            // DimBackground must be a CHILD of overlayGo (not a sibling) so it
+            // inherits overlayGo.SetActive(false) and doesn't dim the scene
+            // while the overlay is dormant.
+            var dim = new GameObject("DimBackground", typeof(RectTransform));
+            dim.transform.SetParent(overlayGo.transform, false);
+            dim.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.75f);
+            StretchFull(dim.GetComponent<RectTransform>());
 
             var panelGo = new GameObject("Panel", typeof(RectTransform));
             panelGo.transform.SetParent(overlayGo.transform, false);

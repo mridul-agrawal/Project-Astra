@@ -29,6 +29,7 @@ MonoBehaviour:
   _baseClass: {fileID: 0}
   _promotionBonuses:
     _values: 140000000700000002000000060000000800000005000000030000000700000006000000
+  _expPowerFactor: 1
   _classAbilities: []
   _mapSpriteId: 
   _combatAnimationSetId: 

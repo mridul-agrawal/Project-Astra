@@ -23,6 +23,7 @@ namespace ProjectAstra.Core
             GameState.SaveMenu,
             GameState.SettingsMenu,
             GameState.WarLedger,
+            GameState.LevelUpScreen,
         };
 
         // Overlay states whose UI prefab already lives in the parent scene
@@ -32,6 +33,7 @@ namespace ProjectAstra.Core
         private static readonly HashSet<GameState> InSceneOverlays = new()
         {
             GameState.WarLedger,
+            GameState.LevelUpScreen,
         };
 
         private void Awake()

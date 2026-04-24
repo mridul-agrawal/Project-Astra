@@ -451,13 +451,16 @@ namespace ProjectAstra.Core.UI
                 _lvValueText.text = level.ToString();
             }
 
-            // EXP — "Lv. 20 (MAX)" when promoted level cap reached; hidden for enemy.
+            // EXP — "MAX" for promoted cap; "--" for unpromoted Lv 20 (still accumulates silently); hidden for enemy.
             bool showExp = _unit.faction != Faction.Enemy;
             bool atCap = inst != null && inst.IsAtLevelCap;
+            bool atUnpromotedCap = inst != null && inst.CurrentClass != null
+                && !inst.CurrentClass.IsPromoted && inst.Level >= UnitInstance.PromotedLevelCap;
             if (_expValueText != null)
             {
                 _expValueText.gameObject.SetActive(showExp);
                 if (atCap) _expValueText.text = "MAX";
+                else if (atUnpromotedCap) _expValueText.text = "--";
                 else _expValueText.text = (inst?.CurrentEXP ?? 0) + " / " + UnitInstance.ExpPerLevel;
             }
             if (_expLabelText != null) _expLabelText.gameObject.SetActive(showExp);
