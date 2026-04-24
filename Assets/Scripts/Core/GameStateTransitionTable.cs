@@ -75,6 +75,7 @@ namespace ProjectAstra.Core
                 new TransitionEntry(GameState.CombatAnimation, GameState.BattleMap),
 
                 new TransitionEntry(GameState.Dialogue, GameState.BattleMap),
+                new TransitionEntry(GameState.Dialogue, GameState.GameOver),
 
                 new TransitionEntry(GameState.ChapterClear, GameState.Cutscene),
                 new TransitionEntry(GameState.ChapterClear, GameState.SaveMenu),

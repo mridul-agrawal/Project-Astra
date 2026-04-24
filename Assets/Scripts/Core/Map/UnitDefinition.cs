@@ -38,6 +38,12 @@ namespace ProjectAstra.Core
         [Tooltip("One-line identity line shown in the Ledger's left column when this unit dies. Example: \"Commander of the Eastern Wall, sworn to protect the border villages.\"")]
         [SerializeField, TextArea] private string _oneLineIdentity;
 
+        [Header("Lord (UM-02)")]
+        [Tooltip("Exactly one player unit in the campaign should have this set. When the Lord dies, the chapter ends in Game Over regardless of other survivors.")]
+        [SerializeField] private bool _isLord;
+        [Tooltip("2–4 authored lines played as a dialogue sequence when this unit dies. Only consulted when IsLord is true.")]
+        [SerializeField, TextArea(1, 3)] private string[] _lastWordsLines;
+
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
@@ -53,5 +59,7 @@ namespace ProjectAstra.Core
         public Personality Personality => _personality;
         public bool IsNamedCommander => _isNamedCommander;
         public string OneLineIdentity => _oneLineIdentity;
+        public bool IsLord => _isLord;
+        public string[] LastWordsLines => _lastWordsLines;
     }
 }
