@@ -32941,6 +32941,8 @@ GameObject:
   - component: {fileID: 1202195121}
   - component: {fileID: 1202195123}
   - component: {fileID: 1202195124}
+  - component: {fileID: 1202195126}
+  - component: {fileID: 1202195125}
   m_Layer: 0
   m_Name: BattleVictoryWatcher
   m_TagString: Untagged
@@ -33006,6 +33008,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ExpGranter
   _expGainOverlay: {fileID: 1995867636}
   _levelUpScreen: {fileID: 843855194}
+--- !u!114 &1202195125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202195120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40b5441400db8014e85487c59d291054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.HealingTileSystem
+  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
+  _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
+  _mapRenderer: {fileID: 268787981}
+  _healFloatSpawner: {fileID: 1202195126}
+--- !u!114 &1202195126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1202195120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b321bb501852d24381416c337389a71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.HealFloatSpawner
+  _floatUpSeconds: 1.2
+  _holdSeconds: 0.3
+  _riseDistance: 0.6
+  _spawnOffset: {x: 0, y: 0.6, z: 0}
+  _fontSize: 48
+  _textColor: {r: 0.486, g: 0.827, b: 0.416, a: 1}
+  _outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  _canvasScale: 0.025
+  _sortingLayerName: UIOverlay
+  _sortingOrder: 100
 --- !u!1 &1210866893
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ namespace ProjectAstra.Core
     [CreateAssetMenu(menuName = "Project Astra/Map/Terrain Stat Table")]
     public class TerrainStatTable : ScriptableObject
     {
-        [SerializeField] private TerrainStats[] _stats = new TerrainStats[18];
+        [SerializeField] private TerrainStats[] _stats = new TerrainStats[19];
 
         public TerrainStats GetStats(TerrainType terrain)
         {
@@ -35,8 +35,8 @@ namespace ProjectAstra.Core
 
         private void OnValidate()
         {
-            if (_stats.Length != 18)
-                Array.Resize(ref _stats, 18);
+            if (_stats.Length != 19)
+                Array.Resize(ref _stats, 19);
         }
     }
 

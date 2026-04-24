@@ -19,6 +19,7 @@ namespace ProjectAstra.Core
         DestructibleWall,
         Rubble,
         Sand,
-        Void
+        Void,
+        Throne
     }
 }

@@ -111,7 +111,7 @@ MonoBehaviour:
     moveCostThief: 1
     defenceBonus: 2
     avoidBonus: 20
-    healPerTurn: 10
+    healPerTurn: 5
     isInteractable: 0
   - moveCostFoot: 1
     moveCostMounted: 1
@@ -119,9 +119,9 @@ MonoBehaviour:
     moveCostFlying: 1
     moveCostPirate: 1
     moveCostThief: 1
-    defenceBonus: 3
-    avoidBonus: 30
-    healPerTurn: 10
+    defenceBonus: 1
+    avoidBonus: 10
+    healPerTurn: 5
     isInteractable: 0
   - moveCostFoot: 1
     moveCostMounted: 1
@@ -192,4 +192,14 @@ MonoBehaviour:
     defenceBonus: 0
     avoidBonus: 0
     healPerTurn: 0
+    isInteractable: 0
+  - moveCostFoot: 1
+    moveCostMounted: 1
+    moveCostArmoured: 1
+    moveCostFlying: 1
+    moveCostPirate: 1
+    moveCostThief: 1
+    defenceBonus: 3
+    avoidBonus: 30
+    healPerTurn: 5
     isInteractable: 0
