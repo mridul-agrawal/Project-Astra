@@ -57,6 +57,8 @@ namespace ProjectAstra.Core
         public ClassDefinition BaseClass => _baseClass;
         public StatArray PromotionBonuses => _promotionBonuses;
         public float ExpPowerFactor => _expPowerFactor;
+        // Canto — cavalry and flying units keep any unused movement after an action.
+        public bool HasCanto => _classType == ClassType.Cavalry || _classType == ClassType.Flying;
         public string[] ClassAbilities => _classAbilities;
         public string MapSpriteId => _mapSpriteId;
         public string CombatAnimationSetId => _combatAnimationSetId;
