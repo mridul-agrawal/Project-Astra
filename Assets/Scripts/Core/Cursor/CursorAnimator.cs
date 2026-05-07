@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Cursor
 {
     /// <summary>
     /// Drives a sinusoidal alpha pulse on a SpriteRenderer for cursor idle animation.

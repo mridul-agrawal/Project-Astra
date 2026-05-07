@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Cursor;
 
 namespace ProjectAstra.EditorTools
 {
@@ -149,7 +150,7 @@ namespace ProjectAstra.EditorTools
                 ?? screen.AddComponent<ProjectAstra.Core.UI.TradeScreenUI>();
 
             // Auto-wire to GridCursor if present — saves a manual drag-and-drop step.
-            var cursor = Object.FindFirstObjectByType<ProjectAstra.Core.GridCursor>();
+            var cursor = Object.FindFirstObjectByType<ProjectAstra.Core.Cursor.GridCursor>();
             if (cursor != null)
             {
                 var so = new SerializedObject(cursor);

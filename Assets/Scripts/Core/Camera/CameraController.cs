@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]

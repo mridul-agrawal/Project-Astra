@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Cursor;
 
 namespace ProjectAstra.EditorTools
 {
@@ -417,7 +418,7 @@ namespace ProjectAstra.EditorTools
 
         static void WireGridCursor(Core.UI.UnitInfoPanelUI controller)
         {
-            var cursor = Object.FindObjectOfType<ProjectAstra.Core.GridCursor>();
+            var cursor = Object.FindObjectOfType<ProjectAstra.Core.Cursor.GridCursor>();
             if (cursor == null) { Debug.LogWarning("No GridCursor in scene — UnitInfoPanel opened-by-cursor wiring skipped."); return; }
             var so = new SerializedObject(cursor);
             var prop = so.FindProperty("_unitInfoPanelUI");

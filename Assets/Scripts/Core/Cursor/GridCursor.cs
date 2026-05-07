@@ -9,7 +9,7 @@ using ProjectAstra.Core.UI;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Cursor
 {
     /// <summary>
     /// Grid-snapped cursor for the tactical battle map. Tracks integer grid position,

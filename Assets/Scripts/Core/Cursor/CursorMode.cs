@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Cursor
 {
     /// <summary>
     /// Operational modes for the grid cursor, controlling movement constraints and input response.

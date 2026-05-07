@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Progression;
 using UnityEngine;
 

@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using TMPro;

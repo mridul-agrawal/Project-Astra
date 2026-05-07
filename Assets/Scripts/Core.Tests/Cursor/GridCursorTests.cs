@@ -3,8 +3,10 @@ using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Cursor;
+using CursorMode = ProjectAstra.Core.Cursor.CursorMode;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Cursor
 {
     [TestFixture]
     public class GridCursorTests
