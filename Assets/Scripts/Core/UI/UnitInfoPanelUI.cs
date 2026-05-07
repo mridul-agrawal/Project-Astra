@@ -5,6 +5,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Support;
 using ProjectAstra.Core.UI.Interfaces;
+using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI

@@ -11,6 +11,7 @@ using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Forecast;
+using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 

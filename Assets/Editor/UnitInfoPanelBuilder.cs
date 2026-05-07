@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Support;
+using ProjectAstra.Core.UI.Inventory;
 
 namespace ProjectAstra.EditorTools
 {
@@ -203,7 +204,7 @@ namespace ProjectAstra.EditorTools
             if (prop != null) prop.objectReferenceValue = value;
         }
 
-        static Core.UI.UnitInfoItemDetailUI BuildItemDetailSubpanel(Transform parent)
+        static Core.UI.Inventory.UnitInfoItemDetailUI BuildItemDetailSubpanel(Transform parent)
         {
             var root = NewImage("ItemDetailPanel", parent, ColIndigo);
             var rt = root.GetComponent<RectTransform>();
@@ -294,7 +295,7 @@ namespace ProjectAstra.EditorTools
             dRt.anchorMin = new Vector2(0, 0); dRt.anchorMax = new Vector2(1, 0); dRt.pivot = new Vector2(0.5f, 0);
             dRt.anchoredPosition = new Vector2(0, 70); dRt.sizeDelta = new Vector2(-60, 30);
 
-            var comp = root.AddComponent<Core.UI.UnitInfoItemDetailUI>();
+            var comp = root.AddComponent<Core.UI.Inventory.UnitInfoItemDetailUI>();
             var so = new SerializedObject(comp);
             so.FindProperty("_nameText").objectReferenceValue = title;
             so.FindProperty("_typeText").objectReferenceValue = type;
@@ -407,7 +408,7 @@ namespace ProjectAstra.EditorTools
         }
 
         static void WireDetailReferences(Core.UI.UnitInfoPanelUI controller,
-            Core.UI.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfoSupportDetailUI supportDetail)
+            Core.UI.Inventory.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfoSupportDetailUI supportDetail)
         {
             var so = new SerializedObject(controller);
             var itemProp = so.FindProperty("_itemDetail");

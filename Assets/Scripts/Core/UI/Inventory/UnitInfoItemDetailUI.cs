@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Inventory
 {
     // UI-02 page 2 detail view. Read-only item inspector opened on top of the Unit
     // Info Panel's inventory page. Close with Cancel.

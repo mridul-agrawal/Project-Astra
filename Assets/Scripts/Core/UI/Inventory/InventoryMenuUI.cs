@@ -9,7 +9,7 @@ using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Inventory
 {
     /// <summary>
     /// Drives the Indigo Codex inventory popup — a five-slot modal that lists a unit's

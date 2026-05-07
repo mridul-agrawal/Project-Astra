@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Inventory
 {
     // Ref-holder attached to the prefab root by InventoryPopupBuilder. InventoryMenuUI
     // reads these fields instead of walking the hierarchy by name, so renames in the
