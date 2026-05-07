@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Forecast
 {
     // SP-02. Aggregated combat bonus from one or more support partners.
     public struct SupportCombatBonus

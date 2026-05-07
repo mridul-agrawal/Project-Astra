@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Forecast
 {
     // Ref-holder attached to the CombatForecast prefab root by CombatForecastBuilder.
     // CombatForecastUI reads these fields to drive the live text + HP bars + state badges.

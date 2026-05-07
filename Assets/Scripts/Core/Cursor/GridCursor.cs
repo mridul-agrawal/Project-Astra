@@ -8,6 +8,7 @@ using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 

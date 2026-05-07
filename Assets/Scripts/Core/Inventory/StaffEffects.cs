@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core

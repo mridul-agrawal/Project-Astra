@@ -6,7 +6,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Forecast
 {
     /// <summary>
     /// Combat Forecast Panel — previews the outcome of a player-chosen attack before commit.

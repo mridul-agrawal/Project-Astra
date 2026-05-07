@@ -1,3 +1,4 @@
+using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Interfaces
