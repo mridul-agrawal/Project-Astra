@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Stats;

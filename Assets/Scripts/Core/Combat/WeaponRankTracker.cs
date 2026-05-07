@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public class WeaponRankTracker
     {

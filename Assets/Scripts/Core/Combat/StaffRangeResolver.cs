@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Pathfinding;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public static class StaffRangeResolver
     {

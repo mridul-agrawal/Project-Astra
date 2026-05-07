@@ -1,8 +1,9 @@
 using NUnit.Framework;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Combat
 {
     [TestFixture]
     public class CombatEngineTests

@@ -5,7 +5,7 @@ using ProjectAstra.Core.UI;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// Experience Scaling orchestrator. Routes EXP grants through:

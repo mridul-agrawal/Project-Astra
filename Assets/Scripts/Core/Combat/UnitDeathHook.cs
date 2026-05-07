@@ -4,7 +4,7 @@ using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// Shared death-handling logic called from GridCursor.ApplyCombatResult

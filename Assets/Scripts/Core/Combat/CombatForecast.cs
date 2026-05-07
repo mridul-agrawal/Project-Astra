@@ -1,6 +1,6 @@
 using ProjectAstra.Core.Stats;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public struct CombatForecast
     {

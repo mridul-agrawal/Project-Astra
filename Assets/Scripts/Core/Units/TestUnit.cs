@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Pathfinding;
 
 namespace ProjectAstra.Core.Units

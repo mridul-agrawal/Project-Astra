@@ -4,7 +4,7 @@ using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public enum BattleWinner { Player, Enemy, None }
     public enum BattleEndCause { AllEnemiesDead, AllPlayerUnitsDead, Objective, Other }

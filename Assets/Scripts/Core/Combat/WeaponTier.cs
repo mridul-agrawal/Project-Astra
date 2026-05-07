@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public enum WeaponTier
     {

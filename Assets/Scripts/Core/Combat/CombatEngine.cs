@@ -1,7 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public static class CombatEngine
     {

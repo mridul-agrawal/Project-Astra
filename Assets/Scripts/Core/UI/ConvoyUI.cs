@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI

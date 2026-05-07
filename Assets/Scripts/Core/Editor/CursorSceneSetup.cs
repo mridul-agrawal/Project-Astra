@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Camera;
+using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;

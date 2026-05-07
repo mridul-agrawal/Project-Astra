@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public interface IRng
     {
