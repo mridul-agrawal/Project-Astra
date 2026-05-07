@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     /// <summary>
-    /// Dialogue overlay — confirm ends dialogue and returns to battle map.
+    /// Save menu overlay — return or cancel goes back to previous state.
     /// </summary>
-    public class DialogueOverlayUI : MonoBehaviour
+    public class SaveMenuOverlayUI : MonoBehaviour
     {
-        [SerializeField] private Button _endDialogueButton;
+        [SerializeField] private Button _returnButton;
 
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
@@ -16,17 +16,18 @@ namespace ProjectAstra.Core.UI
         {
             AddListenersToMouseClicks();
             AddListenerToGameplayInputs();
-            _endDialogueButton.image.color = Selected;
+            _returnButton.image.color = Selected;
         }
 
         private void AddListenersToMouseClicks()
         {
-            _endDialogueButton.onClick.AddListener(EndDialogue);
+            _returnButton.onClick.AddListener(Return);
         }
 
         private void AddListenerToGameplayInputs()
         {
-            InputManager.Instance.OnConfirm += EndDialogue;
+            InputManager.Instance.OnConfirm += Return;
+            InputManager.Instance.OnCancel += Return;
         }
 
         private void OnDisable()
@@ -37,14 +38,15 @@ namespace ProjectAstra.Core.UI
 
         private void RemoveListenersToMouseClicks()
         {
-            _endDialogueButton.onClick.RemoveListener(EndDialogue);
+            _returnButton.onClick.RemoveListener(Return);
         }
 
         private void RemoveListenerToGameplayInputs()
         {
-            InputManager.Instance.OnConfirm -= EndDialogue;
+            InputManager.Instance.OnConfirm -= Return;
+            InputManager.Instance.OnCancel -= Return;
         }
 
-        private void EndDialogue() => GameStateManager.Instance.RequestTransition(GameState.BattleMap, nameof(DialogueOverlayUI));
+        private void Return() => GameStateManager.Instance.ReturnFromContextMenu(nameof(SaveMenuOverlayUI));
     }
 }

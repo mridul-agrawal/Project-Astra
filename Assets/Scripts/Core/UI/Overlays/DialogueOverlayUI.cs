@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     /// <summary>
-    /// Save menu overlay — return or cancel goes back to previous state.
+    /// Dialogue overlay — confirm ends dialogue and returns to battle map.
     /// </summary>
-    public class SaveMenuOverlayUI : MonoBehaviour
+    public class DialogueOverlayUI : MonoBehaviour
     {
-        [SerializeField] private Button _returnButton;
+        [SerializeField] private Button _endDialogueButton;
 
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
@@ -16,18 +16,17 @@ namespace ProjectAstra.Core.UI
         {
             AddListenersToMouseClicks();
             AddListenerToGameplayInputs();
-            _returnButton.image.color = Selected;
+            _endDialogueButton.image.color = Selected;
         }
 
         private void AddListenersToMouseClicks()
         {
-            _returnButton.onClick.AddListener(Return);
+            _endDialogueButton.onClick.AddListener(EndDialogue);
         }
 
         private void AddListenerToGameplayInputs()
         {
-            InputManager.Instance.OnConfirm += Return;
-            InputManager.Instance.OnCancel += Return;
+            InputManager.Instance.OnConfirm += EndDialogue;
         }
 
         private void OnDisable()
@@ -38,15 +37,14 @@ namespace ProjectAstra.Core.UI
 
         private void RemoveListenersToMouseClicks()
         {
-            _returnButton.onClick.RemoveListener(Return);
+            _endDialogueButton.onClick.RemoveListener(EndDialogue);
         }
 
         private void RemoveListenerToGameplayInputs()
         {
-            InputManager.Instance.OnConfirm -= Return;
-            InputManager.Instance.OnCancel -= Return;
+            InputManager.Instance.OnConfirm -= EndDialogue;
         }
 
-        private void Return() => GameStateManager.Instance.ReturnFromContextMenu(nameof(SaveMenuOverlayUI));
+        private void EndDialogue() => GameStateManager.Instance.RequestTransition(GameState.BattleMap, nameof(DialogueOverlayUI));
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI

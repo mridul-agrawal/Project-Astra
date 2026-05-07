@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     /// <summary>
     /// Combat animation overlay — confirm returns to battle map.

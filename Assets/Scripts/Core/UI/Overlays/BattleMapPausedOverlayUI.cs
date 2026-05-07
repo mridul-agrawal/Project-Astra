@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     public class BattleMapPausedOverlayUI : MonoBehaviour
     {

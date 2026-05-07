@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     /// <summary>
     /// Brief animated counter shown after an EXP-granting action. Counts the

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Overlays
 {
     /// <summary>
     /// Modal that appears when a unit tries to acquire an item with a full inventory.
