@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Cutscene
 {
     /// <summary>
     /// Plays an ordered list of dialogue lines through a shared overlay. Confirm

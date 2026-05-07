@@ -1,5 +1,6 @@
 using System.Collections;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Cutscene;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 

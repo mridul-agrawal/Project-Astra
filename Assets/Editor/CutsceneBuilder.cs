@@ -1,4 +1,5 @@
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Cutscene;
 using UnityEditor;
 
 namespace ProjectAstra.EditorTools

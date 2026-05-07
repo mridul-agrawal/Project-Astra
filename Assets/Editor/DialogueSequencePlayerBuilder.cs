@@ -1,5 +1,6 @@
 using System.IO;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Cutscene;
 using TMPro;
 using UnityEditor;
 using UnityEngine;

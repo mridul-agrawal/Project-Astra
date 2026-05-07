@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Cutscene
 {
     /// <summary>
     /// Cutscene controller. Lives on the "Cutscene" root built by CutsceneBuilder.
