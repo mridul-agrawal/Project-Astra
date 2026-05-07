@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Progression;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.WarLedger
 {
     /// <summary>
     /// War's Ledger runtime controller. Subscribes to GameStateEventChannel;

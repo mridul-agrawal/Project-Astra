@@ -15,6 +15,8 @@ using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.UI.Trade;
+using ProjectAstra.Core.UI.UnitInfo;
+using ProjectAstra.Core.UI.WarLedger;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor

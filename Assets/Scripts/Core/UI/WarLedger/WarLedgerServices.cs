@@ -1,6 +1,6 @@
 using ProjectAstra.Core.Progression;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.WarLedger
 {
     /// <summary>
     /// Simple service-locator for the War's Ledger. Keeps the Ledger's dependency

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.WarLedger
 {
     /// <summary>
     /// Ref-holder on the WarLedger prefab root. WarLedgerUI reads + mutates
