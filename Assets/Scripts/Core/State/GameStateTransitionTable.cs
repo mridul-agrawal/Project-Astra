@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.State
 {
     [CreateAssetMenu(fileName = "TransitionTable", menuName = "Project Astra/Core/Transition Table")]
     /// <summary>Data-driven whitelist of legal GameState transitions, stored as a ScriptableObject and queried via HashSet lookup.</summary>

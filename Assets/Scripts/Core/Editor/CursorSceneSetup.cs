@@ -8,6 +8,7 @@ using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Progression;
+using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Convoy;

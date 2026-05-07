@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Progression;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.WarLedger
 {

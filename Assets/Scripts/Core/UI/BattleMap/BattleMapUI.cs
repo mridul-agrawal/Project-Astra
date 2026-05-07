@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.BattleMap
 {

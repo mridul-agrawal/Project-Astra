@@ -4,7 +4,7 @@ using UnityEngine;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.State
 {
     /// <summary>
     /// Singleton state machine that owns the current GameState, validates transitions, and enforces one-transition-per-frame.

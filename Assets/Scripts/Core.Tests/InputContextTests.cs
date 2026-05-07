@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using ProjectAstra.Core;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Tests
 {

@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.State
 {
     /// <summary>All top-level game states — only one active at a time, transitions validated by GameStateTransitionTable.</summary>
     public enum GameState

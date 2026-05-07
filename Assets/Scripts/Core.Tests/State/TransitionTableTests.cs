@@ -2,8 +2,9 @@ using System;
 using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.State
 {
     [TestFixture]
     public class TransitionTableTests
