@@ -4,6 +4,7 @@ using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Camera;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
 

@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Pathfinding
 {
     /// <summary>
     /// Classification for how a unit traverses terrain. Maps 1:1 to the moveCost fields

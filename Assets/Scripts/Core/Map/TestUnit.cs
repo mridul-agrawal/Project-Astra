@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Pathfinding;
 
 namespace ProjectAstra.Core
 {

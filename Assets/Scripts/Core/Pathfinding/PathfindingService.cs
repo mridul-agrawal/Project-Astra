@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Grid;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Pathfinding
 {
     /// <summary>
     /// Wires the stateless Pathfinder to live game systems (MapRenderer + TerrainStatTable).

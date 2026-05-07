@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Pathfinding
 {
     public class PathArrowRenderer : MonoBehaviour
     {

@@ -4,8 +4,9 @@ using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Pathfinding;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Pathfinding
 {
     [TestFixture]
     public class PathfinderTests

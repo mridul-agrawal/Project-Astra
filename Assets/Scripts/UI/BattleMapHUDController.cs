@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Pathfinding;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

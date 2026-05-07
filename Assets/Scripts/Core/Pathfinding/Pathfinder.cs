@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Grid;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Pathfinding
 {
     /// <summary>
     /// Static utility class providing Dijkstra-based pathfinding for the tactical grid.
