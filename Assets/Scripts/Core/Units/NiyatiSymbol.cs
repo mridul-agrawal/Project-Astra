@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     public enum NiyatiSymbol
     {

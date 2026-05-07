@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     // CC-01. Sarathi archetype assigned to allied NPC units.
     public enum Personality

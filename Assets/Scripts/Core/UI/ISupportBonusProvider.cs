@@ -1,3 +1,5 @@
+using ProjectAstra.Core.Units;
+
 namespace ProjectAstra.Core.UI
 {
     // SP-02. Returns the aggregated support combat bonus currently active on a

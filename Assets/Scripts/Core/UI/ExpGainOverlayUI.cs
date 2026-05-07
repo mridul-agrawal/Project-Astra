@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI
 {

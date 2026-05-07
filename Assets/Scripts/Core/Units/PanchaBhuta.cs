@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     // SP-03. Elemental affinity.
     public enum PanchaBhuta

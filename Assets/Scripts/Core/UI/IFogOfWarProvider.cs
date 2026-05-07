@@ -1,3 +1,5 @@
+using ProjectAstra.Core.Units;
+
 namespace ProjectAstra.Core.UI
 {
     // HM-08 / MT-04. Gates Unit Info Panel open on a unit that has not yet been

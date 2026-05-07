@@ -6,6 +6,7 @@ using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.Units;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 

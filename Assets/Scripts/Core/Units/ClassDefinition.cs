@@ -2,7 +2,7 @@ using UnityEngine;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Stats;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     [CreateAssetMenu(menuName = "Project Astra/Units/Class Definition")]
     public class ClassDefinition : ScriptableObject

@@ -1,7 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Stats;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     [CreateAssetMenu(menuName = "Project Astra/Units/Unit Definition")]
     public class UnitDefinition : ScriptableObject

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     /// <summary>
     /// Sinusoidal vertical bob for flying-unit map sprites, giving the visual cue

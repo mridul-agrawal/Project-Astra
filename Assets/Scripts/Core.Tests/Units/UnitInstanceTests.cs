@@ -3,8 +3,9 @@ using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Units
 {
     [TestFixture]
     public class UnitInstanceTests

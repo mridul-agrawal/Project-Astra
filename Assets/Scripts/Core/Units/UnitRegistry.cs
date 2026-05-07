@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     public class UnitRegistry
     {

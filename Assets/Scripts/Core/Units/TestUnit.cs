@@ -1,7 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Pathfinding;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     /// <summary>
     /// Minimal test unit for exercising cursor, movement, and targeting flows.

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     /// <summary>
     /// Animates a unit moving tile-by-tile along a given path. Reusable for player,

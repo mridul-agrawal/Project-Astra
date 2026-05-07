@@ -8,6 +8,7 @@ using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor
 {

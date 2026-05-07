@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Units
 {
     // SP-01. Integer values match SupportBond.BondLevel so casts round-trip.
     public enum BondStage

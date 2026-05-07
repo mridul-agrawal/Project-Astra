@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI
 {
