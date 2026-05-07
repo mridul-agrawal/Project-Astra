@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Progression
 {
     /// <summary>
-    /// Chapter Clear controller. Lives on the "ChapterClear" root built by ChapterClearBuilder.
+    /// Game Over controller. Lives on the "GameOver" root built by GameOverBuilder.
     /// Discovers its buttons at OnEnable from ButtonsContainer's children in sibling order —
-    /// index 0 → Cutscene, 1 → SaveMenu. The order must match ChapterClearBuilder.ButtonLabels.
+    /// index 0 → MainMenu, 1 → SaveMenu. The order must match GameOverBuilder.ButtonLabels.
     /// </summary>
-    public class ChapterClearUI : MonoBehaviour
+    public class GameOverUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);
         [SerializeField] private Color _selectedTint = new(1f, 1f, 1f, 1f);
@@ -39,8 +39,8 @@ namespace ProjectAstra.Core.UI
             var container = transform.Find("ButtonsContainer");
             if (container == null)
             {
-                Debug.LogError("[ChapterClearUI] ButtonsContainer child not found. " +
-                               "Expected hierarchy: ChapterClear/ButtonsContainer/Button_NN_*. Did ChapterClearBuilder run?");
+                Debug.LogError("[GameOverUI] ButtonsContainer child not found. " +
+                               "Expected hierarchy: GameOver/ButtonsContainer/Button_NN_*. Did GameOverBuilder run?");
                 return false;
             }
 
@@ -53,8 +53,8 @@ namespace ProjectAstra.Core.UI
 
             if (list.Count != 2)
             {
-                Debug.LogError($"[ChapterClearUI] Expected 2 buttons under ButtonsContainer, found {list.Count}. " +
-                               "Check ChapterClearBuilder.ButtonLabels.");
+                Debug.LogError($"[GameOverUI] Expected 2 buttons under ButtonsContainer, found {list.Count}. " +
+                               "Check GameOverBuilder.ButtonLabels.");
                 return false;
             }
 
@@ -64,13 +64,13 @@ namespace ProjectAstra.Core.UI
 
         private void WireClicks()
         {
-            _buttons[0].onClick.AddListener(GoToCutscene);
+            _buttons[0].onClick.AddListener(GoToMainMenu);
             _buttons[1].onClick.AddListener(GoToSaveMenu);
         }
 
         private void UnwireClicks()
         {
-            _buttons[0].onClick.RemoveListener(GoToCutscene);
+            _buttons[0].onClick.RemoveListener(GoToMainMenu);
             _buttons[1].onClick.RemoveListener(GoToSaveMenu);
         }
 
@@ -88,11 +88,11 @@ namespace ProjectAstra.Core.UI
             InputManager.Instance.OnConfirm    -= ConfirmSelection;
         }
 
-        private void GoToCutscene() => GameStateManager.Instance.RequestTransition(GameState.Cutscene, nameof(ChapterClearUI));
-        private void GoToSaveMenu() => GameStateManager.Instance.RequestTransition(GameState.SaveMenu, nameof(ChapterClearUI));
+        private void GoToMainMenu() => GameStateManager.Instance.RequestTransition(GameState.MainMenu, nameof(GameOverUI));
+        private void GoToSaveMenu() => GameStateManager.Instance.RequestTransition(GameState.SaveMenu, nameof(GameOverUI));
 
         // Guards input callbacks against firing during an in-progress transition away from this screen.
-        private bool IsNotActiveState => GameStateManager.Instance.CurrentState != GameState.ChapterClear;
+        private bool IsNotActiveState => GameStateManager.Instance.CurrentState != GameState.GameOver;
 
         private void Navigate(Vector2Int dir)
         {

@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Progression
 {
     /// <summary>
     /// Spawns a brief world-space "+N" text above a unit when a heal resolves.

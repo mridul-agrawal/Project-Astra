@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Progression
 {
     /// <summary>
     /// Modal level-up screen. Displays the unit's portrait, name, the level
