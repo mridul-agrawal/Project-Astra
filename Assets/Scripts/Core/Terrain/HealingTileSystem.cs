@@ -3,7 +3,7 @@ using ProjectAstra.Core.UI;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Terrain
 {
     /// <summary>
     /// Phase-start healing: any unit of the current-phase faction standing on a
