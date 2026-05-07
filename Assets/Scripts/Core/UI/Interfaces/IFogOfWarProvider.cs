@@ -1,6 +1,6 @@
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Interfaces
 {
     // HM-08 / MT-04. Gates Unit Info Panel open on a unit that has not yet been
     // revealed by torchlight. Once revealed, a unit remains revealed for the

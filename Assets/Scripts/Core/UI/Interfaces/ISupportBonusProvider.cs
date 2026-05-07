@@ -1,6 +1,6 @@
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Interfaces
 {
     // SP-02. Returns the aggregated support combat bonus currently active on a
     // unit (sum across all partners in range). Also exposes a per-pair query used

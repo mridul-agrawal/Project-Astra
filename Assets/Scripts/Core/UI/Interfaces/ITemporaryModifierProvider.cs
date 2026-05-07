@@ -1,7 +1,7 @@
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Interfaces
 {
     // UI-02. Returns the net temporary-modifier delta per stat for display in the
     // Unit Info Panel. Providers sum across all active sources (support, terrain,
