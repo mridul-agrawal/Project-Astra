@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using TMPro;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.BattleMap
 {
     /// <summary>
     /// Battle map debug UI — phase controls, allies toggle, and transition buttons.

@@ -9,6 +9,7 @@ using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core.Cursor;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.BattleMap
 {
     /// <summary>
     /// Unit Action Menu popup — appears after a unit moves, showing context-dependent

@@ -5,6 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.UI.BattleMap;
 
 namespace ProjectAstra.EditorTools
 {
@@ -413,7 +414,7 @@ namespace ProjectAstra.EditorTools
 
         static void WireController(RectTransform root)
         {
-            var controller = root.gameObject.AddComponent<ProjectAstra.UI.BattleMapHUDController>();
+            var controller = root.gameObject.AddComponent<BattleMapHUDController>();
 
             // Unit card refs
             controller.UnitCardRoot  = root.Find("UnitCard").gameObject;

@@ -8,7 +8,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.UI
+namespace ProjectAstra.Core.UI.BattleMap
 {
     /// <summary>
     /// Runtime controller for the Battle Map HUD (Unit Card / Objective Panel / Tile Info Panel).
