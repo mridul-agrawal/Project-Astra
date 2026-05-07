@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core.Tests.Inventory
 {

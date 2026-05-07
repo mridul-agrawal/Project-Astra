@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Stats
 {
     public enum StatIndex
     {

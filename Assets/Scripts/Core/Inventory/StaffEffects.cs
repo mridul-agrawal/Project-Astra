@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core
 {

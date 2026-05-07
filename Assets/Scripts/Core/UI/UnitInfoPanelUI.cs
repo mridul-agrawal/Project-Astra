@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core.UI
 {

@@ -1,3 +1,5 @@
+using ProjectAstra.Core.Stats;
+
 namespace ProjectAstra.Core.UI
 {
     // UI-02. Returns the net temporary-modifier delta per stat for display in the

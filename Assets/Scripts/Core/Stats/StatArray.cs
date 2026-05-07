@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Stats
 {
     [Serializable]
     public struct StatArray
