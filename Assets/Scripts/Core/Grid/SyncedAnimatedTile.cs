@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     /// <summary>
     /// Animated tile that stays globally synchronized — all instances of the same asset

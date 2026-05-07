@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     /// <summary>
     /// Loads a MapData asset into the MapRenderer on scene start.

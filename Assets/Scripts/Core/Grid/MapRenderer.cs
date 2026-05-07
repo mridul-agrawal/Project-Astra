@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     /// <summary>
     /// Orchestrates tilemap rendering for a loaded map. Reads MapData (integer tile IDs),

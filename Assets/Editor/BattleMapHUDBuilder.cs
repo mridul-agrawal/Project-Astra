@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.EditorTools
 {
@@ -436,7 +437,7 @@ namespace ProjectAstra.EditorTools
             controller.HealValue     = root.Find("TileInfoPanel/HealValue").GetComponent<TextMeshProUGUI>();
 
             // Data sources — ScriptableObjects wired by path
-            controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.TerrainStatTable>(
+            controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Grid.TerrainStatTable>(
                 "Assets/ScriptableObjects/Map/TerrainStatTable.asset");
             controller.TurnChannel   = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.TurnEventChannel>(
                 "Assets/ScriptableObjects/Core/TurnEventChannel.asset");

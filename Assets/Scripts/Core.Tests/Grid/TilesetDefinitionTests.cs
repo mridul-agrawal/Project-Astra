@@ -2,8 +2,9 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Grid;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Grid
 {
     [TestFixture]
     public class TilesetDefinitionTests

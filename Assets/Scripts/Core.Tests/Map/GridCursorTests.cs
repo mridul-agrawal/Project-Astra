@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Tests
 {

@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     public enum TerrainType
     {

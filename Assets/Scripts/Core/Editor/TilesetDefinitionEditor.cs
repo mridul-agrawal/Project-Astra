@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Editor
 {

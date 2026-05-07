@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     [CreateAssetMenu(menuName = "Project Astra/Map/Terrain Stat Table")]
     public class TerrainStatTable : ScriptableObject

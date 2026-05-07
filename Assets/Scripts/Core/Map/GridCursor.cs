@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.UI;
 

@@ -2,6 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
 

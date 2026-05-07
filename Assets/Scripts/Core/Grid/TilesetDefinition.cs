@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Editor")]
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Grid
 {
     /// <summary>
     /// Bridges integer tile IDs (stored in MapData) to Unity TileBase assets and TerrainType metadata.
