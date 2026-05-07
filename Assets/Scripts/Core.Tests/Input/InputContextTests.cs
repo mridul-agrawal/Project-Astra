@@ -1,9 +1,10 @@
 using System;
 using NUnit.Framework;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Input
 {
     [TestFixture]
     public class InputContextTests

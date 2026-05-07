@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Input
 {
     /// <summary>IMGUI overlay that logs InputManager events in real time for debugging input and device state.</summary>
     public class InputDebugHUD : MonoBehaviour

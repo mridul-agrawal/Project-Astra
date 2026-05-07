@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.MainMenu

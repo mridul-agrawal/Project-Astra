@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Cutscene

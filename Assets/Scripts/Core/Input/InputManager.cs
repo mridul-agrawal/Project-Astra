@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Input
 {
     /// <summary>
     /// Active input device classification for hot-swap detection.

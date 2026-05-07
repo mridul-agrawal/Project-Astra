@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Cutscene
 {

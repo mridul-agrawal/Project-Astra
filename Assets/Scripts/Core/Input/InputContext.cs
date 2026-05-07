@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Input
 {
     /// <summary>Defines which input actions are allowed per GameState, used by InputManager for context-based action filtering.</summary>
     public static class InputContext

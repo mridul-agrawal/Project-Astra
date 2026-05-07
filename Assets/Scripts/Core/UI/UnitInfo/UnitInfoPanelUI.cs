@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Support;
 using ProjectAstra.Core.UI.Interfaces;
