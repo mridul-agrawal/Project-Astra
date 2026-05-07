@@ -1,7 +1,8 @@
 using NUnit.Framework;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Turn;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Turn
 {
     [TestFixture]
     public class BattlePhaseManagerTests

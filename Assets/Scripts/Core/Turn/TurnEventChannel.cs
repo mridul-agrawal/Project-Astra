@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Turn
 {
     [CreateAssetMenu(fileName = "TurnEventChannel", menuName = "Project Astra/Core/Turn Event Channel")]
     public class TurnEventChannel : ScriptableObject

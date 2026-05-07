@@ -5,6 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI.BattleMap;
 
 namespace ProjectAstra.EditorTools
@@ -440,7 +441,7 @@ namespace ProjectAstra.EditorTools
             // Data sources — ScriptableObjects wired by path
             controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Grid.TerrainStatTable>(
                 "Assets/ScriptableObjects/Map/TerrainStatTable.asset");
-            controller.TurnChannel   = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.TurnEventChannel>(
+            controller.TurnChannel   = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Turn.TurnEventChannel>(
                 "Assets/ScriptableObjects/Core/TurnEventChannel.asset");
 
             if (controller.StatTable == null)

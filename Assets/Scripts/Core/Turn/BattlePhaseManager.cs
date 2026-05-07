@@ -1,6 +1,6 @@
 using System;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Turn
 {
     /// <summary>Cycles battle phases (Player->Enemy->Allied) and optionally skips AlliedPhase when no allies are present.</summary>
     public class BattlePhaseManager

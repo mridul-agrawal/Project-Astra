@@ -3,7 +3,7 @@ using UnityEngine;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Turn
 {
     public class TurnManager : MonoBehaviour
     {
