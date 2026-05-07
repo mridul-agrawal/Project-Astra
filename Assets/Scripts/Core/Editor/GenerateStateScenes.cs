@@ -12,6 +12,7 @@ using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.MainMenu;
 using ProjectAstra.Core.UI.Overlays;
 
 namespace ProjectAstra.Core.Editor

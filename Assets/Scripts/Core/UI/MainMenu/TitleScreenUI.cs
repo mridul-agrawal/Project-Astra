@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.MainMenu
 {
     /// <summary>Title screen UI — single "Start" button that transitions to MainMenu.</summary>
     public class TitleScreenUI : MonoBehaviour

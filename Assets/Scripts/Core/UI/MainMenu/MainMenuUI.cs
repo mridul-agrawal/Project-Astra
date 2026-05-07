@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.MainMenu
 {
     /// <summary>
     /// Main menu controller. Lives on the "MainMenu" root built by MainMenuBuilder.
