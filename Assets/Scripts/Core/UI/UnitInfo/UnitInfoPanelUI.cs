@@ -8,7 +8,7 @@ using ProjectAstra.Core.UI.Interfaces;
 using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.UnitInfo
 {
     public class UnitInfoPanelUI : MonoBehaviour
     {

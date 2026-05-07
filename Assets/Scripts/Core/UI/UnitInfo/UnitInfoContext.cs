@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.UnitInfo
 {
     // UI-02. The screen / flow that opened the Unit Info Panel.
     // Determines interactivity (e.g., inventory is reorderable only in PreBattlePrep),

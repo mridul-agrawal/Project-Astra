@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Forecast

@@ -5,7 +5,7 @@ using ProjectAstra.Core.Support;
 using ProjectAstra.Core.UI.Interfaces;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.UnitInfo
 {
     // UI-02 page 3 detail view. Modal inspector for a single support bond.
     // Shows combined SP-02 affinity bonuses, Bandhan promise text, Shapath icon.

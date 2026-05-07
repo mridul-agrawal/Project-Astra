@@ -13,6 +13,7 @@ using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.UI.Trade;
+using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
@@ -341,7 +342,7 @@ namespace ProjectAstra.Core.Cursor
             TestUnit unit = FindUnitAt(_gridPosition);
             if (unit == null) return;
 
-            _unitInfoPanelUI?.Show(unit, ProjectAstra.Core.UI.UnitInfoContext.BattleMap);
+            _unitInfoPanelUI?.Show(unit, UnitInfoContext.BattleMap);
         }
 
         private void UpdatePathArrow()

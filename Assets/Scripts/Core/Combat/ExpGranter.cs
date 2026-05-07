@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.Overlays;
+using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 
