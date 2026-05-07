@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Scenes
 {
     /// <summary>
     /// Listens to state changes and loads base scenes or instantiates overlay prefabs accordingly.

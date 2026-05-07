@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Scenes;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
