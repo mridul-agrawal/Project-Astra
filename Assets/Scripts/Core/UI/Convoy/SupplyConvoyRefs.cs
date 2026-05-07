@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Convoy
 {
     // Ref-holder attached to the SupplyConvoy prefab root by SupplyConvoyBuilder.
     // ConvoyUI reads these fields to drive live text + state sprite swaps.

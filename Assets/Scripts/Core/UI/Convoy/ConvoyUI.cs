@@ -7,7 +7,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Convoy
 {
     /// <summary>
     /// Supply Convoy trade screen (Indigo Codex · Variant A). Drives the
