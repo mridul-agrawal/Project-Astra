@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Trade
 {
     // Visual state for a single inventory row in the Trade Screen.
     // Values map 1:1 to the JSX mockup's state styles; see docs/mockups/.../e7379e7e-*.js.

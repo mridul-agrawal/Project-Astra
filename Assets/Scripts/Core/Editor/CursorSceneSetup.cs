@@ -13,6 +13,7 @@ using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.UI.Overlays;
+using ProjectAstra.Core.UI.Trade;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor

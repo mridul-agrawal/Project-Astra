@@ -7,7 +7,7 @@ using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.UI
+namespace ProjectAstra.Core.UI.Trade
 {
     // Runtime controller for the Indigo Codex trade screen built by TradeScreenBuilder.
     //
