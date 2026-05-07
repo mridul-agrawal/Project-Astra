@@ -443,7 +443,7 @@ namespace ProjectAstra.Core.UI
         private void RepositionPanel(TestUnit target)
         {
             if (_panelRt == null) return;
-            var cam = Camera.main;
+            var cam = UnityEngine.Camera.main;
             if (cam == null) return;
 
             var worldPos = new Vector3(target.transform.position.x, target.transform.position.y, 0);

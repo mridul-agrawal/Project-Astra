@@ -5,7 +5,7 @@ using ProjectAstra.Core.Grid;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Camera
 {
     /// <summary>
     /// Deadzone-based camera tracking for the tactical battle map.
@@ -13,7 +13,7 @@ namespace ProjectAstra.Core
     /// when the cursor pushes past the deadzone boundary. Camera position is
     /// always clamped to map bounds and integer-snapped for pixel-perfect rendering.
     /// </summary>
-    [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(UnityEngine.Camera))]
     public class CameraController : MonoBehaviour
     {
         [Header("Dependencies")]
@@ -81,7 +81,7 @@ namespace ProjectAstra.Core
                 return;
             }
 
-            var cam = GetComponent<Camera>();
+            var cam = GetComponent<UnityEngine.Camera>();
             if (cam == null || !cam.orthographic) return;
 
             float worldHeight = cam.orthographicSize * 2f;

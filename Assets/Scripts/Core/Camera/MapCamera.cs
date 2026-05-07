@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Camera
 {
     /// <summary>
     /// Configures the camera for pixel-perfect tile rendering using URP's PixelPerfectCamera.
     /// Ensures integer-scale display (1x, 2x, 3x, 4x) with no sub-pixel artifacts, tile bleed,
     /// or gaps. Automatically handles window resize by recalculating the nearest valid scale.
     /// </summary>
-    [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(UnityEngine.Camera))]
     public class MapCamera : MonoBehaviour
     {
         [Header("Pixel Perfect Settings")]
@@ -17,11 +17,11 @@ namespace ProjectAstra.Core
         [SerializeField] private int _referenceResolutionY = 135; // 240x135 = 16:9, 8x upscale to 1920x1080
 
         private PixelPerfectCamera _pixelPerfect;
-        private Camera _camera;
+        private UnityEngine.Camera _camera;
 
         private void Awake()
         {
-            _camera = GetComponent<Camera>();
+            _camera = GetComponent<UnityEngine.Camera>();
             _camera.orthographic = true;
 
             EnsurePixelPerfectComponent();

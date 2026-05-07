@@ -2,8 +2,9 @@ using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Camera;
 
-namespace ProjectAstra.Core.Tests
+namespace ProjectAstra.Core.Tests.Camera
 {
     [TestFixture]
     public class CameraControllerTests
@@ -38,7 +39,7 @@ namespace ProjectAstra.Core.Tests
 
             // Create CameraController
             _cameraGO = new GameObject("Camera");
-            var cam = _cameraGO.AddComponent<Camera>();
+            var cam = _cameraGO.AddComponent<UnityEngine.Camera>();
             cam.orthographic = true;
             _controller = _cameraGO.AddComponent<CameraController>();
             _controller.Initialize(null, _mapRenderer, Margin, ViewW, ViewH);

@@ -481,7 +481,7 @@ namespace ProjectAstra.Core.Editor
         private static void CreateSceneCamera()
         {
             var go = new GameObject("Camera");
-            var cam = go.AddComponent<Camera>();
+            var cam = go.AddComponent<UnityEngine.Camera>();
             cam.orthographic = true;
             cam.orthographicSize = 5;
             cam.clearFlags = CameraClearFlags.SolidColor;

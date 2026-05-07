@@ -2,6 +2,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Camera;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.UI;
@@ -567,7 +568,7 @@ namespace ProjectAstra.Core.Editor
 
         private static void SetupCameraController(MapRenderer mapRenderer)
         {
-            var cam = Object.FindAnyObjectByType<Camera>();
+            var cam = Object.FindAnyObjectByType<UnityEngine.Camera>();
             if (cam == null)
             {
                 Debug.LogError("CursorSceneSetup: No Camera found in scene.");
