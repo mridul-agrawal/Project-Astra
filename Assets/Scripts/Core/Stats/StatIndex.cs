@@ -1,6 +1,6 @@
 namespace ProjectAstra.Core.Stats
 {
-    // Ordinals are contracted with StatArray._values[] indices — reordering this enum breaks every serialized StatArray on disk.
+    // Values are stored as integers in save files. Don't reorder — append new entries at the end only.
     public enum StatIndex
     {
         HP = 0,

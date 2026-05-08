@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Stats
 {
-    // 9-int Unity-serializable container indexed by StatIndex; lazy-inits backing array so default(StatArray) is safe to index.
+    // 9 ints accessed by StatIndex. The backing array auto-allocates on first read, so default(StatArray) returns zeros instead of throwing.
     [Serializable]
     public struct StatArray
     {
