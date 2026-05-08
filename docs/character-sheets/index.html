@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Astra · Character Sheets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="_renderer/sheet.css" />
+</head>
+<body>
+  <aside id="sidebar">
+    <h1 class="sidebar-title">Project Astra<br /><span>Character Sheets</span></h1>
+    <nav id="character-list"></nav>
+    <footer class="sidebar-foot">
+      <button id="print-btn" type="button">Print / Save as PDF</button>
+      <p class="hint">Tip: in the print dialog, set Margins → None and enable Background graphics.</p>
+    </footer>
+  </aside>
+
+  <main id="viewer">
+    <div id="pages"></div>
+    <div id="error" class="error" hidden></div>
+  </main>
+
+  <!-- Embedded TEMPLATE.md so double-clicking index.html (file://) works without a server.
+       Source of truth is TEMPLATE.md on disk. If you edit it, refresh this block too
+       (or run a local server — see README). -->
+  <script type="text/plain" id="embedded-TEMPLATE.md">---
+# === IDENTITY ===
+name_devanagari: ""
+name_romanized: ""
+name_ipa: ""
+epithet: ""
+mythological_lineage: ""
+faction: ""
+banner: ""
+class: ""
+role_archetype: ""
+recruitment_chapter: ""
+recruitment_method: ""
+availability_start: ""
+availability_end: ""
+age: ""
+gender: ""
+species: ""
+height: ""
+voice_direction: ""
+
+# === COMBAT NUMBERS ===
+starting_level: 1
+movement_type: ""
+pancha_bhuta_affinity: ""
+personality_enum: ""
+promotion_paths: []
+
+bases:
+  hp: 0
+  str: 0
+  mag: 0
+  skl: 0
+  spd: 0
+  lck: 0
+  def: 0
+  res: 0
+  con: 0
+  mov: 0
+
+growths:
+  hp: 0
+  str: 0
+  mag: 0
+  skl: 0
+  spd: 0
+  lck: 0
+  def: 0
+  res: 0
+  con: 0
+  mov: 0
+
+cap_modifiers:
+  hp: 0
+  str: 0
+  mag: 0
+  skl: 0
+  spd: 0
+  lck: 0
+  def: 0
+  res: 0
+  con: 0
+  mov: 0
+
+weapon_ranks:
+  sword: ""
+  lance: ""
+  axe: ""
+  bow: ""
+  dagger: ""
+  tome: ""
+  staff: ""
+
+# === VISUAL ===
+portrait_path: ""
+silhouette_one_liner: ""
+
+palette:
+  primary: ""
+  secondary: ""
+  accent: ""
+  metal: ""
+  cloth: ""
+
+# === META ===
+author: ""
+last_updated: ""
+status: "draft"
+---
+
+# Visual Design
+
+## Silhouette
+
+## Features
+- **Skin:**
+- **Hair color:**
+- **Hair style &amp; length:**
+- **Eyes:**
+
+## Build &amp; Posture
+
+## Garments
+- **Headwear:**
+- **Top:**
+- **Bottom:**
+- **Armor pieces:**
+- **Accessories:**
+
+## Iconography &amp; Sigil
+
+## Weapon Visual
+
+## Mount Visual
+
+## Battle Sprite vs Portrait Notes
+
+## Mood References
+1.
+2.
+3.
+
+## Idle Expression
+
+## Critical Pose
+
+## Do's &amp; Don'ts
+**Do:**
+-
+
+**Don't:**
+-
+
+
+# Combat Kit
+
+## Personal Skill
+- **Name (Sanskrit):**
+- **Name (English):**
+- **Mechanic:**
+- **Lore:**
+
+## Class Skills
+-
+
+## Signature Ability
+- **Name (Sanskrit):**
+- **Name (English):**
+- **Mechanic:**
+- **Lore:**
+
+## Starting Inventory
+-
+
+## Personal Weapon
+- **Name:**
+- **Stats:**
+- **Lore:**
+
+## Mechanical Niche
+
+
+# Personality &amp; Lore
+
+## Hook
+
+## Background
+
+## Personality Traits
+1. **:**
+2. **:**
+3. **:**
+4. **:**
+5. **:**
+
+## Beliefs &amp; Dharma Alignment
+
+## Motivations (Top 3)
+1.
+2.
+3.
+
+## Fears &amp; Weaknesses
+
+## Speech Style
+
+## Internal Conflict
+
+## Character Arc Summary
+
+## Foreshadowing Hooks
+
+## Family Tree
+
+## Key Relationships
+
+## Theme &amp; Leitmotif Notes
+
+
+# Dialogue Library
+
+## Recruit Quote
+
+## Level-Up Quotes
+-
+
+## Critical-Hit Quotes
+-
+
+## Death Quote / Last Words
+-
+
+## Class-Change Quote
+
+## Idle Barks
+-
+
+## Battle Conversation Seeds
+-
+
+## One-Line Identity (War's Ledger)
+
+
+# Design Meta
+
+## Design Intent
+
+## Mechanical Niche
+
+## Story Role
+
+## Accessibility / Difficulty Tier
+
+## Comparable References
+
+## Risks &amp; Pitfalls
+
+## Open Questions
+</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script src="_renderer/sheet.js"></script>
+</body>
+</html>

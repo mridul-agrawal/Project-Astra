@@ -1,0 +1,87 @@
+# Prototype vs Vertical Slice Requirements
+
+- Prototypee Anchors (Non-Negotiable):
+    1. Combat Feel
+    2. The Indian mythology angle
+    3. **Clarity** of UI + Map + Other Tactical Elements
+- Prototype
+    - Art/Visual
+        - Strategy
+            - Biggest Piece is Art Assets for the Prototype
+            - The trap most devs fall into is treating the prototype as a uglier version of the vertical slice. It isn't.
+            - A prototype is **strategically polished** — rough almost everywhere, finished-looking in 2–3 specific anchor pieces that prove the vision. A grant evaluator should be able to extrapolate the final game from those anchors.
+            - **Anchor pieces** at near-final quality to prove vision - Everything else: consistent placeholder/greybox art that *reads* clearly, uses a unified color/style language so it doesn't look like a Frankenstein.
+            - Visual that screams "Indian mythology SRPG”
+        - List of TODOs
+            - [ ]  ART DIRECTION NEEDS TO BE LOCKED IN FIRST  -  BUT HOW?
+            - [ ]  1 hero map (the one you'll record gameplay on)
+            - [ ]  Map Sprites
+                - [ ]  5 Player Units
+                - [ ]  5 Enemy Units
+                - [ ]  1 Boss Enemy Unit
+                - [ ]  2 Ally Units - **Optional**
+            - [ ]  Character Sprites (Battle + Combat Animations)
+                - [ ]  5 Player Units
+                - [ ]  5 Enemy Units
+                - [ ]  1 Boss Enemy Unit
+                - [ ]  2 Ally Units - **Optional**
+            - [ ]  Character Portraits
+                - [ ]  Main Cast (Player Units)
+                - [ ]  Generic / Enemy Portraits
+                - [ ]  Boss Portrait
+            - [ ]  Battle Scene Backgrounds depending on the terrain types
+            - [ ]  Weapon & Items
+                - [ ]  Basic Weapons & Items
+            - [ ]  Miscellaneous
+                - [ ]  TItle Screen
+                - [ ]  Logo
+    - Game Design/Content
+        - Strategy
+            - Basic Tactical Gameplay Mechanics must be fun to learn and use and play. Should be left wanting more.
+            - Anchor points must be strictly adhered to - this is non-negotiable.
+        - List of TODOs
+            - [ ]  WHOLE USER WORKFLOW INSIDE THE WHOLE 60min of GAMEPLAY MUST BE CRAFTED SKILLFULLY - THIS INCLUDES ALL EXPERIENCE BUILDING / GAME DESIGN ELEMENT OF THE PROTOTYPE.
+            - [ ]  1 carefully designed map with 2 sessions (2 objectives) - 1. defensive objective   2. offensive objective. It should be genuinely fun after iteration.
+            - [ ]  Tutorial / onboarding designed for someone who has never played the game - Prototype Specific Tutorial  - All core mehcanics working with 4th wall breaking - KEEP IT SIMPLE STUPID - Clarity in tutorial matters more than polish
+            - [ ]  4–6 playable units showing class diversity (lord, infantry, cavalry, flying, ranged, healer) + 5 different enemy units + 1 boss unit
+            - [ ]  One representative twist (NPC to rescue, choke point, Enemy → Player Unit Conversion)
+    - Narrative
+        - Strategy
+            - Least focused pillar for the protoype because it is my weakest point
+            - Not a major requirement for the prototype showcase narration (actual story dialogues)
+            - No Voiceover
+            - Linear dialogue/narration
+            - Short Narrative designed specfically for the prototype build.
+        - List of TODOs
+            - [ ]  The narration should break the 4th wall and characters should directly talk to the player / grant board.
+            - [ ]  The narration should still respect the game theme and character personalities.
+            - [ ]  Throught his narration, player expectations must also be set.
+            - [ ]  World-bible doc  at outline level — factions, themes, mythology framing
+    - Technical
+        - Strategy/Goal
+            - Codebase should be refactored *just enough* to support rapid iteration on content 
+            (don't gold-plate yet. vertical slice will need another refactor pass anyway)
+        - List of TODOs
+            - [ ]  Refactoring Layer 1
+            - [ ]  Reliable build pipeline
+            - [ ]  Build doesn't crash/hang/desync
+            - [ ]  Build pipeline produces a handout .exe / itch link
+            - [ ]  Basic settings (resolution, audio, exit)
+            - [ ]  Clean recording setup for capturing gameplay video
+    - Audio
+        - Strategy
+            - Just enough so the silence doesn’t feel empty. And the music being put doesn’t feel choppy or cringey.
+        - List of TODOs
+            - [ ]  Use AI for music
+            - [ ]  Use placeholder sfx for combat and UI
+    - **Marketing / Deliverables for Grants**
+        - Strategy
+            - Do only what is required for the grant here. No need to overkill here as of now. Once the prototype i ready, marketing can kick off seriously post that. I dont have any marketing juice prior to it either way. Focussing on marketing at this prototype stage internally would result in a clusterfuck.
+        - List of TODOs
+            - [ ]  2–4 minute gameplay video showing the anchor encounter with the anchor art
+            - [ ]  Elevator pitch nailed (one sentence + one paragraph)
+            - [ ]  Pitch deck (~12–15 slides)
+            - [ ]  One-page game design summary
+            - [ ]  Concept art board / mood board
+            - [ ]  Optional but strong: a 30-second teaser cut for social
+- Vertical Slice
