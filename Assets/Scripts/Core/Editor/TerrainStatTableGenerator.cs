@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Editor
 {

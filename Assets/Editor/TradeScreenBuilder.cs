@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.UI.Trade;
 
 namespace ProjectAstra.EditorTools
 {
@@ -145,11 +147,11 @@ namespace ProjectAstra.EditorTools
                 if (legacy != null) Object.DestroyImmediate(legacy.gameObject);
             }
 
-            var controller = screen.GetComponent<ProjectAstra.Core.UI.TradeScreenUI>()
-                ?? screen.AddComponent<ProjectAstra.Core.UI.TradeScreenUI>();
+            var controller = screen.GetComponent<ProjectAstra.Core.UI.Trade.TradeScreenUI>()
+                ?? screen.AddComponent<ProjectAstra.Core.UI.Trade.TradeScreenUI>();
 
             // Auto-wire to GridCursor if present — saves a manual drag-and-drop step.
-            var cursor = Object.FindFirstObjectByType<ProjectAstra.Core.GridCursor>();
+            var cursor = Object.FindFirstObjectByType<ProjectAstra.Core.Cursor.GridCursor>();
             if (cursor != null)
             {
                 var so = new SerializedObject(cursor);
@@ -629,14 +631,14 @@ namespace ProjectAstra.EditorTools
 
             var vs = item.State switch
             {
-                RowState.Hover    => ProjectAstra.Core.UI.TradeRowVisualState.Hover,
-                RowState.Pressed  => ProjectAstra.Core.UI.TradeRowVisualState.Pressed,
-                RowState.Focused  => ProjectAstra.Core.UI.TradeRowVisualState.Focused,
-                RowState.Selected => ProjectAstra.Core.UI.TradeRowVisualState.Selected,
-                RowState.Disabled => ProjectAstra.Core.UI.TradeRowVisualState.Disabled,
-                _ => ProjectAstra.Core.UI.TradeRowVisualState.Default,
+                RowState.Hover    => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Hover,
+                RowState.Pressed  => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Pressed,
+                RowState.Focused  => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Focused,
+                RowState.Selected => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Selected,
+                RowState.Disabled => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Disabled,
+                _ => ProjectAstra.Core.UI.Trade.TradeRowVisualState.Default,
             };
-            ProjectAstra.Core.UI.TradeScreenRowVisuals.SetRowState(row, vs);
+            ProjectAstra.Core.UI.Trade.TradeScreenRowVisuals.SetRowState(row, vs);
             if (empty) return;
 
             var sigilImg = row.Find("Sigil")?.GetComponent<Image>();

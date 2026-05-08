@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel Art Generation Workflows — A Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Manrope:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0c08;
+    --bg-tint: #15120c;
+    --surface: #1a1610;
+    --surface-2: #221d15;
+    --border: #2e2820;
+    --border-strong: #3a3328;
+    --text: #ece5d3;
+    --text-dim: #a89e87;
+    --text-faint: #6b6354;
+    --amber: #e6b85c;
+    --amber-deep: #c89643;
+    --teal: #5fb3a8;
+    --coral: #d27f6b;
+    --rule: #463e30;
+    --shadow: 0 1px 0 rgba(255, 240, 200, 0.04), 0 12px 40px -12px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(230, 184, 92, 0.04), transparent 50%),
+      radial-gradient(circle at 85% 100%, rgba(95, 179, 168, 0.03), transparent 50%);
+    background-attachment: fixed;
+  }
+
+  ::selection { background: var(--amber); color: var(--bg); }
+
+  /* ───── Hero ───── */
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 100px 48px 80px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 60px; left: 48px;
+    width: 60px; height: 1px;
+    background: var(--amber);
+  }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 24px;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(40px, 6.5vw, 84px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin-bottom: 28px;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--amber);
+  }
+
+  .hero .lede {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(18px, 2vw, 22px);
+    line-height: 1.5;
+    color: var(--text-dim);
+    max-width: 640px;
+    font-variation-settings: "opsz" 36, "SOFT" 30;
+  }
+
+  .hero-meta {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .hero-meta dt {
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .hero-meta dd { color: var(--text-dim); }
+
+  /* ───── TOC ───── */
+  .toc {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 24px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 48px;
+  }
+
+  .toc-list a {
+    color: var(--text-dim);
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 0;
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    transition: color 0.2s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .toc-list a:hover {
+    color: var(--amber);
+    border-bottom-color: var(--rule);
+  }
+
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+
+  /* ───── Workflows ───── */
+  main { max-width: 1100px; margin: 0 auto; }
+
+  .workflow {
+    padding: 96px 48px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .workflow:last-child { border-bottom: none; }
+
+  .workflow-header { margin-bottom: 64px; }
+
+  .workflow-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .workflow-num::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--rule), transparent);
+    max-width: 120px;
+  }
+
+  .workflow h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 20px;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    max-width: 800px;
+  }
+
+  .workflow h2 em {
+    font-style: italic;
+    color: var(--teal);
+    font-weight: 400;
+  }
+
+  .workflow-desc {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin-bottom: 32px;
+    font-variation-settings: "opsz" 24;
+  }
+
+  .workflow-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-top: 24px;
+  }
+
+  .meta-item {
+    flex: 1;
+    min-width: 140px;
+    padding: 16px 24px 16px 0;
+    border-right: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .meta-item:last-child { border-right: none; padding-right: 0; }
+
+  .meta-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 4px;
+  }
+
+  .meta-value { font-size: 13px; color: var(--text); }
+
+  /* ───── Flow Diagram ───── */
+  .flow {
+    margin: 0;
+    position: relative;
+    counter-reset: step;
+  }
+
+  .flow-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 32px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    position: relative;
+    padding-bottom: 48px;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  /* Vertical connector line */
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 27px;
+    top: 56px;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--rule) 0%, var(--rule) 60%, transparent 100%);
+  }
+
+  .step-marker {
+    position: relative;
+    z-index: 2;
+  }
+
+  .step-num {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--amber);
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    transition: all 0.3s;
+  }
+
+  .step:hover .step-num {
+    border-color: var(--amber);
+    background: var(--surface);
+  }
+
+  .step-content { padding-top: 12px; }
+
+  .step-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-variation-settings: "opsz" 36;
+  }
+
+  .step-body {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .step-body code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--amber);
+    padding: 2px 7px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .step-body strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .spec {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: 5px 10px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    letter-spacing: 0.02em;
+  }
+
+  .spec.alert {
+    border-color: var(--coral);
+    color: var(--coral);
+  }
+
+  .spec.verified {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  /* ───── Caveats ───── */
+  .caveats {
+    margin-top: 56px;
+    padding: 28px 32px;
+    background: var(--bg-tint);
+    border-left: 2px solid var(--coral);
+    border-radius: 0 4px 4px 0;
+  }
+
+  .caveats-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .caveats ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .caveats li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .caveats li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--coral);
+  }
+
+  /* ───── Footer ───── */
+  footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 48px 96px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+
+  footer p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-faint);
+    line-height: 1.8;
+  }
+
+  footer p:not(:last-child) { margin-bottom: 8px; }
+
+  footer a {
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--rule);
+  }
+
+  footer a:hover { border-bottom-color: var(--amber); }
+
+  /* ───── Responsive ───── */
+  @media (max-width: 720px) {
+    .hero { padding: 64px 24px 56px; }
+    .toc { padding: 40px 24px; }
+    .toc-list { grid-template-columns: 1fr; gap: 4px; }
+    .workflow { padding: 64px 24px; }
+    .step { grid-template-columns: 56px 1fr; gap: 16px; }
+    .step:not(:last-child)::before { left: 19px; }
+    .step-num { width: 40px; height: 40px; font-size: 12px; }
+    .meta-item { border-right: none; border-bottom: 1px solid var(--border); padding: 12px 0; }
+    .meta-item:last-child { border-bottom: none; }
+    footer { padding: 48px 24px; }
+  }
+
+  /* Smooth fade-in for reading delight */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .workflow { animation: fadeUp 0.6s ease-out backwards; }
+  .workflow:nth-child(2) { animation-delay: 0.05s; }
+  .workflow:nth-child(3) { animation-delay: 0.1s; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero">
+  <div class="eyebrow">Pixelorama × Pixel Lab · Field Reference</div>
+  <h1>Six workflows for generating <em>pixel art maps</em>, end&#8209;to&#8209;end.</h1>
+  <p class="lede">
+    A practical reference compiled from official Pixel Lab and Pixelorama documentation. Each workflow is broken down step by step, with verified specs, options, and caveats. Built for testing in order — cheapest first.
+  </p>
+  <dl class="hero-meta">
+    <div>
+      <dt>Target</dt>
+      <dd>512×512 pixel art map</dd>
+    </div>
+    <div>
+      <dt>Editor</dt>
+      <dd>Pixel Lab Pixelorama</dd>
+    </div>
+    <div>
+      <dt>Workflows</dt>
+      <dd>6 documented</dd>
+    </div>
+    <div>
+      <dt>Last reviewed</dt>
+      <dd>April 2026</dd>
+    </div>
+  </dl>
+</section>
+
+<!-- ═══════ TOC ═══════ -->
+<nav class="toc">
+  <div class="toc-title">Contents</div>
+  <ol class="toc-list">
+    <li><a href="#wf1"><span class="toc-num">01</span><span>Patch-by-patch with seed lock</span></a></li>
+    <li><a href="#wf2"><span class="toc-num">02</span><span>Anchor patch + init image chain</span></a></li>
+    <li><a href="#wf3"><span class="toc-num">03</span><span>Single-pass with Create S-XL (Pro)</span></a></li>
+    <li><a href="#wf5"><span class="toc-num">05</span><span>External AI → Unzoom Pixel Art</span></a></li>
+    <li><a href="#wf6"><span class="toc-num">06</span><span>External AI → Image to Pixel Art</span></a></li>
+    <li><a href="#wf8"><span class="toc-num">08</span><span>Inpaint v3 with intentional masking</span></a></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ═══════ WORKFLOW 01 ═══════ -->
+<article class="workflow" id="wf1">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 01</div>
+    <h2>Patch-by-patch with <em>seed lock</em></h2>
+    <p class="workflow-desc">
+      The minimum-viable improvement to your current process. Stay with Edit Image (Pro), but lock the random seed and overlap your patches so each generation sees its neighbour's edge as context.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">Tool</div>
+        <div class="meta-value">Edit Image (Pro)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Patch size</div>
+        <div class="meta-value">256×256 (×4)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tier</div>
+        <div class="meta-value">Pro</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Effort</div>
+        <div class="meta-value">Low</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open the 512×512 map in Pixelorama</h3>
+        <p class="step-body">
+          Either continue from an existing project (<code>.pxo</code>) or import an existing PNG via <strong>File → Open</strong>. Confirm the canvas dimensions in the top bar read <code>[512×512]</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Plan four overlapping quadrants</h3>
+        <p class="step-body">
+          Instead of dividing the canvas into clean 256×256 quadrants at <code>(0,0)</code>, <code>(256,0)</code>, <code>(0,256)</code>, <code>(256,256)</code>, plan an <strong>overlap zone of 64-128 pixels</strong> between adjacent patches. Each subsequent patch will see already-generated content as edge context.
+        </p>
+        <div class="specs">
+          <span class="spec">Patch 1: 0,0 → 256,256</span>
+          <span class="spec">Patch 2: 192,0 → 448,256</span>
+          <span class="spec">overlap: 64px</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Make the first selection — and commit it</h3>
+        <p class="step-body">
+          Use the <strong>Rectangular Selection tool</strong>. Drag a rough box, then refine using the X / Y / Width / Height fields in the Left Tool Options panel. <strong>Press Enter</strong> (or click the green checkmark) to commit — this is critical, otherwise the selection stays in transformation mode and the field edits will move the content under it instead of the boundary.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Edit Image (Pro) and lock the seed</h3>
+        <p class="step-body">
+          From the PixelLab menu select <strong>Edit Image (Pro)</strong>. Open <strong>Advanced options</strong> and find the <strong>Seed</strong> field. Pick any integer (e.g., <code>12345</code>) and write it down — you will reuse this exact value for every patch in this map.
+        </p>
+        <div class="specs">
+          <span class="spec verified">Seed: documented option</span>
+          <span class="spec alert">256×256 max: from your testing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Write a precise instruction and generate</h3>
+        <p class="step-body">
+          Use action verbs: <em>change</em>, <em>add</em>, <em>remove</em>, <em>replace</em>. The docs explicitly recommend this phrasing. Example: <code>"replace with detailed top-down grassland tiles, paths, scattered trees"</code>. Click Generate.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Move to the next patch — keep the same seed</h3>
+        <p class="step-body">
+          Make a new selection that <strong>overlaps the previous patch by 64-128px</strong>. Re-open Edit Image (Pro). Confirm the seed is still <code>12345</code>. Use the <strong>same</strong> instruction text. Generate.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Repeat for the remaining quadrants</h3>
+        <p class="step-body">
+          Work in a consistent traversal order — e.g., top-left → top-right → bottom-right → bottom-left — so each new patch always borders an already-generated one.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Manual cleanup at seams</h3>
+        <p class="step-body">
+          Even with seed-locking + overlap, expect minor discontinuities at patch boundaries. Use the pencil and color-picker tools to manually blend roads, terrain transitions, and water edges where patches meet.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>The 256×256 size limit on Edit Image (Pro) is from your direct observation, not from the docs page (which I could not fetch).</li>
+      <li>Seed-locking reduces style drift but does not eliminate it — diffusion models can still produce variation given different surrounding contexts.</li>
+      <li>The official docs for the standard Edit Image tool list these options: Instruction, Guidance weight, Target Palette, Remove background, Output method, Seed. The Pro variant likely shares these but I have not verified.</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ═══════ WORKFLOW 02 ═══════ -->
+<article class="workflow" id="wf2">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 02</div>
+    <h2>Anchor patch + <em>init image</em> chain</h2>
+    <p class="workflow-desc">
+      Generate one patch you love. Then use that patch as an init image for every subsequent generation, anchoring style across the entire map. Switches to a tool with verified init-image support.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">Tool</div>
+        <div class="meta-value">Create M-XL image (pixflux)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Max patch size</div>
+        <div class="meta-value">200 / 320 / 400</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tier</div>
+        <div class="meta-value">Free / T1 / T2+</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Effort</div>
+        <div class="meta-value">Medium</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate one anchor patch</h3>
+        <p class="step-body">
+          Create or pick the single best-looking 256×256 region of your map. This becomes your <strong>style anchor</strong>. If starting fresh, generate it first using Create M-XL (pixflux) with no init image — just a strong description.
+        </p>
+        <div class="specs">
+          <span class="spec verified">Init image: documented option</span>
+          <span class="spec">Free tier max: 200×200</span>
+          <span class="spec">Tier 1 max: 320×320</span>
+          <span class="spec">Tier 2+ max: 400×400</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Save the anchor as a separate file</h3>
+        <p class="step-body">
+          Export the anchor patch as a standalone PNG via <strong>File → Export</strong>. You will load this PNG as the init image input for every subsequent generation.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Set up the next patch's selection</h3>
+        <p class="step-body">
+          Make a selection in the unfilled area of your map at the size you want to generate. Commit the selection (Enter / green check).
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Create M-XL (pixflux) and load the init image</h3>
+        <p class="step-body">
+          From the PixelLab menu select <strong>Create M-XL image (new)</strong>. Find the <strong>Init image</strong> option. When enabled, a small thumbnail of the currently selected init image appears under the dropdown — set this to your saved anchor PNG.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Set init image strength to 600-900</h3>
+        <p class="step-body">
+          The docs are explicit on these ranges:<br>
+          <code>300-400</code> — rough shape/color guidance<br>
+          <code>400-600</code> — variations on the existing image<br>
+          <code>600-900</code> — detailed style enforcement<br>
+          For style coherence across patches, you want the higher band.
+        </p>
+        <div class="specs">
+          <span class="spec verified">Init strength values: from docs</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Lock seed and write the description</h3>
+        <p class="step-body">
+          Use a fixed seed across all patches. Write a description appropriate to <strong>this patch's content</strong> (e.g., one patch is "forest with stream," another is "rocky hills with cave entrance") — but the same style anchor and seed enforce visual consistency.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate and review</h3>
+        <p class="step-body">
+          Compare against your anchor — colors, line weights, dithering pattern, and outline thickness should now match much more closely than freeform generations. Iterate strength up or down by ±100 if results drift.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Composite patches in Pixelorama</h3>
+        <p class="step-body">
+          Position each generated patch at the appropriate location on the 512×512 master canvas. Use the Move tool with selection to nudge alignment. Manual seam cleanup as in Workflow 01.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>Workflow uses Create M-XL (pixflux) instead of Edit Image (Pro) because the pixflux tool's init-image support is documented; Edit Image (Pro) init-image support is not verified in docs I could access.</li>
+      <li>Init image strength is most reliable around <code>700</code>; values above <code>850</code> may produce results too similar to the anchor (and below <code>500</code>, too divergent).</li>
+      <li>Pixflux size limits depend on your subscription tier — confirm yours before planning patch dimensions.</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ═══════ WORKFLOW 03 ═══════ -->
+<article class="workflow" id="wf3">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 03</div>
+    <h2>Single-pass with <em>Create S-XL (Pro)</em></h2>
+    <p class="workflow-desc">
+      The cleanest fix for patch coherence: generate the entire 512×512 map in one diffusion pass. Pro tier required, but eliminates the patch-stitching problem entirely.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">Tool</div>
+        <div class="meta-value">Create S-XL image (Pro)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Max size</div>
+        <div class="meta-value">512×512 (or 688×384)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tier</div>
+        <div class="meta-value">Pro</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Cost</div>
+        <div class="meta-value">40 generations</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Confirm Pro tier subscription</h3>
+        <p class="step-body">
+          Create S-XL is a Pro-only tool. The cost scales by canvas dimension — at 512×512 each generation costs <strong>40 generations</strong> from your quota. Plan attempts accordingly.
+        </p>
+        <div class="specs">
+          <span class="spec verified">Pro tier required: documented</span>
+          <span class="spec">≤256px: 20 generations</span>
+          <span class="spec">257-341px: 25 generations</span>
+          <span class="spec">342-512px: 40 generations</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Create or open a 512×512 canvas</h3>
+        <p class="step-body">
+          The tool supports any dimension from 16 to 512 per side for square canvases (or larger non-square aspect ratios — up to ~688×384 for 16:9). Confirm canvas dimensions match what you want generated.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Create S-XL (Pro) from the PixelLab menu</h3>
+        <p class="step-body">
+          The tool's name in the menu is <strong>Create S-L image (Pro)</strong> in some builds and <strong>Create S-XL image (Pro)</strong> in newer ones — the docs page title and the in-app label may differ.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Add reference images</h3>
+        <p class="step-body">
+          Use the <strong>"Add reference image"</strong> button. You can attach <strong>up to 4 reference images</strong> to guide composition and content. Use these for: existing tiles you want incorporated, terrain palette references, art style anchors.
+        </p>
+        <div class="specs">
+          <span class="spec verified">4 reference images: documented max</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Optionally add a style image</h3>
+        <p class="step-body">
+          Separate from reference images, the tool supports <strong>1 style image</strong> that controls color palette, outline, detail level, and shading. Style options let you toggle which of these aspects to copy. Useful for matching an existing game's visual identity.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Write a strong description</h3>
+        <p class="step-body">
+          Be explicit about perspective, scale, and content — the docs note that "the description should describe what's in the middle of the selected area." For maps, lead with viewpoint: <code>"top-down 32x32 tile pixel art map: grassland with stone paths, a small lake, scattered trees, rocky outcrops"</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Set seed and generate</h3>
+        <p class="step-body">
+          Set a known seed if you want reproducibility for iteration. Click Generate. At 512×512 you receive 1 frame back (smaller canvases produce multi-frame variation grids — see the docs' frame output table).
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Iterate via inpainting if needed</h3>
+        <p class="step-body">
+          Rather than re-rolling at 40 generations a pop, fix specific regions with Workflow 08 (Inpaint v3). One full S-XL generation followed by 2-3 small inpaints is typically cheaper than multiple full re-rolls.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>40 generations per attempt is a meaningful cost — be deliberate about your prompt and reference images before clicking Generate.</li>
+      <li>Single-pass generation means the model decides composition holistically; if you want fine control over specific regions, S-XL alone may not suffice and you will need inpaint follow-ups.</li>
+      <li>For tile-based Unity maps where each tile must be reusable and grid-aligned, dedicated map/tileset tools may still serve better than S-XL.</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ═══════ WORKFLOW 05 ═══════ -->
+<article class="workflow" id="wf5">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 05</div>
+    <h2>External AI → <em>Unzoom Pixel Art</em></h2>
+    <p class="workflow-desc">
+      Generate stylised pixel art externally in Gemini or ChatGPT at large resolution, then use Pixel Lab's Unzoom tool to detect the apparent pixel grid and rescale to true native pixel art.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">External tool</div>
+        <div class="meta-value">Gemini / ChatGPT / DALL-E</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Pixel Lab tool</div>
+        <div class="meta-value">Unzoom Pixel Art</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Input range</div>
+        <div class="meta-value">256-2048px</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Best for</div>
+        <div class="meta-value">Backgrounds, scenes</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate stylized pixel art externally</h3>
+        <p class="step-body">
+          In Gemini or ChatGPT, request an image at <strong>1024×1024</strong> with explicit pixel art language. Be specific about the apparent pixel scale and palette: <code>"top-down pixel art map, large 8px chunky pixels, 16-color limited palette, grassland with stone paths and trees, retro RPG style"</code>. The output will visually look like pixel art but is actually a high-resolution raster.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Save the output as PNG</h3>
+        <p class="step-body">
+          Right-click → Save, or use the platform's download function. PNG preserves the apparent hard edges better than JPEG (which would smear pixel boundaries with compression artifacts).
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open the PNG in Pixelorama</h3>
+        <p class="step-body">
+          <strong>File → Open</strong>, or drag and drop. In the import dialog, choose "New project" if prompted. Confirm the canvas dimensions match the source (e.g., 1024×1024).
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Unzoom Pixel Art</h3>
+        <p class="step-body">
+          From the PixelLab menu, find <strong>Unzoom Pixel Art</strong>. Per docs, this tool <em>"automatically detects and removes zoom/upscaling from pixel art images. It analyzes the image to find the original pixel size and scales it down accordingly."</em>
+        </p>
+        <div class="specs">
+          <span class="spec verified">Min 256×256 / Max 2048×2048</span>
+          <span class="spec verified">Aseprite + Pixelorama only</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Configure Color Reduction</h3>
+        <p class="step-body">
+          Three modes available:<br>
+          <strong>Auto</strong> — tool decides palette size (start here for first run).<br>
+          <strong>None</strong> — keep all colors (rarely useful; AI output has thousands).<br>
+          <strong>Custom</strong> — specify 2-256 colors. For retro feel, try <code>16-32</code>; for richer pixel art, <code>48-64</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Run and inspect</h3>
+        <p class="step-body">
+          The tool detects the upscale factor and outputs a downsized native-resolution image. If the AI's apparent pixels were ~8px, your 1024×1024 will become ~128×128. Inspect for irregular pixels — areas where the AI's grid drifted will show inconsistent block sizes.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Manual cleanup</h3>
+        <p class="step-body">
+          Expect to clean: anti-aliased edges, irregularly-sized "pixels," color stragglers, broken outlines. Use the pencil and color-picker tools. Budget 10-30 minutes of cleanup per map for usable results.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Optional: scale up for use as art asset</h3>
+        <p class="step-body">
+          If you want a larger asset for actual game use, scale the cleaned-up native pixel art back up using <strong>Nearest Neighbor</strong> interpolation (preserves crisp edges). Find this under <strong>Effects → Scale Image</strong> (the path is Effects, not Image, in the Pixel Lab fork).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>AI pseudo-pixel-art often has a drifting grid — pixels shift between, say, 7 and 9 px wide across the image. Unzoom's automatic detection picks the best average and leaves residual artifacts.</li>
+      <li>This workflow is poorly suited to tile-based Unity maps — the output is a single image, not a tileset of reusable cells. Best for splash screens, cutscenes, character portraits, illustrations.</li>
+      <li>External AI generators are non-deterministic and don't honor pixel-art constraints (palette discipline, clean lines, consistent dithering). Even after Unzoom + cleanup, the result may feel "off" compared to hand-crafted pixel art.</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ═══════ WORKFLOW 06 ═══════ -->
+<article class="workflow" id="wf6">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 06</div>
+    <h2>External AI → <em>Image to Pixel Art</em></h2>
+    <p class="workflow-desc">
+      A variant of Workflow 05 for source images that aren't already pixel-art-styled. Pixel Lab's Image-to-Pixel-Art tool stylizes any image into pixel art via an AI model, rather than detecting an existing pixel grid.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">External tool</div>
+        <div class="meta-value">Any image source</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Pixel Lab tool</div>
+        <div class="meta-value">Image to Pixel Art</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Max output</div>
+        <div class="meta-value">200 / 256 / 320</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tier</div>
+        <div class="meta-value">Free / T1 / T2+</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate or source any image</h3>
+        <p class="step-body">
+          Unlike Workflow 05, this tool doesn't require the source to look like pixel art. Use a regular illustration from Gemini/ChatGPT, a photo, concept art — anything. The model will reinterpret it as pixel art.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Import into Pixelorama</h3>
+        <p class="step-body">
+          <strong>File → Open</strong> or drag and drop. The source image dimensions don't strictly matter since the tool will resize internally — but cleaner inputs (already cropped to the subject, balanced lighting) yield cleaner pixel art outputs.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Image to Pixel Art</h3>
+        <p class="step-body">
+          From the PixelLab menu. Per docs: <em>"the image is downsized 4 times; if you select a size larger than that, the image is automatically resized in the background to your requested image size."</em>
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Set the output size</h3>
+        <p class="step-body">
+          Bound by your tier:
+        </p>
+        <div class="specs">
+          <span class="spec verified">Free tier: 200×200</span>
+          <span class="spec verified">Tier 1: 256×256</span>
+          <span class="spec verified">Tier 2+: 320×320</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Optionally set a Target Palette</h3>
+        <p class="step-body">
+          The tool supports <strong>Target Palette</strong> — constrain the output to a specific color palette. For consistent style across multiple converted assets, use the same palette every run. Look for "Target Palette" in the tool options panel.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Configure Guidance weight and seed</h3>
+        <p class="step-body">
+          <strong>Guidance weight</strong> controls how strictly the output matches the source. Higher = more faithful. <strong>Seed</strong> for reproducibility. Set both, then generate.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Choose Output method</h3>
+        <p class="step-body">
+          Per docs, the tool has an <strong>Output method</strong> option (e.g., New frame, Modify current layer). Choose "New frame" to keep the source intact for comparison, or "Modify current layer" if you want to overwrite.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate and review</h3>
+        <p class="step-body">
+          Output is true pixel art at the dimensions you specified. Unlike Unzoom, this is generative — it interprets the source rather than detecting an existing pixel grid. Better for source images that aren't already styled as pixel art.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>Output capped at 320×320 (Tier 2+) — substantially smaller than your 512×512 target. Not a single-pass solution for full-canvas maps; better suited for individual sprites, icons, characters, items.</li>
+      <li>Better for character/icon-style sources than for sprawling map scenes — diffusion-based stylization works best on focused subjects.</li>
+      <li>Distinct from Unzoom: this tool generates new pixel art interpretations. Unzoom detects existing pixel grids in pre-pixel-art-styled images. Pick the right tool for your source.</li>
+    </ul>
+  </div>
+</article>
+
+<!-- ═══════ WORKFLOW 08 ═══════ -->
+<article class="workflow" id="wf8">
+  <header class="workflow-header">
+    <div class="workflow-num">Workflow 08</div>
+    <h2>Inpaint v3 with <em>intentional masking</em></h2>
+    <p class="workflow-desc">
+      Targeted local edits without disturbing surrounding tiles. The 256×256 selection defines what the model can see; the painted Inpainting layer defines what gets replaced. Mastering this distinction is the key to surgical edits.
+    </p>
+    <div class="workflow-meta">
+      <div class="meta-item">
+        <div class="meta-label">Tool</div>
+        <div class="meta-value">Inpaint (v3)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Selection size</div>
+        <div class="meta-value">up to 256×256</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Cost</div>
+        <div class="meta-value">20 generations*</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Tier</div>
+        <div class="meta-value">All tiers</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flow">
+    <div class="flow-section-label">Procedure</div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">01</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open your existing map</h3>
+        <p class="step-body">
+          Open the project containing the area you want to fix. Identify the specific pixels that need regenerating (e.g., "this pond should be grass"; "this castle wall is broken").
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">02</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Open Inpaint v3 from the PixelLab menu</h3>
+        <p class="step-body">
+          Per docs: <em>"When you select Inpaint from the PixelLab menu, a new layer called Inpainting will be added to your image. Drawing on this layer specifies which parts of your image the model is allowed to modify."</em>
+        </p>
+        <div class="specs">
+          <span class="spec verified">Min 32×32 / Max 256×256</span>
+          <span class="spec verified">Inpainting layer auto-created</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">03</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Make a selection that includes context</h3>
+        <p class="step-body">
+          Critical conceptual point: the <strong>selection</strong> is the model's <em>context window</em>, not the area being replaced. Include the target zone <strong>plus surrounding healthy content</strong> so the model has style reference. For canvases &gt; 256×256, the selection auto-snaps to 256×256.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">04</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Commit the selection</h3>
+        <p class="step-body">
+          <strong>Press Enter</strong> or click the green checkmark in Left Tool Options. The corner handles disappear; you're left with a marching-ants outline. The selection is now locked and will persist when you switch to other tools.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">05</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Activate the Inpainting layer</h3>
+        <p class="step-body">
+          In the Layers panel (timeline), click on the <strong>Inpainting</strong> layer to make it active. This is the layer your pencil strokes will land on — not your art layer. Switch to the pencil tool.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">06</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Paint BLACK over only the pixels to regenerate</h3>
+        <p class="step-body">
+          Quote from Pixel Lab's Create Map guide: <em>"if we want to have a consistent style and smooth transitions between tiles, it is important that we don't inpaint the whole selection area, as that leaves no reference for the model to use."</em>
+          <br><br>
+          More paint = more freedom for the model. Less paint = stronger style anchoring. For "remove this pond," paint only the water tiles. For "redesign this whole region," paint nearly everything.
+        </p>
+        <div class="specs">
+          <span class="spec">Color: black (#000000)</span>
+          <span class="spec">"Paint in selection" must be checked</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">07</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Write a focused description</h3>
+        <p class="step-body">
+          The description should say what the painted area should become — not the whole scene. Per the docs: <em>"the description should describe what's in the middle of the selected area."</em> Example for the pond replacement: <code>"detailed top-down grassland with small flowers"</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">08</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Set output method and seed</h3>
+        <p class="step-body">
+          <strong>Output method</strong>: "New frame" preserves the original; "Modify current layer" overwrites in place. Use New frame for first attempts (so you can compare), Modify current layer once you're confident in the prompt + mask combo.
+          <br><br>
+          Set a known <strong>Seed</strong> if you want reproducibility across attempts.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">09</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Generate</h3>
+        <p class="step-body">
+          The model regenerates only the painted pixels, using the unpainted parts of the selection as style reference. Surrounding tiles stay untouched. Inspect the boundary between regenerated and original content — should blend seamlessly if mask + selection are well-chosen.
+        </p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-marker"><div class="step-num">10</div></div>
+      <div class="step-content">
+        <h3 class="step-title">Iterate by adjusting the mask</h3>
+        <p class="step-body">
+          If results are too divergent, paint less black (more anchor). If results are too constrained, paint more black (more freedom). Re-generate with the same seed to isolate the effect of the mask change.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="caveats">
+    <div class="caveats-label">Caveats &amp; uncertainties</div>
+    <ul>
+      <li>The 256×256 auto-snap behavior on selections is something you observed in your testing; it isn't explicitly documented as auto-snap. If you want truly smaller selections, the original Inpaint tool (under "Other") may behave differently — worth a single test.</li>
+      <li>Cost shown as 20 generations per docs; you observed 40 in-app. The in-app value is the source of truth — the docs page may be out of date.</li>
+      <li>Inpaint v3 options are: Description, No Background, Crop to Mask, Use Selection, Seed. Pixpatch v2 (also under Inpaint) offers more control — camera view, palette, guidance weight, projection — at the cost of a smaller 180×180 max.</li>
+    </ul>
+  </div>
+</article>
+
+</main>
+
+<footer>
+  <p>Compiled from official documentation at <a href="https://www.pixellab.ai/docs">pixellab.ai/docs</a> and <a href="https://pixelorama.org/user_manual">pixelorama.org/user_manual</a></p>
+  <p>Verified against docs as of April 2026 · Subject to change as tools evolve</p>
+  <p>For tool-specific behaviour questions, the <a href="https://discord.gg/pBeyTBF8T7">Pixel Lab Discord</a> is the authoritative source</p>
+</footer>
+
+</body>
+</html>

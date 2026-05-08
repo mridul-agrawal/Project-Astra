@@ -3,6 +3,10 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.Support;
+using ProjectAstra.Core.UI.Inventory;
+using ProjectAstra.Core.UI.UnitInfo;
 
 namespace ProjectAstra.EditorTools
 {
@@ -141,9 +145,9 @@ namespace ProjectAstra.EditorTools
             var panel = BuildPanel(canvas.transform);
 
             // Attach runtime controller
-            var controller = panel.GetComponent<Core.UI.UnitInfoPanelUI>();
+            var controller = panel.GetComponent<Core.UI.UnitInfo.UnitInfoPanelUI>();
             if (controller == null)
-                controller = panel.AddComponent<Core.UI.UnitInfoPanelUI>();
+                controller = panel.AddComponent<Core.UI.UnitInfo.UnitInfoPanelUI>();
 
             // Sub-panels — item detail & support detail (UI-02 pages 2 & 3 selection)
             var itemDetail = BuildItemDetailSubpanel(panel.transform);
@@ -161,7 +165,7 @@ namespace ProjectAstra.EditorTools
             Debug.Log("UnitInfoPanel (Nila Dharma) built.");
         }
 
-        static void WireControllerSprites(Core.UI.UnitInfoPanelUI controller)
+        static void WireControllerSprites(Core.UI.UnitInfo.UnitInfoPanelUI controller)
         {
             var so = new SerializedObject(controller);
             AssignSprite(so, "_hpFillGreen",     sprHpFillGreen);
@@ -201,7 +205,7 @@ namespace ProjectAstra.EditorTools
             if (prop != null) prop.objectReferenceValue = value;
         }
 
-        static Core.UI.UnitInfoItemDetailUI BuildItemDetailSubpanel(Transform parent)
+        static Core.UI.Inventory.UnitInfoItemDetailUI BuildItemDetailSubpanel(Transform parent)
         {
             var root = NewImage("ItemDetailPanel", parent, ColIndigo);
             var rt = root.GetComponent<RectTransform>();
@@ -292,7 +296,7 @@ namespace ProjectAstra.EditorTools
             dRt.anchorMin = new Vector2(0, 0); dRt.anchorMax = new Vector2(1, 0); dRt.pivot = new Vector2(0.5f, 0);
             dRt.anchoredPosition = new Vector2(0, 70); dRt.sizeDelta = new Vector2(-60, 30);
 
-            var comp = root.AddComponent<Core.UI.UnitInfoItemDetailUI>();
+            var comp = root.AddComponent<Core.UI.Inventory.UnitInfoItemDetailUI>();
             var so = new SerializedObject(comp);
             so.FindProperty("_nameText").objectReferenceValue = title;
             so.FindProperty("_typeText").objectReferenceValue = type;
@@ -311,7 +315,7 @@ namespace ProjectAstra.EditorTools
             return comp;
         }
 
-        static Core.UI.UnitInfoSupportDetailUI BuildSupportDetailSubpanel(Transform parent)
+        static Core.UI.UnitInfo.UnitInfoSupportDetailUI BuildSupportDetailSubpanel(Transform parent)
         {
             var root = NewImage("SupportDetailPanel", parent, ColIndigo);
             var rt = root.GetComponent<RectTransform>();
@@ -385,7 +389,7 @@ namespace ProjectAstra.EditorTools
             if (sprShapathIcon != null) shapath.GetComponent<Image>().sprite = sprShapathIcon;
             shapath.SetActive(false);
 
-            var comp = root.AddComponent<Core.UI.UnitInfoSupportDetailUI>();
+            var comp = root.AddComponent<Core.UI.UnitInfo.UnitInfoSupportDetailUI>();
             var so = new SerializedObject(comp);
             so.FindProperty("_portraitImage").objectReferenceValue = portrait.GetComponent<Image>();
             so.FindProperty("_nameText").objectReferenceValue = name;
@@ -404,8 +408,8 @@ namespace ProjectAstra.EditorTools
             return comp;
         }
 
-        static void WireDetailReferences(Core.UI.UnitInfoPanelUI controller,
-            Core.UI.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfoSupportDetailUI supportDetail)
+        static void WireDetailReferences(Core.UI.UnitInfo.UnitInfoPanelUI controller,
+            Core.UI.Inventory.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfo.UnitInfoSupportDetailUI supportDetail)
         {
             var so = new SerializedObject(controller);
             var itemProp = so.FindProperty("_itemDetail");
@@ -415,9 +419,9 @@ namespace ProjectAstra.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
-        static void WireGridCursor(Core.UI.UnitInfoPanelUI controller)
+        static void WireGridCursor(Core.UI.UnitInfo.UnitInfoPanelUI controller)
         {
-            var cursor = Object.FindObjectOfType<ProjectAstra.Core.GridCursor>();
+            var cursor = Object.FindObjectOfType<ProjectAstra.Core.Cursor.GridCursor>();
             if (cursor == null) { Debug.LogWarning("No GridCursor in scene — UnitInfoPanel opened-by-cursor wiring skipped."); return; }
             var so = new SerializedObject(cursor);
             var prop = so.FindProperty("_unitInfoPanelUI");

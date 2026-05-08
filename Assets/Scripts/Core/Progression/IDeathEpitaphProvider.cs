@@ -1,3 +1,5 @@
+using ProjectAstra.Core.Combat;
+
 namespace ProjectAstra.Core.Progression
 {
     /// <summary>

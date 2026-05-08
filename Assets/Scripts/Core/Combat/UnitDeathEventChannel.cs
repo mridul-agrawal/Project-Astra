@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.State;
+using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// How a unit died. Only Combat is wired in gameplay today (UM-01 scope).

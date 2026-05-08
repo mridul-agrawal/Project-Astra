@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core
 {

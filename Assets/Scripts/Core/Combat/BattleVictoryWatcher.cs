@@ -1,9 +1,13 @@
 using System;
 using UnityEngine;
 using ProjectAstra.Core.Progression;
+using ProjectAstra.Core.State;
+using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.WarLedger;
+using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     public enum BattleWinner { Player, Enemy, None }
     public enum BattleEndCause { AllEnemiesDead, AllPlayerUnitsDead, Objective, Other }

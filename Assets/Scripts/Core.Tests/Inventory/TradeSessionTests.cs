@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Tests.Inventory
 {

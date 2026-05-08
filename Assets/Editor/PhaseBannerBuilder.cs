@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -25,7 +26,7 @@ namespace ProjectAstra.Core.Editor
             LoadFonts();
             EnsureMaterials();
 
-            var existing = Object.FindAnyObjectByType<UI.PhaseBannerUI>();
+            var existing = Object.FindAnyObjectByType<UI.Overlays.PhaseBannerUI>();
             if (existing != null)
             {
                 Object.DestroyImmediate(existing.gameObject);
@@ -58,7 +59,7 @@ namespace ProjectAstra.Core.Editor
             var cg = bannerRoot.gameObject.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
 
-            var bannerUI = wrapperGO.AddComponent<UI.PhaseBannerUI>();
+            var bannerUI = wrapperGO.AddComponent<UI.Overlays.PhaseBannerUI>();
             WireReferences(bannerUI, bannerRoot, dimOverlay, bg, borderTop, borderBottom,
                 innerBorderTop, innerBorderBottom, orbs, phaseText, turnText);
 
@@ -269,7 +270,7 @@ namespace ProjectAstra.Core.Editor
             return t;
         }
 
-        static void WireReferences(UI.PhaseBannerUI bannerUI, RectTransform root,
+        static void WireReferences(UI.Overlays.PhaseBannerUI bannerUI, RectTransform root,
             Image dimOverlay, Image bg, Image borderTop, Image borderBottom,
             Image innerBorderTop, Image innerBorderBottom,
             Image[] orbs, TextMeshProUGUI phaseText, TextMeshProUGUI turnText)

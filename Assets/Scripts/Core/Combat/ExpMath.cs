@@ -1,6 +1,7 @@
 using UnityEngine;
+using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// FE GBA experience formulas. Stateless — pure math on UnitInstance inputs.

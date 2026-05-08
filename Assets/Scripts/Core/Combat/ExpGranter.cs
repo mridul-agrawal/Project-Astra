@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Overlays;
+using ProjectAstra.Core.UI.Progression;
+using ProjectAstra.Core.UI.UnitInfo;
+using ProjectAstra.Core.Units;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// Experience Scaling orchestrator. Routes EXP grants through:

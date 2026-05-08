@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -12,7 +13,7 @@ namespace ProjectAstra.Core.Editor
         public static void CreateMapGrid()
         {
             var gridGO = new GameObject("MapGrid");
-            var grid = gridGO.AddComponent<Grid>();
+            var grid = gridGO.AddComponent<UnityEngine.Grid>();
             grid.cellSize = new Vector3(1f, 1f, 0f);
 
             for (int i = 0; i < LayerNames.Length; i++)

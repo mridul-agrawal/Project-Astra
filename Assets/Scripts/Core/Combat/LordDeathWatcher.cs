@@ -1,8 +1,11 @@
 using System.Collections;
+using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Cutscene;
+using ProjectAstra.Core.Units;
 using UnityEngine;
 
-namespace ProjectAstra.Core
+namespace ProjectAstra.Core.Combat
 {
     /// <summary>
     /// UM-02 — Lord Permadeath = Game Over.

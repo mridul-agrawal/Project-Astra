@@ -2,8 +2,24 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Camera;
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Progression;
+using ProjectAstra.Core.State;
+using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.UI.Convoy;
+using ProjectAstra.Core.UI.Forecast;
+using ProjectAstra.Core.UI.Inventory;
+using ProjectAstra.Core.UI.Overlays;
+using ProjectAstra.Core.UI.Trade;
+using ProjectAstra.Core.UI.UnitInfo;
+using ProjectAstra.Core.UI.WarLedger;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -566,7 +582,7 @@ namespace ProjectAstra.Core.Editor
 
         private static void SetupCameraController(MapRenderer mapRenderer)
         {
-            var cam = Object.FindAnyObjectByType<Camera>();
+            var cam = Object.FindAnyObjectByType<UnityEngine.Camera>();
             if (cam == null)
             {
                 Debug.LogError("CursorSceneSetup: No Camera found in scene.");

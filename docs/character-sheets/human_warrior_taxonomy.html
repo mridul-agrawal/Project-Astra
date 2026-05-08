@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Human Warrior Taxonomy — Project Astra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant+SC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:        #0c1019;
+    --bg-card:        #151a26;
+    --bg-card-2:      #1c2230;
+    --ink-primary:    #efe6d8;
+    --ink-secondary:  #b9b0a0;
+    --ink-muted:      #7a7464;
+    --gold:           #d4af37;
+    --gold-bright:    #e8c468;
+    --saffron:        #f4a261;
+    --rule:           #2a2f3d;
+
+    /* per-axis accents */
+    --c-1: #f4a261; /* varna     — saffron */
+    --c-2: #c44536; /* power     — crimson */
+    --c-3: #c08a5a; /* weapon    — bronze */
+    --c-4: #4a9da8; /* mount     — teal */
+    --c-5: #a486c4; /* astra     — violet */
+    --c-6: #d4af37; /* vows      — gold */
+    --c-7: #6fa67d; /* lineage   — emerald */
+    --c-8: #8090c8; /* training  — indigo */
+    --c-9: #d18a99; /* dharma    — rose */
+
+    --font-display: 'Cormorant Garamond', 'Cormorant SC', Georgia, serif;
+    --font-small-caps: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    padding: 0;
+    background:
+      radial-gradient(ellipse at top, rgba(212,175,55,0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(244,162,97,0.04), transparent 60%),
+      var(--bg-deep);
+    color: var(--ink-primary);
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Layout ─────────────────────────────────────────────── */
+  .page {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 80px 56px 120px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  header.title-block {
+    text-align: center;
+    padding: 56px 0 64px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 80px;
+    position: relative;
+  }
+  .eyebrow {
+    font-family: var(--font-small-caps);
+    color: var(--gold);
+    letter-spacing: 0.32em;
+    font-size: 13px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1.work-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    margin: 0 0 18px;
+    color: var(--ink-primary);
+    letter-spacing: -0.01em;
+  }
+  h1.work-title em {
+    font-style: italic;
+    color: var(--gold-bright);
+  }
+  .subtitle {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-style: italic;
+    color: var(--ink-secondary);
+    max-width: 720px;
+    margin: 0 auto 28px;
+    line-height: 1.4;
+  }
+  .ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 24px 0 32px;
+    color: var(--gold);
+  }
+  .ornament .line { height: 1px; width: 60px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+  .ornament .dot { width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); }
+
+  .how-to-use {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: left;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    padding: 28px 32px;
+    border-radius: 4px;
+    position: relative;
+  }
+  .how-to-use::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+  }
+  .how-to-use h3 {
+    font-family: var(--font-small-caps);
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+    margin: 0 0 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+  .how-to-use p { margin: 0 0 10px; color: var(--ink-secondary); }
+  .how-to-use p:last-child { margin-bottom: 0; }
+  .how-to-use strong { color: var(--ink-primary); font-weight: 500; }
+
+  /* ── Section headings ───────────────────────────────────── */
+  section.section {
+    margin: 96px 0 0;
+  }
+  .section-header {
+    margin-bottom: 48px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-header .label {
+    font-family: var(--font-small-caps);
+    color: var(--gold);
+    letter-spacing: 0.32em;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-header h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 40px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .section-header p {
+    color: var(--ink-secondary);
+    font-style: italic;
+    font-family: var(--font-display);
+    font-size: 18px;
+    margin: 0;
+    max-width: 680px;
+  }
+
+  /* ── Tree card ──────────────────────────────────────────── */
+  .tree {
+    --accent: var(--gold);
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-bottom: 36px;
+    overflow: hidden;
+    position: relative;
+    page-break-inside: avoid;
+  }
+  .tree::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+
+  .tree.axis-1 { --accent: var(--c-1); }
+  .tree.axis-2 { --accent: var(--c-2); }
+  .tree.axis-3 { --accent: var(--c-3); }
+  .tree.axis-4 { --accent: var(--c-4); }
+  .tree.axis-5 { --accent: var(--c-5); }
+  .tree.axis-6 { --accent: var(--c-6); }
+  .tree.axis-7 { --accent: var(--c-7); }
+  .tree.axis-8 { --accent: var(--c-8); }
+  .tree.axis-9 { --accent: var(--c-9); }
+
+  .trunk {
+    padding: 32px 40px 28px;
+    border-bottom: 1px solid var(--rule);
+    background: linear-gradient(180deg, var(--bg-card-2), var(--bg-card));
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  .axis-number {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+    opacity: 0.85;
+    min-width: 80px;
+    text-align: center;
+    padding-right: 24px;
+    border-right: 1px solid var(--rule);
+  }
+  .trunk-content h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    margin: 0 0 6px;
+    line-height: 1.1;
+    color: var(--ink-primary);
+  }
+  .trunk-content h2 .sanskrit {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 0.78em;
+  }
+  .trunk-content .axis-question {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--ink-secondary);
+    margin: 0;
+  }
+
+  /* ── Branches ───────────────────────────────────────────── */
+  .branches {
+    list-style: none;
+    margin: 0;
+    padding: 32px 40px 40px 64px;
+    position: relative;
+  }
+  .branches::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 32px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 30%, transparent));
+  }
+
+  .branch {
+    position: relative;
+    padding: 14px 18px 14px 22px;
+    margin-bottom: 14px;
+    background: var(--bg-card-2);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--accent);
+    border-radius: 2px;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+  .branch:last-child { margin-bottom: 0; }
+  .branch:hover {
+    transform: translateX(3px);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg-card-2));
+    border-color: var(--accent);
+  }
+  .branch::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .branch::after {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .branch-head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .branch-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 21px;
+    color: var(--ink-primary);
+    line-height: 1.2;
+  }
+  .branch-tag {
+    font-family: var(--font-small-caps);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 2px 10px;
+    border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .branch-desc {
+    font-size: 14.5px;
+    color: var(--ink-secondary);
+    margin: 0 0 10px;
+    line-height: 1.55;
+  }
+  .branch-hook {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin: 0;
+    padding: 8px 12px;
+    background: rgba(0,0,0,0.18);
+    border-left: 2px solid color-mix(in srgb, var(--accent) 50%, transparent);
+    border-radius: 2px;
+    font-family: var(--font-body);
+  }
+  .branch-hook strong {
+    font-family: var(--font-small-caps);
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 11px;
+    margin-right: 8px;
+  }
+
+  /* ── Combinations grid ──────────────────────────────────── */
+  .combinations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+  .seed-card {
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--gold);
+    padding: 28px 28px 24px;
+    border-radius: 2px;
+    position: relative;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+  }
+  .seed-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--gold) 60%, var(--rule));
+  }
+  .seed-card .seed-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    margin-bottom: 10px;
+  }
+  .seed-card .seed-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0 0 14px;
+    color: var(--ink-primary);
+  }
+  .seed-card .seed-tension {
+    font-size: 14px;
+    color: var(--ink-secondary);
+    margin: 0 0 14px;
+    font-style: italic;
+    font-family: var(--font-display);
+    border-left: 2px solid var(--gold);
+    padding-left: 12px;
+  }
+  .seed-card .seed-gameplay {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(0,0,0,0.18);
+    border-radius: 2px;
+  }
+  .seed-card .seed-gameplay strong {
+    font-family: var(--font-small-caps);
+    color: var(--gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 11px;
+    margin-right: 6px;
+    font-weight: 600;
+  }
+
+  /* ── Genre mechanics ────────────────────────────────────── */
+  .mechanics-list {
+    list-style: none;
+    counter-reset: mech;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    gap: 16px;
+  }
+  .mechanics-list li {
+    counter-increment: mech;
+    padding: 22px 24px 22px 64px;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    position: relative;
+  }
+  .mechanics-list li::before {
+    content: counter(mech, decimal-leading-zero);
+    position: absolute;
+    left: 18px;
+    top: 22px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .mechanics-list .mech-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--ink-primary);
+    margin: 0 0 6px;
+    line-height: 1.2;
+  }
+  .mechanics-list p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--ink-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────── */
+  footer {
+    margin-top: 120px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 12.5px;
+    font-family: var(--font-small-caps);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer .ornament { margin-bottom: 24px; }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .page { padding: 56px 24px 80px; }
+    .trunk { grid-template-columns: 1fr; gap: 12px; padding: 24px 24px 20px; }
+    .axis-number { border-right: none; padding: 0; min-width: 0; text-align: left; font-size: 40px; }
+    .branches { padding: 24px 20px 28px 48px; }
+    .branches::before { left: 24px; }
+    .branch::before { left: -27px; width: 23px; }
+    .branch::after { left: -30px; }
+    .trunk-content h2 { font-size: 26px; }
+    h1.work-title { font-size: 40px; }
+    .section-header h2 { font-size: 30px; }
+  }
+
+  /* ── Print ──────────────────────────────────────────────── */
+  @media print {
+    body { background: white; color: #111; }
+    .tree, .seed-card, .mechanics-list li, .how-to-use { background: white; border-color: #ccc; }
+    .branch { background: #fafafa; }
+    .branch-hook, .seed-card .seed-gameplay { background: #f4f4f4; }
+    h1.work-title, .section-header h2, .branch-name, .seed-card .seed-title, .mechanics-list .mech-title { color: #111; }
+    .branch-desc, .seed-card .seed-tension, .mechanics-list p, .subtitle, .how-to-use p { color: #333; }
+    .branch-hook, .branch-hook strong, .seed-card .seed-gameplay strong { color: #555; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ────────────── HEADER ────────────── -->
+<header class="title-block">
+  <div class="eyebrow">Project Astra · Character Design Reference · Vol. 01</div>
+  <h1 class="work-title">A Field Atlas of <em>Human Warriors</em></h1>
+  <p class="subtitle">Nine independent classification trees, drawn from the great epics, for inventing original heroes by combination rather than imitation.</p>
+  <div class="ornament"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+
+  <div class="how-to-use">
+    <h3>How to read this atlas</h3>
+    <p>Each warrior in the source material can be located along <strong>nine separate axes</strong> — who they were born as, how powerful they are, what they fight with, what binds them, and so on. The trees below treat these axes as <strong>independent dimensions</strong>: pick one branch from any number of trees, and the intersection becomes a fresh, mythologically grounded character seed.</p>
+    <p>No real names appear in the visible text — only the structural shapes. The goal is <strong>inspiration by combination</strong>, not reconstruction. A "Liminal-born Mace fighter on Elephant, Tier C astras, bound by a Vengeance Vow, of Rakshasa lineage, war-hardened, and a Tragic Loyalist" is not a real figure from any epic — but every part of it is.</p>
+  </div>
+</header>
+
+<!-- ────────────── TREES ────────────── -->
+<section class="section trees">
+  <div class="section-header">
+    <div class="label">Part One</div>
+    <h2>Nine Trees of Classification</h2>
+    <p>Each tree sorts warriors along one axis. Read them as independent — the same warrior occupies one branch on every tree at once.</p>
+  </div>
+
+  <!-- ─── Axis 1: Varna ─── -->
+  <article class="tree axis-1">
+    <div class="trunk">
+      <div class="axis-number">01</div>
+      <div class="trunk-content">
+        <h2>Birth-Class &amp; Legitimacy <span class="sanskrit">— Varna</span></h2>
+        <p class="axis-question">By whose authority does this warrior take up arms?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Pure Warrior-Caste</span>
+          <span class="branch-tag">Established</span>
+        </div>
+        <p class="branch-desc">Born into the warrior estate. Authority to fight is hereditary and unquestioned; the institutions of war are theirs by right.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+command respect, +access to standing armies, low identity friction</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Priestly-Born Warrior</span>
+          <span class="branch-tag">Sacred &amp; Lethal</span>
+        </div>
+        <p class="branch-desc">Born to a priestly lineage but trained in arms. Carries scriptural knowledge, which is the gateway to the highest divine weapons — but also the heaviest moral load.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>highest astra-tier ceiling, internal dharma conflict, gated by ritual purity</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Liminal / Mixed Birth</span>
+          <span class="branch-tag">In-Between</span>
+        </div>
+        <p class="branch-desc">Born across castes, raised outside their birth-class, or of disputed parentage. Excluded from establishment training; their power, when it comes, is hard-won and resented.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>exclusion-fueled stat boost, identity-based questlines, unconventional training paths</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Royalty / Dynastic Heir</span>
+          <span class="branch-tag">Throne-Bound</span>
+        </div>
+        <p class="branch-desc">A warrior-caste subtype where the throne itself constrains personal will. Strategic decisions echo through entire kingdoms; private morality is rarely affordable.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>institutional vows by default, −personal autonomy, +strategic influence on map-wide events</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 2: Power Tier ─── -->
+  <article class="tree axis-2">
+    <div class="trunk">
+      <div class="axis-number">02</div>
+      <div class="trunk-content">
+        <h2>Power Tier <span class="sanskrit">— Rathi-class hierarchy</span></h2>
+        <p class="axis-question">How many lesser warriors does this one equal in open battle?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Foot Soldier <em>(Padatik)</em></span>
+          <span class="branch-tag">Tier 0 · Baseline</span>
+        </div>
+        <p class="branch-desc">The unit of measurement. Everything else is counted in multiples of these.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>1× — the standard against which all others scale</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Cavalry <em>(Ashvarohi)</em></span>
+          <span class="branch-tag">Tier 0.5</span>
+        </div>
+        <p class="branch-desc">Mounted skirmisher. Mobility and reach lift them above the infantry baseline.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× foot soldier; +redeploy speed, +flank pressure</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Elephant Warrior <em>(Gaja)</em></span>
+          <span class="branch-tag">Tier 1</span>
+        </div>
+        <p class="branch-desc">A war-elephant rider. Elevated platform, crushing mass, psychological dominance.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× cavalry; +morale-break aura, +line-of-sight, slow but hard to stop</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Half-Charioteer <em>(ArdhaRathi)</em></span>
+          <span class="branch-tag">Tier 2</span>
+        </div>
+        <p class="branch-desc">A capable chariot-warrior, not yet a champion. Equals one elephant unit in open field.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~1× Gaja; competent ranged platform</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Charioteer <em>(Rathi)</em></span>
+          <span class="branch-tag">Tier 3</span>
+        </div>
+        <p class="branch-desc">A battle-hardened chariot champion; mid-tier kings and seasoned officers fall here. The lower bound of "named warrior."</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× ArdhaRathi / ~5,000 foot soldiers</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Master-Charioteer <em>(Atirathi)</em></span>
+          <span class="branch-tag">Tier 4</span>
+        </div>
+        <p class="branch-desc">Multi-weapon master; a single unit can stall an army's advance.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× Rathi / ~60,000 foot soldiers</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Great Charioteer <em>(Maharathi)</em></span>
+          <span class="branch-tag">Tier 5 · Champion</span>
+        </div>
+        <p class="branch-desc">Master of every form of combat known. A presence on the battlefield freezes lesser units in place.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× Atirathi / ~720,000 foot soldiers; battlefield-defining</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Supreme-Great Charioteer <em>(Ati-Maharathi)</em></span>
+          <span class="branch-tag">Tier 6 · Rare</span>
+        </div>
+        <p class="branch-desc">A super-warrior; only a handful exist in any given age. Capable of holding the line against multiple Maharathis.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>~12× Maharathi; appearance alone shifts war's course</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Transcendent Warrior <em>(Maha-Maharathi)</em></span>
+          <span class="branch-tag">Tier 7 · Near-Divine</span>
+        </div>
+        <p class="branch-desc">Beyond mortal scale. Effectively unkillable by conventional means; usually a divine incarnation in disguise.</p>
+        <p class="branch-hook"><strong>Combat Value</strong>narrative cap; cannot be defeated mechanically — only restrained by oath, vow, or self-limitation</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 3: Weapon Specialization ─── -->
+  <article class="tree axis-3">
+    <div class="trunk">
+      <div class="axis-number">03</div>
+      <div class="trunk-content">
+        <h2>Weapon Specialization <span class="sanskrit">— Shastra-yuddha</span></h2>
+        <p class="axis-question">What does the warrior reach for first?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Bow Specialist <em>(Dhanurdhari)</em></span>
+          <span class="branch-tag">Long Range</span>
+        </div>
+        <p class="branch-desc">The archetypal warrior of the epics. Primary weapon is the great bow; the bow is also the conduit through which most divine weapons are launched.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>high single-target damage, range advantage, primary astra-delivery vehicle</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Mace / Club Fighter <em>(Gadayudha)</em></span>
+          <span class="branch-tag">Brute Force</span>
+        </div>
+        <p class="branch-desc">Iron mace specialist. Strength-based, medium range, devastating in close. Often paired with low astra-access — the mace fighter trusts the body, not the mantra.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>high AoE / cleave damage, strength-scaling, lower astra ceiling</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Sword Fighter <em>(Asi-yuddha)</em></span>
+          <span class="branch-tag">Close Quarters</span>
+        </div>
+        <p class="branch-desc">Twin-sword and single-blade specialists. High mobility, fast technique; tier compensated by skill rather than scale.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>high mobility &amp; counter-attack, tech-scaled rather than stat-scaled</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Spear / Lance Fighter <em>(Shaktayudha)</em></span>
+          <span class="branch-tag">Mid Range</span>
+        </div>
+        <p class="branch-desc">Pole-arm and javelin specialists. Reach, control, and the rare one-throw kill — the spear is also the form most divine "shakti" weapons take.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>reach control, +zone-of-denial, single-use ranged shakti weapons</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Axe Warrior <em>(Parasha-yuddha)</em></span>
+          <span class="branch-tag">Cleaving</span>
+        </div>
+        <p class="branch-desc">Battle-axe specialists. High-momentum, often tied to a specific signature artifact; rare style associated with divinely-chosen warriors.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>high momentum / charge damage, often bound to a unique artifact</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Multi-Weapon Generalist</span>
+          <span class="branch-tag">All Forms</span>
+        </div>
+        <p class="branch-desc">Master of every shastra. Indicates extreme experience or elite training; their flexibility is their advantage.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+tactical flexibility, +adapts to enemy archetype, requires high power-tier</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Astra-Specialist / Warrior-Sage</span>
+          <span class="branch-tag">Mantric</span>
+        </div>
+        <p class="branch-desc">Primary "weapon" is the recited mantra rather than steel. Their power lives in memory and ritual; physical prowess is secondary.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+highest astra-tier, −physical durability, vulnerable to memory/concentration disruption</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Unique / Signature Weapon</span>
+          <span class="branch-tag">One-of-a-Kind</span>
+        </div>
+        <p class="branch-desc">Defined by a single weapon no one else can wield — three infallible arrows, a thousand-armed style, a cursed bow that only fires once. Power is bound to that artifact alone.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>extreme situational power, finite uses, identity collapses if weapon is lost</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 4: Mount ─── -->
+  <article class="tree axis-4">
+    <div class="trunk">
+      <div class="axis-number">04</div>
+      <div class="trunk-content">
+        <h2>Mount &amp; Transport <span class="sanskrit">— Vahana</span></h2>
+        <p class="axis-question">From what platform does the warrior fight?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">On Foot <em>(Padati)</em></span>
+          <span class="branch-tag">Infantry</span>
+        </div>
+        <p class="branch-desc">Unencumbered. Lowest profile on the battlefield, easiest to hide in formation, hardest to single out.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>unrestricted terrain, +stealth in crowd, low durability</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Horse-Mounted <em>(Ashvarohi)</em></span>
+          <span class="branch-tag">Cavalry</span>
+        </div>
+        <p class="branch-desc">Rapid redeploy, skirmish-and-withdraw, flank exploitation. The greatest horsemen could deflect raindrops with a sword in mid-gallop.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+movement range, +flanking damage, vulnerable when dismounted</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Elephant-Mounted <em>(Gaja)</em></span>
+          <span class="branch-tag">Heavy Mount</span>
+        </div>
+        <p class="branch-desc">High elevation, AoE presence, area denial. The elephant warrior dominates archer positioning by sight and space alike.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+line-of-sight bonus, +morale aura, slow movement, hard counter to massed infantry</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Chariot-Borne <em>(Ratha)</em></span>
+          <span class="branch-tag">Two-Person Platform</span>
+        </div>
+        <p class="branch-desc">The signature platform of elite warriors: a mobile archery deck operated by an archer and a charioteer. Effectively a stationary cannon once positioned — and useless if the wheel sticks.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>ranged platform with armor, requires 2-unit crew, immobile once committed; charioteer's morale affects archer's accuracy</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 5: Astra Tier ─── -->
+  <article class="tree axis-5">
+    <div class="trunk">
+      <div class="axis-number">05</div>
+      <div class="trunk-content">
+        <h2>Divine Weapon Access <span class="sanskrit">— Astra-tier</span></h2>
+        <p class="axis-question">How high in the mantric arsenal can this warrior reach?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Tier A — Elemental</span>
+          <span class="branch-tag">Common</span>
+        </div>
+        <p class="branch-desc">The first tier any trained warrior masters: fire, water, wind, rain, lightning. Each is countered by its elemental opposite, producing readable rock-paper-scissors duels.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>broadly accessible, low cost, hard-counterable by opposite element</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Tier B — Indra-class &amp; Illusion</span>
+          <span class="branch-tag">Restricted</span>
+        </div>
+        <p class="branch-desc">Mid-tier astras: mass-stupefaction, sleep-inducing, illusion-weaving, weather-bending. Crowd control rather than raw damage.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>battlefield CC, temporary disables, useful against numerically superior foes</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Tier C — Brahmastra-class</span>
+          <span class="branch-tag">High Cosmic</span>
+        </div>
+        <p class="branch-desc">Single-target cosmic damage. Must be invoked AND recalled; an unrecalled astra continues to consume the world. Counters all of Tier A and most of Tier B.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>massive damage; recall mantra is a separate piece of knowledge — without it, victory becomes catastrophe</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Tier D — Apocalyptic</span>
+          <span class="branch-tag">World-Ending</span>
+        </div>
+        <p class="branch-desc">Brahmashirastra, Narayanastra, Pashupatastra-tier weapons. Capable of unmaking armies, kingdoms, or worlds. Hard constraints: cannot target mortals, cannot be used twice, only one warrior per generation may know it.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>narrative-scale damage; locked behind use-restrictions, target-restrictions, or single-use limits — a tool the player <em>almost never</em> deploys</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 6: Vows ─── -->
+  <article class="tree axis-6">
+    <div class="trunk">
+      <div class="axis-number">06</div>
+      <div class="trunk-content">
+        <h2>Vows &amp; Binding Constraints <span class="sanskrit">— Vrata, Shapa</span></h2>
+        <p class="axis-question">What can this warrior <em>not</em> do, and what does that cost them?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Institutional Vow</span>
+          <span class="branch-tag">To a Throne</span>
+        </div>
+        <p class="branch-desc">A binding oath of duty to a kingdom, dynasty, or office — even when its cause is morally wrong. The most tragic warriors of the epics fight on the wrong side because of this vow.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+institutional authority &amp; resources, −autonomy; breaking the vow grants new powers but inflicts permanent moral collapse</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Weapon-Use Constraint</span>
+          <span class="branch-tag">Conditional Lockout</span>
+        </div>
+        <p class="branch-desc">A specific weapon cannot be used under specific conditions: never against mortals, never twice in a war, never on someone unarmed. The most powerful tool in the warrior's hand is also the most situational.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>highest-damage ability gated by enemy-type, count, or context; using it against the rules backfires</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Ascetic Vow</span>
+          <span class="branch-tag">Renunciation</span>
+        </div>
+        <p class="branch-desc">Voluntary surrender of food, sleep, comfort, or family for a fixed period in exchange for power. The body becomes hollow but the will becomes a weapon.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+stat boosts during the vow, −quality-of-life mechanics; vow ends with ritual release</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Vengeance Vow</span>
+          <span class="branch-tag">Time-Bounded</span>
+        </div>
+        <p class="branch-desc">A sworn oath to slay a specific target — often by sunset, often or else. Failure costs the warrior's own life by self-immolation.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>turn-limited objective, +damage vs target, instant-death failure state</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Algorithmic / Paradoxical Vow</span>
+          <span class="branch-tag">Self-Defeating</span>
+        </div>
+        <p class="branch-desc">A vow whose logic eats itself: "I will always fight for the weaker side" — but the moment they join, that side becomes stronger. The warrior is a walking contradiction, often resolved by self-sacrifice.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>unpredictable allegiance flips; AI may switch sides mid-battle; plot-locked self-sacrifice ending</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Curse of Forgetting</span>
+          <span class="branch-tag">Conditional Failure</span>
+        </div>
+        <p class="branch-desc">Cursed by a slighted teacher or sage: at the moment of greatest need, the warrior forgets the mantra they most need. Power present, access denied.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>astra invocation fails under contextual stress (HP threshold, story flag, specific enemy); not random — <em>triggered</em></p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Mortality Denial</span>
+          <span class="branch-tag">Death-Choice</span>
+        </div>
+        <p class="branch-desc">A boon that defers death until the warrior chooses it. Effectively unkillable while the will holds — but the moment they accept death, it is final and without delay.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>cannot be reduced below 1 HP unless flagged "willing"; decision is permanent</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 7: Lineage ─── -->
+  <article class="tree axis-7">
+    <div class="trunk">
+      <div class="axis-number">07</div>
+      <div class="trunk-content">
+        <h2>Origin &amp; Lineage <span class="sanskrit">— Janma</span></h2>
+        <p class="axis-question">What blood, what fire, or what god fathered this warrior?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Pure Mortal</span>
+          <span class="branch-tag">Human Through</span>
+        </div>
+        <p class="branch-desc">No divine parent, no miraculous birth. Whatever they achieve is achieved by training, will, and luck. The truest underdogs.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>baseline; +growth-curve bonus from training events; no innate ceiling</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Demigod / Semi-Divine</span>
+          <span class="branch-tag">Divine Parent</span>
+        </div>
+        <p class="branch-desc">One mortal parent, one divine parent. The divine domain (sun, wind, storm, sky, river) imprints a starting bonus and often a destined fate.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+innate stat in divine domain, +divine boon flexibility, often +extended lifespan</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Rakshasa-Hybrid</span>
+          <span class="branch-tag">Half-Demonic</span>
+        </div>
+        <p class="branch-desc">Half-blood of demonic or non-human kin. Carries access to sorcery, illusion, and night-combat advantages — but also instinctive prejudice from the human world.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+sorcery skill, +night-combat bonus, demonic weapon access; social penalty in human settlements</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Avatar / Incarna</span>
+          <span class="branch-tag">God in Mortal Form</span>
+        </div>
+        <p class="branch-desc">A full divine incarnation, voluntarily limited to mortal form. The defining arc is <em>self-restraint</em>: choosing not to deploy the cosmic power they obviously possess.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>narrative power-cap (self-imposed); rare unlocks where the divine surface punctures through; cannot be balanced — only restrained</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Ritual-Born / Fire-Born</span>
+          <span class="branch-tag">Born of Sacrifice</span>
+        </div>
+        <p class="branch-desc">Born not of a womb but of ceremony — emerged fully formed from sacrificial fire, often summoned for a specific purpose (to kill a specific person, to fulfill a specific prophecy).</p>
+        <p class="branch-hook"><strong>Mechanic</strong>begins at high tier with full equipment; locked into the destiny they were summoned for; identity = mission</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Immortal <em>(Chiranjivi)</em></span>
+          <span class="branch-tag">Cursed Endless</span>
+        </div>
+        <p class="branch-desc">Cannot die of age or normal wounds. The text is explicit — this is punishment, not blessing. Watching loved ones die forever, motivation often becomes <em>ending</em> the curse rather than extending life.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>unkillable until specific narrative condition met; goal = release; recurring presence across multiple game eras</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 8: Training ─── -->
+  <article class="tree axis-8">
+    <div class="trunk">
+      <div class="axis-number">08</div>
+      <div class="trunk-content">
+        <h2>Training Tradition <span class="sanskrit">— Guru-parampara</span></h2>
+        <p class="axis-question">From whom did the knowledge come, and at what cost?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Avatar-Lineage</span>
+          <span class="branch-tag">Highest Pedigree</span>
+        </div>
+        <p class="branch-desc">Direct training under a divine incarnation. Unlocks the highest tier of astras and the most ferocious martial techniques. Few in any age can claim this.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+Tier C minimum astra access, accelerated learning, +divine-artifact compatibility</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Institutional Archery School</span>
+          <span class="branch-tag">Establishment</span>
+        </div>
+        <p class="branch-desc">Trained at a recognized institution under a master. Knowledge is unevenly transferred — favorites learn the recall mantras, the rest do not. Same school, different ceilings.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>institutional bias mechanic: same class, different ceilings; favoritism flag affects access</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Self-Taught / Idol-Worship</span>
+          <span class="branch-tag">Outside the System</span>
+        </div>
+        <p class="branch-desc">Excluded from formal training, the warrior teaches themselves — sometimes through devotion to a clay idol of the master they were denied. Slow start, eventual parity.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>−early game stats, +late-game ceiling = trained warrior; vulnerable to formal-school curse mechanics</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Divine-Direct Teaching</span>
+          <span class="branch-tag">Personal Tutelage</span>
+        </div>
+        <p class="branch-desc">A god or sage takes the warrior personally as a student — often during a year of exile in the celestial realm. Compressed time, accelerated mastery, multiple astras per training arc.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>rapid astra-learning during specific story arcs; tied to divine favor (revocable)</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Martial-Body Tradition</span>
+          <span class="branch-tag">Hand-to-Hand Origin</span>
+        </div>
+        <p class="branch-desc">Trained in the unarmed and weapons-of-the-body traditions said to be taught by the destroyer god himself. Philosophical combat — the body is the weapon, the breath is the discipline.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+unarmed combat bonus, +counter-throw &amp; grapple, weapon-loss does not disable</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Apprenticeship with Guru-Dakshina</span>
+          <span class="branch-tag">Knowledge for Sacrifice</span>
+        </div>
+        <p class="branch-desc">Formal student-teacher bond ending with a "fee" demanded by the master — never gold, always something irreversible: a thumb, a head, a lifelong silence. Knowledge bought with permanent loss.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>full skill access at the cost of a permanent stat-loss or limb-loss; cannot be undone</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">War-Hardened (No Formal Master)</span>
+          <span class="branch-tag">Forged in Battle</span>
+        </div>
+        <p class="branch-desc">No guru, no school. Power comes from surviving more wars than most live to see one of. Solid mid-tier ceiling; locked out of the highest astras.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+Rathi-tier minimum, −astra ceiling, +battle-specific bonuses, +veteran morale aura</p>
+      </li>
+    </ol>
+  </article>
+
+  <!-- ─── Axis 9: Dharma ─── -->
+  <article class="tree axis-9">
+    <div class="trunk">
+      <div class="axis-number">09</div>
+      <div class="trunk-content">
+        <h2>Dharma Alignment <span class="sanskrit">— not Good / Evil</span></h2>
+        <p class="axis-question">How does this warrior resolve the conflict between duty, honor, and cosmic order?</p>
+      </div>
+    </div>
+    <ol class="branches">
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Dharma-Bound</span>
+          <span class="branch-tag">Righteous &amp; Self-Limiting</span>
+        </div>
+        <p class="branch-desc">Operates strictly within the rules of righteous combat. Will not strike the unarmed, will not lie, will not abandon a vow even when the vow is killing them. Gains divine blessing while truthful — loses it the moment they slip.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>passive divine blessing (e.g. invulnerable wheels, true-strike), revoked permanently on first vow-violation</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Adharma-Exploiter</span>
+          <span class="branch-tag">Rule-Bender</span>
+        </div>
+        <p class="branch-desc">Wins by bending rules others won't. Strikes at night, strikes the unarmed, weaponizes ceremonies. Each transgression buys an immediate edge — and a permanent debt.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+temporary action economy (extra turn, astra recovery), accumulating curse debt; allies defect on witnessing transgression</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Strategic-Neutral</span>
+          <span class="branch-tag">Unbound</span>
+        </div>
+        <p class="branch-desc">Fights for outcomes, not for righteousness. May refuse to bear arms personally yet shape entire wars by counsel. No vow-binding; maximum tactical flexibility.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+tactical flexibility, no divine blessing or curse, +mercenary-loyalty &amp; recruitment options</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Tragic Loyalist</span>
+          <span class="branch-tag">Right Person, Wrong Side</span>
+        </div>
+        <p class="branch-desc">Knows perfectly well which side is righteous — and fights for the other one anyway, out of personal loyalty, gratitude, or love. The most heartbreaking shape a warrior can take.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>internal-conflict dialogue branches; if forced to confront the truth, may refuse to fight key targets; hidden recruitment route</p>
+      </li>
+      <li class="branch">
+        <div class="branch-head">
+          <span class="branch-name">Corrective Vengeance</span>
+          <span class="branch-tag">Dharmic Rage</span>
+        </div>
+        <p class="branch-desc">Fights to restore cosmic balance, even if methods are extreme. Not "evil" but not gentle — these warriors wage cycles of annihilation against entire classes of people who have failed dharma.</p>
+        <p class="branch-hook"><strong>Mechanic</strong>+bonus damage vs designated target-class, burn-out timer, immortal curse if mission unfulfilled at death</p>
+      </li>
+    </ol>
+  </article>
+</section>
+
+<!-- ────────────── COMBINATIONS ────────────── -->
+<section class="section">
+  <div class="section-header">
+    <div class="label">Part Two</div>
+    <h2>Signature Combinations</h2>
+    <p>Six cross-cutting archetypes the source material keeps producing — proof that certain branch-intersections create characters more compelling than the sum of their parts. Use as seed templates, then perturb.</p>
+  </div>
+  <div class="combinations-grid">
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 01 —</div>
+      <h3 class="seed-title">The Cursed Apocalypse</h3>
+      <p class="seed-tension">World-ending power held by someone morally compromised or structurally destined to fail. The most dangerous tool in the wrong hands — but the hands cannot let go.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>Late-game power spike that always risks backfiring. Massive damage potential, equally massive self-destruction probability. Players will save them for one critical moment — and they may still misfire.</p>
+    </article>
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 02 —</div>
+      <h3 class="seed-title">The Bound Commander</h3>
+      <p class="seed-tension">The right person, on the wrong side, by an unbreakable institutional vow. Fully knows their cause is unjust. Fights anyway, because the oath is older than the war.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>Ultimate morale anchor for the enemy. Grants passive blessings to allies; can break under specific moral pressure events. If their vow snaps, they gain new powers <em>and</em> a permanent curse.</p>
+    </article>
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 03 —</div>
+      <h3 class="seed-title">The Insulted Demigod</h3>
+      <p class="seed-tension">Born low, gifted high. Excluded from establishment training despite carrying divine blood. Resentment is fuel; every insult charges the next victory.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>Underdog scaling — gains stat boosts from being insulted, excluded, or underestimated. Cursed by establishment figures who recognize them too late.</p>
+    </article>
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 04 —</div>
+      <h3 class="seed-title">The Reluctant Annihilator</h3>
+      <p class="seed-tension">Priestly birth, warrior body, mantric specialist. Understands the spiritual <em>weight</em> of the destruction they can call down — and is therefore the warrior most reluctant to use it.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>Tier C/D astra access from session one, but moral cost on every use. Can refuse to deploy (morale cost) or deploy and accumulate karma debt that compounds across the campaign.</p>
+    </article>
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 05 —</div>
+      <h3 class="seed-title">The Devoted Second</h3>
+      <p class="seed-tension">Loves and serves someone greater, will never surpass them — and could have, in another life. The tragedy is the gap between capability and ceiling, both freely chosen.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>Exceptional support unit. Massive bonuses while adjacent to or fighting for their chosen leader; near-zero solo-win condition; high probability of self-sacrifice trigger.</p>
+    </article>
+
+    <article class="seed-card">
+      <div class="seed-num">— Combination 06 —</div>
+      <h3 class="seed-title">The Held-Back Nuke</h3>
+      <p class="seed-tension">Carries the most powerful tool available — and is forbidden from using it under almost every condition. Single-use, target-restricted, vow-locked. The win-button you spend the campaign refusing to press.</p>
+      <p class="seed-gameplay"><strong>Gameplay</strong>One guaranteed-kill ability locked behind heavy restrictions. Using it auto-wins the encounter but breaks character arc or violates a vow — narrative cost is permanent and irreversible.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ────────────── GENRE MECHANICS ────────────── -->
+<section class="section">
+  <div class="section-header">
+    <div class="label">Part Three</div>
+    <h2>Genre Guardrails — Don't Lose These</h2>
+    <p>Ten mechanical signatures that make Indian-mythological warriors structurally different from generic fantasy. When inventing characters, check that your design preserves these — or breaks them deliberately, not by accident.</p>
+  </div>
+  <ol class="mechanics-list">
+    <li>
+      <h4 class="mech-title">Astras are Learned, Not Looted</h4>
+      <p>Mantric weapons are <em>knowledge</em>, transmitted by guru or earned by penance. They are never random treasure. This means astra access is a design-time gating decision, expressed through mentor relationships and training trees, not loot tables.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Guru-Dakshina — Asymmetric Knowledge Cost</h4>
+      <p>Completing training demands a "fee" set by the teacher. It is never money. It is always something precious and irreversible — a thumb, a head, a name, a lifelong silence. Knowledge has a permanent body-cost.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Dharma is Mechanically Rewarded &amp; Punished</h4>
+      <p>Truthfulness grants tangible passive bonuses (a chariot whose wheels never touch ground). A single half-lie revokes them — permanently, not until next save. Morality is not flavor; it is mechanics.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Ultra-Weapons Have Hard Constraints</h4>
+      <p>Every Tier-D weapon comes with a structural lockout: cannot be used twice, cannot target mortals, cannot be used after surrender, must be recalled or it consumes forever. There is no single "win button" that lacks a leash.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Power Tier Scales Exponentially</h4>
+      <p>A Maharathi is not 4× a Rathi — they are roughly 720,000× a foot soldier. Tier-matching is therefore critical: sending a low-tier unit at a high-tier one is suicide by design, and the player must feel it.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Immortality is the Curse</h4>
+      <p>The warriors who cannot die are presented as the most pitied. Their motivation is <em>release</em>, not life-extension. Treat immortality as a failure state; design endings that earn it back.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Alignment Drives Allies, Not Damage</h4>
+      <p>Dharma-bound warriors attract loyal companions; rule-benders attract mercenaries and defectors. Alignment is a faction/recruitment mechanic, not a personal stat curve.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">The Chariot is a Two-Person Platform</h4>
+      <p>Archer plus charioteer. The charioteer's morale, taunting, or skill directly affects the archer's accuracy. Separate them and both are vulnerable. A chariot warrior cannot be a solo unit.</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Mantras Forget Under Stress</h4>
+      <p>The defining curse of one of the greatest archers: at the moment he most needed his astras, the recall mantras vanished from memory. Not a random miss — a triggered failure under contextual pressure (a stuck wheel, an emotional collision, a story flag).</p>
+    </li>
+    <li>
+      <h4 class="mech-title">Vow-Breaking is Permanent</h4>
+      <p>A vow-bound benefit is a locked-in mechanical advantage. Breaking the vow removes it forever; the warrior does not earn it back. This is the price of the bargain.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ────────────── FOOTER ────────────── -->
+<footer>
+  <div class="ornament"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+  Source · <a href="../character%20design/HumanWarriorpedia.md">docs/character design/HumanWarriorpedia.md</a> · Project Astra Vol. 01
+</footer>
+
+</div>
+</body>
+</html>

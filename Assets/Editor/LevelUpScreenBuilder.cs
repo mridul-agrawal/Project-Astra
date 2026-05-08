@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.Cutscene;
+using ProjectAstra.Core.UI.Progression;
 using TMPro;
 using UnityEditor;
 using UnityEngine;

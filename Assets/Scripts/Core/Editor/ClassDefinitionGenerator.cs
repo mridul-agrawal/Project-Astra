@@ -1,6 +1,10 @@
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Pathfinding;
+using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor
 {

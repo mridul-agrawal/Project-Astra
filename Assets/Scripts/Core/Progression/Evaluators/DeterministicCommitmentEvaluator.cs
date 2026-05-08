@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core.Progression.Evaluators
 {

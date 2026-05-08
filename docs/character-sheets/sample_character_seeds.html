@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Character Seeds — Project Astra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Cormorant+SC:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:        #0c1019;
+    --bg-card:        #151a26;
+    --bg-card-2:      #1c2230;
+    --bg-card-3:      #232a3a;
+    --ink-primary:    #efe6d8;
+    --ink-secondary:  #b9b0a0;
+    --ink-muted:      #7a7464;
+    --gold:           #d4af37;
+    --gold-bright:    #e8c468;
+    --rule:           #2a2f3d;
+
+    --c-1: #f4a261;  /* the bound-wheel commander  — amber */
+    --c-2: #c97b8a;  /* the cinder-born hunter     — rose-ember */
+    --c-3: #6fa67d;  /* the hollow-vow ascetic     — pale jade */
+    --c-4: #a486c4;  /* the wheelsmith's daughter  — twilight violet */
+    --c-5: #4a9da8;  /* the silver-thumb           — river teal */
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-small-caps: 'Cormorant SC', 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(ellipse at top, rgba(212,175,55,0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(244,162,97,0.04), transparent 60%),
+      var(--bg-deep);
+    color: var(--ink-primary);
+    font-family: var(--font-body);
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  .page { max-width: 1280px; margin: 0 auto; padding: 80px 56px 120px; }
+
+  /* ── Header ─── */
+  header.title-block {
+    text-align: center;
+    padding: 56px 0 56px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 72px;
+  }
+  .eyebrow {
+    font-family: var(--font-small-caps);
+    color: var(--gold);
+    letter-spacing: 0.32em;
+    font-size: 13px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  h1.work-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 68px);
+    line-height: 1.05;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  h1.work-title em { font-style: italic; color: var(--gold-bright); }
+  .subtitle {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-style: italic;
+    color: var(--ink-secondary);
+    max-width: 760px;
+    margin: 0 auto 24px;
+    line-height: 1.45;
+  }
+  .ornament {
+    display: flex; align-items: center; justify-content: center;
+    gap: 14px; margin: 24px 0 32px; color: var(--gold);
+  }
+  .ornament .line { height: 1px; width: 60px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+  .ornament .dot { width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); }
+
+  .reading-note {
+    max-width: 800px; margin: 0 auto;
+    background: var(--bg-card); border: 1px solid var(--rule);
+    padding: 24px 30px; border-radius: 4px; text-align: left;
+    position: relative;
+  }
+  .reading-note::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold);
+  }
+  .reading-note h3 {
+    font-family: var(--font-small-caps); color: var(--gold);
+    letter-spacing: 0.18em; margin: 0 0 10px; font-size: 12px; text-transform: uppercase; font-weight: 600;
+  }
+  .reading-note p { margin: 0 0 8px; color: var(--ink-secondary); }
+  .reading-note p:last-child { margin: 0; }
+  .reading-note strong { color: var(--ink-primary); font-weight: 500; }
+
+  /* ── Character card ─── */
+  .character {
+    --accent: var(--gold);
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-bottom: 56px;
+    overflow: hidden;
+    position: relative;
+    page-break-inside: avoid;
+  }
+  .character::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent);
+  }
+  .character.c-1 { --accent: var(--c-1); }
+  .character.c-2 { --accent: var(--c-2); }
+  .character.c-3 { --accent: var(--c-3); }
+  .character.c-4 { --accent: var(--c-4); }
+  .character.c-5 { --accent: var(--c-5); }
+
+  /* card header */
+  .char-head {
+    padding: 36px 44px 32px;
+    background: linear-gradient(180deg, var(--bg-card-2), var(--bg-card));
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+  .char-num {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 64px;
+    color: var(--accent);
+    line-height: 1;
+    opacity: 0.85;
+    padding-right: 28px;
+    border-right: 1px solid var(--rule);
+    min-width: 100px;
+    text-align: center;
+  }
+  .char-titleblock .codename {
+    font-family: var(--font-small-caps);
+    letter-spacing: 0.28em;
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .char-titleblock h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 38px;
+    line-height: 1.1;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .char-titleblock h2 em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .char-titleblock .epithet {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-secondary);
+    margin: 0;
+  }
+
+  /* axis-tag strip */
+  .axis-strip {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 18px 44px;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .axis-tag {
+    font-family: var(--font-small-caps);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+    color: var(--accent);
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .axis-tag .axis-key { color: var(--ink-muted); margin-right: 6px; }
+
+  /* body grid */
+  .char-body {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 0;
+  }
+  .char-col-left { padding: 36px 36px 36px 44px; border-right: 1px solid var(--rule); }
+  .char-col-right { padding: 36px 44px 36px 36px; background: rgba(0,0,0,0.12); }
+
+  .field { margin-bottom: 28px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-label {
+    font-family: var(--font-small-caps);
+    color: var(--accent);
+    letter-spacing: 0.22em;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .field-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, color-mix(in srgb, var(--accent) 40%, transparent), transparent);
+  }
+  .field p { margin: 0 0 10px; color: var(--ink-secondary); font-size: 14.5px; line-height: 1.62; }
+  .field p:last-child { margin: 0; }
+  .field p strong { color: var(--ink-primary); font-weight: 500; }
+  .field p em { color: var(--ink-primary); font-style: italic; }
+
+  .field-display {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink-primary);
+    line-height: 1.45;
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+    margin: 0;
+  }
+
+  /* stat block */
+  .stats {
+    background: var(--bg-card-2);
+    border: 1px solid var(--rule);
+    padding: 22px 24px;
+    border-radius: 2px;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed color-mix(in srgb, var(--rule) 80%, transparent);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-name {
+    font-family: var(--font-small-caps);
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-secondary);
+    font-weight: 500;
+  }
+  .stat-bar {
+    height: 6px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 100px;
+    overflow: hidden;
+    position: relative;
+  }
+  .stat-bar .fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: linear-gradient(to right, color-mix(in srgb, var(--accent) 60%, transparent), var(--accent));
+    border-radius: 100px;
+  }
+  .stat-val {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink-primary);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  /* signature ability box */
+  .signature {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, var(--bg-card-2)), var(--bg-card-2));
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--rule));
+    padding: 22px 24px;
+    border-radius: 2px;
+    position: relative;
+  }
+  .signature .sig-name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink-primary);
+    margin: 0 0 4px;
+    line-height: 1.2;
+  }
+  .signature .sig-translit {
+    font-family: var(--font-small-caps);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .signature .sig-desc {
+    margin: 0 0 12px;
+    font-size: 14px;
+    color: var(--ink-secondary);
+    line-height: 1.55;
+  }
+  .signature .sig-cost {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px dashed color-mix(in srgb, var(--accent) 40%, var(--rule));
+  }
+  .signature .sig-cost strong {
+    font-family: var(--font-small-caps);
+    color: var(--accent);
+    letter-spacing: 0.16em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 8px;
+    font-size: 11px;
+  }
+
+  /* lore quote */
+  .lore-quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--ink-secondary);
+    font-size: 17px;
+    line-height: 1.5;
+    margin: 24px 0 0;
+    padding: 18px 22px;
+    background: rgba(0,0,0,0.2);
+    border-left: 2px solid var(--accent);
+    border-radius: 2px;
+  }
+  .lore-quote .attribution {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-family: var(--font-small-caps);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* footer */
+  footer {
+    margin-top: 96px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+    color: var(--ink-muted);
+    font-size: 12.5px;
+    font-family: var(--font-small-caps);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer .ornament { margin-bottom: 24px; }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    .page { padding: 56px 24px 80px; }
+    .char-head { grid-template-columns: 1fr; gap: 14px; padding: 28px; }
+    .char-num { border-right: none; padding: 0; min-width: 0; text-align: left; font-size: 44px; }
+    .axis-strip { padding: 16px 28px; }
+    .char-body { grid-template-columns: 1fr; }
+    .char-col-left, .char-col-right { padding: 28px; border-right: none; }
+    .char-col-left { border-bottom: 1px solid var(--rule); }
+    .char-titleblock h2 { font-size: 28px; }
+    h1.work-title { font-size: 40px; }
+  }
+
+  @media print {
+    body { background: white; color: #111; }
+    .character, .reading-note, .stats { background: white; border-color: #ccc; }
+    .char-col-right { background: #f7f7f7; }
+    .signature { background: #fafafa; border-color: #ccc; }
+    .lore-quote { background: #f4f4f4; }
+    h1.work-title, .char-titleblock h2, .signature .sig-name { color: #111; }
+    .field p, .subtitle, .reading-note p, .signature .sig-desc, .lore-quote { color: #333; }
+    .stat-bar .fill { background: #555; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ────── HEADER ────── -->
+<header class="title-block">
+  <div class="eyebrow">Project Astra · Character Design Reference · Vol. 02</div>
+  <h1 class="work-title">Five <em>Character Seeds</em></h1>
+  <p class="subtitle">Sample warriors built by intersecting branches across the nine taxonomy trees. Each is a starting point — fully sketched but deliberately rough at the edges, so you can pull them apart and reshape them.</p>
+  <div class="ornament"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+
+  <div class="reading-note">
+    <h3>How these were assembled</h3>
+    <p>Every character below is one branch from each of the nine trees in <strong>Vol. 01</strong>. The <em>axis-strip</em> at the top of each card lists those nine choices. The rest of the sheet — name, lore, appearance, abilities — is what fell out of those nine intersections when held in tension with each other.</p>
+    <p>Read these as <strong>first sketches</strong>, not finished concepts. The names are placeholders; the silhouettes are propositions; the stats are rough. Pick one, riff on it, redraw it. Or take three and Frankenstein them.</p>
+  </div>
+</header>
+
+<!-- ══════ CHARACTER 01 ══════ -->
+<article class="character c-1">
+  <div class="char-head">
+    <div class="char-num">I</div>
+    <div class="char-titleblock">
+      <div class="codename">Seed · 01 — The Bound Commander</div>
+      <h2>Vrishaketu, <em>The Last Pillar of Anuhasta</em></h2>
+      <p class="epithet">An old general bound by an oath that outlived the kingdom that asked for it.</p>
+    </div>
+  </div>
+
+  <div class="axis-strip">
+    <span class="axis-tag"><span class="axis-key">01</span>Royalty</span>
+    <span class="axis-tag"><span class="axis-key">02</span>Maharathi · T5</span>
+    <span class="axis-tag"><span class="axis-key">03</span>Spear / Shakti</span>
+    <span class="axis-tag"><span class="axis-key">04</span>Chariot</span>
+    <span class="axis-tag"><span class="axis-key">05</span>Astra · Tier C</span>
+    <span class="axis-tag"><span class="axis-key">06</span>Institutional Vow</span>
+    <span class="axis-tag"><span class="axis-key">07</span>Pure Mortal</span>
+    <span class="axis-tag"><span class="axis-key">08</span>War-Hardened</span>
+    <span class="axis-tag"><span class="axis-key">09</span>Tragic Loyalist</span>
+  </div>
+
+  <div class="char-body">
+    <div class="char-col-left">
+      <div class="field">
+        <div class="field-label">Concept</div>
+        <p>The fading commander of a kingdom that no longer exists in any meaningful sense. Vrishaketu swore his service to a throne three regents ago — to a court that has since become a puppet stage for a tyrant the player faces in Act II. He <em>knows</em> the cause is unjust. He has known for a long time. The vow is older than his doubt, and that is the whole tragedy.</p>
+        <p>He is the kind of antagonist the player begins by hating and ends by mourning. There is a recruitment route, but it requires the death of the man he swore the oath to — a death the party did not ask for and cannot un-cause.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <p>Tall and gone slightly thin in the way old soldiers go thin — shoulders still wide, but the chest no longer fills the harness the way it used to. Skin the colour of weathered teak. Hair iron-grey, oiled back, bound in a single warrior's knot at the crown; the rest falls past the shoulder when loose, which is rare.</p>
+        <p>Wears a <strong>cuirass of overlapping bronze scales</strong> the colour of late-evening sun, lacquered black at the seams. A long pale shawl marked with the sigil of his vanished kingdom — three concentric rings, broken — wraps once around his waist and hangs almost to the chariot floor. His <em>shakti</em>, a long ceremonial spear with a leaf-shaped blade, is held in a leather sleeve at his back when not in use; the sleeve is older than the spear.</p>
+        <p>His face is the read: a long jaw, a thin mouth that rarely opens, and grey eyes set deep enough that they seem to be looking at something further away than the battlefield. A faint vertical scar runs from his hairline down through his right brow — not given in combat, but in a duel of honour decades ago that he refuses to discuss.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Personality</div>
+        <p>Quiet to the point of being mistaken for cold. Speaks in measured, complete sentences and considers it a discourtesy to interrupt anyone — including enemies. Has a dry, vanishingly subtle humour that surfaces only with men he has fought beside for thirty years.</p>
+        <p>Internally, he is at war with himself in every scene he appears in. He will not say so. The closest he comes is a habit, in conversation, of trailing off and looking at his hands.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tactical Role · Battlefield Behaviour</div>
+        <p><strong>Anchor &amp; Denial.</strong> Vrishaketu is built to <em>hold ground</em>, not to chase. Once his chariot is positioned, he becomes a stationary fortress: long reach with the shakti, a Tier-C astra in reserve, and an aura that gives nearby enemy units a small morale and accuracy bonus simply by his being there. The player wants to flank around him, not engage him head-on.</p>
+        <p>His charioteer is named and statted — losing the chariot is a separate, devastating event from killing him personally. If the chariot wheel is stuck (a status condition the player can inflict), he loses his "anchor" buff entirely and his vow-bound benefits begin to falter.</p>
+      </div>
+    </div>
+
+    <div class="char-col-right">
+      <div class="field">
+        <div class="field-label">Stat Profile</div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-name">Might</span><span class="stat-bar"><span class="fill" style="width:74%"></span></span><span class="stat-val">14</span></div>
+          <div class="stat-row"><span class="stat-name">Skill</span><span class="stat-bar"><span class="fill" style="width:88%"></span></span><span class="stat-val">17</span></div>
+          <div class="stat-row"><span class="stat-name">Speed</span><span class="stat-bar"><span class="fill" style="width:42%"></span></span><span class="stat-val">8</span></div>
+          <div class="stat-row"><span class="stat-name">Defense</span><span class="stat-bar"><span class="fill" style="width:80%"></span></span><span class="stat-val">15</span></div>
+          <div class="stat-row"><span class="stat-name">Resilience</span><span class="stat-bar"><span class="fill" style="width:88%"></span></span><span class="stat-val">17</span></div>
+          <div class="stat-row"><span class="stat-name">Mantra</span><span class="stat-bar"><span class="fill" style="width:64%"></span></span><span class="stat-val">12</span></div>
+          <div class="stat-row"><span class="stat-name">Dharma</span><span class="stat-bar"><span class="fill" style="width:84%"></span></span><span class="stat-val">+16</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Signature Ability</div>
+        <div class="signature">
+          <h4 class="sig-name">The Three Broken Rings</h4>
+          <div class="sig-translit">Vajra-stambha</div>
+          <p class="sig-desc">Vrishaketu plants the butt of his shakti and recites the oath he swore to the founding king of Anuhasta. For three turns, he <em>cannot move</em> — and cannot be moved. His Defense and Resilience double; allies within two tiles gain his vow-bonus; enemies adjacent to him lose half their action economy.</p>
+          <p class="sig-cost"><strong>Cost</strong>locked-in for 3 turns; if the chariot is destroyed during the stance, the vow snaps and he loses Dharma permanently for the rest of the campaign</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Gameplay Feel</div>
+        <p class="field-display">"You don't fight Vrishaketu. You fight the ground he is standing on, and try to outlast it."</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Lore Fragment</div>
+        <p class="lore-quote">It is said that when Anuhasta fell, three of its sons broke their oaths and lived; one kept his and burned with the city. There is a fourth, but the tellers do not agree on whether he keeps his oath or has forgotten what it was for.<span class="attribution">— from a wayside teller's verse, district unknown</span></p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ══════ CHARACTER 02 ══════ -->
+<article class="character c-2">
+  <div class="char-head">
+    <div class="char-num">II</div>
+    <div class="char-titleblock">
+      <div class="codename">Seed · 02 — The Cinder-Born Hunter</div>
+      <h2>Indravati, <em>Daughter of the Smokeless Flame</em></h2>
+      <p class="epithet">A girl summoned from the sacrificial fire to kill one specific man, and now uncertain what to do with the rest of her life.</p>
+    </div>
+  </div>
+
+  <div class="axis-strip">
+    <span class="axis-tag"><span class="axis-key">01</span>Liminal Birth</span>
+    <span class="axis-tag"><span class="axis-key">02</span>Atirathi · T4</span>
+    <span class="axis-tag"><span class="axis-key">03</span>Bow Specialist</span>
+    <span class="axis-tag"><span class="axis-key">04</span>Foot</span>
+    <span class="axis-tag"><span class="axis-key">05</span>Astra · Tier B</span>
+    <span class="axis-tag"><span class="axis-key">06</span>Vengeance Vow</span>
+    <span class="axis-tag"><span class="axis-key">07</span>Fire-Born</span>
+    <span class="axis-tag"><span class="axis-key">08</span>Divine-Direct</span>
+    <span class="axis-tag"><span class="axis-key">09</span>Corrective Vengeance</span>
+  </div>
+
+  <div class="char-body">
+    <div class="char-col-left">
+      <div class="field">
+        <div class="field-label">Concept</div>
+        <p>Indravati was not born; she <em>arrived</em>. A grieving sage's wife performed a forbidden rite over a fire of <em>khadira</em> wood, and the figure that stepped out had a bow already strung and a name on her lips — the name of the man who had wronged the family.</p>
+        <p>That was her purpose. Her entire identity. The catch is that the player meets her <em>after</em> she has fulfilled it — found him, killed him, walked back from the body — and discovered, to her own bewilderment, that she is still here. The fire did not reclaim her. She is a weapon that has been put down and is waiting to be picked up again, by anyone, for anything. The Pandavas' war finds her in this lull.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <p>Mid-twenties in apparent age — but she has only existed for about three years, total. Compact, wiry, slightly shorter than average; the build of a hunter, not a duellist. Skin a deep coppery brown that seems to hold heat — in low light, the inside of her wrists and the hollow of her throat have a faint warm glow that vanishes if you look directly. She does not perspire, ever.</p>
+        <p>Hair black and very long, almost always braided tight against her back in a single rope; the tip of the braid is, unmistakably, charred. Eyes the dark amber of old honey, with a fine grain of red in the iris that catches when she draws.</p>
+        <p>Her bow is plain — a forester's recurve of horn and yew, no ornament — but the <strong>arrows are unusual</strong>: black-shafted, fletched with the feathers of birds that should not be local, and warm to the touch when drawn from the quiver. She wears a sleeveless tunic of charcoal and rust, leather hunting trousers, and a single thin gold chain at her throat that no one ever sees her remove. She walks barefoot in dry weather. The grass behind her, in still air, sometimes seems to lean toward where she has just been.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Personality</div>
+        <p>Direct in a way that unsettles people. She has not been alive long enough to learn small talk, and she is not particularly interested in learning it now. Asks blunt questions; gives blunt answers; does not soften refusals.</p>
+        <p>Beneath this — and only her closest support unit ever sees it — is a quiet, almost childlike curiosity about being a <em>person</em> rather than a verb. She watches people eat. She watches children play. She does both with the same level attention she gives to a target at three hundred paces.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tactical Role · Battlefield Behaviour</div>
+        <p><strong>Long-range executioner.</strong> Indravati is the player's answer to high-value targets behind enemy lines. Foot-mobile and lightly armoured, she lives or dies by initiative — she wants to fire before the enemy archer-line draws breath, and reposition before they draw a second.</p>
+        <p>Her Tier-B astras are illusion- and stupefaction-based: she can darken the field around her own position for a turn, or pull a single enemy's gaze (and attack priority) off her allies and onto an empty patch of ground. She is, fundamentally, a <em>positioner</em> with a killshot attached.</p>
+      </div>
+    </div>
+
+    <div class="char-col-right">
+      <div class="field">
+        <div class="field-label">Stat Profile</div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-name">Might</span><span class="stat-bar"><span class="fill" style="width:60%"></span></span><span class="stat-val">11</span></div>
+          <div class="stat-row"><span class="stat-name">Skill</span><span class="stat-bar"><span class="fill" style="width:95%"></span></span><span class="stat-val">19</span></div>
+          <div class="stat-row"><span class="stat-name">Speed</span><span class="stat-bar"><span class="fill" style="width:88%"></span></span><span class="stat-val">17</span></div>
+          <div class="stat-row"><span class="stat-name">Defense</span><span class="stat-bar"><span class="fill" style="width:38%"></span></span><span class="stat-val">7</span></div>
+          <div class="stat-row"><span class="stat-name">Resilience</span><span class="stat-bar"><span class="fill" style="width:55%"></span></span><span class="stat-val">10</span></div>
+          <div class="stat-row"><span class="stat-name">Mantra</span><span class="stat-bar"><span class="fill" style="width:78%"></span></span><span class="stat-val">14</span></div>
+          <div class="stat-row"><span class="stat-name">Dharma</span><span class="stat-bar"><span class="fill" style="width:50%"></span></span><span class="stat-val">±0</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Signature Ability</div>
+        <div class="signature">
+          <h4 class="sig-name">The Arrow That Remembers</h4>
+          <div class="sig-translit">Smaranāstra</div>
+          <p class="sig-desc">She nocks an arrow and whispers a name. The shot ignores intervening cover, line of sight, and most defensive abilities — but only if the named target has, in some way, wronged her or someone she has accepted as kin. Against any other target, the arrow simply will not loose.</p>
+          <p class="sig-cost"><strong>Cost</strong>once per battle; the named target's name is then <em>forgotten</em> by Indravati permanently — she cannot recognise the corpse, the family, the kingdom; the arrow takes the memory with the life</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Gameplay Feel</div>
+        <p class="field-display">"She always fires first. The question is only whether you have given her a reason."</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Lore Fragment</div>
+        <p class="lore-quote">The sage's wife asked the fire for a son to avenge her family. The fire, being older than grammar, gave her what she actually wanted: a hand to draw the bow.<span class="attribution">— marginalia from the Khadira-Saptaka palm-leaf, fragmentary</span></p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ══════ CHARACTER 03 ══════ -->
+<article class="character c-3">
+  <div class="char-head">
+    <div class="char-num">III</div>
+    <div class="char-titleblock">
+      <div class="codename">Seed · 03 — The Hollow-Vow Ascetic</div>
+      <h2>Bhargava-Aja, <em>The Walker Who Will Not Sit</em></h2>
+      <p class="epithet">A young scholar-warrior who swore to neither sit nor sleep until a certain mountain falls — and the mountain still stands.</p>
+    </div>
+  </div>
+
+  <div class="axis-strip">
+    <span class="axis-tag"><span class="axis-key">01</span>Brahmin-Warrior</span>
+    <span class="axis-tag"><span class="axis-key">02</span>Atirathi · T4</span>
+    <span class="axis-tag"><span class="axis-key">03</span>Astra-Specialist</span>
+    <span class="axis-tag"><span class="axis-key">04</span>Foot</span>
+    <span class="axis-tag"><span class="axis-key">05</span>Astra · Tier C</span>
+    <span class="axis-tag"><span class="axis-key">06</span>Ascetic Vow</span>
+    <span class="axis-tag"><span class="axis-key">07</span>Pure Mortal</span>
+    <span class="axis-tag"><span class="axis-key">08</span>Avatar-Lineage</span>
+    <span class="axis-tag"><span class="axis-key">09</span>Dharma-Bound</span>
+  </div>
+
+  <div class="char-body">
+    <div class="char-col-left">
+      <div class="field">
+        <div class="field-label">Concept</div>
+        <p>Bhargava-Aja is the youngest student of a martial lineage said to descend, however dilutely, from a divine incarnation. He is brilliant, slightly insufferable about it, and as a student-graduation rite he took a vow that his teachers warned him was too ambitious: he would neither sit nor sleep until <strong>the Mountain of Sahyadri-Above</strong> — a peak said to harbour a fragment of an old, sleeping wrong — was unmade.</p>
+        <p>That was four years ago. The mountain is still there. He has not sat down since. The vow has begun to <em>do</em> things to him: he is faster, sharper, his mantras land harder than his teachers' did at his age — but his hands shake when he is not concentrating, and his hair has gone the white of a man twice his years.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <p>Twenty-six in years, sixty in the eyes. Tall and gaunt — the gauntness of a man whose body has been spending its principal, not its interest, for some time. Skin the warm olive-brown of the southern hill country, deeply tanned at the throat, paler at the wrists where the prayer-beads cover.</p>
+        <p>Hair completely white, kept short — almost cropped — because he no longer has the patience for ritual hair-binding. A close-trimmed beard, also white. Eyes a pale grey-green, the colour startling against the dark skin; rimmed in red from sleeplessness no matter how recently he has rested standing.</p>
+        <p>Dressed plainly: an undyed cotton wrap from waist to mid-calf, a longer ochre upper-cloth thrown over one shoulder, both stained at the hems. A <strong>thin sacred thread</strong> — the <em>yajñopavīta</em> — runs from his left shoulder to right hip, the only ornament he wears. Carries no shield; his weapon is recitation, and his hand is empty most of the time. When forced to fight at distance, he carries a slim ash-wood staff that doubles as a walking-stick on the move.</p>
+        <p>He walks <em>constantly</em>. Even in conversation, he paces. The few times the player sees him stop and stand still, something is about to go very wrong.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Personality</div>
+        <p>Sharp, impatient, and trying very hard not to be — he is intellectually aware that his vow has eroded his temper, and he is performing patience the way a tired actor performs a familiar role. Ferociously intelligent, often funny in a black, exhausted way. Holds himself to standards no one around him meets, and is quietly disappointed about it most of the time.</p>
+        <p>The player learns, late, that he is terrified of finishing his vow. As long as the mountain stands, he has a purpose. He has not asked himself who he will be after.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tactical Role · Battlefield Behaviour</div>
+        <p><strong>Glass nuke / mantric artillery.</strong> Bhargava-Aja is the answer to the question "what if a unit could fire a Brahmastra-tier astra and was also made of paper?" He has Tier-C astra access — uncommonly high for an Atirathi — and his recital times are short because of his lineage's mantric fluency.</p>
+        <p>The catch: his vow forbids sitting. He cannot enter cover. He cannot occupy a defensive emplacement. He is always exposed, always upright, and his Defense stat reflects it. The player who plans well places him on a high ridge with two shields between him and the enemy archer-line. The player who plans poorly loses him on turn three.</p>
+      </div>
+    </div>
+
+    <div class="char-col-right">
+      <div class="field">
+        <div class="field-label">Stat Profile</div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-name">Might</span><span class="stat-bar"><span class="fill" style="width:48%"></span></span><span class="stat-val">9</span></div>
+          <div class="stat-row"><span class="stat-name">Skill</span><span class="stat-bar"><span class="fill" style="width:92%"></span></span><span class="stat-val">18</span></div>
+          <div class="stat-row"><span class="stat-name">Speed</span><span class="stat-bar"><span class="fill" style="width:74%"></span></span><span class="stat-val">14</span></div>
+          <div class="stat-row"><span class="stat-name">Defense</span><span class="stat-bar"><span class="fill" style="width:30%"></span></span><span class="stat-val">5</span></div>
+          <div class="stat-row"><span class="stat-name">Resilience</span><span class="stat-bar"><span class="fill" style="width:42%"></span></span><span class="stat-val">8</span></div>
+          <div class="stat-row"><span class="stat-name">Mantra</span><span class="stat-bar"><span class="fill" style="width:100%"></span></span><span class="stat-val">20</span></div>
+          <div class="stat-row"><span class="stat-name">Dharma</span><span class="stat-bar"><span class="fill" style="width:90%"></span></span><span class="stat-val">+18</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Signature Ability</div>
+        <div class="signature">
+          <h4 class="sig-name">The Mountain Shall Not Stand</h4>
+          <div class="sig-translit">Parvata-bhaṅga</div>
+          <p class="sig-desc">Bhargava-Aja recites the deep-form of an inherited astra his teachers told him never to call. A column of force descends in a 2×2 area, ignoring all terrain and most armour. The strike is so loud that allies nearby lose 1 turn-action from the concussion.</p>
+          <p class="sig-cost"><strong>Cost</strong>he must remain motionless for exactly one turn after firing — and his vow forbids sitting. If he is moved or knocked prone in that turn, the vow snaps; if it snaps, his White Hair stat-bonus is lost forever, but he gains the ability to <em>sleep</em> again, which the player may consider a kindness</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Gameplay Feel</div>
+        <p class="field-display">"Move him every turn. Cover him every turn. The day you forget, the campaign's most powerful unit dies to a stray javelin."</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Lore Fragment</div>
+        <p class="lore-quote">There is a man on the southern road who has not slept in four winters. Bring him water; do not bring him a chair.<span class="attribution">— a courier's instruction to her apprentice, route from Karavīra to the Pass</span></p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ══════ CHARACTER 04 ══════ -->
+<article class="character c-4">
+  <div class="char-head">
+    <div class="char-num">IV</div>
+    <div class="char-titleblock">
+      <div class="codename">Seed · 04 — The Wheelsmith's Daughter</div>
+      <h2>Sumitrā, <em>The One the Wheel Will Not Catch</em></h2>
+      <p class="epithet">A charioteer-caste girl who out-fights the warriors she is meant to drive, and a small, dangerous voice in her head says she always could.</p>
+    </div>
+  </div>
+
+  <div class="axis-strip">
+    <span class="axis-tag"><span class="axis-key">01</span>Liminal Birth</span>
+    <span class="axis-tag"><span class="axis-key">02</span>Rathi · T3</span>
+    <span class="axis-tag"><span class="axis-key">03</span>Sword (Twin)</span>
+    <span class="axis-tag"><span class="axis-key">04</span>Horse</span>
+    <span class="axis-tag"><span class="axis-key">05</span>Astra · Tier A</span>
+    <span class="axis-tag"><span class="axis-key">06</span>Curse of Forgetting</span>
+    <span class="axis-tag"><span class="axis-key">07</span>Demigod</span>
+    <span class="axis-tag"><span class="axis-key">08</span>Self-Taught</span>
+    <span class="axis-tag"><span class="axis-key">09</span>Adharma-Exploiter</span>
+  </div>
+
+  <div class="char-body">
+    <div class="char-col-left">
+      <div class="field">
+        <div class="field-label">Concept</div>
+        <p>Sumitrā's father was the master wheelwright of a minor kingdom; her mother, by the family's quiet, never-spoken account, was not. The wind itself, on a long road, in a year the rains forgot — that is the village's version. Whatever the truth, Sumitrā can run a horse three times the distance other riders manage, and she taught herself the twin-sword forms by watching warriors at sparring practice through a fence.</p>
+        <p>The establishment will not formally recognise her; she is the wrong caste for the throne to claim, and too dangerous for them to ignore. So she rides as a <em>raid commander</em> for a small mercenary band — striking supply columns, escorting refugees, taking grey jobs and grey money. She is also, quietly, cursed: a sage she cheated at dice — and she did cheat — left her with a single, surgical wound. At the moment her astras are about to hit, she forgets the recall mantra. Her elemental shots therefore tend to keep going long after they should stop.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <p>Twenty-two, average height, the broad-shouldered build of someone who has been working with hands and horses since childhood. Skin the warm bronze of long sun, with a fine network of small scars along the forearms — not battle wounds, working wounds. The kind a wheelwright's apprentice gets and never quite outgrows.</p>
+        <p>Hair the colour of dark honey at the roots and almost grey-blonde at the ends — not natural, almost certainly the inheritance of a divine wind-line on her mother's side. Cut to chin length, uneven, hacked back with her own knife when it gets in her eyes. Eyes a pale steel-grey, with one tiny imperfection: a single drop of darker pigment in the right iris, like an inkdrop on water.</p>
+        <p>Wears a <strong>short-sleeved leather riding-jerkin</strong> over a plum-coloured tunic, the leather dyed twilight-violet because she likes the colour and there is no one in her band who will tell her not to. Loose riding trousers, tall boots, a long indigo riding-shawl wound twice around the throat against road-dust. <strong>Twin short swords</strong> at the hip, drawn cross-handed; a small bow on the saddle for distance work she rarely uses. Her horse is named — and the horse, frankly, is half her character: a tall grey gelding she stole back from people who had stolen him from her.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Personality</div>
+        <p>Quick-tongued, charming, profoundly untrustworthy with money but utterly trustworthy with people. The kind who will lie to a magistrate's face and ride a hundred miles to bury a stranger's brother because he asked. Laughs easily; gets quiet when she is genuinely angry, which is rare and frightening.</p>
+        <p>Has an ongoing, almost theological argument with the idea of <em>dharma</em>. Will steal a Brahmin's grain to feed a village and feel righteous about it. Knows that this is, by some accountings, the wrong answer. Does not care. The curse has, if anything, hardened her position: <em>fine, the universe is keeping score. Send the bill.</em></p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tactical Role · Battlefield Behaviour</div>
+        <p><strong>Mounted skirmisher / flank duellist.</strong> Sumitrā is what the player reaches for when there is a high-value enemy archer or mage three squares behind the front line and someone needs to be there yesterday. High movement, very high crit, twin-sword form gives her two strikes per engagement; she does not <em>tank</em>, she <em>visits</em>.</p>
+        <p>Her Tier-A astras (wind, lightning) are usable but unreliable because of the curse — there is a small percentage chance, increasing as her HP drops, that the astra cannot be recalled and continues to damage a random adjacent unit (friend or enemy) for one more turn. The player learns to use them only when collateral damage is acceptable.</p>
+      </div>
+    </div>
+
+    <div class="char-col-right">
+      <div class="field">
+        <div class="field-label">Stat Profile</div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-name">Might</span><span class="stat-bar"><span class="fill" style="width:62%"></span></span><span class="stat-val">12</span></div>
+          <div class="stat-row"><span class="stat-name">Skill</span><span class="stat-bar"><span class="fill" style="width:80%"></span></span><span class="stat-val">15</span></div>
+          <div class="stat-row"><span class="stat-name">Speed</span><span class="stat-bar"><span class="fill" style="width:100%"></span></span><span class="stat-val">20</span></div>
+          <div class="stat-row"><span class="stat-name">Defense</span><span class="stat-bar"><span class="fill" style="width:48%"></span></span><span class="stat-val">9</span></div>
+          <div class="stat-row"><span class="stat-name">Resilience</span><span class="stat-bar"><span class="fill" style="width:62%"></span></span><span class="stat-val">12</span></div>
+          <div class="stat-row"><span class="stat-name">Mantra</span><span class="stat-bar"><span class="fill" style="width:54%"></span></span><span class="stat-val">10</span></div>
+          <div class="stat-row"><span class="stat-name">Dharma</span><span class="stat-bar"><span class="fill" style="width:32%"></span></span><span class="stat-val">−9</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Signature Ability</div>
+        <div class="signature">
+          <h4 class="sig-name">The Wheel Will Not Catch Me</h4>
+          <div class="sig-translit">Cakra-vimukti</div>
+          <p class="sig-desc">A hard riding-charge: Sumitrā moves through up to four enemy tiles in a straight line, striking each for a clean twin-sword cross. Cannot be interrupted by attacks of opportunity. Ends with her on the far side of the line, facing the way she came.</p>
+          <p class="sig-cost"><strong>Cost</strong>2-turn cooldown; on the turn it is used, her curse activates harder — any astra she casts on that turn cannot be recalled at all and will burn whatever it ends up touching</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Gameplay Feel</div>
+        <p class="field-display">"You don't aim her. You point her at the worst part of the enemy line and let go."</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Lore Fragment</div>
+        <p class="lore-quote">She offered the sage a wager and dealt herself the better hand. He smiled, drank the wine she had paid for, and made it so that — at the moment of her brightest victory — she would forget the one word that brings the lightning home. She has not forgotten it yet. It will be a beautiful afternoon when she does.<span class="attribution">— a teaching-story told in a courtesan's quarter; the teller declines to name the city</span></p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ══════ CHARACTER 05 ══════ -->
+<article class="character c-5">
+  <div class="char-head">
+    <div class="char-num">V</div>
+    <div class="char-titleblock">
+      <div class="codename">Seed · 05 — The Silver-Thumb</div>
+      <h2>Kalyāṇ-Ekajit, <em>The One Who Paid In Advance</em></h2>
+      <p class="epithet">A forester who learned the bow from a clay idol of a master who refused to teach him, and whose right thumb is now made of silver.</p>
+    </div>
+  </div>
+
+  <div class="axis-strip">
+    <span class="axis-tag"><span class="axis-key">01</span>Liminal Birth</span>
+    <span class="axis-tag"><span class="axis-key">02</span>Maharathi · T5</span>
+    <span class="axis-tag"><span class="axis-key">03</span>Bow Specialist</span>
+    <span class="axis-tag"><span class="axis-key">04</span>Foot</span>
+    <span class="axis-tag"><span class="axis-key">05</span>Astra · Tier B</span>
+    <span class="axis-tag"><span class="axis-key">06</span>Apprenticeship · Guru-Dakshina</span>
+    <span class="axis-tag"><span class="axis-key">07</span>Pure Mortal</span>
+    <span class="axis-tag"><span class="axis-key">08</span>Self-Taught + Idol</span>
+    <span class="axis-tag"><span class="axis-key">09</span>Strategic-Neutral</span>
+  </div>
+
+  <div class="char-body">
+    <div class="char-col-left">
+      <div class="field">
+        <div class="field-label">Concept</div>
+        <p>Kalyāṇ was a forester's son in a tribe the mainline kingdoms politely call <em>vana-jana</em> — forest people — and impolitely call several other things. He learned of a great archery master, walked to the nearest court to ask for training, and was refused on grounds of caste so flatly that no one even argued the point.</p>
+        <p>So he went home, made a small clay figure of the master, set it under a banyan, and taught himself by treating the idol as his teacher. Years passed. He became, by any honest measure, the best archer in the region, possibly in the kingdom. Then the master heard. Came in person. Demanded the traditional fee — the <em>guru-dakshina</em> — and asked for the boy's right thumb. Kalyāṇ gave it.</p>
+        <p>He should have been crippled. He was, briefly. Then a wandering smith heard the story, made him a thumb of <em>silver</em>, and fitted it to the stump in a process Kalyāṇ does not discuss. He shoots again. He shoots almost as well as before — almost. The "almost" is the whole story.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Appearance</div>
+        <p>Mid-thirties. Average build, deceptively unimposing — strangers consistently underestimate him on first meeting. Skin the deep umber-brown of long, hard sun; the carriage of a man used to walking thirty miles a day with a bow over his shoulder. Hair black and threaded with the first silver, kept long, tied at the nape; a short, neat beard.</p>
+        <p>Eyes very dark, very steady — the eyes of a man whose default state is <em>aim</em>. Few expressions; when he smiles, which is rare, it is small and warm and entirely sincere.</p>
+        <p>The <strong>silver thumb</strong> on his right hand is the centrepiece of his silhouette. It is well-made — articulated at the joint by tiny river-pearl pins — but it is unmistakably <em>not flesh</em>, and he does not hide it: he keeps it polished, almost vain about it. He pulls his bowstring with the silver thumb. The string sings differently against silver than against bone.</p>
+        <p>He wears the deep teal hunter's cowl of his tribe — a wrap-coat of waxed cotton, knee-length, dyed with river-clay — over plain undyed trousers and soft leather wraps to the knee. A great curved bow of dark horn is slung over his back at all times; he is never seen without it. A short skinning-knife at the hip; nothing else.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Personality</div>
+        <p>Quiet, watchful, profoundly self-contained. The opposite of bitter — there are reasons he could be bitter, and he has examined each one and decided against it. Speaks rarely. When he does speak, he is often funny in a very dry way that takes a while to land.</p>
+        <p>Unaligned by choice. Will fight for either side of the war if the side has clean reasons; will <em>not</em> fight for either if neither does. The mainline kingdoms therefore court him constantly and resent that he cannot be bought. He is the player's negotiation puzzle in Act II — the sequence where the party realises they cannot recruit him with money, blackmail, divine providence, or appeals to caste loyalty, and must instead simply <em>be the better cause</em>.</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Tactical Role · Battlefield Behaviour</div>
+        <p><strong>Sniper / killing reservoir.</strong> Kalyāṇ is a Maharathi-tier archer — the highest tier of any character in this set — and on the field, he plays exactly that way: long-range, surgical, almost surgically <em>uninvolved</em>. He picks one target per turn and that target dies. He does not chase, panic, or make trades.</p>
+        <p>His silver thumb gives him a permanent <strong>−1 to attack speed</strong> compared to a flesh-thumbed archer of equal training: a small, recurring tax for the rest of his life. The player feels it in initiative order. He always fires, but he does not always fire <em>first</em>. This single mechanical detail tells the entire story of his character without any dialogue.</p>
+      </div>
+    </div>
+
+    <div class="char-col-right">
+      <div class="field">
+        <div class="field-label">Stat Profile</div>
+        <div class="stats">
+          <div class="stat-row"><span class="stat-name">Might</span><span class="stat-bar"><span class="fill" style="width:74%"></span></span><span class="stat-val">14</span></div>
+          <div class="stat-row"><span class="stat-name">Skill</span><span class="stat-bar"><span class="fill" style="width:98%"></span></span><span class="stat-val">19</span></div>
+          <div class="stat-row"><span class="stat-name">Speed</span><span class="stat-bar"><span class="fill" style="width:62%"></span></span><span class="stat-val">12</span></div>
+          <div class="stat-row"><span class="stat-name">Defense</span><span class="stat-bar"><span class="fill" style="width:55%"></span></span><span class="stat-val">10</span></div>
+          <div class="stat-row"><span class="stat-name">Resilience</span><span class="stat-bar"><span class="fill" style="width:74%"></span></span><span class="stat-val">14</span></div>
+          <div class="stat-row"><span class="stat-name">Mantra</span><span class="stat-bar"><span class="fill" style="width:68%"></span></span><span class="stat-val">13</span></div>
+          <div class="stat-row"><span class="stat-name">Dharma</span><span class="stat-bar"><span class="fill" style="width:60%"></span></span><span class="stat-val">+5</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Signature Ability</div>
+        <div class="signature">
+          <h4 class="sig-name">The Debt Already Paid</h4>
+          <div class="sig-translit">Pūrva-dakṣiṇā</div>
+          <p class="sig-desc">Kalyāṇ takes a single shot that <em>cannot miss</em>, ignores all evasion, all cover, all elevation, and has a flat, very high damage value. The arrow is loosed from the silver thumb and there is, briefly, the sound of a bowstring against metal that sets every dog within a mile to whimpering.</p>
+          <p class="sig-cost"><strong>Cost</strong>once per chapter, not per battle. He has already paid for this shot — it cost him a thumb. The universe, fairly, will not bill him twice in a season</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Gameplay Feel</div>
+        <p class="field-display">"He never panics. He never misses. He is also, almost always, the second-fastest archer in the room — and that is the entire point."</p>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Lore Fragment</div>
+        <p class="lore-quote">There is an archer in the eastern forests who pays a thumb's-weight of silver in tribute to no king. He says he has already given a thumb to a king who had no right to ask for one, and that should be enough for any kingdom.<span class="attribution">— a tax-collector's report, returned without comment to the regional treasury</span></p>
+      </div>
+    </div>
+  </div>
+</article>
+
+<!-- ────── FOOTER ────── -->
+<footer>
+  <div class="ornament"><span class="line"></span><span class="dot"></span><span class="line"></span></div>
+  Vol. 02 · Companion to <a href="human_warrior_taxonomy.html">human_warrior_taxonomy.html</a> · Project Astra
+</footer>
+
+</div>
+</body>
+</html>

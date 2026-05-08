@@ -11,7 +11,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Scenes;
+using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.UI.MainMenu;
+using ProjectAstra.Core.UI.Overlays;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -481,7 +486,7 @@ namespace ProjectAstra.Core.Editor
         private static void CreateSceneCamera()
         {
             var go = new GameObject("Camera");
-            var cam = go.AddComponent<Camera>();
+            var cam = go.AddComponent<UnityEngine.Camera>();
             cam.orthographic = true;
             cam.orthographicSize = 5;
             cam.clearFlags = CameraClearFlags.SolidColor;

@@ -3,6 +3,9 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Tests.Inventory
 {

@@ -1,3 +1,6 @@
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Units;
+
 namespace ProjectAstra.Core
 {
     /// <summary>
