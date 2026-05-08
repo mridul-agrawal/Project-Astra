@@ -295,14 +295,12 @@ namespace ProjectAstra.Core.UI.Forecast
             if (side.doubleChipRoot != null) side.doubleChipRoot.SetActive(false);
         }
 
-        private Sprite HpFillFor(int cur, int max)
+        private Sprite HpFillFor(int cur, int max) => StatUtils.CalculateHPThreshold(cur, max) switch
         {
-            if (max <= 0) return _refs.hpFillRed;
-            int pct = cur * 100 / max;
-            if (pct > 50) return _refs.hpFillGreen;
-            if (pct >= 31) return _refs.hpFillYellow;
-            return _refs.hpFillRed;
-        }
+            HPThreshold.Normal  => _refs.hpFillGreen,
+            HPThreshold.Injured => _refs.hpFillYellow,
+            _                   => _refs.hpFillRed,
+        };
 
         private Sprite SigilFor(WeaponData w)
         {

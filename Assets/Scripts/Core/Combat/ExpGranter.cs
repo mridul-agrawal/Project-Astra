@@ -105,11 +105,8 @@ namespace ProjectAstra.Core.Combat
                 yield return PlayLevelUp(unit);
         }
 
-        // ComputeLevelUpGains ignores the second parameter and calls with (growth, 0) —
-        // so the real roll happens inside the supplied closure. We use UnityEngine.Random
-        // for the 0-99 roll against the effective growth rate.
-        private static readonly Func<int, int, bool> RollRandom =
-            (growthRate, _) => UnityEngine.Random.Range(0, 100) < growthRate;
+        private static readonly Func<int, bool> RollRandom =
+            growthRate => UnityEngine.Random.Range(0, 100) < growthRate;
 
         private IEnumerator PlayLevelUp(TestUnit unit)
         {

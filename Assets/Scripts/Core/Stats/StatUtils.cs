@@ -6,50 +6,19 @@ namespace ProjectAstra.Core.Stats
 {
     public static class StatUtils
     {
-        public const int DefaultHPGainOnLevelUp = 2;
+        const int DefaultStatGain = 1;
+        const int PercentScale = 100;
 
-        public static bool RollGrowth(int growthRate, int roll)
-        {
-            return roll < growthRate;
-        }
+        // FE-style HP color thresholds (percent of max).
+        const int InjuredMaxPercent = 50;
+        const int CriticalMaxPercent = 30;
 
-        public static int EffectiveGrowth(int personalGrowth, int classModifier)
-        {
-            return personalGrowth + classModifier;
-        }
+        // Niyati lotus icon thresholds (current / base ratio).
+        const float LotusFullMinRatio = 1.2f;
+        const float LotusHalfMinRatio = 0.8f;
 
-        public static int AttackSpeed(int speed, int weaponWeight, int constitution)
-        {
-            return Mathf.Max(0, speed - Mathf.Max(0, weaponWeight - constitution));
-        }
-
-        public static int WeightPenalty(int weaponWeight, int constitution)
-        {
-            return Mathf.Max(0, weaponWeight - constitution);
-        }
-
-        public static HPThreshold CalculateHPThreshold(int currentHP, int maxHP)
-        {
-            if (maxHP <= 0) return HPThreshold.Critical;
-            int percent = currentHP * 100 / maxHP;
-            if (percent > 50) return HPThreshold.Normal;
-            if (percent >= 31) return HPThreshold.Injured;
-            return HPThreshold.Critical;
-        }
-
-        public static NiyatiSymbol CalculateNiyatiSymbol(int currentNiyati, int baseNiyati)
-        {
-            if (baseNiyati <= 0) return NiyatiSymbol.LotusHalf;
-            float ratio = (float)currentNiyati / baseNiyati;
-            if (ratio > 1.2f) return NiyatiSymbol.LotusFull;
-            if (ratio >= 0.8f) return NiyatiSymbol.LotusHalf;
-            return NiyatiSymbol.LotusWithered;
-        }
-
-        public static bool CanRescue(int rescuerCon, int rescuedCon)
-        {
-            return rescuerCon >= rescuedCon - 10;
-        }
+        // Rescue: rescuer can lift a unit whose CON is at most this many points above their own.
+        const int RescueConDifferenceLimit = 10;
 
         public static StatArray ComputeLevelUpGains(
             StatArray personalGrowths,
@@ -57,22 +26,20 @@ namespace ProjectAstra.Core.Stats
             StatArray currentStats,
             StatArray caps,
             int hpGainOnLevelUp,
-            Func<int, int, bool> rollFunction)
+            Func<int, bool> rollFunction)
         {
             var gains = StatArray.Create();
 
             for (int i = 0; i < StatArray.Length; i++)
             {
                 var idx = (StatIndex)i;
+                if (idx == StatIndex.Con) continue; // Con doesn't grow on level-up.
 
-                if (idx == StatIndex.Con) continue;
+                int growth = EffectiveGrowth(personalGrowths[idx], classModifiers[idx]);
+                if (!rollFunction(growth)) continue;
 
-                int effectiveGrowth = EffectiveGrowth(personalGrowths[idx], classModifiers[idx]);
-                if (!rollFunction(effectiveGrowth, 0)) continue;
-
-                int gain = (idx == StatIndex.HP) ? hpGainOnLevelUp : 1;
-                int newValue = currentStats[idx] + gain;
-                if (newValue > caps[idx]) continue;
+                int gain = (idx == StatIndex.HP) ? hpGainOnLevelUp : DefaultStatGain;
+                if (currentStats[idx] + gain > caps[idx]) continue;
 
                 gains[idx] = gain;
             }
@@ -85,9 +52,42 @@ namespace ProjectAstra.Core.Stats
             for (int i = 0; i < StatArray.Length; i++)
             {
                 var idx = (StatIndex)i;
-                if (stats[idx] > caps[idx])
-                    stats[idx] = caps[idx];
+                stats[idx] = Mathf.Min(stats[idx], caps[idx]);
             }
         }
+
+        public static int EffectiveGrowth(int personalGrowth, int classModifier)
+            => personalGrowth + classModifier;
+
+        public static bool RollGrowth(int growthRate, int roll)
+            => roll < growthRate;
+
+        public static int AttackSpeed(int speed, int weaponWeight, int constitution)
+            => Mathf.Max(0, speed - WeightPenalty(weaponWeight, constitution));
+
+        public static int WeightPenalty(int weaponWeight, int constitution)
+            => Mathf.Max(0, weaponWeight - constitution);
+
+        public static HPThreshold CalculateHPThreshold(int currentHP, int maxHP)
+        {
+            if (maxHP <= 0) return HPThreshold.Critical;
+            int percent = currentHP * PercentScale / maxHP;
+            if (percent > InjuredMaxPercent) return HPThreshold.Normal;
+            if (percent > CriticalMaxPercent) return HPThreshold.Injured;
+            return HPThreshold.Critical;
+        }
+
+        public static NiyatiSymbol CalculateNiyatiSymbol(int currentNiyati, int baseNiyati)
+        {
+            if (baseNiyati <= 0) return NiyatiSymbol.LotusHalf;
+            float ratio = (float)currentNiyati / baseNiyati;
+            // LotusHalf claims both boundary points: ratio in [0.8, 1.2] inclusive.
+            if (ratio > LotusFullMinRatio) return NiyatiSymbol.LotusFull;
+            if (ratio >= LotusHalfMinRatio) return NiyatiSymbol.LotusHalf;
+            return NiyatiSymbol.LotusWithered;
+        }
+
+        public static bool CanRescue(int rescuerCon, int rescuedCon)
+            => rescuerCon >= rescuedCon - RescueConDifferenceLimit;
     }
 }

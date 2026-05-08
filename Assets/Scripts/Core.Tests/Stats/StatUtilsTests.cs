@@ -205,7 +205,7 @@ namespace ProjectAstra.Core.Tests.Stats
 
             // Roll value 55: fails at 40 personal, succeeds at 60 effective (40+20)
             var gains = StatUtils.ComputeLevelUpGains(growths, mods, stats, caps, 2,
-                (rate, _) => 55 < rate);
+                rate => 55 < rate);
             Assert.AreEqual(1, gains[StatIndex.Str]);
         }
 
@@ -221,6 +221,6 @@ namespace ProjectAstra.Core.Tests.Stats
             Assert.AreEqual(10, stats[StatIndex.Mag]);
         }
 
-        private static bool AlwaysSucceed(int rate, int unused) => true;
+        private static bool AlwaysSucceed(int rate) => true;
     }
 }
