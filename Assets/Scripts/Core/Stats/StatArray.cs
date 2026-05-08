@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Stats
 {
-    // 9 ints accessed by StatIndex. The backing array auto-allocates on first read, so default(StatArray) returns zeros instead of throwing.
+    // Bundles a unit's nine stats into one passable, copyable, serializable lump.
     [Serializable]
     public struct StatArray
     {
@@ -34,6 +34,7 @@ namespace ProjectAstra.Core.Stats
             set { EnsureInitialized(); _values[(int)index] = value; }
         }
 
+        // Auto-allocates the backing array so default(StatArray) returns zeros instead of throwing on first index access.
         private void EnsureInitialized()
         {
             if (_values == null || _values.Length != Length)
