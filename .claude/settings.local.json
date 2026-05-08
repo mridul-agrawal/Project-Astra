@@ -139,7 +139,11 @@
       "Bash(ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name,r_frame_rate -of default=noprint_wrappers=1 'C:/Unity Projects/Project Astra/Recordings/__TRACKED_VAR__')",
       "Bash(ffprobe -v error -show_entries format=duration \"C:/Unity Projects/Project Astra/Recordings/devlog_2026-04-08_17-18-56.webm\")",
       "Bash(ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name -of default=noprint_wrappers=1 \"C:/Unity Projects/Project Astra/marketing/devlog_timelapse_v01.mp4\")",
-      "Bash(ffprobe *)"
+      "Bash(ffprobe *)",
+      "Bash(powershell -NoProfile -Command ' *)",
+      "Bash(Select-String \"\\\\.meta$\")",
+      "Bash(Measure-Object)",
+      "Bash(Select-Object Count)"
     ]
   }
 }
