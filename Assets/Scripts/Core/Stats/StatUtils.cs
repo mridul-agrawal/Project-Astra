@@ -4,6 +4,7 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Stats
 {
+    // All the stat math, as pure functions. Level-up rolls, attack speed, HP and Niyati thresholds, rescue.
     public static class StatUtils
     {
         const int DefaultStatGain = 1;
@@ -17,7 +18,7 @@ namespace ProjectAstra.Core.Stats
         const float LotusFullMinRatio = 1.2f;
         const float LotusHalfMinRatio = 0.8f;
 
-        // Rescue: rescuer can lift a unit whose CON is at most this many points above their own.
+        // A unit can rescue another whose CON is at most this many points above its own.
         const int RescueConDifferenceLimit = 10;
 
         public static StatArray ComputeLevelUpGains(
@@ -81,7 +82,7 @@ namespace ProjectAstra.Core.Stats
         {
             if (baseNiyati <= 0) return NiyatiSymbol.LotusHalf;
             float ratio = (float)currentNiyati / baseNiyati;
-            // LotusHalf claims both boundary points: ratio in [0.8, 1.2] inclusive.
+            // Both endpoints (0.8 and 1.2) fall in LotusHalf — the band is inclusive.
             if (ratio > LotusFullMinRatio) return NiyatiSymbol.LotusFull;
             if (ratio >= LotusHalfMinRatio) return NiyatiSymbol.LotusHalf;
             return NiyatiSymbol.LotusWithered;

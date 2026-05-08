@@ -1,6 +1,6 @@
 namespace ProjectAstra.Core.Stats
 {
-    // Values are stored as integers in save files. Don't reorder — append new entries at the end only.
+    // The nine stat slots a unit has. Save files store these as integer values — don't reorder; append at the end only.
     public enum StatIndex
     {
         HP = 0,

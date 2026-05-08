@@ -34,7 +34,7 @@ namespace ProjectAstra.Core.Stats
             set { EnsureInitialized(); _values[(int)index] = value; }
         }
 
-        // Auto-allocates the backing array so default(StatArray) returns zeros instead of throwing on first index access.
+        // Allocates _values on first access; without this, default(StatArray) would null-ref on read.
         private void EnsureInitialized()
         {
             if (_values == null || _values.Length != Length)
