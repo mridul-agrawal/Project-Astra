@@ -452,6 +452,15 @@ namespace ProjectAstra.Core.Editor
             }
             SetField(loader, "_stateChangedChannel", eventChannel);
 
+            // OverlayManager
+            var overlayManager = UnityEngine.Object.FindFirstObjectByType<OverlayManager>();
+            if (overlayManager == null)
+            {
+                var go = new GameObject("OverlayManager");
+                overlayManager = go.AddComponent<OverlayManager>();
+            }
+            SetField(overlayManager, "_stateChangedChannel", eventChannel);
+
             // Remove legacy StateUIController if present
             var legacyGo = GameObject.Find("StateUIController");
             if (legacyGo != null)

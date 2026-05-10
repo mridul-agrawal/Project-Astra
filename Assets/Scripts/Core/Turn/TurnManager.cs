@@ -153,16 +153,13 @@ namespace ProjectAstra.Core.Turn
 
         #region Helpers
 
-        private static Faction PhaseToFaction(BattlePhase phase)
+        internal static Faction PhaseToFaction(BattlePhase phase) => phase switch
         {
-            return phase switch
-            {
-                BattlePhase.PlayerPhase => Faction.Player,
-                BattlePhase.EnemyPhase => Faction.Enemy,
-                BattlePhase.AlliedPhase => Faction.Allied,
-                _ => Faction.Player
-            };
-        }
+            BattlePhase.PlayerPhase => Faction.Player,
+            BattlePhase.EnemyPhase  => Faction.Enemy,
+            BattlePhase.AlliedPhase => Faction.Allied,
+            _                       => Faction.Player,
+        };
 
         private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
