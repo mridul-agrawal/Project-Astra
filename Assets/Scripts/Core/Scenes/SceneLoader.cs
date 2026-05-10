@@ -6,11 +6,11 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Scenes
 {
-    /// <summary>
-    /// Listens to state changes and loads base scenes or instantiates overlay prefabs accordingly.
-    /// </summary>
+    // Mediates between game state changes and Unity scene/overlay loading.
     public class SceneLoader : MonoBehaviour
     {
+        const string OverlayResourceFolder = "Overlays";
+
         [SerializeField] private GameStateEventChannel _stateChangedChannel;
 
         private string _currentBaseScene;
@@ -27,10 +27,8 @@ namespace ProjectAstra.Core.Scenes
             GameState.LevelUpScreen,
         };
 
-        // Overlay states whose UI prefab already lives in the parent scene
-        // (e.g. WarLedger is instantiated into BattleMap.unity by CursorSceneSetup
-        // and driven via GameStateEventChannel). For these, SceneLoader must NOT
-        // destroy the base scene and must NOT hunt Resources/Overlays/ for a prefab.
+        // Overlays whose UI prefab is already inside the parent scene (e.g. WarLedger is built into BattleMap.unity
+        // by CursorSceneSetup and driven via GameStateEventChannel). For these we must NOT swap scenes or hunt for a prefab.
         private static readonly HashSet<GameState> InSceneOverlays = new()
         {
             GameState.WarLedger,
@@ -65,42 +63,40 @@ namespace ProjectAstra.Core.Scenes
 
         private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
-            if (IsOverlayState(args.PreviousState))
-                DestroyActiveOverlay();
+            DestroyActiveOverlay();
 
             if (IsOverlayState(args.NewState))
-            {
-                // In-scene overlays (e.g. WarLedger) live inside the base scene already
-                // and handle their own Show/Hide off GameStateEventChannel. Nothing to
-                // instantiate here — silently skip the Resources lookup.
-                if (InSceneOverlays.Contains(args.NewState)) return;
-
-                var prefab = Resources.Load<GameObject>($"Overlays/{args.NewState}");
-                if (prefab != null)
-                    _activeOverlay = Instantiate(prefab);
-                else
-                    Debug.LogError($"[SceneLoader] Overlay prefab not found: Resources/Overlays/{args.NewState}");
-            }
+                ShowOverlayFor(args.NewState);
             else
-            {
-                DestroyActiveOverlay();
+                LoadBaseSceneFor(args.NewState);
+        }
 
-                string sceneName = args.NewState.ToString();
-                if (sceneName != _currentBaseScene)
-                {
-                    _currentBaseScene = sceneName;
-                    SceneManager.LoadScene(sceneName);
-                }
-            }
+        private void ShowOverlayFor(GameState state)
+        {
+            // In-scene overlays handle their own Show/Hide via GameStateEventChannel; nothing to instantiate here.
+            if (InSceneOverlays.Contains(state)) return;
+
+            var prefab = Resources.Load<GameObject>($"{OverlayResourceFolder}/{state}");
+            if (prefab != null)
+                _activeOverlay = Instantiate(prefab);
+            else
+                Debug.LogError($"[SceneLoader] Overlay prefab not found: Resources/{OverlayResourceFolder}/{state}");
+        }
+
+        private void LoadBaseSceneFor(GameState state)
+        {
+            string sceneName = state.ToString();
+            if (sceneName == _currentBaseScene) return;
+
+            _currentBaseScene = sceneName;
+            SceneManager.LoadScene(sceneName);
         }
 
         private void DestroyActiveOverlay()
         {
-            if (_activeOverlay != null)
-            {
-                Destroy(_activeOverlay);
-                _activeOverlay = null;
-            }
+            if (_activeOverlay == null) return;
+            Destroy(_activeOverlay);
+            _activeOverlay = null;
         }
 
         private static bool IsOverlayState(GameState state) => OverlayStates.Contains(state);

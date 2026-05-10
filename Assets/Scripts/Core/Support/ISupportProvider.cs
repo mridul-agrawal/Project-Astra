@@ -4,20 +4,22 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Support
 {
+    // Returns the support bonds a unit currently has. Implemented by whichever subsystem owns the bond data.
     public interface ISupportProvider
     {
         IReadOnlyList<SupportBond> GetBonds(UnitInstance unit);
     }
 
+    // A single bond between two units. Tracks level, oath/promise state, and whether they can converse this chapter.
     public struct SupportBond
     {
         public UnitDefinition Partner;
-        public int BondLevel;               // 0..3 — round-trips with BondStage cast
+        public int BondLevel;               // Stored as int 0..3; Stage exposes the BondStage view.
         public bool ConversationAvailable;
         public bool IsDeceased;
-        public string PromiseText;          // SP-01 bandhan promise; null/empty when not sworn
-        public bool ShapathWitnessed;       // SP-04 oath scene completed
+        public string PromiseText;          // Bandhan promise; null/empty when not sworn.
+        public bool ShapathWitnessed;       // True once the oath scene has played.
 
-        public BondStage Stage => (BondStage)Mathf.Clamp(BondLevel, 0, 3);
+        public BondStage Stage => (BondStage)Mathf.Clamp(BondLevel, (int)BondStage.Encounter, (int)BondStage.Bandhan);
     }
 }
