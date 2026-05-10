@@ -6,33 +6,26 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Scenes
 {
-    // Mediates between game state changes and Unity scene/overlay loading.
+    // Swaps the active Unity scene in response to game state changes. Knows the explicit
+    // set of states that have a corresponding scene asset; ignores everything else (overlay
+    // states, transient UI states) — those are someone else's problem.
     public class SceneLoader : MonoBehaviour
     {
-        const string OverlayResourceFolder = "Overlays";
-
         [SerializeField] private GameStateEventChannel _stateChangedChannel;
 
         private string _currentBaseScene;
-        private GameObject _activeOverlay;
 
-        private static readonly HashSet<GameState> OverlayStates = new()
+        // States that map to an actual scene file under Assets/Scenes/. Anything not in this
+        // set is a no-op for SceneLoader (overlays, sub-states, etc.).
+        private static readonly HashSet<GameState> SceneStates = new()
         {
-            GameState.BattleMapPaused,
-            GameState.CombatAnimation,
-            GameState.Dialogue,
-            GameState.SaveMenu,
-            GameState.SettingsMenu,
-            GameState.WarLedger,
-            GameState.LevelUpScreen,
-        };
-
-        // Overlays whose UI prefab is already inside the parent scene (e.g. WarLedger is built into BattleMap.unity
-        // by CursorSceneSetup and driven via GameStateEventChannel). For these we must NOT swap scenes or hunt for a prefab.
-        private static readonly HashSet<GameState> InSceneOverlays = new()
-        {
-            GameState.WarLedger,
-            GameState.LevelUpScreen,
+            GameState.TitleScreen,
+            GameState.MainMenu,
+            GameState.Cutscene,
+            GameState.PreBattlePrep,
+            GameState.BattleMap,
+            GameState.ChapterClear,
+            GameState.GameOver,
         };
 
         private void Awake()
@@ -49,7 +42,7 @@ namespace ProjectAstra.Core.Scenes
             _stateChangedChannel.Register(OnStateChanged);
 
             var initialState = GameStateManager.Instance.CurrentState;
-            if (!IsOverlayState(initialState))
+            if (SceneStates.Contains(initialState))
             {
                 _currentBaseScene = initialState.ToString();
                 SceneManager.LoadScene(_currentBaseScene);
@@ -63,42 +56,13 @@ namespace ProjectAstra.Core.Scenes
 
         private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
-            DestroyActiveOverlay();
+            if (!SceneStates.Contains(args.NewState)) return;
 
-            if (IsOverlayState(args.NewState))
-                ShowOverlayFor(args.NewState);
-            else
-                LoadBaseSceneFor(args.NewState);
-        }
-
-        private void ShowOverlayFor(GameState state)
-        {
-            // In-scene overlays handle their own Show/Hide via GameStateEventChannel; nothing to instantiate here.
-            if (InSceneOverlays.Contains(state)) return;
-
-            var prefab = Resources.Load<GameObject>($"{OverlayResourceFolder}/{state}");
-            if (prefab != null)
-                _activeOverlay = Instantiate(prefab);
-            else
-                Debug.LogError($"[SceneLoader] Overlay prefab not found: Resources/{OverlayResourceFolder}/{state}");
-        }
-
-        private void LoadBaseSceneFor(GameState state)
-        {
-            string sceneName = state.ToString();
+            string sceneName = args.NewState.ToString();
             if (sceneName == _currentBaseScene) return;
 
             _currentBaseScene = sceneName;
             SceneManager.LoadScene(sceneName);
         }
-
-        private void DestroyActiveOverlay()
-        {
-            if (_activeOverlay == null) return;
-            Destroy(_activeOverlay);
-            _activeOverlay = null;
-        }
-
-        private static bool IsOverlayState(GameState state) => OverlayStates.Contains(state);
     }
 }
