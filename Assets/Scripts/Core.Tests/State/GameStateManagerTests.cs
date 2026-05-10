@@ -63,21 +63,27 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.BattleMap, GameState.Dialogue)]
         [TestCase(GameState.BattleMap, GameState.BattleMapPaused)]
         [TestCase(GameState.BattleMap, GameState.ChapterClear)]
+        [TestCase(GameState.BattleMap, GameState.WarLedger)]
         [TestCase(GameState.BattleMap, GameState.GameOver)]
+        [TestCase(GameState.BattleMap, GameState.LevelUpScreen)]
+        [TestCase(GameState.WarLedger, GameState.ChapterClear)]
         [TestCase(GameState.BattleMapPaused, GameState.BattleMap)]
         [TestCase(GameState.BattleMapPaused, GameState.SaveMenu)]
         [TestCase(GameState.BattleMapPaused, GameState.SettingsMenu)]
         [TestCase(GameState.CombatAnimation, GameState.BattleMap)]
         [TestCase(GameState.Dialogue, GameState.BattleMap)]
+        [TestCase(GameState.Dialogue, GameState.GameOver)]
         [TestCase(GameState.ChapterClear, GameState.Cutscene)]
         [TestCase(GameState.ChapterClear, GameState.SaveMenu)]
         [TestCase(GameState.GameOver, GameState.MainMenu)]
         [TestCase(GameState.GameOver, GameState.SaveMenu)]
         [TestCase(GameState.SaveMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SaveMenu, GameState.ChapterClear)]
+        [TestCase(GameState.SaveMenu, GameState.GameOver)]
         [TestCase(GameState.SaveMenu, GameState.MainMenu)]
         [TestCase(GameState.SettingsMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SettingsMenu, GameState.MainMenu)]
+        [TestCase(GameState.LevelUpScreen, GameState.BattleMap)]
         public void ValidTransition_Succeeds(GameState startState, GameState target)
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
@@ -91,7 +97,6 @@ namespace ProjectAstra.Core.Tests.State
         }
 
         [TestCase(GameState.TitleScreen, GameState.BattleMap)]
-        [TestCase(GameState.Dialogue, GameState.GameOver)]
         [TestCase(GameState.CombatAnimation, GameState.ChapterClear)]
         [TestCase(GameState.GameOver, GameState.BattleMap)]
         public void IllegalTransition_Rejected_StateUnchanged(GameState startState, GameState target)

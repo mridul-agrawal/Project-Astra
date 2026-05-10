@@ -3,8 +3,11 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.State
 {
+    // A pub/sub channel for "the game state just changed." Stored as a ScriptableObject
+    // so broadcasters (GameStateManager) and listeners (SceneLoader, OverlayManager,
+    // TurnManager...) can find each other through the same asset reference instead of
+    // needing scene-time lookups.
     [CreateAssetMenu(fileName = "GameStateChanged", menuName = "Project Astra/Core/Game State Event Channel")]
-    /// <summary>ScriptableObject-based event bus for broadcasting game state transitions to decoupled listeners.</summary>
     public class GameStateEventChannel : ScriptableObject
     {
         public struct StateChangeArgs
