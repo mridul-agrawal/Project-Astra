@@ -21,13 +21,8 @@ namespace ProjectAstra.Core.Stats
         // A unit can rescue another whose CON is at most this many points above its own.
         const int RescueConDifferenceLimit = 10;
 
-        public static StatArray ComputeLevelUpGains(
-            StatArray personalGrowths,
-            StatArray classModifiers,
-            StatArray currentStats,
-            StatArray caps,
-            int hpGainOnLevelUp,
-            Func<int, bool> rollFunction)
+        public static StatArray ComputeLevelUpGains(StatArray personalGrowths, StatArray classModifiers, StatArray currentStats,
+            StatArray caps, int hpGainOnLevelUp, Func<int, bool> rollFunction)
         {
             var gains = StatArray.Create();
 
@@ -57,17 +52,13 @@ namespace ProjectAstra.Core.Stats
             }
         }
 
-        public static int EffectiveGrowth(int personalGrowth, int classModifier)
-            => personalGrowth + classModifier;
+        public static int EffectiveGrowth(int personalGrowth, int classModifier) => personalGrowth + classModifier;
 
-        public static bool RollGrowth(int growthRate, int roll)
-            => roll < growthRate;
+        public static bool RollGrowth(int growthRate, int roll) => roll < growthRate;
 
-        public static int AttackSpeed(int speed, int weaponWeight, int constitution)
-            => Mathf.Max(0, speed - WeightPenalty(weaponWeight, constitution));
+        public static int AttackSpeed(int speed, int weaponWeight, int constitution) => Mathf.Max(0, speed - WeightPenalty(weaponWeight, constitution));
 
-        public static int WeightPenalty(int weaponWeight, int constitution)
-            => Mathf.Max(0, weaponWeight - constitution);
+        public static int WeightPenalty(int weaponWeight, int constitution) => Mathf.Max(0, weaponWeight - constitution);
 
         public static HPThreshold CalculateHPThreshold(int currentHP, int maxHP)
         {
@@ -88,7 +79,6 @@ namespace ProjectAstra.Core.Stats
             return NiyatiSymbol.LotusWithered;
         }
 
-        public static bool CanRescue(int rescuerCon, int rescuedCon)
-            => rescuerCon >= rescuedCon - RescueConDifferenceLimit;
+        public static bool CanRescue(int rescuerCon, int rescuedCon) => rescuerCon >= rescuedCon - RescueConDifferenceLimit;
     }
 }
