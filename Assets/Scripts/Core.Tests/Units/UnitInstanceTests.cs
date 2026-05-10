@@ -318,8 +318,8 @@ namespace ProjectAstra.Core.Tests.Units
                 arr.GetArrayElementAtIndex(i).intValue = values[i];
         }
 
-        private static bool AlwaysSucceed(int rate, int unused) => true;
-        private static bool AlwaysFail(int rate, int unused) => false;
+        private static bool AlwaysSucceed(int rate) => true;
+        private static bool AlwaysFail(int rate) => false;
 
         #endregion
     }

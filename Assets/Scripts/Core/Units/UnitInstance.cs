@@ -128,7 +128,7 @@ namespace ProjectAstra.Core.Units
 
         #region Level-up
 
-        public StatArray ApplyLevelUp(Func<int, int, bool> rollFunction)
+        public StatArray ApplyLevelUp(Func<int, bool> rollFunction)
         {
             var gains = StatUtils.ComputeLevelUpGains(
                 Definition.PersonalGrowths,

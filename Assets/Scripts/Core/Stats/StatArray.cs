@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Stats
 {
+    // Bundles a unit's nine stats into one passable, copyable, serializable lump.
     [Serializable]
     public struct StatArray
     {
@@ -10,40 +11,30 @@ namespace ProjectAstra.Core.Stats
 
         [SerializeField] private int[] _values;
 
-        public int this[StatIndex index]
-        {
-            get
-            {
-                EnsureInitialized();
-                return _values[(int)index];
-            }
-            set
-            {
-                EnsureInitialized();
-                _values[(int)index] = value;
-            }
-        }
-
-        public static StatArray Create()
-        {
-            return new StatArray { _values = new int[Length] };
-        }
+        public static StatArray Create() => new StatArray { _values = new int[Length] };
 
         public static StatArray From(int hp, int str, int mag, int skl, int spd, int def, int res, int con, int niyati)
         {
             var array = Create();
-            array[StatIndex.HP] = hp;
-            array[StatIndex.Str] = str;
-            array[StatIndex.Mag] = mag;
-            array[StatIndex.Skl] = skl;
-            array[StatIndex.Spd] = spd;
-            array[StatIndex.Def] = def;
-            array[StatIndex.Res] = res;
-            array[StatIndex.Con] = con;
+            array[StatIndex.HP]     = hp;
+            array[StatIndex.Str]    = str;
+            array[StatIndex.Mag]    = mag;
+            array[StatIndex.Skl]    = skl;
+            array[StatIndex.Spd]    = spd;
+            array[StatIndex.Def]    = def;
+            array[StatIndex.Res]    = res;
+            array[StatIndex.Con]    = con;
             array[StatIndex.Niyati] = niyati;
             return array;
         }
 
+        public int this[StatIndex index]
+        {
+            get { EnsureInitialized(); return _values[(int)index]; }
+            set { EnsureInitialized(); _values[(int)index] = value; }
+        }
+
+        // Allocates _values on first access; without this, default(StatArray) would null-ref on read.
         private void EnsureInitialized()
         {
             if (_values == null || _values.Length != Length)
