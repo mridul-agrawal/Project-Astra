@@ -5,6 +5,9 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Turn
 {
+    // Singleton conductor for a battle's turn cycle. Owns the phase manager, the unit registry,
+    // and the AI auto-phase timer; broadcasts phase/turn events on TurnEventChannel. Started by
+    // entering the BattleMap game state and lives until the scene unloads.
     public class TurnManager : MonoBehaviour
     {
         public static TurnManager Instance { get; private set; }
@@ -12,6 +15,8 @@ namespace ProjectAstra.Core.Turn
         [SerializeField] private TurnEventChannel _turnEventChannel;
         [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private bool _hasAllies;
+        // Placeholder: how long an AI phase visibly lingers before auto-ending. Replace once real AI exists.
+        [SerializeField] private float _aiPhaseDelaySeconds = 1f;
 
         private BattlePhaseManager _phaseManager;
         private UnitRegistry _unitRegistry;
@@ -60,8 +65,9 @@ namespace ProjectAstra.Core.Turn
             if (Instance == this) Instance = null;
         }
 
-        #region Battle lifecycle
-
+        // Idempotent — called from both Start() (cold boot directly into BattleMap) and
+        // OnGameStateChanged (entering BattleMap from a menu). The _turnCounter > 0 guard
+        // makes the second call a no-op.
         public void StartBattle()
         {
             if (_turnCounter > 0) return;
@@ -73,69 +79,22 @@ namespace ProjectAstra.Core.Turn
             BeginPhase();
         }
 
-        private void RegisterSceneUnits()
-        {
-            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
-            {
-                if (_unitRegistry.GetFaction(unit) == null)
-                    _unitRegistry.Register(unit, unit.faction);
-            }
-        }
-
-        #endregion
-
-        #region Phase management
-
-        private void BeginPhase()
-        {
-            var phase = _phaseManager.CurrentPhase;
-            var faction = PhaseToFaction(phase);
-            _unitRegistry.ResetPhaseFlags(faction);
-
-            _turnEventChannel?.RaisePhaseStarted(phase, _turnCounter);
-
-            if (phase != BattlePhase.PlayerPhase)
-                _aiPhaseCoroutine = StartCoroutine(ExecuteAIPhase(phase));
-        }
-
-        private IEnumerator ExecuteAIPhase(BattlePhase phase)
-        {
-            yield return new WaitForSeconds(1f);
-
-            var faction = PhaseToFaction(phase);
-            var units = _unitRegistry.GetActableUnits(faction);
-            foreach (var unit in units)
-                _unitRegistry.MarkActed(unit);
-
-            EndCurrentPhase();
-        }
-
         public void EndCurrentPhase()
         {
-            if (_aiPhaseCoroutine != null)
-            {
-                StopCoroutine(_aiPhaseCoroutine);
-                _aiPhaseCoroutine = null;
-            }
+            StopAIPhaseCoroutine();
 
             var endingPhase = _phaseManager.CurrentPhase;
-            var faction = PhaseToFaction(endingPhase);
-
-            foreach (var unit in _unitRegistry.GetActableUnits(faction))
-                _unitRegistry.MarkActed(unit);
-
+            _unitRegistry.MarkAllActed(PhaseToFaction(endingPhase));
             _turnEventChannel?.RaisePhaseEnded(endingPhase);
+
             _phaseManager.AdvancePhase();
-
-            if (_phaseManager.CurrentPhase == BattlePhase.PlayerPhase)
-            {
-                _turnCounter++;
-                _turnEventChannel?.RaiseTurnAdvanced(_turnCounter);
-            }
-
+            AdvanceTurnIfNewRound();
             BeginPhase();
         }
 
+        // Player-facing "end my phase" entry point — wired to the pause menu's End Turn button.
+        // No-ops outside PlayerPhase so pressing it mid-enemy-phase (the pause menu is reachable
+        // from any phase) can't accidentally cut someone else's phase short.
         public void EndPlayerPhase()
         {
             if (_phaseManager.CurrentPhase != BattlePhase.PlayerPhase) return;
@@ -149,9 +108,46 @@ namespace ProjectAstra.Core.Turn
                 EndCurrentPhase();
         }
 
-        #endregion
+        private void BeginPhase()
+        {
+            var phase = _phaseManager.CurrentPhase;
+            _unitRegistry.ResetPhaseFlags(PhaseToFaction(phase));
+            _turnEventChannel?.RaisePhaseStarted(phase, _turnCounter);
 
-        #region Helpers
+            if (phase != BattlePhase.PlayerPhase)
+                _aiPhaseCoroutine = StartCoroutine(RunAIPhase());
+        }
+
+        // Placeholder AI: waits the configured delay so the phase reads visibly, then ends.
+        // EndCurrentPhase auto-marks any units that didn't act, so no per-unit logic is needed here yet.
+        private IEnumerator RunAIPhase()
+        {
+            yield return new WaitForSeconds(_aiPhaseDelaySeconds);
+            EndCurrentPhase();
+        }
+
+        private void RegisterSceneUnits()
+        {
+            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+            {
+                if (_unitRegistry.GetFaction(unit) == null)
+                    _unitRegistry.Register(unit, unit.faction);
+            }
+        }
+
+        private void StopAIPhaseCoroutine()
+        {
+            if (_aiPhaseCoroutine == null) return;
+            StopCoroutine(_aiPhaseCoroutine);
+            _aiPhaseCoroutine = null;
+        }
+
+        private void AdvanceTurnIfNewRound()
+        {
+            if (_phaseManager.CurrentPhase != BattlePhase.PlayerPhase) return;
+            _turnCounter++;
+            _turnEventChannel?.RaiseTurnAdvanced(_turnCounter);
+        }
 
         internal static Faction PhaseToFaction(BattlePhase phase) => phase switch
         {
@@ -166,7 +162,5 @@ namespace ProjectAstra.Core.Turn
             if (args.NewState == GameState.BattleMap && args.PreviousState != GameState.BattleMapPaused)
                 StartBattle();
         }
-
-        #endregion
     }
 }
