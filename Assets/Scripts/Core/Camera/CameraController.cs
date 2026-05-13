@@ -8,12 +8,10 @@ using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Camera
 {
-    /// <summary>
-    /// Deadzone-based camera tracking for the tactical battle map.
-    /// Subscribes to GridCursor.OnCursorMoved and scrolls the camera by 1 tile
-    /// when the cursor pushes past the deadzone boundary. Camera position is
-    /// always clamped to map bounds and integer-snapped for pixel-perfect rendering.
-    /// </summary>
+    // Deadzone-based camera that follows the cursor across the battle map. When the cursor
+    // pushes past the deadzone boundary on a frame, the camera scrolls by 1 tile in that
+    // direction. Position is clamped to map bounds and integer-aligned so the
+    // PixelPerfectCamera can render pixel-perfect without sub-pixel drift.
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class CameraController : MonoBehaviour
     {
@@ -24,15 +22,13 @@ namespace ProjectAstra.Core.Camera
         [Header("Deadzone")]
         [SerializeField] private int _deadzoneMarginTiles = 3;
 
-        // Top-left corner of the viewport in tile coordinates
+        // Top-left corner of the viewport, in tile coordinates.
         private Vector2Int _cameraGridPos;
         private int _viewportTilesW;
         private int _viewportTilesH;
         private bool _viewportInitialized;
 
-        /// <summary>Top-left corner of the viewport in world coordinates. Queryable by any system.</summary>
         public Vector2 WorldTopLeft => _cameraGridPos;
-
         public int ViewportTilesW => _viewportTilesW;
         public int ViewportTilesH => _viewportTilesH;
         public Vector2Int CameraGridPos => _cameraGridPos;
@@ -55,43 +51,16 @@ namespace ProjectAstra.Core.Camera
 
         private void LateUpdate()
         {
-            // Deferred init: PixelPerfectCamera updates orthographicSize via a render
-            // callback after Awake/Start, so the first LateUpdate is the earliest point
-            // we can read the correct viewport dimensions.
-            if (!_viewportInitialized)
-            {
-                RecalculateViewport();
-                CenterOnTile(_gridCursor != null ? _gridCursor.GridPosition : Vector2Int.zero);
-                _viewportInitialized = true;
-            }
-
+            if (!_viewportInitialized) InitializeViewport();
             ApplyCameraPosition();
         }
 
-        /// <summary>Recalculate viewport tile dimensions from camera settings.</summary>
         public void RecalculateViewport()
         {
-            // Prefer PixelPerfectCamera ref resolution when present: it's set in MapCamera.Awake
-            // and is deterministic, unlike camera.orthographicSize which PixelPerfectCamera only
-            // updates during the render callback (after LateUpdate).
-            var ppc = GetComponent<PixelPerfectCamera>();
-            if (ppc != null && ppc.assetsPPU > 0)
-            {
-                _viewportTilesW = ppc.refResolutionX / ppc.assetsPPU;
-                _viewportTilesH = ppc.refResolutionY / ppc.assetsPPU;
-                return;
-            }
-
-            var cam = GetComponent<UnityEngine.Camera>();
-            if (cam == null || !cam.orthographic) return;
-
-            float worldHeight = cam.orthographicSize * 2f;
-            float worldWidth = worldHeight * cam.aspect;
-            _viewportTilesW = Mathf.FloorToInt(worldWidth);
-            _viewportTilesH = Mathf.FloorToInt(worldHeight);
+            if (TryRecalculateFromPixelPerfectCamera()) return;
+            RecalculateFromOrthographicCamera();
         }
 
-        /// <summary>Instantly center the viewport on the given tile, clamped to map bounds.</summary>
         public void CenterOnTile(Vector2Int tile)
         {
             _cameraGridPos = new Vector2Int(
@@ -102,7 +71,15 @@ namespace ProjectAstra.Core.Camera
             ApplyCameraPosition();
         }
 
-        // --- Core tracking logic ---
+        // Init runs on the first LateUpdate because PixelPerfectCamera writes its viewport
+        // values via a render callback that fires after Awake/Start — so we can't read the
+        // correct dimensions any earlier.
+        private void InitializeViewport()
+        {
+            RecalculateViewport();
+            CenterOnTile(_gridCursor != null ? _gridCursor.GridPosition : Vector2Int.zero);
+            _viewportInitialized = true;
+        }
 
         internal void OnCursorMoved(Vector2Int cursorPos)
         {
@@ -128,6 +105,30 @@ namespace ProjectAstra.Core.Camera
             ClampToMapBounds();
         }
 
+        // PixelPerfectCamera path: ref resolution and PPU are deterministic and set in
+        // MapCamera.Awake, so we can trust them. Returns false when no PPC is present (or
+        // it's misconfigured) so the caller can fall back to the orthographic-camera path.
+        private bool TryRecalculateFromPixelPerfectCamera()
+        {
+            var ppc = GetComponent<PixelPerfectCamera>();
+            if (ppc == null || ppc.assetsPPU <= 0) return false;
+
+            _viewportTilesW = ppc.refResolutionX / ppc.assetsPPU;
+            _viewportTilesH = ppc.refResolutionY / ppc.assetsPPU;
+            return true;
+        }
+
+        private void RecalculateFromOrthographicCamera()
+        {
+            var cam = GetComponent<UnityEngine.Camera>();
+            if (cam == null || !cam.orthographic) return;
+
+            float worldHeight = cam.orthographicSize * 2f;
+            float worldWidth = worldHeight * cam.aspect;
+            _viewportTilesW = Mathf.FloorToInt(worldWidth);
+            _viewportTilesH = Mathf.FloorToInt(worldHeight);
+        }
+
         private void ClampToMapBounds()
         {
             MapData map = _mapRenderer != null ? _mapRenderer.CurrentMap : null;
@@ -140,18 +141,17 @@ namespace ProjectAstra.Core.Camera
             _cameraGridPos.y = Mathf.Clamp(_cameraGridPos.y, 0, maxY);
         }
 
+        // Camera center = top-left tile + half-viewport. Odd viewport widths land on a
+        // half-integer (7.5, etc.); PixelPerfectCamera snaps sprites to the pixel grid at
+        // render time, so no world-unit floor is needed here.
         private void ApplyCameraPosition()
         {
-            // Camera center = top-left tile + half-viewport. For odd viewport widths this
-            // lands on a half-integer (e.g. 7.5), which is correct — PixelPerfectCamera
-            // snaps sprites to the pixel grid at render time, so no world-unit floor needed.
             float centerX = _cameraGridPos.x + _viewportTilesW * 0.5f;
             float centerY = _cameraGridPos.y + _viewportTilesH * 0.5f;
-
             transform.position = new Vector3(centerX, centerY, transform.position.z);
         }
 
-        // --- Test helpers ---
+        #region Test helpers
 
         internal void Initialize(GridCursor cursor, MapRenderer mapRenderer, int deadzoneMargin,
             int viewportW, int viewportH)
@@ -168,5 +168,7 @@ namespace ProjectAstra.Core.Camera
         {
             _cameraGridPos = pos;
         }
+
+        #endregion
     }
 }
