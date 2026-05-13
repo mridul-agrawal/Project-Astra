@@ -47,26 +47,10 @@ namespace ProjectAstra.Core.State
 
         public bool RequestTransition(GameState target, string requester = null)
         {
-            string requesterName = requester ?? "unknown";
+            if (IsBlockedThisFrame(target, requester)) return false;
+            if (IsIllegalTransition(target, requester)) return false;
 
-            if (_oneTransitionPerFrameGate)
-            {
-                Debug.LogWarning(
-                    $"[GameStateManager] Transition to {target} discarded — " +
-                    $"already processed a transition this frame. Requester: {requesterName}");
-                return false;
-            }
-
-            if (!_transitionTable.IsValid(_currentState, target))
-            {
-                Debug.LogError(
-                    $"[GameStateManager] ILLEGAL transition: {_currentState} -> {target}. Requester: {requesterName}");
-                return false;
-            }
-
-            if (IsContextMenu(target))
-                _menuReturnState = _currentState;
-
+            RememberMenuReturnIfNeeded(target);
             ExecuteTransition(target);
             _oneTransitionPerFrameGate = true;
             return true;
@@ -76,9 +60,7 @@ namespace ProjectAstra.Core.State
         {
             if (!IsContextMenu(_currentState))
             {
-                Debug.LogError(
-                    $"[GameStateManager] ReturnFromContextMenu called from invalid state: {_currentState}. " +
-                    $"Requester: {requester ?? "unknown"}");
+                LogInvalidContextMenuReturn(requester);
                 return false;
             }
 
@@ -93,6 +75,31 @@ namespace ProjectAstra.Core.State
             ExecuteTransition(state);
         }
 
+        // Returns true (and logs) if a transition has already been processed this frame.
+        private bool IsBlockedThisFrame(GameState target, string requester)
+        {
+            if (!_oneTransitionPerFrameGate) return false;
+            Debug.LogWarning(
+                $"[GameStateManager] Transition to {target} discarded — " +
+                $"already processed a transition this frame. Requester: {RequesterName(requester)}");
+            return true;
+        }
+
+        // Returns true (and logs) if the requested move isn't in the transition table.
+        private bool IsIllegalTransition(GameState target, string requester)
+        {
+            if (_transitionTable.IsValid(_currentState, target)) return false;
+            Debug.LogError(
+                $"[GameStateManager] ILLEGAL transition: {_currentState} -> {target}. Requester: {RequesterName(requester)}");
+            return true;
+        }
+
+        private void RememberMenuReturnIfNeeded(GameState target)
+        {
+            if (IsContextMenu(target))
+                _menuReturnState = _currentState;
+        }
+
         private void ExecuteTransition(GameState target)
         {
             var previous = _currentState;
@@ -105,8 +112,15 @@ namespace ProjectAstra.Core.State
             });
         }
 
+        private void LogInvalidContextMenuReturn(string requester) =>
+            Debug.LogError(
+                $"[GameStateManager] ReturnFromContextMenu called from invalid state: {_currentState}. " +
+                $"Requester: {RequesterName(requester)}");
+
         private static bool IsContextMenu(GameState state) =>
             state == GameState.SaveMenu || state == GameState.SettingsMenu;
+
+        private static string RequesterName(string requester) => requester ?? "unknown";
 
         #region Test helpers
 
