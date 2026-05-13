@@ -4,11 +4,16 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Input
 {
-    /// <summary>IMGUI overlay that logs InputManager events in real time for debugging input and device state.</summary>
+    // IMGUI overlay that logs the last N InputManager events in real time. Drop onto any
+    // GameObject to debug input dispatch — what fired, which device, which state.
     public class InputDebugHUD : MonoBehaviour
     {
-        private readonly List<string> _log = new();
         private const int MaxLines = 12;
+        private const float PanelWidth = 300f;
+        private const float PanelHeight = 280f;
+        private const float PanelMargin = 10f;
+
+        private readonly List<string> _log = new();
         private Vector2 _scrollPos;
         private bool _visible = true;
 
@@ -35,21 +40,12 @@ namespace ProjectAstra.Core.Input
             InputManager.Instance.OnDeviceChanged += device => Log($"Device → {device}");
         }
 
-        private void Log(string msg)
-        {
-            _log.Add($"[{Time.frameCount}] {msg}");
-            if (_log.Count > MaxLines) _log.RemoveAt(0);
-        }
-
         private void OnGUI()
         {
             if (!_visible) return;
 
-            float width = 300;
-            float height = 280;
-            float x = Screen.width - width - 10;
-
-            GUILayout.BeginArea(new Rect(x, 10, width, height), GUI.skin.box);
+            float x = Screen.width - PanelWidth - PanelMargin;
+            GUILayout.BeginArea(new Rect(x, PanelMargin, PanelWidth, PanelHeight), GUI.skin.box);
 
             GUILayout.Label($"<b>Input Debug</b>  |  State: {GameStateManager.Instance?.CurrentState}");
             GUILayout.Label($"Device: {InputManager.Instance?.ActiveDevice}  |  FastCursor: {InputManager.Instance?.IsFastCursorHeld}");
@@ -59,6 +55,12 @@ namespace ProjectAstra.Core.Input
                 GUILayout.Label(line);
 
             GUILayout.EndArea();
+        }
+
+        private void Log(string msg)
+        {
+            _log.Add($"[{Time.frameCount}] {msg}");
+            if (_log.Count > MaxLines) _log.RemoveAt(0);
         }
     }
 }

@@ -5,15 +5,15 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Input
 {
-    /// <summary>
-    /// Active input device classification for hot-swap detection.
-    /// </summary>
+    // Which device most recently produced input. Used by the HUD to swap glyph sets
+    // (keyboard prompts vs. gamepad prompts).
     public enum InputDeviceType { Keyboard, Gamepad, Mouse }
 
-    /// <summary>
-    /// Singleton that maps raw Input System actions to logical game events, 
-    /// with DAS cursor repeat, context filtering, and same-frame priority resolution.
-    /// </summary>
+    // Singleton bridge between Unity's Input System and game-level events. Three jobs:
+    //   1. Translate raw action callbacks into typed events (OnCursorMove, OnConfirm, ...).
+    //   2. Filter actions by the current GameState (no Confirm during CombatAnimation, etc.).
+    //   3. Implement DAS (Delayed Auto-Shift) for held cursor directions, and resolve
+    //      same-frame Confirm/Cancel conflicts (Cancel wins).
     public class InputManager : MonoBehaviour
     {
         public static InputManager Instance { get; private set; }
@@ -26,7 +26,6 @@ namespace ProjectAstra.Core.Input
         [SerializeField] private float _dasRepeatRate = 0.1f;
         [SerializeField] private float _dasFastRepeatRate = 0.05f;
 
-        // Logical action events — game systems subscribe to these
         public event Action<Vector2Int> OnCursorMove;
         public event Action OnConfirm;
         public event Action OnCancel;
@@ -48,12 +47,21 @@ namespace ProjectAstra.Core.Input
         private InputActionMap _gameplayMap;
         private GameState _currentState;
 
-        // DAS state per direction
-        private readonly float[] _dasTimers = new float[4];
-        private readonly bool[] _dasInitialMoveFired = new bool[4];
-        private readonly bool[] _directionHeld = new bool[4];
+        private const int DirectionCount = 4;
+        private const int DirUp = 0, DirDown = 1, DirLeft = 2, DirRight = 3;
 
-        // Confirm/Cancel same-frame priority
+        private static readonly Vector2Int[] Directions =
+        {
+            Vector2Int.up,    // DirUp
+            Vector2Int.down,  // DirDown
+            Vector2Int.left,  // DirLeft
+            Vector2Int.right  // DirRight
+        };
+
+        private readonly float[] _dasTimers = new float[DirectionCount];
+        private readonly bool[] _dasInInitialDelay = new bool[DirectionCount];
+        private readonly bool[] _directionHeld = new bool[DirectionCount];
+
         private bool _confirmPendingThisFrame;
         private bool _cancelPendingThisFrame;
 
@@ -61,6 +69,40 @@ namespace ProjectAstra.Core.Input
         {
             CreateSingleton();
             InitializeInputActionMap();
+        }
+
+        private void OnEnable()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Register(OnStateChanged);
+
+            InputSystem.onActionChange += OnInputActionChange;
+        }
+
+        private void Start()
+        {
+            _currentState = GameStateManager.Instance.CurrentState;
+            ApplyContextFilter(_currentState);
+        }
+
+        private void OnDisable()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Unregister(OnStateChanged);
+
+            InputSystem.onActionChange -= OnInputActionChange;
+        }
+
+        private void Update()
+        {
+            UpdateDAS();
+            ResolveSameFramePriority();
+        }
+
+        private void LateUpdate()
+        {
+            _confirmPendingThisFrame = false;
+            _cancelPendingThisFrame = false;
         }
 
         private void CreateSingleton()
@@ -87,40 +129,6 @@ namespace ProjectAstra.Core.Input
             BindActions();
         }
 
-        private void OnEnable()
-        {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnStateChanged);
-
-            InputSystem.onActionChange += OnInputActionChange;
-        }
-
-        private void OnDisable()
-        {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnStateChanged);
-
-            InputSystem.onActionChange -= OnInputActionChange;
-        }
-
-        private void Start()
-        {
-            _currentState = GameStateManager.Instance.CurrentState;
-            ApplyContextFilter(_currentState);
-        }
-
-        private void Update()
-        {
-            UpdateDAS();
-            ResolveSameFramePriority();
-        }
-
-        private void LateUpdate()
-        {
-            _confirmPendingThisFrame = false;
-            _cancelPendingThisFrame = false;
-        }
-
         private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
             _currentState = args.NewState;
@@ -141,7 +149,6 @@ namespace ProjectAstra.Core.Input
             }
         }
 
-        // Tracks which device was most recently used
         private void OnInputActionChange(object obj, InputActionChange change)
         {
             if (change != InputActionChange.ActionPerformed) return;
@@ -167,30 +174,30 @@ namespace ProjectAstra.Core.Input
 
         private void BindActions()
         {
-            Bind("CursorUp", ctx => StartDirection(0));
-            Bind("CursorDown", ctx => StartDirection(1));
-            Bind("CursorLeft", ctx => StartDirection(2));
-            Bind("CursorRight", ctx => StartDirection(3));
+            Bind("CursorUp",    _ => StartDirection(DirUp));
+            Bind("CursorDown",  _ => StartDirection(DirDown));
+            Bind("CursorLeft",  _ => StartDirection(DirLeft));
+            Bind("CursorRight", _ => StartDirection(DirRight));
 
-            BindCancel("CursorUp", _ => StopDirection(0));
-            BindCancel("CursorDown", _ => StopDirection(1));
-            BindCancel("CursorLeft", _ => StopDirection(2));
-            BindCancel("CursorRight", _ => StopDirection(3));
+            BindCancel("CursorUp",    _ => StopDirection(DirUp));
+            BindCancel("CursorDown",  _ => StopDirection(DirDown));
+            BindCancel("CursorLeft",  _ => StopDirection(DirLeft));
+            BindCancel("CursorRight", _ => StopDirection(DirRight));
 
             Bind("Confirm", _ => _confirmPendingThisFrame = true);
-            Bind("Cancel", _ => _cancelPendingThisFrame = true);
+            Bind("Cancel",  _ => _cancelPendingThisFrame = true);
 
             Bind("FastCursor", _ => IsFastCursorHeld = true);
             BindCancel("FastCursor", _ => IsFastCursorHeld = false);
 
-            Bind("OpenMapMenu", _ => OnOpenMapMenu?.Invoke());
-            Bind("OpenUnitInfo", _ => OnOpenUnitInfo?.Invoke());
+            Bind("OpenMapMenu",      _ => OnOpenMapMenu?.Invoke());
+            Bind("OpenUnitInfo",     _ => OnOpenUnitInfo?.Invoke());
             Bind("ToggleMapOverlay", _ => OnToggleMapOverlay?.Invoke());
-            Bind("Pause", _ => OnPause?.Invoke());
-            Bind("SkipAnimation", _ => OnSkipAnimation?.Invoke());
-            Bind("SkipDialogue", _ => OnSkipDialogue?.Invoke());
+            Bind("Pause",            _ => OnPause?.Invoke());
+            Bind("SkipAnimation",    _ => OnSkipAnimation?.Invoke());
+            Bind("SkipDialogue",     _ => OnSkipDialogue?.Invoke());
 
-            Bind("HoldAdvanceDialogue", _ => OnHoldAdvanceDialogue?.Invoke(true));
+            Bind("HoldAdvanceDialogue",       _ => OnHoldAdvanceDialogue?.Invoke(true));
             BindCancel("HoldAdvanceDialogue", _ => OnHoldAdvanceDialogue?.Invoke(false));
 
             Bind("NextUnit", _ => OnNextUnit?.Invoke());
@@ -214,19 +221,11 @@ namespace ProjectAstra.Core.Input
 
         #region DAS (Delayed Auto-Shift)
 
-        private static readonly Vector2Int[] Directions =
-        {
-            Vector2Int.up,    // 0 = Up
-            Vector2Int.down,  // 1 = Down
-            Vector2Int.left,  // 2 = Left
-            Vector2Int.right  // 3 = Right
-        };
-
         private void StartDirection(int dir)
         {
             _directionHeld[dir] = true;
             _dasTimers[dir] = 0f;
-            _dasInitialMoveFired[dir] = true;
+            _dasInInitialDelay[dir] = true;
             OnCursorMove?.Invoke(Directions[dir]);
         }
 
@@ -234,47 +233,48 @@ namespace ProjectAstra.Core.Input
         {
             _directionHeld[dir] = false;
             _dasTimers[dir] = 0f;
-            _dasInitialMoveFired[dir] = false;
+            _dasInInitialDelay[dir] = false;
         }
 
         private void UpdateDAS()
         {
             float repeatRate = IsFastCursorHeld ? _dasFastRepeatRate : _dasRepeatRate;
-
-            for (int i = 0; i < 4; i++)
+            for (int dir = 0; dir < DirectionCount; dir++)
             {
-                if (!_directionHeld[i]) continue;
-
-                _dasTimers[i] += Time.deltaTime;
-
-                if (_dasInitialMoveFired[i] && _dasTimers[i] < _dasInitialDelay)
-                    continue;
-
-                if (_dasTimers[i] >= (_dasInitialMoveFired[i] ? _dasInitialDelay : repeatRate))
-                {
-                    _dasTimers[i] = _dasInitialMoveFired[i] ? 0f : _dasTimers[i] - repeatRate;
-                    _dasInitialMoveFired[i] = false;
-                    OnCursorMove?.Invoke(Directions[i]);
-                }
+                if (_directionHeld[dir])
+                    AdvanceDAS(dir, repeatRate);
             }
+        }
+
+        // Carries fractional overshoot into the next tick so repeats stay on rate when frame time jitters.
+        private void AdvanceDAS(int dir, float repeatRate)
+        {
+            _dasTimers[dir] += Time.deltaTime;
+
+            bool inInitialDelay = _dasInInitialDelay[dir];
+            float threshold = inInitialDelay ? _dasInitialDelay : repeatRate;
+            if (_dasTimers[dir] < threshold) return;
+
+            _dasTimers[dir] = inInitialDelay ? 0f : _dasTimers[dir] - repeatRate;
+            _dasInInitialDelay[dir] = false;
+            OnCursorMove?.Invoke(Directions[dir]);
         }
 
         private void ResetDAS()
         {
-            for (int i = 0; i < 4; i++)
+            for (int dir = 0; dir < DirectionCount; dir++)
             {
-                _directionHeld[i] = false;
-                _dasTimers[i] = 0f;
-                _dasInitialMoveFired[i] = false;
+                _directionHeld[dir] = false;
+                _dasTimers[dir] = 0f;
+                _dasInInitialDelay[dir] = false;
             }
             IsFastCursorHeld = false;
         }
 
         #endregion
 
-        #region Same-Frame Priority
-
-        // CANCEL takes priority over CONFIRM if both fire on the same frame
+        // Cancel takes priority over Confirm when both fire on the same frame —
+        // protects against accidental confirmations when the player meant to back out.
         private void ResolveSameFramePriority()
         {
             if (_cancelPendingThisFrame)
@@ -287,7 +287,5 @@ namespace ProjectAstra.Core.Input
                 OnConfirm?.Invoke();
             }
         }
-
-        #endregion
     }
 }
