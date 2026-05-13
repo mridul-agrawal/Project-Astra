@@ -3,8 +3,9 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.State
 {
+    // The list of legal GameState→GameState moves. Stored as a ScriptableObject so designers
+    // can review and edit the table in the Inspector without code changes.
     [CreateAssetMenu(fileName = "TransitionTable", menuName = "Project Astra/Core/Transition Table")]
-    /// <summary>Data-driven whitelist of legal GameState transitions, stored as a ScriptableObject and queried via HashSet lookup.</summary>
     public class GameStateTransitionTable : ScriptableObject
     {
         [System.Serializable]
@@ -26,6 +27,12 @@ namespace ProjectAstra.Core.State
 
         public int TransitionCount => _validTransitions != null ? _validTransitions.Length : 0;
 
+        public bool IsValid(GameState from, GameState to)
+        {
+            if (_lookupSet == null) Initialize();
+            return _lookupSet.Contains((from, to));
+        }
+
         public void Initialize()
         {
             int capacity = _validTransitions != null ? _validTransitions.Length : 0;
@@ -37,12 +44,7 @@ namespace ProjectAstra.Core.State
                 _lookupSet.Add((entry.From, entry.To));
         }
 
-        public bool IsValid(GameState from, GameState to)
-        {
-            if (_lookupSet == null) Initialize();
-            return _lookupSet.Contains((from, to));
-        }
-
+        // Seed data for the SO asset. Used by the inspector context-menu and by tests.
         public static TransitionEntry[] CreateDefaultTransitions()
         {
             return new[]
@@ -65,6 +67,7 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.BattleMap, GameState.ChapterClear),
                 new TransitionEntry(GameState.BattleMap, GameState.WarLedger),
                 new TransitionEntry(GameState.BattleMap, GameState.GameOver),
+                new TransitionEntry(GameState.BattleMap, GameState.LevelUpScreen),
 
                 new TransitionEntry(GameState.WarLedger, GameState.ChapterClear),
 
@@ -91,7 +94,6 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.SettingsMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SettingsMenu, GameState.MainMenu),
 
-                new TransitionEntry(GameState.BattleMap, GameState.LevelUpScreen),
                 new TransitionEntry(GameState.LevelUpScreen, GameState.BattleMap),
             };
         }

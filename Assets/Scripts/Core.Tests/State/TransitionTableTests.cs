@@ -28,16 +28,10 @@ namespace ProjectAstra.Core.Tests.State
         }
 
         [Test]
-        public void DefaultTransitions_ContainsExactly28Entries()
+        public void TransitionCount_MatchesDefaults()
         {
-            var transitions = GameStateTransitionTable.CreateDefaultTransitions();
-            Assert.AreEqual(28, transitions.Length);
-        }
-
-        [Test]
-        public void TransitionCount_Is28()
-        {
-            Assert.AreEqual(28, _table.TransitionCount);
+            var defaults = GameStateTransitionTable.CreateDefaultTransitions();
+            Assert.AreEqual(defaults.Length, _table.TransitionCount);
         }
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]
@@ -52,21 +46,27 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.BattleMap, GameState.Dialogue)]
         [TestCase(GameState.BattleMap, GameState.BattleMapPaused)]
         [TestCase(GameState.BattleMap, GameState.ChapterClear)]
+        [TestCase(GameState.BattleMap, GameState.WarLedger)]
         [TestCase(GameState.BattleMap, GameState.GameOver)]
+        [TestCase(GameState.BattleMap, GameState.LevelUpScreen)]
+        [TestCase(GameState.WarLedger, GameState.ChapterClear)]
         [TestCase(GameState.BattleMapPaused, GameState.BattleMap)]
         [TestCase(GameState.BattleMapPaused, GameState.SaveMenu)]
         [TestCase(GameState.BattleMapPaused, GameState.SettingsMenu)]
         [TestCase(GameState.CombatAnimation, GameState.BattleMap)]
         [TestCase(GameState.Dialogue, GameState.BattleMap)]
+        [TestCase(GameState.Dialogue, GameState.GameOver)]
         [TestCase(GameState.ChapterClear, GameState.Cutscene)]
         [TestCase(GameState.ChapterClear, GameState.SaveMenu)]
         [TestCase(GameState.GameOver, GameState.MainMenu)]
         [TestCase(GameState.GameOver, GameState.SaveMenu)]
         [TestCase(GameState.SaveMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SaveMenu, GameState.ChapterClear)]
+        [TestCase(GameState.SaveMenu, GameState.GameOver)]
         [TestCase(GameState.SaveMenu, GameState.MainMenu)]
         [TestCase(GameState.SettingsMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SettingsMenu, GameState.MainMenu)]
+        [TestCase(GameState.LevelUpScreen, GameState.BattleMap)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
             Assert.IsTrue(_table.IsValid(from, to),
@@ -85,7 +85,6 @@ namespace ProjectAstra.Core.Tests.State
 
         [TestCase(GameState.TitleScreen, GameState.BattleMap)]
         [TestCase(GameState.TitleScreen, GameState.GameOver)]
-        [TestCase(GameState.Dialogue, GameState.GameOver)]
         [TestCase(GameState.CombatAnimation, GameState.ChapterClear)]
         [TestCase(GameState.SaveMenu, GameState.Dialogue)]
         [TestCase(GameState.GameOver, GameState.BattleMap)]
