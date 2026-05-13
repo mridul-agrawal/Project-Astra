@@ -1,17 +1,14 @@
-using System;
-
 namespace ProjectAstra.Core.Turn
 {
-    /// <summary>Cycles battle phases (Player->Enemy->Allied) and optionally skips AlliedPhase when no allies are present.</summary>
+    // Cycles the battle phase Player → Enemy → Allied → Player. When no allies are present
+    // the Allied slot is skipped so the loop is Player → Enemy → Player. Pure data class —
+    // no Unity dependency — so it can be unit-tested in isolation.
     public class BattlePhaseManager
     {
         private BattlePhase _currentPhase;
         private bool _hasAllies;
 
         public BattlePhase CurrentPhase => _currentPhase;
-        public bool HasAllies => _hasAllies;
-
-        public event Action<BattlePhase> OnPhaseChanged;
 
         public BattlePhaseManager(bool hasAllies)
         {
@@ -24,7 +21,6 @@ namespace ProjectAstra.Core.Turn
         public void AdvancePhase()
         {
             _currentPhase = GetNextPhase(_currentPhase);
-            OnPhaseChanged?.Invoke(_currentPhase);
         }
 
         public void Reset()
@@ -32,15 +28,12 @@ namespace ProjectAstra.Core.Turn
             _currentPhase = BattlePhase.PlayerPhase;
         }
 
-        private BattlePhase GetNextPhase(BattlePhase current)
+        private BattlePhase GetNextPhase(BattlePhase current) => current switch
         {
-            return current switch
-            {
-                BattlePhase.PlayerPhase => BattlePhase.EnemyPhase,
-                BattlePhase.EnemyPhase => _hasAllies ? BattlePhase.AlliedPhase : BattlePhase.PlayerPhase,
-                BattlePhase.AlliedPhase => BattlePhase.PlayerPhase,
-                _ => BattlePhase.PlayerPhase
-            };
-        }
+            BattlePhase.PlayerPhase => BattlePhase.EnemyPhase,
+            BattlePhase.EnemyPhase  => _hasAllies ? BattlePhase.AlliedPhase : BattlePhase.PlayerPhase,
+            BattlePhase.AlliedPhase => BattlePhase.PlayerPhase,
+            _                       => BattlePhase.PlayerPhase
+        };
     }
 }

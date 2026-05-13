@@ -46,18 +46,6 @@ namespace ProjectAstra.Core.Tests.Turn
         }
 
         [Test]
-        public void OnPhaseChanged_FiresWithNewPhase()
-        {
-            var manager = new BattlePhaseManager(hasAllies: false);
-            BattlePhase? received = null;
-            manager.OnPhaseChanged += phase => received = phase;
-
-            manager.AdvancePhase();
-
-            Assert.AreEqual(BattlePhase.EnemyPhase, received);
-        }
-
-        [Test]
         public void Reset_ReturnsToPlayerPhase()
         {
             var manager = new BattlePhaseManager(hasAllies: false);

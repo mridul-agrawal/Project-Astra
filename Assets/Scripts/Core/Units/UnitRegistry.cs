@@ -87,6 +87,19 @@ namespace ProjectAstra.Core.Units
             }
         }
 
+        // Marks every still-actable unit of this faction as acted in one pass. Fires OnUnitActed
+        // for each — same as calling MarkActed unit by unit, just without allocating a throwaway list.
+        public void MarkAllActed(Faction faction)
+        {
+            foreach (var entry in _units)
+            {
+                if (entry.Faction != faction || !entry.CanAct) continue;
+                entry.CanAct = false;
+                entry.Unit.MarkActed();
+                OnUnitActed?.Invoke(entry.Unit);
+            }
+        }
+
         public bool AllDone(Faction faction)
         {
             foreach (var entry in _units)
