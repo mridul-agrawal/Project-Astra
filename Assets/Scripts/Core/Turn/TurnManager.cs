@@ -92,6 +92,9 @@ namespace ProjectAstra.Core.Turn
             BeginPhase();
         }
 
+        // Player-facing "end my phase" entry point — wired to the pause menu's End Turn button.
+        // No-ops outside PlayerPhase so pressing it mid-enemy-phase (the pause menu is reachable
+        // from any phase) can't accidentally cut someone else's phase short.
         public void EndPlayerPhase()
         {
             if (_phaseManager.CurrentPhase != BattlePhase.PlayerPhase) return;

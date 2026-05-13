@@ -12,7 +12,7 @@ namespace ProjectAstra.Core.Turn
 
         public BattlePhaseManager(bool hasAllies)
         {
-            _hasAllies = hasAllies;
+            SetHasAllies(hasAllies);
             _currentPhase = BattlePhase.PlayerPhase;
         }
 
