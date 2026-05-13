@@ -117,8 +117,7 @@ namespace ProjectAstra.Core.State
                 $"[GameStateManager] ReturnFromContextMenu called from invalid state: {_currentState}. " +
                 $"Requester: {RequesterName(requester)}");
 
-        private static bool IsContextMenu(GameState state) =>
-            state == GameState.SaveMenu || state == GameState.SettingsMenu;
+        private static bool IsContextMenu(GameState state) => state == GameState.SaveMenu || state == GameState.SettingsMenu;
 
         private static string RequesterName(string requester) => requester ?? "unknown";
 
