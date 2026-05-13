@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Grid
 {
+    // A single battle map's authored data: dimensions, per-layer tile IDs, unit start
+    // positions, and event triggers. Pure data — no rendering. MapRenderer is what stamps
+    // this onto Unity tilemaps; pathfinding and combat read terrain through here too.
     [CreateAssetMenu(menuName = "Project Astra/Map/Map Data")]
     public class MapData : ScriptableObject
     {
+        private const int MinDimension = 1;
+        private const int MaxDimension = 64;
+
         [SerializeField] private string _mapName;
         [SerializeField] private int _width = 4;
         [SerializeField] private int _height = 4;
@@ -57,11 +63,7 @@ namespace ProjectAstra.Core.Grid
             return FindLayer(layer);
         }
 
-        // Converts (x, y) grid coordinates to an index into the flat tile ID array (row-major order)
-        private int ToFlatIndex(int x, int y)
-        {
-            return y * _width + x;
-        }
+        private int ToFlatIndex(int x, int y) => y * _width + x;
 
         private MapLayerData? FindLayer(MapLayer layer)
         {
@@ -75,8 +77,8 @@ namespace ProjectAstra.Core.Grid
 
         private void OnValidate()
         {
-            _width = Mathf.Clamp(_width, 1, 64);
-            _height = Mathf.Clamp(_height, 1, 64);
+            _width = Mathf.Clamp(_width, MinDimension, MaxDimension);
+            _height = Mathf.Clamp(_height, MinDimension, MaxDimension);
         }
     }
 

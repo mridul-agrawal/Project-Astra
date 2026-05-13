@@ -4,10 +4,18 @@ using ProjectAstra.Core.Pathfinding;
 
 namespace ProjectAstra.Core.Grid
 {
+    // The lookup table for per-terrain combat bonuses, movement costs, and special effects
+    // (heal, capture). One row per TerrainType, indexed by enum value. Stored as a
+    // ScriptableObject so designers can tune values in the Inspector.
     [CreateAssetMenu(menuName = "Project Astra/Map/Terrain Stat Table")]
     public class TerrainStatTable : ScriptableObject
     {
-        [SerializeField] private TerrainStats[] _stats = new TerrainStats[19];
+        // Must equal the number of TerrainType enum entries. A test asserts the drift.
+        public const int ExpectedTerrainCount = 19;
+
+        [SerializeField] private TerrainStats[] _stats = new TerrainStats[ExpectedTerrainCount];
+
+        public int TerrainCount => _stats.Length;
 
         public TerrainStats GetStats(TerrainType terrain)
         {
@@ -17,27 +25,23 @@ namespace ProjectAstra.Core.Grid
             return _stats[index];
         }
 
-        /// <summary>
-        /// Returns terrain DEF and AVO bonuses. Applied uniformly across movement types —
-        /// flying units are immune to movement costs, not to terrain cover.
-        /// </summary>
+        // Terrain DEF/AVO bonuses apply uniformly across movement types — flying units are
+        // immune to movement costs (handled by Pathfinder) but not to terrain cover. The
+        // moveType parameter is kept for forward compatibility with future special cases.
         public static (int def, int avo) GetTerrainBonuses(TerrainStats stats, MovementType moveType)
         {
             return (stats.defenceBonus, stats.avoidBonus);
         }
 
-        /// <summary>Returns whether a tile is passable for a given movement type.</summary>
         public static bool IsPassable(TerrainStats stats, MovementType moveType)
         {
             return Pathfinder.GetMovementCost(stats, moveType) > 0;
         }
 
-        public int TerrainCount => _stats.Length;
-
         private void OnValidate()
         {
-            if (_stats.Length != 19)
-                Array.Resize(ref _stats, 19);
+            if (_stats.Length != ExpectedTerrainCount)
+                Array.Resize(ref _stats, ExpectedTerrainCount);
         }
     }
 

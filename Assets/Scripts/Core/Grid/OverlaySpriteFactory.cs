@@ -2,13 +2,16 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Grid
 {
+    // Generates the 16×16 hover-highlight sprite at runtime: a 1-pixel transparent border with
+    // a diagonal brightness gradient inside. Cached after first call — same sprite reused for
+    // every overlay instance.
     public static class OverlaySpriteFactory
     {
-        private static Sprite _cachedSprite;
-
         const int TextureSize = 16;
         const int Border = 1;
         const float GradientStrength = 0.22f;
+
+        private static Sprite _cachedSprite;
 
         public static Sprite GetOverlaySprite()
         {
@@ -29,23 +32,9 @@ namespace ProjectAstra.Core.Grid
             {
                 for (int x = 0; x < TextureSize; x++)
                 {
-                    bool isEdge = x < Border || x >= TextureSize - Border
-                               || y < Border || y >= TextureSize - Border;
-
-                    if (isEdge)
-                    {
-                        pixels[y * TextureSize + x] = new Color32(0, 0, 0, 0);
-                        continue;
-                    }
-
-                    float nx = (float)(x - Border) / (innerSize - 1);
-                    float ny = (float)(y - Border) / (innerSize - 1);
-
-                    // Diagonal gradient: top-left bright, bottom-right dimmer
-                    // y=0 is bottom in texture space, so invert for "top = bright"
-                    float gradient = 1.0f - GradientStrength * ((nx + (1.0f - ny)) * 0.5f);
-                    byte brightness = (byte)(Mathf.Clamp01(gradient) * 255);
-                    pixels[y * TextureSize + x] = new Color32(brightness, brightness, brightness, 255);
+                    pixels[y * TextureSize + x] = IsEdgePixel(x, y)
+                        ? new Color32(0, 0, 0, 0)
+                        : InteriorPixel(x, y, innerSize);
                 }
             }
 
@@ -58,6 +47,21 @@ namespace ProjectAstra.Core.Grid
                 new Vector2(0.5f, 0.5f),
                 TextureSize
             );
+        }
+
+        private static bool IsEdgePixel(int x, int y) =>
+            x < Border || x >= TextureSize - Border ||
+            y < Border || y >= TextureSize - Border;
+
+        // Diagonal gradient: top-left bright, bottom-right dimmer. Note y=0 is bottom in
+        // texture space, so we invert ny to make "top" the bright corner.
+        private static Color32 InteriorPixel(int x, int y, int innerSize)
+        {
+            float nx = (float)(x - Border) / (innerSize - 1);
+            float ny = (float)(y - Border) / (innerSize - 1);
+            float gradient = 1.0f - GradientStrength * ((nx + (1.0f - ny)) * 0.5f);
+            byte brightness = (byte)(Mathf.Clamp01(gradient) * 255);
+            return new Color32(brightness, brightness, brightness, 255);
         }
     }
 }
