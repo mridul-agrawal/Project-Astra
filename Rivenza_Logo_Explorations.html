@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rivenza Technologies — Logo Explorations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600&family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,700;9..144,900&family=Manrope:wght@200;300;400;500;600&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --paper: #f1ece1;
+    --paper-card: #f6f1e6;
+    --paper-deep: #e6dfcd;
+    --ink: #1a1410;
+    --ink-2: #2b211a;
+    --ink-soft: #5e524a;
+    --ink-faint: #8a7d6f;
+    --hairline: rgba(24, 20, 16, 0.16);
+    --hairline-strong: rgba(24, 20, 16, 0.42);
+    --accent: #7a2419;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-feature-settings: 'liga' 1, 'kern' 1, 'onum' 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* paper grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0.14 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 999;
+    opacity: 0.55;
+  }
+
+  /* subtle vertical scan/lay for paper warmth */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(120% 80% at 10% 0%, rgba(255, 244, 219, 0.5), transparent 60%),
+      radial-gradient(120% 80% at 100% 100%, rgba(140, 100, 60, 0.08), transparent 55%);
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  main {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 5rem 3.25rem 5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============================================================
+   PREAMBLE
+  ============================================================ */
+  .preamble {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 1.4rem;
+    margin-bottom: 5rem;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 400;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .preamble .lhs {
+    display: flex;
+    align-items: center;
+    gap: 1.6rem;
+  }
+
+  .preamble .lhs .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .preamble .corner {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink-soft);
+  }
+
+  /* ============================================================
+   HERO
+  ============================================================ */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 3rem;
+    align-items: end;
+    margin-bottom: 6rem;
+    position: relative;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    font-size: clamp(3rem, 7.2vw, 6.4rem);
+    line-height: 0.92;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+
+  .hero .intro {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 36ch;
+    justify-self: end;
+  }
+
+  .hero .intro p + p { margin-top: 0.85rem; }
+
+  .hero .intro em { color: var(--ink-2); }
+
+  .hero-meta {
+    margin-top: 2rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .hero-meta span + span::before {
+    content: '·';
+    margin: 0 0.7rem;
+    color: var(--ink-faint);
+  }
+
+  /* ============================================================
+   SECTION LABEL
+  ============================================================ */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.66rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .section-label .line {
+    flex: 1;
+    height: 1px;
+    background: var(--hairline);
+  }
+
+  /* ============================================================
+   GRID + CARDS
+  ============================================================ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--paper-card);
+    border: 1px solid var(--hairline);
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem 2.5rem 2rem;
+    min-height: 520px;
+    position: relative;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .card-id {
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.08rem;
+    color: var(--ink-2);
+    letter-spacing: 0.01em;
+  }
+
+  .card-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 0;
+    min-height: 240px;
+    position: relative;
+  }
+
+  .card-footer {
+    border-top: 1px solid var(--hairline);
+    padding-top: 1.25rem;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .favicon-frame {
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    position: relative;
+  }
+
+  .favicon-frame::after {
+    content: 'FAVICON';
+    position: absolute;
+    top: -1.4rem;
+    left: 0;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+  }
+
+  .favicon-frame svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .card-desc {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.96rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .card-desc em { color: var(--ink-2); font-style: italic; }
+
+  /* ============================================================
+   FOOTER
+  ============================================================ */
+  .footer {
+    margin-top: 4.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .footer .rhs span + span::before {
+    content: '·';
+    margin: 0 0.7rem;
+  }
+
+  /* ============================================================
+   WORDMARK STYLES — PER CONCEPT
+  ============================================================ */
+
+  /* —————————————————————————————————————— I + II : INK DROP */
+  .wm-ink {
+    font-family: 'EB Garamond', serif;
+    font-weight: 500;
+    font-size: 4.6rem;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    line-height: 1;
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .wm-ink .i-slot {
+    position: relative;
+    display: inline-block;
+    width: 0.32em;
+    text-align: center;
+  }
+
+  .wm-ink .i-slot::after {
+    /* the i stem, drawn as a tiny pseudo-element so we control everything */
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0.16em;
+    width: 0.085em;
+    height: 0.68em;
+    background: var(--ink);
+    transform: translateX(-50%);
+    border-radius: 0.04em;
+  }
+
+  /* the ink dot is positioned above the stem */
+  .wm-ink .ink-dot {
+    position: absolute;
+    left: 50%;
+    top: -0.45em;
+    transform: translateX(-50%);
+    width: 0.55em;
+    height: 0.55em;
+  }
+
+  .wm-ink-tagline {
+    display: block;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 300;
+    font-size: 0.62rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 1.4rem;
+    text-align: center;
+    padding-left: 0.5em; /* compensate the trailing letter-spacing */
+  }
+
+  .ink-wrap { text-align: center; }
+
+  /* —————————————————————————————————————— III : VĀSTU GLYPH */
+  .wm-vastu {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+  }
+
+  .wm-vastu .glyph {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+  }
+
+  .wm-vastu .text {
+    font-family: 'Spectral', serif;
+    font-weight: 300;
+    font-size: 3rem;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    line-height: 1;
+  }
+
+  .wm-vastu .text-cluster { display: flex; flex-direction: column; }
+
+  .wm-vastu .text-tag {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 300;
+    font-size: 0.56rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-top: 0.55rem;
+    padding-left: 2px;
+  }
+
+  /* —————————————————————————————————————— IV : COLOPHON */
+  .colophon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .colophon-svg {
+    width: 220px;
+    height: 220px;
+  }
+
+  /* —————————————————————————————————————— V : DEVANAGARI R */
+  .devanagari-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+  }
+
+  .devanagari-glyph {
+    width: 130px;
+    height: 130px;
+  }
+
+  .devanagari-wordmark {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    font-size: 1.55rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  /* —————————————————————————————————————— VI : DISPLAY WORDMARK */
+  .wm-display {
+    text-align: center;
+  }
+
+  .wm-display .top {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-variation-settings: 'opsz' 144, 'SOFT' 20;
+    font-size: 5.2rem;
+    letter-spacing: -0.045em;
+    text-transform: uppercase;
+    color: var(--ink);
+    line-height: 0.88;
+    /* tighten optical kerning between RIVENZA letters */
+  }
+
+  .wm-display .bottom {
+    margin-top: 1.3rem;
+    font-family: 'Manrope', sans-serif;
+    font-weight: 300;
+    font-size: 0.6rem;
+    letter-spacing: 0.55em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding-left: 0.55em;
+  }
+
+  /* —————————————————————————————————————— VII : INSCRIBED */
+  .inscribed-wrap {
+    text-align: center;
+    padding: 2rem 2rem;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(60, 45, 35, 0.06), transparent 70%);
+  }
+
+  .inscribed {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-variation-settings: 'opsz' 144, 'SOFT' 0;
+    font-size: 4.6rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #2d231d;
+    line-height: 1;
+    text-shadow:
+      -1px -1px 0 rgba(0, 0, 0, 0.55),
+       1px  1px 0 rgba(255, 245, 225, 0.7),
+       0   0   1px rgba(0, 0, 0, 0.2);
+  }
+
+  .inscribed-rule {
+    height: 1px;
+    width: 60%;
+    background: linear-gradient(90deg, transparent, var(--ink-faint), transparent);
+    margin: 1.2rem auto 0.9rem;
+  }
+
+  .inscribed-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+
+  /* —————————————————————————————————————— VIII : COUNTERPOINT */
+  .counterpoint-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+  }
+
+  .counterpoint-glyph {
+    width: 132px;
+    height: 132px;
+  }
+
+  .counterpoint-wordmark {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding-left: 0.42em;
+  }
+
+  .counterpoint-tag {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+    margin-top: -0.5rem;
+  }
+
+  /* favicon ink dot scaling helper */
+  .fav-ink-dot { width: 100%; height: 100%; }
+
+  /* ============================================================
+   ANIMATIONS
+  ============================================================ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .preamble,
+  .hero,
+  .section-label,
+  .card,
+  .footer {
+    animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+
+  .preamble { animation-delay: 0.05s; }
+  .hero { animation-delay: 0.18s; }
+  .section-label { animation-delay: 0.36s; }
+  .card:nth-child(1) { animation-delay: 0.46s; }
+  .card:nth-child(2) { animation-delay: 0.54s; }
+  .card:nth-child(3) { animation-delay: 0.62s; }
+  .card:nth-child(4) { animation-delay: 0.70s; }
+  .card:nth-child(5) { animation-delay: 0.78s; }
+  .card:nth-child(6) { animation-delay: 0.86s; }
+  .card:nth-child(7) { animation-delay: 0.94s; }
+  .card:nth-child(8) { animation-delay: 1.02s; }
+  .footer { animation-delay: 1.20s; }
+
+  /* small hover lift for inspectability */
+  .card { transition: border-color 0.4s ease, transform 0.4s ease; }
+  .card:hover { border-color: var(--hairline-strong); }
+
+  /* ============================================================
+   RESPONSIVE
+  ============================================================ */
+  @media (max-width: 980px) {
+    main { padding: 3rem 1.4rem; }
+    .hero { grid-template-columns: 1fr; gap: 2rem; }
+    .hero .intro { justify-self: start; }
+    .grid { grid-template-columns: 1fr; }
+    .preamble { flex-direction: column; gap: 1rem; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== SHARED SVG DEFS ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Ink bleed: irregular edge -->
+    <filter id="ink-bleed" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.4"/>
+    </filter>
+
+    <!-- Ink bloom: irregular edge + soft halo -->
+    <filter id="ink-bloom" x="-40%" y="-40%" width="180%" height="180%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.32" numOctaves="3" seed="9" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4.4" result="dx"/>
+      <feGaussianBlur in="dx" stdDeviation="1.3" result="blurred"/>
+      <feMerge>
+        <feMergeNode in="blurred"/>
+        <feMergeNode in="dx"/>
+      </feMerge>
+    </filter>
+
+    <!-- Tiny scratchy noise used in inscribed text edge -->
+    <filter id="paper-soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="3" numOctaves="1" seed="2" result="t"/>
+      <feDisplacementMap in="SourceGraphic" in2="t" scale="0.6"/>
+    </filter>
+
+    <!-- Ink dot path (used multiple places) -->
+    <symbol id="dot-pooled" viewBox="0 0 100 100">
+      <path
+        d="M50 8
+           C72 7 91 24 92 47
+           C93 72 76 91 53 92
+           C29 93 11 75 9 51
+           C7 28 27 9 50 8 Z"
+        fill="#1a1410"
+        filter="url(#ink-bleed)" />
+    </symbol>
+
+    <symbol id="dot-bloom" viewBox="0 0 100 100">
+      <!-- soft halo behind -->
+      <path
+        d="M50 6
+           C76 6 95 24 96 50
+           C97 76 75 95 49 95
+           C25 95 6 76 6 51
+           C5 26 26 6 50 6 Z"
+        fill="#1a1410"
+        opacity="0.18"
+        filter="url(#ink-bloom)" />
+      <!-- main dot -->
+      <path
+        d="M50 12
+           C70 11 88 26 89 48
+           C90 70 73 87 51 88
+           C28 89 11 73 11 51
+           C11 30 28 13 50 12 Z"
+        fill="#1a1410"
+        filter="url(#ink-bloom)" />
+    </symbol>
+  </defs>
+</svg>
+
+<main>
+
+  <!-- PREAMBLE -->
+  <div class="preamble">
+    <div class="lhs">
+      <span>Rivenza Technologies</span>
+      <span class="dot"></span>
+      <span>Identity · Round I</span>
+      <span class="dot"></span>
+      <span>Internal Review</span>
+    </div>
+    <div class="corner">M·M·X·X·V·I</div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>
+      Eight marks<br />
+      for a <em>studio</em><br />
+      <em>in waiting.</em>
+    </h1>
+
+    <div>
+      <div class="intro">
+        <p>Concept directions for the corporate identity of a craft-led game studio, beginning with <em>Project&nbsp;Astra</em>.</p>
+        <p>The mark should age well, accrue meaning through a body of work, and carry a quiet Indian sensibility without leaning on stereotype.</p>
+        <p>None of these are final. The right answer should become visible only after the wrong ones.</p>
+      </div>
+      <div class="hero-meta">
+        <span>Eight directions</span>
+        <span>One studio</span>
+        <span>Pre-launch</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION LABEL -->
+  <div class="section-label">
+    <span>The Directions</span>
+    <span class="line"></span>
+    <span>I — VIII</span>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid">
+
+    <!-- ============================================================
+       I. THE FIRST INK DROP — POOLED
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">I.</span>
+        <span class="card-name">The First Ink Drop — Pooled</span>
+      </div>
+      <div class="card-stage">
+        <div class="ink-wrap">
+          <span class="wm-ink">
+            r<span class="i-slot"><svg class="ink-dot" viewBox="0 0 100 100" aria-hidden="true"><use href="#dot-pooled" /></svg></span>venza
+          </span>
+          <span class="wm-ink-tagline">Technologies</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg class="fav-ink-dot" viewBox="0 0 100 100" aria-hidden="true"><use href="#dot-pooled" /></svg>
+        </div>
+        <p class="card-desc">A single hand-painted dot replaces the tittle of the <em>i</em>. The studio's first ink-drop on a clean page; every game shipped is another drop in the same hand.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       II. THE FIRST INK DROP — BLOOM
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">II.</span>
+        <span class="card-name">The First Ink Drop — Bloom</span>
+      </div>
+      <div class="card-stage">
+        <div class="ink-wrap">
+          <span class="wm-ink">
+            r<span class="i-slot"><svg class="ink-dot" viewBox="0 0 100 100" aria-hidden="true"><use href="#dot-bloom" /></svg></span>venza
+          </span>
+          <span class="wm-ink-tagline">Technologies</span>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg class="fav-ink-dot" viewBox="0 0 100 100" aria-hidden="true"><use href="#dot-bloom" /></svg>
+        </div>
+        <p class="card-desc">Same gesture, allowed to bleed. A faint halo surrounds the brush mark — ink hitting fibrous paper. Warmer and more handmade than I; reads as <em>just-made</em>.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       III. THE VĀSTU GLYPH
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">III.</span>
+        <span class="card-name">The Vāstu Glyph</span>
+      </div>
+      <div class="card-stage">
+        <div class="wm-vastu">
+          <svg class="glyph" viewBox="0 0 100 100" aria-hidden="true">
+            <!-- outer square -->
+            <rect x="6" y="6" width="88" height="88" fill="none" stroke="#1a1410" stroke-width="1.6"/>
+            <!-- 4x4 internal grid hairlines -->
+            <g stroke="#1a1410" stroke-width="0.5" opacity="0.85">
+              <line x1="28" y1="6" x2="28" y2="94"/>
+              <line x1="50" y1="6" x2="50" y2="94"/>
+              <line x1="72" y1="6" x2="72" y2="94"/>
+              <line x1="6" y1="28" x2="94" y2="28"/>
+              <line x1="6" y1="50" x2="94" y2="50"/>
+              <line x1="6" y1="72" x2="94" y2="72"/>
+            </g>
+            <!-- center bindu (Brahma sthāna) -->
+            <rect x="39" y="39" width="22" height="22" fill="#1a1410"/>
+          </svg>
+          <div class="text-cluster">
+            <span class="text">Rivenza</span>
+            <span class="text-tag">Technologies</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="6" y="6" width="88" height="88" fill="none" stroke="#1a1410" stroke-width="2"/>
+            <g stroke="#1a1410" stroke-width="0.8" opacity="0.85">
+              <line x1="28" y1="6" x2="28" y2="94"/>
+              <line x1="50" y1="6" x2="50" y2="94"/>
+              <line x1="72" y1="6" x2="72" y2="94"/>
+              <line x1="6" y1="28" x2="94" y2="28"/>
+              <line x1="6" y1="50" x2="94" y2="50"/>
+              <line x1="6" y1="72" x2="94" y2="72"/>
+            </g>
+            <rect x="39" y="39" width="22" height="22" fill="#1a1410"/>
+          </svg>
+        </div>
+        <p class="card-desc">The skeleton of a vāstu purusha mandala — a 4×4 grid with the central <em>brahma sthāna</em> marked solid. Reads as Vignelli-clean to a Western eye; reads as <em>yantra</em> to anyone who knows.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       IV. THE COLOPHON
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">IV.</span>
+        <span class="card-name">The Colophon</span>
+      </div>
+      <div class="card-stage">
+        <div class="colophon-wrap">
+          <svg class="colophon-svg" viewBox="0 0 220 220" aria-hidden="true">
+            <defs>
+              <path id="colophon-circle-top"
+                d="M 110,110 m -82,0 a 82,82 0 1,1 164,0" />
+              <path id="colophon-circle-bottom"
+                d="M 28,110 a 82,82 0 1,0 164,0" />
+            </defs>
+            <!-- two concentric rings -->
+            <circle cx="110" cy="110" r="98" fill="none" stroke="#1a1410" stroke-width="1"/>
+            <circle cx="110" cy="110" r="92" fill="none" stroke="#1a1410" stroke-width="1.6"/>
+            <circle cx="110" cy="110" r="78" fill="none" stroke="#1a1410" stroke-width="0.5"/>
+
+            <!-- text on top of circle -->
+            <text font-family="Cormorant Garamond" font-size="13" letter-spacing="6" fill="#1a1410" font-weight="500">
+              <textPath href="#colophon-circle-top" startOffset="50%" text-anchor="middle">
+                RIVENZA · TECHNOLOGIES
+              </textPath>
+            </text>
+
+            <!-- text on bottom of circle -->
+            <text font-family="Cormorant Garamond" font-size="11" letter-spacing="8" fill="#1a1410" font-style="italic">
+              <textPath href="#colophon-circle-bottom" startOffset="50%" text-anchor="middle">
+                established · MMXXVI
+              </textPath>
+            </text>
+
+            <!-- center mark: small bindu -->
+            <circle cx="110" cy="110" r="4" fill="#1a1410"/>
+            <!-- four cardinal tickmarks -->
+            <line x1="110" y1="22" x2="110" y2="32" stroke="#1a1410" stroke-width="1.2"/>
+            <line x1="110" y1="188" x2="110" y2="198" stroke="#1a1410" stroke-width="1.2"/>
+            <line x1="22" y1="110" x2="32" y2="110" stroke="#1a1410" stroke-width="1.2"/>
+            <line x1="188" y1="110" x2="198" y2="110" stroke="#1a1410" stroke-width="1.2"/>
+          </svg>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#1a1410" stroke-width="3"/>
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#1a1410" stroke-width="1"/>
+            <circle cx="50" cy="50" r="3.5" fill="#1a1410"/>
+          </svg>
+        </div>
+        <p class="card-desc">Treats Rivenza as a publisher's imprint — a sealed colophon in the lineage of Penguin Classics, NYRB, the Modern Library. Signals: <em>we publish games for the long haul.</em></p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       V. THE DEVANAGARI R
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">V.</span>
+        <span class="card-name">The Devanagari R</span>
+      </div>
+      <div class="card-stage">
+        <div class="devanagari-wrap">
+          <svg class="devanagari-glyph" viewBox="0 0 130 140" aria-hidden="true">
+            <!-- shirorekha echo: thin bar slightly extending left of stem -->
+            <rect x="8" y="12" width="86" height="3.4" fill="#1a1410"/>
+
+            <!-- main R body: stem + bowl + leg as filled forms -->
+            <!-- stem -->
+            <rect x="22" y="14" width="9" height="116" fill="#1a1410"/>
+
+            <!-- bowl (outer fill) -->
+            <path d="
+              M 31 14
+              L 68 14
+              Q 92 14 92 40
+              Q 92 66 68 66
+              L 31 66
+              Z
+            " fill="#1a1410"/>
+
+            <!-- bowl (inner cutout — paper colour) -->
+            <path d="
+              M 31 22
+              L 66 22
+              Q 84 22 84 40
+              Q 84 58 66 58
+              L 31 58
+              Z
+            " fill="#f6f1e6"/>
+
+            <!-- leg -->
+            <path d="
+              M 56 62
+              L 99 130
+              L 87 130
+              L 47 66
+              Z
+            " fill="#1a1410"/>
+          </svg>
+          <div class="devanagari-wordmark">Rivenza</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="10" y="13" width="68" height="3" fill="#1a1410"/>
+            <rect x="20" y="14" width="8" height="74" fill="#1a1410"/>
+            <path d="M 28 14 L 56 14 Q 74 14 74 32 Q 74 50 56 50 L 28 50 Z" fill="#1a1410"/>
+            <path d="M 28 20 L 54 20 Q 68 20 68 32 Q 68 44 54 44 L 28 44 Z" fill="#f1ece1"/>
+            <path d="M 46 47 L 80 88 L 70 88 L 38 50 Z" fill="#1a1410"/>
+          </svg>
+        </div>
+        <p class="card-desc">A Latin R built on Devanagari structural DNA — a top bar that overhangs the stem like a <em>shirorekha</em>, a more angular bowl, a wedge-cut leg. Latin to read, Indian to construct.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       VI. THE DISPLAY WORDMARK
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">VI.</span>
+        <span class="card-name">The Display Wordmark</span>
+      </div>
+      <div class="card-stage">
+        <div class="wm-display">
+          <div class="top">Rivenza</div>
+          <div class="bottom">Technologies</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <text x="50" y="76" text-anchor="middle"
+              font-family="Fraunces" font-weight="900" font-size="84"
+              letter-spacing="-3" fill="#1a1410"
+              style="font-variation-settings: 'opsz' 144, 'SOFT' 20;">
+              R
+            </text>
+          </svg>
+        </div>
+        <p class="card-desc">No symbol. The wordmark alone, set in a heavy display serif — Fraunces at its most monumental. In the lineage of <em>A24</em>, <em>Criterion</em>, <em>Annapurna</em>. Restraint as the statement.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       VII. THE INSCRIBED
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">VII.</span>
+        <span class="card-name">The Inscribed</span>
+      </div>
+      <div class="card-stage">
+        <div class="inscribed-wrap">
+          <div class="inscribed">Rivenza</div>
+          <div class="inscribed-rule"></div>
+          <div class="inscribed-sub">technologies · est. MMXXVI</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="0" y="0" width="100" height="100" fill="#2d231d"/>
+            <text x="50" y="72" text-anchor="middle"
+              font-family="Fraunces" font-weight="700" font-size="74"
+              letter-spacing="2" fill="#0d0805"
+              style="font-variation-settings: 'opsz' 144;">
+              R
+            </text>
+            <text x="50" y="72" text-anchor="middle"
+              font-family="Fraunces" font-weight="700" font-size="74"
+              letter-spacing="2" fill="rgba(255,245,220,0.18)"
+              transform="translate(1,1)"
+              style="font-variation-settings: 'opsz' 144;">
+              R
+            </text>
+          </svg>
+        </div>
+        <p class="card-desc">Lettering pressed into the surface — light from above catching the lower edge of each carve. FromSoftware energy without iconography. Reads as <em>ancient</em>, but is just type and shadow.</p>
+      </div>
+    </article>
+
+    <!-- ============================================================
+       VIII. THE COUNTERPOINT
+    ============================================================ -->
+    <article class="card">
+      <div class="card-header">
+        <span class="card-id">VIII.</span>
+        <span class="card-name">The Counterpoint</span>
+      </div>
+      <div class="card-stage">
+        <div class="counterpoint-wrap">
+          <svg class="counterpoint-glyph" viewBox="0 0 132 132" aria-hidden="true">
+            <!-- solid block -->
+            <rect x="8" y="8" width="116" height="116" fill="#1a1410"/>
+            <!-- R cut out in paper -->
+            <!-- stem -->
+            <rect x="32" y="26" width="14" height="80" fill="#f6f1e6"/>
+            <!-- bowl outer -->
+            <path d="
+              M 46 26
+              L 78 26
+              Q 102 26 102 50
+              Q 102 72 78 72
+              L 46 72
+              Z
+            " fill="#f6f1e6"/>
+            <!-- bowl counter cut back to ink -->
+            <path d="
+              M 46 38
+              L 76 38
+              Q 90 38 90 50
+              Q 90 60 76 60
+              L 46 60
+              Z
+            " fill="#1a1410"/>
+            <!-- leg cut paper -->
+            <path d="
+              M 64 66
+              L 104 106
+              L 90 106
+              L 50 66
+              Z
+            " fill="#f6f1e6"/>
+          </svg>
+          <div class="counterpoint-wordmark">Rivenza</div>
+          <div class="counterpoint-tag">Technologies</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="favicon-frame">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="0" y="0" width="100" height="100" fill="#1a1410"/>
+            <rect x="22" y="18" width="11" height="62" fill="#f1ece1"/>
+            <path d="M 33 18 L 60 18 Q 80 18 80 38 Q 80 56 60 56 L 33 56 Z" fill="#f1ece1"/>
+            <path d="M 33 28 L 58 28 Q 70 28 70 38 Q 70 48 58 48 L 33 48 Z" fill="#1a1410"/>
+            <path d="M 48 50 L 82 82 L 70 82 L 38 56 Z" fill="#f1ece1"/>
+          </svg>
+        </div>
+        <p class="card-desc">A mark-led counterpoint to the typography-led directions: a heavy black block with the R carved out as paper. Sculptural, modern, confident — <em>Crouwel</em> meets <em>Pentagram</em>.</p>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="lhs">Rivenza Technologies — Identity Concept Review I</div>
+    <div class="rhs">
+      <span>Internal</span>
+      <span>Not for distribution</span>
+      <span>MMXXVI</span>
+    </div>
+  </footer>
+
+</main>
+</body>
+</html>
