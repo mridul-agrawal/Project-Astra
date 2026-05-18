@@ -16,7 +16,7 @@ namespace ProjectAstra.Core.Input
 
         private const int DirectionCount = 4;
 
-        private static readonly Vector2Int[] Vectors =
+        private static readonly Vector2Int[] DirectionVectors =
         {
             Vector2Int.up,    // CursorDirection.Up
             Vector2Int.down,  // CursorDirection.Down
@@ -41,53 +41,53 @@ namespace ProjectAstra.Core.Input
 
         public void Press(CursorDirection direction)
         {
-            int dir = (int)direction;
-            _held[dir] = true;
-            _timers[dir] = 0f;
-            _inInitialDelay[dir] = true;
-            CursorMoveTriggered?.Invoke(Vectors[dir]);
+            int directionIndex = (int)direction;
+            _held[directionIndex] = true;
+            _timers[directionIndex] = 0f;
+            _inInitialDelay[directionIndex] = true;
+            CursorMoveTriggered?.Invoke(DirectionVectors[directionIndex]);
         }
 
         public void Release(CursorDirection direction)
         {
-            int dir = (int)direction;
-            _held[dir] = false;
-            _timers[dir] = 0f;
-            _inInitialDelay[dir] = false;
+            ClearSlot((int)direction);
         }
 
         public void Tick(float deltaTime, bool fastCursorHeld)
         {
             float repeatRate = fastCursorHeld ? _fastRepeatRate : _repeatRate;
-            for (int dir = 0; dir < DirectionCount; dir++)
+            for (int directionIndex = 0; directionIndex < DirectionCount; directionIndex++)
             {
-                if (_held[dir])
-                    Advance(dir, deltaTime, repeatRate);
-            }
-        }
-
-        public void Reset()
-        {
-            for (int dir = 0; dir < DirectionCount; dir++)
-            {
-                _held[dir] = false;
-                _timers[dir] = 0f;
-                _inInitialDelay[dir] = false;
+                if (_held[directionIndex])
+                    Advance(directionIndex, deltaTime, repeatRate);
             }
         }
 
         // Carries fractional overshoot into the next tick so repeats stay on rate when frame time jitters.
-        private void Advance(int dir, float deltaTime, float repeatRate)
+        private void Advance(int directionIndex, float deltaTime, float repeatRate)
         {
-            _timers[dir] += deltaTime;
+            _timers[directionIndex] += deltaTime;
 
-            bool inInitialDelay = _inInitialDelay[dir];
+            bool inInitialDelay = _inInitialDelay[directionIndex];
             float threshold = inInitialDelay ? _initialDelay : repeatRate;
-            if (_timers[dir] < threshold) return;
+            if (_timers[directionIndex] < threshold) return;
 
-            _timers[dir] = inInitialDelay ? 0f : _timers[dir] - repeatRate;
-            _inInitialDelay[dir] = false;
-            CursorMoveTriggered?.Invoke(Vectors[dir]);
+            _timers[directionIndex] = inInitialDelay ? 0f : _timers[directionIndex] - repeatRate;
+            _inInitialDelay[directionIndex] = false;
+            CursorMoveTriggered?.Invoke(DirectionVectors[directionIndex]);
+        }
+
+        public void Reset()
+        {
+            for (int directionIndex = 0; directionIndex < DirectionCount; directionIndex++)
+                ClearSlot(directionIndex);
+        }
+
+        private void ClearSlot(int directionIndex)
+        {
+            _held[directionIndex] = false;
+            _timers[directionIndex] = 0f;
+            _inInitialDelay[directionIndex] = false;
         }
     }
 }
