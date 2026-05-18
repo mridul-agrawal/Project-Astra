@@ -12,8 +12,8 @@ namespace ProjectAstra.Core.Input
     // Singleton bridge between Unity's Input System and game-level events. Three jobs:
     //   1. Translate raw action callbacks into typed events (OnCursorMove, OnConfirm, ...).
     //   2. Filter actions by the current GameState (no Confirm during CombatAnimation, etc.).
-    //   3. Implement DAS (Delayed Auto-Shift) for held cursor directions, and resolve
-    //      same-frame Confirm/Cancel conflicts (Cancel wins).
+    //   3. Drive a DelayedAutoShift sub-controller for held cursor directions, and
+    //      resolve same-frame Confirm/Cancel conflicts (Cancel wins).
     public class InputManager : MonoBehaviour
     {
         public static InputManager Instance { get; private set; }
@@ -46,21 +46,7 @@ namespace ProjectAstra.Core.Input
 
         private InputActionMap _gameplayMap;
         private GameState _currentState;
-
-        private const int DirectionCount = 4;
-        private const int DirUp = 0, DirDown = 1, DirLeft = 2, DirRight = 3;
-
-        private static readonly Vector2Int[] Directions =
-        {
-            Vector2Int.up,    // DirUp
-            Vector2Int.down,  // DirDown
-            Vector2Int.left,  // DirLeft
-            Vector2Int.right  // DirRight
-        };
-
-        private readonly float[] _dasTimers = new float[DirectionCount];
-        private readonly bool[] _dasInInitialDelay = new bool[DirectionCount];
-        private readonly bool[] _directionHeld = new bool[DirectionCount];
+        private DelayedAutoShift _das;
 
         private bool _confirmPendingThisFrame;
         private bool _cancelPendingThisFrame;
@@ -68,7 +54,14 @@ namespace ProjectAstra.Core.Input
         private void Awake()
         {
             CreateSingleton();
+            CreateDelayedAutoShift();
             InitializeInputActionMap();
+        }
+
+        private void CreateDelayedAutoShift()
+        {
+            _das = new DelayedAutoShift(_dasInitialDelay, _dasRepeatRate, _dasFastRepeatRate);
+            _das.CursorMoveTriggered += direction => OnCursorMove?.Invoke(direction);
         }
 
         private void OnEnable()
@@ -95,7 +88,7 @@ namespace ProjectAstra.Core.Input
 
         private void Update()
         {
-            UpdateDAS();
+            _das.Tick(Time.deltaTime, IsFastCursorHeld);
             ResolveSameFramePriority();
         }
 
@@ -133,7 +126,9 @@ namespace ProjectAstra.Core.Input
         {
             _currentState = args.NewState;
             ApplyContextFilter(_currentState);
-            ResetDAS();
+            _das.Reset();
+            // Fast-cursor is an InputManager input, not DAS state — clear it here, not inside Reset.
+            IsFastCursorHeld = false;
         }
 
         private void ApplyContextFilter(GameState state)
@@ -174,15 +169,15 @@ namespace ProjectAstra.Core.Input
 
         private void BindActions()
         {
-            Bind("CursorUp",    _ => StartDirection(DirUp));
-            Bind("CursorDown",  _ => StartDirection(DirDown));
-            Bind("CursorLeft",  _ => StartDirection(DirLeft));
-            Bind("CursorRight", _ => StartDirection(DirRight));
+            Bind("CursorUp",    _ => _das.Press(CursorDirection.Up));
+            Bind("CursorDown",  _ => _das.Press(CursorDirection.Down));
+            Bind("CursorLeft",  _ => _das.Press(CursorDirection.Left));
+            Bind("CursorRight", _ => _das.Press(CursorDirection.Right));
 
-            BindCancel("CursorUp",    _ => StopDirection(DirUp));
-            BindCancel("CursorDown",  _ => StopDirection(DirDown));
-            BindCancel("CursorLeft",  _ => StopDirection(DirLeft));
-            BindCancel("CursorRight", _ => StopDirection(DirRight));
+            BindCancel("CursorUp",    _ => _das.Release(CursorDirection.Up));
+            BindCancel("CursorDown",  _ => _das.Release(CursorDirection.Down));
+            BindCancel("CursorLeft",  _ => _das.Release(CursorDirection.Left));
+            BindCancel("CursorRight", _ => _das.Release(CursorDirection.Right));
 
             Bind("Confirm", _ => _confirmPendingThisFrame = true);
             Bind("Cancel",  _ => _cancelPendingThisFrame = true);
@@ -215,60 +210,6 @@ namespace ProjectAstra.Core.Input
         {
             var action = _gameplayMap.FindAction(actionName);
             if (action != null) action.canceled += callback;
-        }
-
-        #endregion
-
-        #region DAS (Delayed Auto-Shift)
-
-        private void StartDirection(int dir)
-        {
-            _directionHeld[dir] = true;
-            _dasTimers[dir] = 0f;
-            _dasInInitialDelay[dir] = true;
-            OnCursorMove?.Invoke(Directions[dir]);
-        }
-
-        private void StopDirection(int dir)
-        {
-            _directionHeld[dir] = false;
-            _dasTimers[dir] = 0f;
-            _dasInInitialDelay[dir] = false;
-        }
-
-        private void UpdateDAS()
-        {
-            float repeatRate = IsFastCursorHeld ? _dasFastRepeatRate : _dasRepeatRate;
-            for (int dir = 0; dir < DirectionCount; dir++)
-            {
-                if (_directionHeld[dir])
-                    AdvanceDAS(dir, repeatRate);
-            }
-        }
-
-        // Carries fractional overshoot into the next tick so repeats stay on rate when frame time jitters.
-        private void AdvanceDAS(int dir, float repeatRate)
-        {
-            _dasTimers[dir] += Time.deltaTime;
-
-            bool inInitialDelay = _dasInInitialDelay[dir];
-            float threshold = inInitialDelay ? _dasInitialDelay : repeatRate;
-            if (_dasTimers[dir] < threshold) return;
-
-            _dasTimers[dir] = inInitialDelay ? 0f : _dasTimers[dir] - repeatRate;
-            _dasInInitialDelay[dir] = false;
-            OnCursorMove?.Invoke(Directions[dir]);
-        }
-
-        private void ResetDAS()
-        {
-            for (int dir = 0; dir < DirectionCount; dir++)
-            {
-                _directionHeld[dir] = false;
-                _dasTimers[dir] = 0f;
-                _dasInInitialDelay[dir] = false;
-            }
-            IsFastCursorHeld = false;
         }
 
         #endregion
