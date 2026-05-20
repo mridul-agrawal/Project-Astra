@@ -77,6 +77,7 @@ namespace ProjectAstra.Core.Cursor
         private StaffExecutor _staffExecutor;
         private TargetingFlow _targetingFlow;
         private ActionMenuFlow _actionMenuFlow;
+        private CantoFlow _cantoFlow;
 
         // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
@@ -89,9 +90,6 @@ namespace ProjectAstra.Core.Cursor
         private Pathfinder.ReachabilityResult _currentReachability;
         private Vector2Int _committedDestination;
 
-        // Canto — cavalry/flying units re-enter movement mode after a primary action.
-        private bool _isCantoMode;
-        private int _preCantoMovementPoints;
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -125,6 +123,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeStaffExecutor();
             InitializeTargetingFlow();
             InitializeActionMenuFlow();
+            InitializeCantoFlow();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -224,7 +223,7 @@ namespace ProjectAstra.Core.Cursor
             switch (_currentMode)
             {
                 case CursorMode.UnitSelected:
-                    if (_isCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
+                    if (_cantoFlow.IsCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
                     DeselectUnit();
                     break;
                 case CursorMode.Targeting:
@@ -297,6 +296,11 @@ namespace ProjectAstra.Core.Cursor
                 _actionMenuUI, _inventoryMenuUI, _confirmDialogUI,
                 _tradeUI, _convoyUI, _toastUI,
                 _targetingFlow, _staffExecutor, this);
+        }
+
+        private void InitializeCantoFlow()
+        {
+            _cantoFlow = new CantoFlow(this, _actionMenuFlow);
         }
 
         private void AddListenersToInputEvents()
@@ -395,6 +399,15 @@ namespace ProjectAstra.Core.Cursor
         // movement set).
         internal void SetValidMoveTiles(HashSet<Vector2Int> tiles) => _validMoveTiles = tiles;
 
+        // Lets CantoFlow add the unit's current tile to the allowed-set so a
+        // "stay put" confirm during canto is legal even if reachability
+        // wouldn't otherwise include it.
+        internal void EnsureMoveTileAllowed(Vector2Int tile)
+        {
+            if (_validMoveTiles != null && !_validMoveTiles.Contains(tile))
+                _validMoveTiles.Add(tile);
+        }
+
         // --- Cursor movement details ---
 
         private void UpdatePathArrow()
@@ -450,7 +463,7 @@ namespace ProjectAstra.Core.Cursor
             return !unit.hasActed;
         }
 
-        private void EnterUnitSelectedMode()
+        internal void EnterUnitSelectedMode()
         {
             if (_pathfindingService == null || _selectedUnit == null) return;
 
@@ -510,7 +523,7 @@ namespace ProjectAstra.Core.Cursor
 
         private void OnMovementComplete()
         {
-            if (_isCantoMode)
+            if (_cantoFlow.IsCantoMode)
             {
                 FinalizeCanto();
                 return;
@@ -553,7 +566,7 @@ namespace ProjectAstra.Core.Cursor
 
         private void ResetUnitTilesMode()
         {
-            _isCantoMode = false;
+            _cantoFlow?.ResetState();
             _actionMenuFlow?.ClearLastChoice();
             _selectedUnit = null;
             _validMoveTiles = null;
@@ -570,51 +583,19 @@ namespace ProjectAstra.Core.Cursor
             ShowActionMenu();
         }
 
-        // --- Canto ---
+        // --- Post-action dispatch ---
 
+        // Action's onComplete callback. Either canto fires (giving the unit
+        // a second move-only round) or the turn ends.
         private void CompleteAction()
         {
-            if (TryEnterCanto()) return;
+            if (_cantoFlow.TryEnterCanto(_selectedUnit, _currentReachability, _validMoveTiles)) return;
             FinishSelectedUnitTurn();
-        }
-
-        private bool TryEnterCanto()
-        {
-            if (_isCantoMode) return false;
-            if (_selectedUnit == null) return false;
-            var lastChoice = _actionMenuFlow?.LastChoice;
-            if (lastChoice == ActionChoice.Wait || lastChoice == null) return false;
-
-            var cls = _selectedUnit.UnitInstance?.CurrentClass;
-            if (cls == null || !cls.HasCanto) return false;
-
-            int costPaid = _currentReachability.CostMap != null
-                && _currentReachability.CostMap.TryGetValue(_selectedUnit.gridPosition, out var c) ? c : 0;
-            int remaining = _selectedUnit.movementPoints - costPaid;
-            if (remaining <= 0) return false;
-
-            _preCantoMovementPoints = _selectedUnit.movementPoints;
-            _selectedUnit.movementPoints = remaining;
-            _isCantoMode = true;
-
-            EnterUnitSelectedMode();
-
-            // The unit's own tile is a legal "stay put" exit during canto, so
-            // make sure the constraint set includes it even when reachability
-            // would otherwise exclude it.
-            if (_validMoveTiles != null && !_validMoveTiles.Contains(_selectedUnit.gridPosition))
-                _validMoveTiles.Add(_selectedUnit.gridPosition);
-
-            return true;
         }
 
         private void FinalizeCanto()
         {
-            _isCantoMode = false;
-            if (_selectedUnit != null)
-                _selectedUnit.movementPoints = _preCantoMovementPoints;
-            _actionMenuFlow?.ClearLastChoice();
-
+            _cantoFlow.FinalizeCanto(_selectedUnit);
             FinishSelectedUnitTurn();
         }
 
