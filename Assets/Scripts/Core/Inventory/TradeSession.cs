@@ -2,22 +2,21 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Manages a trade between two units by operating on deep copies of their inventories.
-    /// All swap/give/take operations mutate the working copies only. Call Commit() to
-    /// apply changes to the real inventories, or simply discard this object to cancel.
-    /// </summary>
+    // Manages a trade between two units by operating on deep copies of their
+    // inventories. Swap/give/take only mutate the working copies — call
+    // Commit() to apply changes to the real inventories, or discard this
+    // object to cancel.
     public class TradeSession
     {
         public const int Capacity = UnitInventory.Capacity;
+
+        public TestUnit LeftUnit { get; }
+        public TestUnit RightUnit { get; }
 
         private readonly InventoryItem[] _leftSlots;
         private readonly InventoryItem[] _rightSlots;
         private readonly InventoryItem[] _leftOriginal;
         private readonly InventoryItem[] _rightOriginal;
-
-        public TestUnit LeftUnit { get; }
-        public TestUnit RightUnit { get; }
 
         public TradeSession(TestUnit initiator, TestUnit target)
         {
@@ -50,16 +49,14 @@ namespace ProjectAstra.Core
             {
                 for (int i = 0; i < Capacity; i++)
                 {
-                    if (_leftSlots[i].kind != _leftOriginal[i].kind) return true;
-                    if (_leftSlots[i].DisplayName != _leftOriginal[i].DisplayName) return true;
-                    if (_rightSlots[i].kind != _rightOriginal[i].kind) return true;
-                    if (_rightSlots[i].DisplayName != _rightOriginal[i].DisplayName) return true;
+                    if (SlotDiffers(_leftSlots[i], _leftOriginal[i])) return true;
+                    if (SlotDiffers(_rightSlots[i], _rightOriginal[i])) return true;
                 }
                 return false;
             }
         }
 
-        #region Operations
+        // --- Trade operations ---
 
         public bool CanSwap(int leftSlot, int rightSlot)
         {
@@ -106,8 +103,6 @@ namespace ProjectAstra.Core
             return true;
         }
 
-        #endregion
-
         public void Commit()
         {
             var leftInv = LeftUnit.Inventory;
@@ -117,6 +112,11 @@ namespace ProjectAstra.Core
                 leftInv.SetSlot(i, _leftSlots[i]);
                 rightInv.SetSlot(i, _rightSlots[i]);
             }
+        }
+
+        private static bool SlotDiffers(InventoryItem a, InventoryItem b)
+        {
+            return a.kind != b.kind || a.DisplayName != b.DisplayName;
         }
 
         private static bool ValidSlot(int index) => index >= 0 && index < Capacity;

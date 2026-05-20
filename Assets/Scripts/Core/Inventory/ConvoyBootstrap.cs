@@ -3,10 +3,9 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Initializes the supply convoy at runtime. Attach to any persistent scene object.
-    /// CursorSceneSetup creates this automatically.
-    /// </summary>
+    // Initializes the supply convoy at runtime with a small starter loadout.
+    // Attach to any persistent scene object — CursorSceneSetup creates this
+    // automatically. No-op if a SupplyConvoy is already active.
     public class ConvoyBootstrap : MonoBehaviour
     {
         private void Awake()

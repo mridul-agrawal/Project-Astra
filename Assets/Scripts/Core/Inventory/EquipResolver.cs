@@ -3,11 +3,10 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Decides whether a given unit may equip a given weapon. Walks a fallback chain so
-    /// units with full data (UnitInstance + WeaponRankTracker) get the proper rank-aware
-    /// check while bare TestUnits stay usable in tests and editor scenes.
-    /// </summary>
+    // Decides whether a given unit may equip a given weapon. Walks a
+    // fallback chain so units with full data (UnitInstance +
+    // WeaponRankTracker) get the proper rank-aware check while bare
+    // TestUnits stay usable in tests and editor scenes.
     public static class EquipResolver
     {
         public static bool CanEquip(TestUnit unit, WeaponData weapon)

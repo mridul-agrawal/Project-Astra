@@ -3,10 +3,9 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Sorts convoy items by category (weapons by type → staves → consumables),
-    /// then by tier/sub-type, then alphabetically by name.
-    /// </summary>
+    // Sorts inventory + convoy items into a stable display order: weapons by
+    // type → staves → consumables, then by tier or sub-type, then
+    // alphabetically by name as a tie-break.
     public class ItemSortComparer : IComparer<InventoryItem>
     {
         public int Compare(InventoryItem a, InventoryItem b)

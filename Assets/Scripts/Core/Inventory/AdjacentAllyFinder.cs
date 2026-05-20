@@ -6,10 +6,9 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Finds player-faction units orthogonally adjacent (Manhattan distance 1) to a position.
-    /// Accepts a unit lookup delegate so it stays testable without scene dependencies.
-    /// </summary>
+    // Finds units of a given faction that sit orthogonally adjacent
+    // (Manhattan distance 1) to a position. The unit lookup is passed in as
+    // a delegate so this stays testable without scene dependencies.
     public static class AdjacentAllyFinder
     {
         private static readonly Vector2Int[] CardinalOffsets =

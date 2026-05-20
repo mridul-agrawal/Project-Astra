@@ -4,10 +4,10 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Applies consumable effects to a unit. Routes by ConsumableType so new consumables
-    /// can be added without touching UnitInventory.
-    /// </summary>
+    // Routes a consumable's "use" to the right side-effect (heal, stat boost)
+    // and surfaces the player-facing prompt copy. Kept here (not on
+    // UnitInventory) so adding a new consumable type doesn't touch the
+    // inventory class.
     public static class ConsumableEffects
     {
         public static bool Apply(ConsumableData consumable, TestUnit user, out string failReason)
@@ -19,16 +19,12 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            switch (consumable.type)
+            return consumable.type switch
             {
-                case ConsumableType.Vulnerary:
-                    return ApplyVulnerary(consumable, user, out failReason);
-                case ConsumableType.StatBooster:
-                    return ApplyStatBooster(consumable, user, out failReason);
-                default:
-                    failReason = $"Unknown consumable type: {consumable.type}";
-                    return false;
-            }
+                ConsumableType.Vulnerary => ApplyVulnerary(consumable, user, out failReason),
+                ConsumableType.StatBooster => ApplyStatBooster(consumable, user, out failReason),
+                _ => FailUnknownType(consumable.type, out failReason),
+            };
         }
 
         public static (string message, bool reducedEffect) DescribeStatBoost(
@@ -115,6 +111,12 @@ namespace ProjectAstra.Core
 
             user.UnitInstance.ApplyStatBoost(consumable.targetStat, consumable.magnitude);
             return true;
+        }
+
+        private static bool FailUnknownType(ConsumableType type, out string failReason)
+        {
+            failReason = $"Unknown consumable type: {type}";
+            return false;
         }
     }
 }

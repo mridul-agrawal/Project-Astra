@@ -37,21 +37,18 @@ namespace ProjectAstra.Core
             new(AcquisitionOutcome.Canceled, -1, InventoryItem.None);
     }
 
-    /// <summary>
-    /// Optional UI prompt that mediates a full-inventory acquisition. Game UI registers
-    /// a handler so InventoryAcquisition stays UI-agnostic and unit-testable.
-    /// </summary>
+    // Optional UI prompt that mediates a full-inventory acquisition. Game UI
+    // registers a handler so InventoryAcquisition stays UI-agnostic and
+    // unit-testable.
     public interface IInventoryFullPromptHandler
     {
         void Prompt(TestUnit unit, InventoryItem incoming, Action<int> onChooseDiscardSlot, Action onCancel);
     }
 
-    /// <summary>
-    /// Static entry point for putting an item into a unit's inventory. If the inventory
-    /// has room the item is added immediately. Otherwise the registered prompt handler
-    /// asks the player which slot to discard (or to cancel the acquisition).
-    /// Convoy support stubbed via Convoy.Current — UM-08 will plug in real behavior.
-    /// </summary>
+    // Entry point for putting an item into a unit's inventory. If the inventory
+    // has room the item is added immediately; otherwise overflow goes silently
+    // to the convoy; otherwise the registered prompt handler asks the player
+    // which slot to discard (or to cancel).
     public static class InventoryAcquisition
     {
         public static IInventoryFullPromptHandler PromptHandler { get; set; }
@@ -71,7 +68,6 @@ namespace ProjectAstra.Core
                 return;
             }
 
-            // Automatic convoy routing — overflow goes to convoy silently.
             if (Convoy.Current.IsAvailable && Convoy.Current.TryDeposit(incoming))
             {
                 onComplete?.Invoke(AcquisitionResult.SentToConvoy());
