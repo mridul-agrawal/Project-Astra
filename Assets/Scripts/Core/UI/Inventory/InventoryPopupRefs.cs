@@ -43,7 +43,7 @@ namespace ProjectAstra.Core.UI.Inventory
         public TextMeshProUGUI inventoryTitle;
         public TextMeshProUGUI inventoryCount;
         public TextMeshProUGUI hintsText;
-        public RowRefs[] rows = new RowRefs[5];
+        public RowRefs[] rows = new RowRefs[UnitInventory.Capacity];
 
         [Header("Stats panel")]
         public CanvasGroup statsGroup;

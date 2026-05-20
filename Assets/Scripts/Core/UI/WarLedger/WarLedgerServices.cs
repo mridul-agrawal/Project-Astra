@@ -2,12 +2,10 @@ using ProjectAstra.Core.Progression;
 
 namespace ProjectAstra.Core.UI.WarLedger
 {
-    /// <summary>
-    /// Simple service-locator for the War's Ledger. Keeps the Ledger's dependency
-    /// graph explicit without dragging a full DI container into the project.
-    /// Set by CursorSceneSetup at scene load; consumed by BattleVictoryWatcher +
-    /// the future WarLedgerUI runtime controller.
-    /// </summary>
+    // Simple service-locator for the War's Ledger. Keeps the Ledger's
+    // dependency graph explicit without dragging a full DI container into
+    // the project. Set by CursorSceneSetup at scene load; consumed by
+    // BattleVictoryWatcher and the WarLedgerUI runtime controller.
     public static class WarLedgerServices
     {
         public static ICivilianThreadService CivilianThreadService { get; set; }
@@ -16,12 +14,10 @@ namespace ProjectAstra.Core.UI.WarLedger
         public static IDeathEpitaphProvider EpitaphProvider { get; set; }
             = DefaultDeathEpitaphProvider.Instance;
 
-        /// <summary>
-        /// Set by chapter setup when any enemy with isNamedCommander=true is on
-        /// the map, regardless of whether they died. Used by the Ledger-trigger
-        /// predicate to show the Ledger even if no named unit died but a named
-        /// commander was engaged.
-        /// </summary>
+        // Set by chapter setup when any enemy with IsNamedCommander = true is
+        // on the map, regardless of whether they died. Lets the Ledger-trigger
+        // predicate show the Ledger even when no named unit died but a named
+        // commander was engaged.
         public static bool EnemyForceHadNamedCommanderThisChapter { get; set; } = false;
 
         public static void ResetForNewChapter()

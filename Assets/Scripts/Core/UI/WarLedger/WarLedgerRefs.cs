@@ -4,16 +4,14 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.WarLedger
 {
-    /// <summary>
-    /// Ref-holder on the WarLedger prefab root. WarLedgerUI reads + mutates
-    /// these at runtime to populate the three columns. Entry rows are
-    /// cloned from templates (prefab children) so the hierarchy can flex with
-    /// any number of entries per column.
-    /// </summary>
+    // Ref-holder attached to the WarLedger prefab root. WarLedgerUI reads
+    // and mutates these at runtime to populate the three columns. Entry rows
+    // are cloned from disabled templates (prefab children) so the hierarchy
+    // can flex with any number of entries per column.
     public class WarLedgerRefs : MonoBehaviour
     {
         [Header("Parchment chrome")]
-        public Image parchmentSheet;          // the baked 1680x952 background
+        public Image parchmentSheet;          // baked 1680×952 background
 
         [Header("Chapter meta")]
         public TextMeshProUGUI chapterEyebrow; // "CHAPTER"
@@ -24,20 +22,20 @@ namespace ProjectAstra.Core.UI.WarLedger
         public TextMeshProUGUI leftHeadDeva;
         public TextMeshProUGUI leftHeadEn;
         public RectTransform leftEntriesContainer;
-        public GameObject leftEntryTemplate;      // disabled template with Name + Epitaph children
+        public GameObject leftEntryTemplate;      // disabled template (Name + Epitaph)
         public TextMeshProUGUI leftUnnamedTail;
 
         [Header("Middle column — What Was Kept and What Was Not")]
         public TextMeshProUGUI middleHeadDeva;
         public TextMeshProUGUI middleHeadEn;
         public RectTransform middleEntriesContainer;
-        public GameObject middleEntryTemplate;    // disabled template with CommitText + Resolution children + KeptRule
+        public GameObject middleEntryTemplate;    // disabled template (CommitText + Resolution + KeptRule)
 
         [Header("Right column — The Living")]
         public TextMeshProUGUI rightHeadDeva;
         public TextMeshProUGUI rightHeadEn;
         public RectTransform rightEntriesContainer;
-        public GameObject rightEntryTemplate;     // disabled template with Name+State + optional Note
+        public GameObject rightEntryTemplate;     // disabled template (Name + State + optional Note)
 
         [Header("Footer")]
         public TextMeshProUGUI footerContinue;

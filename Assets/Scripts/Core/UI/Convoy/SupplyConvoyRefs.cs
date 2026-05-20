@@ -86,7 +86,7 @@ namespace ProjectAstra.Core.UI.Convoy
         [Header("Lord inventory")]
         public TextMeshProUGUI lordInvHeader;
         public TextMeshProUGUI lordInvCap;
-        public SlotRefs[] slots = new SlotRefs[5];
+        public SlotRefs[] slots = new SlotRefs[UnitInventory.Capacity];
 
         [Header("Convoy head")]
         public TextMeshProUGUI convoyTitle;
