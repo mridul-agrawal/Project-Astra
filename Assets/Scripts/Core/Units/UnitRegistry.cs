@@ -3,11 +3,17 @@ using System.Collections.Generic;
 
 namespace ProjectAstra.Core.Units
 {
+    // Turn-state tracker for every unit on the battlefield. Owns the
+    // per-faction CanAct / HasMoved flags and the next/prev-unit cursor cycle.
+    // Persisted only for the chapter's duration; rebuilt each chapter from
+    // the scene's TestUnits.
     public class UnitRegistry
     {
         private readonly List<UnitTurnState> _units = new();
 
         public event Action<TestUnit> OnUnitActed;
+
+        public int UnitCount => _units.Count;
 
         public void Register(TestUnit unit, Faction faction)
         {
@@ -54,26 +60,49 @@ namespace ProjectAstra.Core.Units
             return Find(unit)?.Faction;
         }
 
+        public bool HasUnitsOfFaction(Faction faction)
+        {
+            foreach (var entry in _units)
+                if (entry.Faction == faction)
+                    return true;
+            return false;
+        }
+
+        public bool AllDone(Faction faction)
+        {
+            foreach (var entry in _units)
+                if (entry.Faction == faction && entry.CanAct)
+                    return false;
+            return true;
+        }
+
         public void MarkMoved(TestUnit unit)
         {
             var entry = Find(unit);
             if (entry != null) entry.HasMoved = true;
         }
 
-        public void MarkActed(TestUnit unit)
-        {
-            var entry = Find(unit);
-            if (entry == null || !entry.CanAct) return;
-
-            entry.CanAct = false;
-            unit.MarkActed();
-            OnUnitActed?.Invoke(unit);
-        }
-
         public void CancelMove(TestUnit unit)
         {
             var entry = Find(unit);
             if (entry != null) entry.HasMoved = false;
+        }
+
+        public void MarkActed(TestUnit unit)
+        {
+            var entry = Find(unit);
+            if (entry == null || !entry.CanAct) return;
+            DoMarkActed(entry);
+        }
+
+        // Same as MarkActed unit by unit, just without allocating a throwaway list.
+        public void MarkAllActed(Faction faction)
+        {
+            foreach (var entry in _units)
+            {
+                if (entry.Faction != faction || !entry.CanAct) continue;
+                DoMarkActed(entry);
+            }
         }
 
         public void ResetPhaseFlags(Faction faction)
@@ -87,45 +116,17 @@ namespace ProjectAstra.Core.Units
             }
         }
 
-        // Marks every still-actable unit of this faction as acted in one pass. Fires OnUnitActed
-        // for each — same as calling MarkActed unit by unit, just without allocating a throwaway list.
-        public void MarkAllActed(Faction faction)
-        {
-            foreach (var entry in _units)
-            {
-                if (entry.Faction != faction || !entry.CanAct) continue;
-                entry.CanAct = false;
-                entry.Unit.MarkActed();
-                OnUnitActed?.Invoke(entry.Unit);
-            }
-        }
+        public TestUnit GetNextUnactedUnit(Faction faction, TestUnit current) =>
+            CycleUnactedUnit(faction, current, 1);
 
-        public bool AllDone(Faction faction)
-        {
-            foreach (var entry in _units)
-                if (entry.Faction == faction && entry.CanAct)
-                    return false;
-            return true;
-        }
+        public TestUnit GetPrevUnactedUnit(Faction faction, TestUnit current) =>
+            CycleUnactedUnit(faction, current, -1);
 
-        public TestUnit GetNextUnactedUnit(Faction faction, TestUnit current)
+        private void DoMarkActed(UnitTurnState entry)
         {
-            return CycleUnactedUnit(faction, current, 1);
-        }
-
-        public TestUnit GetPrevUnactedUnit(Faction faction, TestUnit current)
-        {
-            return CycleUnactedUnit(faction, current, -1);
-        }
-
-        public int UnitCount => _units.Count;
-
-        public bool HasUnitsOfFaction(Faction faction)
-        {
-            foreach (var entry in _units)
-                if (entry.Faction == faction)
-                    return true;
-            return false;
+            entry.CanAct = false;
+            entry.Unit.MarkActed();
+            OnUnitActed?.Invoke(entry.Unit);
         }
 
         private TestUnit CycleUnactedUnit(Faction faction, TestUnit current, int direction)
