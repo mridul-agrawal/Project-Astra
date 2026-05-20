@@ -78,17 +78,7 @@ namespace ProjectAstra.Core.Cursor
         private TargetingFlow _targetingFlow;
         private ActionMenuFlow _actionMenuFlow;
         private CantoFlow _cantoFlow;
-
-        // Movement constraint — null means unconstrained (Free mode).
-        private HashSet<Vector2Int> _validMoveTiles;
-
-        // Cursor position to restore on cancel (e.g., back to the unit tile).
-        private Vector2Int? _memorizedPosition;
-
-        // Unit selection + reachability.
-        private TestUnit _selectedUnit;
-        private Pathfinder.ReachabilityResult _currentReachability;
-        private Vector2Int _committedDestination;
+        private UnitSelectionFlow _unitSelectionFlow;
 
 
         public Vector2Int GridPosition => _gridPosition;
@@ -124,6 +114,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeTargetingFlow();
             InitializeActionMenuFlow();
             InitializeCantoFlow();
+            InitializeUnitSelectionFlow();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -154,17 +145,21 @@ namespace ProjectAstra.Core.Cursor
                 OnCursorMoved?.Invoke(_gridPosition);
         }
 
+        // Stashes the current cursor position so a later
+        // ReturnToMemorizedPosition can restore it (e.g. unit deselect).
+        // The memory itself lives on _unitSelectionFlow; this method stays
+        // on the cursor for test surface compatibility.
         public void SetPositionWithMemory(Vector2Int position)
         {
-            _memorizedPosition = _gridPosition;
+            _unitSelectionFlow?.RecordMemorizedPosition(_gridPosition);
             SetPosition(position);
         }
 
         public void ReturnToMemorizedPosition()
         {
-            if (!_memorizedPosition.HasValue) return;
-            SetPosition(_memorizedPosition.Value);
-            _memorizedPosition = null;
+            if (_unitSelectionFlow == null) return;
+            if (_unitSelectionFlow.TryConsumeMemorizedPosition(out var pos))
+                SetPosition(pos);
         }
 
         // --- Input entry points ---
@@ -181,7 +176,8 @@ namespace ProjectAstra.Core.Cursor
 
             Vector2Int targetGridPosition = ClampToMapBounds(_gridPosition + direction);
 
-            if (IsMovementConstrained() && !_validMoveTiles.Contains(targetGridPosition))
+            if (_unitSelectionFlow.IsMovementConstrained
+                && !_unitSelectionFlow.ValidMoveTiles.Contains(targetGridPosition))
                 return;
 
             if (targetGridPosition == _gridPosition)
@@ -192,7 +188,7 @@ namespace ProjectAstra.Core.Cursor
             OnCursorMoved?.Invoke(_gridPosition);
 
             if (_currentMode == CursorMode.UnitSelected)
-                UpdatePathArrow();
+                _unitSelectionFlow.UpdatePathArrow(_gridPosition);
         }
 
         internal void HandleConfirm()
@@ -202,16 +198,17 @@ namespace ProjectAstra.Core.Cursor
             switch (_currentMode)
             {
                 case CursorMode.Free:
-                    TrySelectUnit();
+                    _unitSelectionFlow.TrySelectUnit(_gridPosition);
                     break;
                 case CursorMode.UnitSelected:
-                    TryCommitMovement();
+                    _unitSelectionFlow.TryCommitMovement(_gridPosition);
                     break;
                 case CursorMode.Targeting:
+                    var selected = _unitSelectionFlow.SelectedUnit;
                     if (_targetingFlow.IsHealTargeting)
-                        _staffExecutor.TryCommitHeal(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
+                        _staffExecutor.TryCommitHeal(selected, FindUnitAt(_gridPosition), _unitSelectionFlow.CompleteAction);
                     else
-                        _combatExecutor.TryCommitAttack(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
+                        _combatExecutor.TryCommitAttack(selected, FindUnitAt(_gridPosition), _unitSelectionFlow.CompleteAction);
                     break;
             }
         }
@@ -223,8 +220,8 @@ namespace ProjectAstra.Core.Cursor
             switch (_currentMode)
             {
                 case CursorMode.UnitSelected:
-                    if (_cantoFlow.IsCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
-                    DeselectUnit();
+                    if (_cantoFlow.IsCantoMode) { _unitSelectionFlow.FinishCantoFromCancel(); break; }
+                    _unitSelectionFlow.DeselectUnit();
                     break;
                 case CursorMode.Targeting:
                     CancelTargeting();
@@ -265,14 +262,20 @@ namespace ProjectAstra.Core.Cursor
                 _animator = new CursorAnimator(_spriteRenderer);
         }
 
+        // Init methods are idempotent — both Start() and the Initialize()
+        // test seam call them. Already-constructed sub-controllers are not
+        // replaced so test-injected state survives Start().
+
         private void InitializePathFindingService()
         {
+            if (_pathfindingService != null) return;
             if (_mapRenderer != null && _terrainStatTable != null)
                 _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
         }
 
         private void InitializeCombatExecutor()
         {
+            if (_combatExecutor != null) return;
             _combatExecutor = new CombatExecutor(
                 _mapRenderer, _terrainStatTable, _deathEventChannel,
                 _combatForecastUI, _toastUI);
@@ -280,11 +283,13 @@ namespace ProjectAstra.Core.Cursor
 
         private void InitializeStaffExecutor()
         {
+            if (_staffExecutor != null) return;
             _staffExecutor = new StaffExecutor(_combatForecastUI, _toastUI);
         }
 
         private void InitializeTargetingFlow()
         {
+            if (_targetingFlow != null) return;
             _targetingFlow = new TargetingFlow(
                 _pathfindingService, _mapRenderer,
                 _rangeHighlighter, _combatForecastUI, this);
@@ -292,6 +297,7 @@ namespace ProjectAstra.Core.Cursor
 
         private void InitializeActionMenuFlow()
         {
+            if (_actionMenuFlow != null) return;
             _actionMenuFlow = new ActionMenuFlow(
                 _actionMenuUI, _inventoryMenuUI, _confirmDialogUI,
                 _tradeUI, _convoyUI, _toastUI,
@@ -300,7 +306,17 @@ namespace ProjectAstra.Core.Cursor
 
         private void InitializeCantoFlow()
         {
+            if (_cantoFlow != null) return;
             _cantoFlow = new CantoFlow(this, _actionMenuFlow);
+        }
+
+        private void InitializeUnitSelectionFlow()
+        {
+            if (_unitSelectionFlow != null) return;
+            _unitSelectionFlow = new UnitSelectionFlow(
+                _pathfindingService, _unitMover,
+                _rangeHighlighter, _pathArrowRenderer, _combatForecastUI,
+                this, _cantoFlow, _actionMenuFlow);
         }
 
         private void AddListenersToInputEvents()
@@ -392,226 +408,37 @@ namespace ProjectAstra.Core.Cursor
             return true;
         }
 
-        private bool IsMovementConstrained() => _validMoveTiles != null;
+        // --- Selection-flow seams (forward to _unitSelectionFlow) ---
 
-        // Lets ActionMenuFlow swap the cursor's allowed-tile set when
-        // entering targeting mode (attack/heal tile set replaces the
-        // movement set).
-        internal void SetValidMoveTiles(HashSet<Vector2Int> tiles) => _validMoveTiles = tiles;
+        internal void SetValidMoveTiles(HashSet<Vector2Int> tiles) =>
+            _unitSelectionFlow.SetValidMoveTiles(tiles);
 
-        // Lets CantoFlow add the unit's current tile to the allowed-set so a
-        // "stay put" confirm during canto is legal even if reachability
-        // wouldn't otherwise include it.
-        internal void EnsureMoveTileAllowed(Vector2Int tile)
+        internal void EnsureMoveTileAllowed(Vector2Int tile) =>
+            _unitSelectionFlow.EnsureMoveTileAllowed(tile);
+
+        internal void EnterUnitSelectedMode() =>
+            _unitSelectionFlow.EnterUnitSelectedMode();
+
+        // --- Cancel / cleanup ---
+
+        private void CancelTargeting()
         {
-            if (_validMoveTiles != null && !_validMoveTiles.Contains(tile))
-                _validMoveTiles.Add(tile);
+            _targetingFlow.Cancel();
+            SetPosition(_unitSelectionFlow.CommittedDestination);
+            _unitSelectionFlow.ShowActionMenu();
         }
 
-        // --- Cursor movement details ---
+        // --- Lookup helper kept on the cursor because the input handlers
+        // (HandleNextUnit / HandlePrevUnit / HandleOpenUnitInfo /
+        // HandleConfirm.Targeting) need it at cursor scope, not selection
+        // scope. The selection flow has its own copy internally. ---
 
-        private void UpdatePathArrow()
-        {
-            if (_pathArrowRenderer == null || _selectedUnit == null) return;
-
-            if (!IsCurrentTileReachable())
-            {
-                _pathArrowRenderer.Clear();
-                return;
-            }
-
-            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, _gridPosition, _currentReachability);
-            _pathArrowRenderer.ShowPath(path);
-        }
-
-        private bool IsCurrentTileReachable() =>
-            _currentReachability.Destinations.Contains(_gridPosition);
-
-        // --- Unit selection ---
-
-        private void TrySelectUnit()
-        {
-            TestUnit unit = FindUnitAt(_gridPosition);
-            if (!IsUnitSelectable(unit)) return;
-
-            _selectedUnit = unit;
-            EnterUnitSelectedMode();
-        }
-
-        private TestUnit FindUnitAt(Vector2Int pos)
+        private static TestUnit FindUnitAt(Vector2Int pos)
         {
             foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
                 if (unit.gridPosition == pos)
                     return unit;
             return null;
-        }
-
-        private bool IsUnitSelectable(TestUnit unit)
-        {
-            if (unit == null) return false;
-
-            if (TurnManager.Instance != null)
-            {
-                var registry = TurnManager.Instance.UnitRegistry;
-                if (!registry.CanAct(unit)) return false;
-                if (registry.GetFaction(unit) != Faction.Player) return false;
-                if (TurnManager.Instance.CurrentPhase != BattlePhase.PlayerPhase) return false;
-                return true;
-            }
-
-            // Test seam: no TurnManager means we fall back to the unit's own flag.
-            return !unit.hasActed;
-        }
-
-        internal void EnterUnitSelectedMode()
-        {
-            if (_pathfindingService == null || _selectedUnit == null) return;
-
-            _currentReachability = _pathfindingService.ComputeReachability(
-                _selectedUnit.gridPosition, _selectedUnit.movementPoints,
-                _selectedUnit.movementType, GetOccupantType);
-
-            RestoreMovementConstraintsAndOverlay();
-            SetPositionWithMemory(_selectedUnit.gridPosition);
-            SetMode(CursorMode.UnitSelected);
-        }
-
-        // TODO(refactor): hook this up to a real unit-occupancy service when
-        // the unit-management system lands. Returning None makes every tile
-        // look unoccupied to the pathfinder.
-        private Pathfinder.OccupantType GetOccupantType(Vector2Int pos)
-        {
-            return Pathfinder.OccupantType.None;
-        }
-
-        private void RestoreMovementConstraintsAndOverlay()
-        {
-            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
-            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
-            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
-        }
-
-        // --- Movement commit ---
-
-        private void TryCommitMovement()
-        {
-            if (!_currentReachability.Destinations.Contains(_gridPosition))
-                return;
-
-            _committedDestination = _gridPosition;
-            _selectedUnit.preMovementPosition = _selectedUnit.gridPosition;
-
-            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, _committedDestination, _currentReachability);
-
-            ClearOverlay();
-            SetMode(CursorMode.Locked);
-
-            if (PathExists(path))
-                _unitMover.MoveAlongPath(_selectedUnit, path, OnMovementComplete);
-            else
-                OnMovementComplete();
-        }
-
-        private void ClearOverlay()
-        {
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
-        }
-
-        private bool PathExists(List<Vector2Int> path) =>
-            _unitMover != null && path != null && path.Count > 1;
-
-        private void OnMovementComplete()
-        {
-            if (_cantoFlow.IsCantoMode)
-            {
-                FinalizeCanto();
-                return;
-            }
-            ShowActionMenu();
-        }
-
-        // --- Action menu (thin shim; flow lives on _actionMenuFlow) ---
-
-        private void ShowActionMenu()
-        {
-            _actionMenuFlow.Show(_selectedUnit, _committedDestination,
-                onComplete: CompleteAction,
-                onCancelToUnitSelected: OnActionCancelled);
-        }
-
-        // The action menu's Cancel button: undo the unit's movement and
-        // unwind back to UnitSelected. Stays in GridCursor because it
-        // touches selection-flow state (_currentReachability, _validMoveTiles,
-        // cursor mode).
-        private void OnActionCancelled()
-        {
-            _combatForecastUI?.Hide();
-
-            if (_unitMover != null)
-                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
-
-            RestoreMovementConstraintsAndOverlay();
-            SetPosition(_selectedUnit.gridPosition);
-            SetMode(CursorMode.UnitSelected);
-        }
-
-        // --- Cancel / cleanup ---
-
-        private void DeselectUnit()
-        {
-            ResetUnitTilesMode();
-            ReturnToMemorizedPosition();
-        }
-
-        private void ResetUnitTilesMode()
-        {
-            _cantoFlow?.ResetState();
-            _actionMenuFlow?.ClearLastChoice();
-            _selectedUnit = null;
-            _validMoveTiles = null;
-            _targetingFlow?.ClearState();
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
-            SetMode(CursorMode.Free);
-        }
-
-        private void CancelTargeting()
-        {
-            _targetingFlow.Cancel();
-            SetPosition(_committedDestination);
-            ShowActionMenu();
-        }
-
-        // --- Post-action dispatch ---
-
-        // Action's onComplete callback. Either canto fires (giving the unit
-        // a second move-only round) or the turn ends.
-        private void CompleteAction()
-        {
-            if (_cantoFlow.TryEnterCanto(_selectedUnit, _currentReachability, _validMoveTiles)) return;
-            FinishSelectedUnitTurn();
-        }
-
-        private void FinalizeCanto()
-        {
-            _cantoFlow.FinalizeCanto(_selectedUnit);
-            FinishSelectedUnitTurn();
-        }
-
-        private void FinishSelectedUnitTurn()
-        {
-            if (_selectedUnit != null)
-            {
-                if (TurnManager.Instance != null)
-                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
-                else
-                    _selectedUnit.MarkActed();
-            }
-
-            _memorizedPosition = null;
-            ResetUnitTilesMode();
-            TurnManager.Instance?.CheckAutoEndPlayerPhase();
         }
 
         // --- Game state events ---
@@ -639,10 +466,20 @@ namespace ProjectAstra.Core.Cursor
         {
             _mapRenderer = mapRenderer;
             _terrainStatTable = terrainStatTable;
-            if (_mapRenderer != null && _terrainStatTable != null)
-                _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
             _gridPosition = Vector2Int.zero;
             _currentMode = CursorMode.Free;
+
+            // Build the sub-controllers eagerly so tests can drive the cursor
+            // without going through Start(). Idempotent guards inside the
+            // initializers prevent double-construction when Start() later runs
+            // in a non-test scenario.
+            InitializePathFindingService();
+            InitializeCombatExecutor();
+            InitializeStaffExecutor();
+            InitializeTargetingFlow();
+            InitializeActionMenuFlow();
+            InitializeCantoFlow();
+            InitializeUnitSelectionFlow();
         }
 
         internal void SetSpriteRenderer(SpriteRenderer sr) => _spriteRenderer = sr;

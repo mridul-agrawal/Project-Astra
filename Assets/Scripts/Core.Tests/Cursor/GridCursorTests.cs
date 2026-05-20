@@ -157,11 +157,11 @@ namespace ProjectAstra.Core.Tests.Cursor
             _cursor.SetMode(CursorMode.Free);
             _cursor.SetPosition(new Vector2Int(2, 2));
 
-            // Simulate entering a constrained mode by going through UnitSelected
-            // Use HandleCursorMove with valid tile set via reflection
-            var field = typeof(GridCursor).GetField("_validMoveTiles",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            field.SetValue(_cursor, new HashSet<Vector2Int>
+            // Simulate entering a constrained mode by injecting the
+            // valid-tile set through the cursor's internal SetValidMoveTiles
+            // seam (used in production by ActionMenuFlow to swap from move
+            // to attack/heal targeting).
+            _cursor.SetValidMoveTiles(new HashSet<Vector2Int>
             {
                 new Vector2Int(2, 2),
                 new Vector2Int(3, 2),
