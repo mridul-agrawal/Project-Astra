@@ -3,13 +3,22 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Pathfinding
 {
+    // Renders the tile-to-tile path arrow shown while the player picks a
+    // destination. Builds all segment sprites procedurally on Awake, then
+    // stitches them together (straights, turns, arrowhead) and pools the
+    // GameObjects for reuse.
     public class PathArrowRenderer : MonoBehaviour
     {
         private static readonly Color ArrowColor = new(0.5f, 0.95f, 1.0f, 0.85f);
+        private static readonly Color32 SpritePixelColor = new(255, 255, 255, 255);
 
-        const int Size = 16;
+        const int SpriteSize = 16;
         const int BodyMin = 5;
         const int BodyMax = 10;
+        // 16-px sprite splits at the midline. Forward arrows have body in
+        // [0..7] and head in [7..15]; reverse arrows are mirrored at 8.
+        const int ForwardBodyEnd = 7;
+        const int ReverseBodyStart = 8;
 
         private readonly List<GameObject> _activeSegments = new();
         private readonly Queue<GameObject> _pool = new();
@@ -50,9 +59,9 @@ namespace ProjectAstra.Core.Pathfinding
             _activeSegments.Clear();
         }
 
-        #region Segment classification
+        // --- Segment classification ---
 
-        private SegmentType ClassifySegment(List<Vector2Int> path, int i)
+        private static SegmentType ClassifySegment(List<Vector2Int> path, int i)
         {
             var inDir = path[i] - path[i - 1];
 
@@ -60,7 +69,6 @@ namespace ProjectAstra.Core.Pathfinding
                 return ClassifyArrowhead(inDir);
 
             var outDir = path[i + 1] - path[i];
-
             if (inDir == outDir)
                 return inDir.x != 0 ? SegmentType.StraightH : SegmentType.StraightV;
 
@@ -88,9 +96,7 @@ namespace ProjectAstra.Core.Pathfinding
             return SegmentType.TurnTR;
         }
 
-        #endregion
-
-        #region Pooled placement
+        // --- Pooled placement ---
 
         private void PlaceSegment(Vector2Int tile, SegmentType type)
         {
@@ -120,11 +126,9 @@ namespace ProjectAstra.Core.Pathfinding
             return obj;
         }
 
-        #endregion
+        // --- Procedural sprite generation ---
 
-        #region Procedural sprite generation
-
-        private Dictionary<SegmentType, Sprite> GenerateAllSprites()
+        private static Dictionary<SegmentType, Sprite> GenerateAllSprites()
         {
             return new Dictionary<SegmentType, Sprite>
             {
@@ -141,58 +145,58 @@ namespace ProjectAstra.Core.Pathfinding
             };
         }
 
-        private Sprite BuildStraightH()
+        private static Sprite BuildStraightH()
         {
-            var px = new Color32[Size * Size];
-            FillRect(px, 0, BodyMin, Size - 1, BodyMax);
+            var px = new Color32[SpriteSize * SpriteSize];
+            FillRect(px, 0, BodyMin, SpriteSize - 1, BodyMax);
             return MakeSprite(px);
         }
 
-        private Sprite BuildStraightV()
+        private static Sprite BuildStraightV()
         {
-            var px = new Color32[Size * Size];
-            FillRect(px, BodyMin, 0, BodyMax, Size - 1);
+            var px = new Color32[SpriteSize * SpriteSize];
+            FillRect(px, BodyMin, 0, BodyMax, SpriteSize - 1);
             return MakeSprite(px);
         }
 
-        private Sprite BuildTurn(bool bottom, bool left)
+        private static Sprite BuildTurn(bool bottom, bool left)
         {
-            var px = new Color32[Size * Size];
+            var px = new Color32[SpriteSize * SpriteSize];
 
             int vYMin = bottom ? 0 : BodyMin;
-            int vYMax = bottom ? BodyMax : Size - 1;
+            int vYMax = bottom ? BodyMax : SpriteSize - 1;
             FillRect(px, BodyMin, vYMin, BodyMax, vYMax);
 
             int hXMin = left ? 0 : BodyMin;
-            int hXMax = left ? BodyMax : Size - 1;
+            int hXMax = left ? BodyMax : SpriteSize - 1;
             FillRect(px, hXMin, BodyMin, hXMax, BodyMax);
 
             return MakeSprite(px);
         }
 
-        private Sprite BuildArrow(Vector2Int dir)
+        private static Sprite BuildArrow(Vector2Int dir)
         {
-            var px = new Color32[Size * Size];
+            var px = new Color32[SpriteSize * SpriteSize];
 
             if (dir == Vector2Int.right)
             {
-                FillRect(px, 0, BodyMin, 7, BodyMax);
-                FillTriangle(px, axis: 0, from: 7, to: Size - 1, forward: true);
+                FillRect(px, 0, BodyMin, ForwardBodyEnd, BodyMax);
+                FillTriangle(px, axis: 0, from: ForwardBodyEnd, to: SpriteSize - 1, forward: true);
             }
             else if (dir == Vector2Int.left)
             {
-                FillRect(px, 8, BodyMin, Size - 1, BodyMax);
-                FillTriangle(px, axis: 0, from: 8, to: 0, forward: false);
+                FillRect(px, ReverseBodyStart, BodyMin, SpriteSize - 1, BodyMax);
+                FillTriangle(px, axis: 0, from: ReverseBodyStart, to: 0, forward: false);
             }
             else if (dir == Vector2Int.up)
             {
-                FillRect(px, BodyMin, 0, BodyMax, 7);
-                FillTriangle(px, axis: 1, from: 7, to: Size - 1, forward: true);
+                FillRect(px, BodyMin, 0, BodyMax, ForwardBodyEnd);
+                FillTriangle(px, axis: 1, from: ForwardBodyEnd, to: SpriteSize - 1, forward: true);
             }
             else
             {
-                FillRect(px, BodyMin, 8, BodyMax, Size - 1);
-                FillTriangle(px, axis: 1, from: 8, to: 0, forward: false);
+                FillRect(px, BodyMin, ReverseBodyStart, BodyMax, SpriteSize - 1);
+                FillTriangle(px, axis: 1, from: ReverseBodyStart, to: 0, forward: false);
             }
 
             return MakeSprite(px);
@@ -200,23 +204,20 @@ namespace ProjectAstra.Core.Pathfinding
 
         private static void FillRect(Color32[] px, int x0, int y0, int x1, int y1)
         {
-            var white = new Color32(255, 255, 255, 255);
             for (int y = y0; y <= y1; y++)
                 for (int x = x0; x <= x1; x++)
-                    px[y * Size + x] = white;
+                    px[y * SpriteSize + x] = SpritePixelColor;
         }
 
-        /// <summary>
-        /// Draws a filled triangle (arrowhead) along the given axis.
-        /// axis=0: horizontal (x varies, y tapers). axis=1: vertical (y varies, x tapers).
-        /// forward=true: increasing coordinate. forward=false: decreasing.
-        /// </summary>
+        // Draws a filled triangle (arrowhead) along the given axis. axis=0
+        // means horizontal (x varies, y tapers); axis=1 means vertical (y
+        // varies, x tapers). forward steps in increasing coordinate; reverse
+        // steps backward.
         private static void FillTriangle(Color32[] px, int axis, int from, int to, bool forward)
         {
-            var white = new Color32(255, 255, 255, 255);
-            float baseHalf = 5f;
-            float tipHalf = 0.5f;
-            float center = 7.5f;
+            const float BaseHalfWidth = 5f;
+            const float TipHalfWidth = 0.5f;
+            const float SpriteCenter = 7.5f;
 
             int step = forward ? 1 : -1;
             int length = Mathf.Abs(to - from);
@@ -225,29 +226,27 @@ namespace ProjectAstra.Core.Pathfinding
             {
                 int coord = from + d * step;
                 float t = (float)d / length;
-                float halfSpan = Mathf.Lerp(baseHalf, tipHalf, t);
-                int spanMin = Mathf.Max(0, Mathf.CeilToInt(center - halfSpan));
-                int spanMax = Mathf.Min(Size - 1, Mathf.FloorToInt(center + halfSpan));
+                float halfSpan = Mathf.Lerp(BaseHalfWidth, TipHalfWidth, t);
+                int spanMin = Mathf.Max(0, Mathf.CeilToInt(SpriteCenter - halfSpan));
+                int spanMax = Mathf.Min(SpriteSize - 1, Mathf.FloorToInt(SpriteCenter + halfSpan));
 
                 for (int s = spanMin; s <= spanMax; s++)
                 {
                     int x = axis == 0 ? coord : s;
                     int y = axis == 0 ? s : coord;
-                    px[y * Size + x] = white;
+                    px[y * SpriteSize + x] = SpritePixelColor;
                 }
             }
         }
 
         private static Sprite MakeSprite(Color32[] pixels)
         {
-            var tex = new Texture2D(Size, Size, TextureFormat.RGBA32, false);
+            var tex = new Texture2D(SpriteSize, SpriteSize, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Point;
             tex.SetPixels32(pixels);
             tex.Apply();
-            return Sprite.Create(tex, new Rect(0, 0, Size, Size), new Vector2(0.5f, 0.5f), Size);
+            return Sprite.Create(tex, new Rect(0, 0, SpriteSize, SpriteSize), new Vector2(0.5f, 0.5f), SpriteSize);
         }
-
-        #endregion
 
         private enum SegmentType
         {
