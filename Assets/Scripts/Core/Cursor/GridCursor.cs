@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Grid;
@@ -18,10 +17,6 @@ using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.UI.Trade;
 using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
-
-// TODO(refactor): this attribute is file-scoped but affects the whole Core
-// assembly; should live in an AssemblyInfo.cs file, not on GridCursor.cs.
-[assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
 namespace ProjectAstra.Core.Cursor
 {
