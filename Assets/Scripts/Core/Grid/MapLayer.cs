@@ -1,7 +1,9 @@
 namespace ProjectAstra.Core.Grid
 {
-    // The five render layers stacked bottom-to-top. Save data references these by integer
-    // index, so don't reorder; append new layers at the end only.
+    // The five render layers, bottom-to-top: Ground, Overlay, Object, Units, UI.
+    // Don't reorder — add new layers only at the end. Unity writes these as plain
+    // integers into every map asset, so reordering silently points existing maps
+    // at the wrong layer (no error, just broken data).
     public enum MapLayer
     {
         Ground = 0,

@@ -25,6 +25,19 @@ namespace ProjectAstra.Core.Grid
             var texture = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, false);
             texture.filterMode = FilterMode.Point;
 
+            texture.SetPixels32(BuildPixels());
+            texture.Apply();
+
+            return Sprite.Create(
+                texture,
+                new Rect(0, 0, TextureSize, TextureSize),
+                new Vector2(0.5f, 0.5f),
+                TextureSize
+            );
+        }
+
+        private static Color32[] BuildPixels()
+        {
             int innerSize = TextureSize - 2 * Border;
             var pixels = new Color32[TextureSize * TextureSize];
 
@@ -38,15 +51,7 @@ namespace ProjectAstra.Core.Grid
                 }
             }
 
-            texture.SetPixels32(pixels);
-            texture.Apply();
-
-            return Sprite.Create(
-                texture,
-                new Rect(0, 0, TextureSize, TextureSize),
-                new Vector2(0.5f, 0.5f),
-                TextureSize
-            );
+            return pixels;
         }
 
         private static bool IsEdgePixel(int x, int y) =>

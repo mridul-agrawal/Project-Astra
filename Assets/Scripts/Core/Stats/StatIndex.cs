@@ -1,6 +1,8 @@
 namespace ProjectAstra.Core.Stats
 {
-    // The nine stat slots a unit has. Save files store these as integer values — don't reorder; append at the end only.
+    // The nine stat slots a unit has. Don't reorder — add new stats only at the end.
+    // Unity stores these as integers inside every unit and class asset (StatArray),
+    // so reordering silently remaps every unit's stats.
     public enum StatIndex
     {
         HP = 0,

@@ -91,18 +91,22 @@ namespace ProjectAstra.Core.Camera
             int localX = cursorPos.x - _cameraGridPos.x;
             int localY = cursorPos.y - _cameraGridPos.y;
 
-            int dzLeft = _deadzoneMarginTiles;
-            int dzRight = _viewportTilesW - 1 - _deadzoneMarginTiles;
-            int dzBottom = _deadzoneMarginTiles;
-            int dzTop = _viewportTilesH - 1 - _deadzoneMarginTiles;
-
-            if (localX < dzLeft) _cameraGridPos.x -= 1;
-            else if (localX > dzRight) _cameraGridPos.x += 1;
-
-            if (localY < dzBottom) _cameraGridPos.y -= 1;
-            else if (localY > dzTop) _cameraGridPos.y += 1;
+            _cameraGridPos.x += DeadzoneScrollDelta(localX, _viewportTilesW);
+            _cameraGridPos.y += DeadzoneScrollDelta(localY, _viewportTilesH);
 
             ClampToMapBounds();
+        }
+
+        // -1 / 0 / +1: scroll one tile when the cursor sits inside the near or far
+        // deadzone margin on this axis, otherwise hold.
+        private int DeadzoneScrollDelta(int local, int viewportTiles)
+        {
+            int near = _deadzoneMarginTiles;
+            int far = viewportTiles - 1 - _deadzoneMarginTiles;
+
+            if (local < near) return -1;
+            if (local > far) return 1;
+            return 0;
         }
 
         // PixelPerfectCamera path: ref resolution and PPU are deterministic and set in
