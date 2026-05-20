@@ -19,19 +19,27 @@ using ProjectAstra.Core.UI.Trade;
 using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
 
+// TODO(refactor): this attribute is file-scoped but affects the whole Core
+// assembly; should live in an AssemblyInfo.cs file, not on GridCursor.cs.
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
 namespace ProjectAstra.Core.Cursor
 {
-    /// <summary>
-    /// Grid-snapped cursor for the tactical battle map. Tracks integer grid position,
-    /// manages four operational modes (Free/UnitSelected/Targeting/Locked), constrains
-    /// movement to valid tile sets, and fires events for downstream systems.
-    /// DAS input repeat is handled by InputManager — this class just responds to OnCursorMove.
-    /// </summary>
+    // TODO(refactor): split this class. It currently owns cursor movement,
+    // mode state, unit selection, action-menu orchestration, targeting cycle,
+    // combat resolution, staff/heal flow, canto, trade, and convoy. Sensible
+    // extractions: ActionMenuController, CombatExecutor, StaffActionExecutor,
+    // TargetingController, CantoController.
+    //
+    // Grid-snapped cursor for the tactical battle map. Tracks integer grid
+    // position, drives the five cursor modes, constrains movement to valid
+    // tile sets, and orchestrates the action flow once a unit is selected.
+    // DAS input repeat is owned by InputManager — this class just reacts to
+    // OnCursorMove.
     public class GridCursor : MonoBehaviour
     {
-        #region Properties and fields
+        // --- Inspector dependencies ---
+
         [Header("Dependencies")]
         [SerializeField] private MapRenderer _mapRenderer;
         [SerializeField] private TerrainStatTable _terrainStatTable;
@@ -64,30 +72,34 @@ namespace ProjectAstra.Core.Cursor
         [SerializeField] private float _scaleMin = 1f;
         [SerializeField] private float _scaleMax = 1.04f;
 
+        // --- Runtime state ---
+
         private Vector2Int _gridPosition;
         private CursorMode _currentMode = CursorMode.Locked;
         private CursorAnimator _animator;
+        private PathfindingService _pathfindingService;
 
-        // Movement constraint — null means unconstrained (FREE mode)
+        // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
 
-        // Cursor memory for mode transitions (e.g., return to unit tile on cancel)
+        // Cursor position to restore on cancel (e.g., back to the unit tile).
         private Vector2Int? _memorizedPosition;
 
-        // Unit selection state
+        // Unit selection + reachability.
         private TestUnit _selectedUnit;
         private Pathfinder.ReachabilityResult _currentReachability;
         private Vector2Int _committedDestination;
-        private PathfindingService _pathfindingService;
 
-        // Targeting mode — cycle through attack tiles instead of grid-walking
+        // Targeting cycles through pre-computed target tiles instead of grid-walking.
         private List<Vector2Int> _targetTiles;
         private int _targetIndex;
+        private bool _isHealTargeting;
+
+        // Caches populated when the action menu is built.
         private List<Vector2Int> _cachedEnemyTiles = new();
         private List<Vector2Int> _cachedHealTiles = new();
         private List<ActionChoice> _cachedActionChoices = new();
         private List<TestUnit> _cachedAdjacentAllies = new();
-        private bool _isHealTargeting;
 
         // Canto — cavalry/flying units re-enter movement mode after a primary action.
         private bool _isCantoMode;
@@ -99,11 +111,11 @@ namespace ProjectAstra.Core.Cursor
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
 
-        /// <summary>Fired after the cursor moves to a new tile.</summary>
+        // Fires after the cursor moves to a new tile.
         public event Action<Vector2Int> OnCursorMoved;
-        #endregion
 
-        #region Monobehaviour lifecycle
+        // --- Unity lifecycle ---
+
         private void Awake()
         {
             InitializeCursorAnimator();
@@ -132,61 +144,8 @@ namespace ProjectAstra.Core.Cursor
         {
             _animator?.UpdatePulse(_pulseSpeed, _alphaMin, _alphaMax, _scaleMin, _scaleMax);
         }
-        #endregion
 
-        #region Helpers for initialization and event management
-        private void InitializeCursorAnimator()
-        {
-            if (_spriteRenderer != null)
-                _animator = new CursorAnimator(_spriteRenderer);
-        }
-
-        private void AddListenersToInputEvents()
-        {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnCursorMove += HandleCursorMove;
-                InputManager.Instance.OnConfirm += HandleConfirm;
-                InputManager.Instance.OnCancel += HandleCancel;
-                InputManager.Instance.OnNextUnit += HandleNextUnit;
-                InputManager.Instance.OnPrevUnit += HandlePrevUnit;
-                InputManager.Instance.OnOpenUnitInfo += HandleOpenUnitInfo;
-            }
-        }
-
-        private void RemoveListenersFromInputEvents()
-        {
-            if (InputManager.Instance != null)
-            {
-                InputManager.Instance.OnCursorMove -= HandleCursorMove;
-                InputManager.Instance.OnConfirm -= HandleConfirm;
-                InputManager.Instance.OnCancel -= HandleCancel;
-                InputManager.Instance.OnNextUnit -= HandleNextUnit;
-                InputManager.Instance.OnPrevUnit -= HandlePrevUnit;
-                InputManager.Instance.OnOpenUnitInfo -= HandleOpenUnitInfo;
-            }
-        }
-
-        private void AddListenersToGameStateEvents()
-        {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnGameStateChanged);
-        }
-
-        private void RemoveListenersFromGameStateEvents()
-        {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnGameStateChanged);
-        }
-
-        private void InitializePathFindingService()
-        {
-            if (_mapRenderer != null && _terrainStatTable != null)
-                _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
-        }
-        #endregion
-
-        #region Methods for mode and position management
+        // --- Public API: mode and position ---
 
         public void SetMode(CursorMode mode)
         {
@@ -199,10 +158,10 @@ namespace ProjectAstra.Core.Cursor
         {
             Vector2Int newClampedPosition = ClampToMapBounds(position);
             bool hasCursorPositionActuallyChanged = newClampedPosition != _gridPosition;
-            
+
             _gridPosition = newClampedPosition;
             SnapToGridPosition();
-            
+
             if (hasCursorPositionActuallyChanged)
                 OnCursorMoved?.Invoke(_gridPosition);
         }
@@ -219,6 +178,144 @@ namespace ProjectAstra.Core.Cursor
             SetPosition(_memorizedPosition.Value);
             _memorizedPosition = null;
         }
+
+        // --- Input entry points ---
+
+        internal void HandleCursorMove(Vector2Int direction)
+        {
+            if (!CanCursorMove()) return;
+
+            if (_currentMode == CursorMode.Targeting)
+            {
+                CycleThroughTargets(direction);
+                return;
+            }
+
+            Vector2Int targetGridPosition = ClampToMapBounds(_gridPosition + direction);
+
+            if (IsMovementConstrained() && !_validMoveTiles.Contains(targetGridPosition))
+                return;
+
+            if (targetGridPosition == _gridPosition)
+                return;
+
+            _gridPosition = targetGridPosition;
+            SnapToGridPosition();
+            OnCursorMoved?.Invoke(_gridPosition);
+
+            if (_currentMode == CursorMode.UnitSelected)
+                UpdatePathArrow();
+        }
+
+        internal void HandleConfirm()
+        {
+            if (!CanCursorMove()) return;
+
+            switch (_currentMode)
+            {
+                case CursorMode.Free:
+                    TrySelectUnit();
+                    break;
+                case CursorMode.UnitSelected:
+                    TryCommitMovement();
+                    break;
+                case CursorMode.Targeting:
+                    if (_isHealTargeting) TryCommitHeal();
+                    else TryCommitAttack();
+                    break;
+            }
+        }
+
+        internal void HandleCancel()
+        {
+            if (!CanCursorMove()) return;
+
+            switch (_currentMode)
+            {
+                case CursorMode.UnitSelected:
+                    if (_isCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
+                    DeselectUnit();
+                    break;
+                case CursorMode.Targeting:
+                    CancelTargeting();
+                    break;
+            }
+        }
+
+        private void HandleNextUnit()
+        {
+            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            var next = TurnManager.Instance.UnitRegistry.GetNextUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
+            if (next != null) SetPosition(next.gridPosition);
+        }
+
+        private void HandlePrevUnit()
+        {
+            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            var prev = TurnManager.Instance.UnitRegistry.GetPrevUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
+            if (prev != null) SetPosition(prev.gridPosition);
+        }
+
+        private void HandleOpenUnitInfo()
+        {
+            if (!CanCursorMove()) return;
+            if (_currentMode == CursorMode.Locked) return;
+
+            TestUnit unit = FindUnitAt(_gridPosition);
+            if (unit == null) return;
+
+            _unitInfoPanelUI?.Show(unit, UnitInfoContext.BattleMap);
+        }
+
+        // --- Initialization helpers ---
+
+        private void InitializeCursorAnimator()
+        {
+            if (_spriteRenderer != null)
+                _animator = new CursorAnimator(_spriteRenderer);
+        }
+
+        private void InitializePathFindingService()
+        {
+            if (_mapRenderer != null && _terrainStatTable != null)
+                _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
+        }
+
+        private void AddListenersToInputEvents()
+        {
+            if (InputManager.Instance == null) return;
+            InputManager.Instance.OnCursorMove += HandleCursorMove;
+            InputManager.Instance.OnConfirm += HandleConfirm;
+            InputManager.Instance.OnCancel += HandleCancel;
+            InputManager.Instance.OnNextUnit += HandleNextUnit;
+            InputManager.Instance.OnPrevUnit += HandlePrevUnit;
+            InputManager.Instance.OnOpenUnitInfo += HandleOpenUnitInfo;
+        }
+
+        private void RemoveListenersFromInputEvents()
+        {
+            if (InputManager.Instance == null) return;
+            InputManager.Instance.OnCursorMove -= HandleCursorMove;
+            InputManager.Instance.OnConfirm -= HandleConfirm;
+            InputManager.Instance.OnCancel -= HandleCancel;
+            InputManager.Instance.OnNextUnit -= HandleNextUnit;
+            InputManager.Instance.OnPrevUnit -= HandlePrevUnit;
+            InputManager.Instance.OnOpenUnitInfo -= HandleOpenUnitInfo;
+        }
+
+        private void AddListenersToGameStateEvents()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Register(OnGameStateChanged);
+        }
+
+        private void RemoveListenersFromGameStateEvents()
+        {
+            if (_stateChangedChannel != null)
+                _stateChangedChannel.Unregister(OnGameStateChanged);
+        }
+
+        // --- Mode/position internals ---
 
         private void ToggleSpriteRendererBasedOnCursorMode()
         {
@@ -250,56 +347,12 @@ namespace ProjectAstra.Core.Cursor
 
             return new Vector2Int(
                 Mathf.Clamp(pos.x, 0, map.Width - 1),
-                Mathf.Clamp(pos.y, 0, map.Height - 1)
-                );
+                Mathf.Clamp(pos.y, 0, map.Height - 1));
         }
 
         private void SnapToGridPosition()
         {
             transform.position = new Vector3(_gridPosition.x + 0.5f, _gridPosition.y + 0.5f, 0f);
-        }
-        #endregion
-
-        #region Methods for handling input events and game state changes
-        internal void HandleCursorMove(Vector2Int direction)
-        {
-            if(!CanCursorMove())
-                return;
-
-            if (_currentMode == CursorMode.Targeting)
-            {
-                CycleThroughTargets(direction);
-                return;
-            }
-
-            Vector2Int targetGridPosition = ClampToMapBounds(_gridPosition + direction);
-
-            if (IsMovementConstrained() && !_validMoveTiles.Contains(targetGridPosition))
-                return;
-
-            if (targetGridPosition == _gridPosition)
-                return;
-
-            _gridPosition = targetGridPosition;
-            SnapToGridPosition();
-            OnCursorMoved?.Invoke(_gridPosition);
-
-            if (_currentMode == CursorMode.UnitSelected)
-                UpdatePathArrow();
-        }
-
-        private void CycleThroughTargets(Vector2Int direction)
-        {
-            if (_targetTiles == null || _targetTiles.Count == 0) return;
-
-            int step = (direction.x > 0 || direction.y > 0) ? 1 : -1;
-            _targetIndex = (_targetIndex + step + _targetTiles.Count) % _targetTiles.Count;
-
-            _gridPosition = _targetTiles[_targetIndex];
-            SnapToGridPosition();
-            OnCursorMoved?.Invoke(_gridPosition);
-
-            UpdateCombatForecastForCurrentTarget();
         }
 
         private bool CanCursorMove()
@@ -317,41 +370,27 @@ namespace ProjectAstra.Core.Cursor
             return true;
         }
 
-        private bool IsMovementConstrained()
+        private bool IsMovementConstrained() => _validMoveTiles != null;
+
+        // --- Cursor movement details ---
+
+        private void CycleThroughTargets(Vector2Int direction)
         {
-            return _validMoveTiles != null;
-        }
+            if (_targetTiles == null || _targetTiles.Count == 0) return;
 
+            int step = (direction.x > 0 || direction.y > 0) ? 1 : -1;
+            _targetIndex = (_targetIndex + step + _targetTiles.Count) % _targetTiles.Count;
 
-        private void HandleNextUnit()
-        {
-            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
-            var next = TurnManager.Instance.UnitRegistry.GetNextUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
-            if (next != null) SetPosition(next.gridPosition);
-        }
+            _gridPosition = _targetTiles[_targetIndex];
+            SnapToGridPosition();
+            OnCursorMoved?.Invoke(_gridPosition);
 
-        private void HandlePrevUnit()
-        {
-            if (_currentMode != CursorMode.Free || TurnManager.Instance == null) return;
-            var prev = TurnManager.Instance.UnitRegistry.GetPrevUnactedUnit(Faction.Player, FindUnitAt(_gridPosition));
-            if (prev != null) SetPosition(prev.gridPosition);
-        }
-
-        private void HandleOpenUnitInfo()
-        {
-            if (!CanCursorMove()) return;
-            if (_currentMode == CursorMode.Locked) return;
-
-            TestUnit unit = FindUnitAt(_gridPosition);
-            if (unit == null) return;
-
-            _unitInfoPanelUI?.Show(unit, UnitInfoContext.BattleMap);
+            UpdateCombatForecastForCurrentTarget();
         }
 
         private void UpdatePathArrow()
         {
-            if (_pathArrowRenderer == null || _selectedUnit == null) 
-                return;
+            if (_pathArrowRenderer == null || _selectedUnit == null) return;
 
             if (!IsCurrentTileReachable())
             {
@@ -363,39 +402,15 @@ namespace ProjectAstra.Core.Cursor
             _pathArrowRenderer.ShowPath(path);
         }
 
-        private bool IsCurrentTileReachable()
-        {
-            return _currentReachability.Destinations.Contains(_gridPosition);
-        }
+        private bool IsCurrentTileReachable() =>
+            _currentReachability.Destinations.Contains(_gridPosition);
 
-        internal void HandleConfirm()
-        {
-            if (!CanCursorMove())
-                return;
-
-            switch (_currentMode)
-            {
-                case CursorMode.Free:
-                    TrySelectUnit();
-                    break;
-                case CursorMode.UnitSelected:
-                    TryCommitMovement();
-                    break;
-                case CursorMode.Targeting:
-                    if (_isHealTargeting)
-                        TryCommitHeal();
-                    else
-                        TryCommitAttack();
-                    break;
-            }
-        }
+        // --- Unit selection ---
 
         private void TrySelectUnit()
         {
             TestUnit unit = FindUnitAt(_gridPosition);
-
-            if (!IsUnitSelectable(unit)) 
-                return;
+            if (!IsUnitSelectable(unit)) return;
 
             _selectedUnit = unit;
             EnterUnitSelectedMode();
@@ -419,35 +434,42 @@ namespace ProjectAstra.Core.Cursor
                 if (!registry.CanAct(unit)) return false;
                 if (registry.GetFaction(unit) != Faction.Player) return false;
                 if (TurnManager.Instance.CurrentPhase != BattlePhase.PlayerPhase) return false;
-            }
-            else if (unit.hasActed)
-            {
-                return false;
+                return true;
             }
 
-            return true;
+            // Test seam: no TurnManager means we fall back to the unit's own flag.
+            return !unit.hasActed;
         }
 
         private void EnterUnitSelectedMode()
         {
             if (_pathfindingService == null || _selectedUnit == null) return;
 
-            _currentReachability = _pathfindingService.ComputeReachability(_selectedUnit.gridPosition, _selectedUnit.movementPoints, _selectedUnit.movementType, pos => GetOccupantType(pos));
+            _currentReachability = _pathfindingService.ComputeReachability(
+                _selectedUnit.gridPosition, _selectedUnit.movementPoints,
+                _selectedUnit.movementType, GetOccupantType);
 
-            // Constrain cursor to reachable + pass-through tiles
-            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
-            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
-
-            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
-
+            RestoreMovementConstraintsAndOverlay();
             SetPositionWithMemory(_selectedUnit.gridPosition);
             SetMode(CursorMode.UnitSelected);
         }
 
+        // TODO(refactor): hook this up to a real unit-occupancy service when
+        // the unit-management system lands. Returning None makes every tile
+        // look unoccupied to the pathfinder.
         private Pathfinder.OccupantType GetOccupantType(Vector2Int pos)
         {
             return Pathfinder.OccupantType.None;
         }
+
+        private void RestoreMovementConstraintsAndOverlay()
+        {
+            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
+            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
+            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
+        }
+
+        // --- Movement commit ---
 
         private void TryCommitMovement()
         {
@@ -474,10 +496,8 @@ namespace ProjectAstra.Core.Cursor
             _pathArrowRenderer?.Clear();
         }
 
-        private bool PathExists(List<Vector2Int> path)
-        {
-            return (_unitMover != null && path != null && path.Count > 1);
-        }
+        private bool PathExists(List<Vector2Int> path) =>
+            _unitMover != null && path != null && path.Count > 1;
 
         private void OnMovementComplete()
         {
@@ -489,26 +509,7 @@ namespace ProjectAstra.Core.Cursor
             ShowActionMenu();
         }
 
-        private void FinalizeCanto()
-        {
-            _isCantoMode = false;
-            if (_selectedUnit != null)
-                _selectedUnit.movementPoints = _preCantoMovementPoints;
-            _lastActionChoice = null;
-
-            if (_selectedUnit != null)
-            {
-                if (TurnManager.Instance != null)
-                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
-                else
-                    _selectedUnit.MarkActed();
-            }
-
-            _memorizedPosition = null;
-            ResetUnitTilesMode();
-
-            TurnManager.Instance?.CheckAutoEndPlayerPhase();
-        }
+        // --- Action menu ---
 
         private void ShowActionMenu()
         {
@@ -516,73 +517,96 @@ namespace ProjectAstra.Core.Cursor
             _cachedActionChoices.Clear();
             _cachedEnemyTiles = FindEnemiesInAttackRange();
 
-            if (_cachedEnemyTiles.Count > 0 && _selectedUnit != null && !_selectedUnit.Inventory.IsUnarmed)
-            {
-                labels.Add("Attack");
-                _cachedActionChoices.Add(ActionChoice.Attack);
-            }
-
-            if (_selectedUnit != null)
-            {
-                var staff = _selectedUnit.equippedWeapon;
-                if (staff.weaponType == WeaponType.Staff && staff.staffEffect != StaffEffect.None && !staff.IsBroken)
-                {
-                    if (staff.staffEffect == StaffEffect.AreaOfEffect)
-                    {
-                        var allUnits = new List<TestUnit>(FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
-                        int mag = GetMagStat(_selectedUnit);
-                        bool anyHealable = false;
-                        foreach (var u in allUnits)
-                        {
-                            if (u == _selectedUnit) continue;
-                            if (StaffEffects.CanHealTarget(_selectedUnit, u, staff, mag, out _))
-                            { anyHealable = true; break; }
-                        }
-                        if (anyHealable)
-                        {
-                            labels.Add("Fortify");
-                            _cachedActionChoices.Add(ActionChoice.Fortify);
-                        }
-                    }
-                    else
-                    {
-                        _cachedHealTiles = FindAlliesInHealRange();
-                        if (_cachedHealTiles.Count > 0)
-                        {
-                            labels.Add("Heal");
-                            _cachedActionChoices.Add(ActionChoice.Heal);
-                        }
-                    }
-                }
-            }
-
-            if (_selectedUnit != null && _selectedUnit.Inventory.OccupiedCount > 0)
-            {
-                labels.Add("Item");
-                _cachedActionChoices.Add(ActionChoice.Item);
-            }
-
-            _cachedAdjacentAllies = _selectedUnit != null
-                ? AdjacentAllyFinder.FindAdjacentAllies(
-                    _committedDestination, Faction.Player, _selectedUnit, FindUnitAt)
-                : new List<TestUnit>();
-            if (_cachedAdjacentAllies.Count > 0)
-            {
-                labels.Add("Trade");
-                _cachedActionChoices.Add(ActionChoice.Trade);
-            }
-
-            if (_selectedUnit != null && _selectedUnit.isLord && Convoy.Current.IsAvailable)
-            {
-                labels.Add("Supply");
-                _cachedActionChoices.Add(ActionChoice.Supply);
-            }
+            TryAddAttackAction(labels);
+            TryAddStaffAction(labels);
+            TryAddItemAction(labels);
+            TryAddTradeAction(labels);
+            TryAddSupplyAction(labels);
 
             labels.Add("Wait");
             _cachedActionChoices.Add(ActionChoice.Wait);
 
             SetMode(CursorMode.ActionMenu);
             _actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
+        }
+
+        private void TryAddAttackAction(List<string> labels)
+        {
+            if (_cachedEnemyTiles.Count == 0) return;
+            if (_selectedUnit == null || _selectedUnit.Inventory.IsUnarmed) return;
+
+            labels.Add("Attack");
+            _cachedActionChoices.Add(ActionChoice.Attack);
+        }
+
+        private void TryAddStaffAction(List<string> labels)
+        {
+            if (_selectedUnit == null) return;
+
+            var staff = _selectedUnit.equippedWeapon;
+            if (staff.weaponType != WeaponType.Staff) return;
+            if (staff.staffEffect == StaffEffect.None || staff.IsBroken) return;
+
+            if (staff.staffEffect == StaffEffect.AreaOfEffect)
+                TryAddFortifyAction(labels);
+            else
+                TryAddHealAction(labels);
+        }
+
+        private void TryAddFortifyAction(List<string> labels)
+        {
+            var staff = _selectedUnit.equippedWeapon;
+            int mag = GetMagStat(_selectedUnit);
+            var allUnits = FindObjectsByType<TestUnit>(FindObjectsSortMode.None);
+
+            foreach (var u in allUnits)
+            {
+                if (u == _selectedUnit) continue;
+                if (!StaffEffects.CanHealTarget(_selectedUnit, u, staff, mag, out _)) continue;
+
+                labels.Add("Fortify");
+                _cachedActionChoices.Add(ActionChoice.Fortify);
+                return;
+            }
+        }
+
+        private void TryAddHealAction(List<string> labels)
+        {
+            _cachedHealTiles = FindAlliesInHealRange();
+            if (_cachedHealTiles.Count == 0) return;
+
+            labels.Add("Heal");
+            _cachedActionChoices.Add(ActionChoice.Heal);
+        }
+
+        private void TryAddItemAction(List<string> labels)
+        {
+            if (_selectedUnit == null || _selectedUnit.Inventory.OccupiedCount == 0) return;
+
+            labels.Add("Item");
+            _cachedActionChoices.Add(ActionChoice.Item);
+        }
+
+        private void TryAddTradeAction(List<string> labels)
+        {
+            _cachedAdjacentAllies = _selectedUnit != null
+                ? AdjacentAllyFinder.FindAdjacentAllies(
+                    _committedDestination, Faction.Player, _selectedUnit, FindUnitAt)
+                : new List<TestUnit>();
+
+            if (_cachedAdjacentAllies.Count == 0) return;
+
+            labels.Add("Trade");
+            _cachedActionChoices.Add(ActionChoice.Trade);
+        }
+
+        private void TryAddSupplyAction(List<string> labels)
+        {
+            if (_selectedUnit == null || !_selectedUnit.isLord) return;
+            if (!Convoy.Current.IsAvailable) return;
+
+            labels.Add("Supply");
+            _cachedActionChoices.Add(ActionChoice.Supply);
         }
 
         private void OnActionSelected(int index)
@@ -598,29 +622,27 @@ namespace ProjectAstra.Core.Cursor
 
             switch (_cachedActionChoices[index])
             {
-                case ActionChoice.Attack:
-                    EnterTargetingMode();
-                    break;
-                case ActionChoice.Heal:
-                    EnterHealTargetingMode();
-                    break;
-                case ActionChoice.Fortify:
-                    TryCommitFortify();
-                    break;
-                case ActionChoice.Item:
-                    OpenInventoryMenu();
-                    break;
-                case ActionChoice.Trade:
-                    ShowTradeTargetMenu();
-                    break;
-                case ActionChoice.Supply:
-                    OpenConvoyUI();
-                    break;
+                case ActionChoice.Attack: EnterTargetingMode(); break;
+                case ActionChoice.Heal: EnterHealTargetingMode(); break;
+                case ActionChoice.Fortify: TryCommitFortify(); break;
+                case ActionChoice.Item: OpenInventoryMenu(); break;
+                case ActionChoice.Trade: ShowTradeTargetMenu(); break;
+                case ActionChoice.Supply: OpenConvoyUI(); break;
                 case ActionChoice.Wait:
-                default:
-                    CompleteAction();
-                    break;
+                default: CompleteAction(); break;
             }
+        }
+
+        private void OnActionCancelled()
+        {
+            _combatForecastUI?.Hide();
+
+            if (_unitMover != null)
+                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
+
+            RestoreMovementConstraintsAndOverlay();
+            SetPosition(_selectedUnit.gridPosition);
+            SetMode(CursorMode.UnitSelected);
         }
 
         private void OpenInventoryMenu()
@@ -669,34 +691,15 @@ namespace ProjectAstra.Core.Cursor
 
         private void OpenConvoyUI()
         {
-            if (_selectedUnit == null || _convoyUI == null)
-            {
-                ShowActionMenu();
-                return;
-            }
+            if (_selectedUnit == null || _convoyUI == null) { ShowActionMenu(); return; }
+
             var convoy = Convoy.Current as SupplyConvoy;
-            if (convoy == null)
-            {
-                ShowActionMenu();
-                return;
-            }
+            if (convoy == null) { ShowActionMenu(); return; }
+
             _convoyUI.Show(convoy, _selectedUnit, _toastUI, onClose: () => CompleteAction());
         }
 
-        private void OnActionCancelled()
-        {
-            _combatForecastUI?.Hide();
-
-            if (_unitMover != null)
-                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
-
-            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
-            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
-            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
-
-            SetPosition(_selectedUnit.gridPosition);
-            SetMode(CursorMode.UnitSelected);
-        }
+        // --- Targeting ---
 
         private void EnterTargetingMode()
         {
@@ -710,8 +713,7 @@ namespace ProjectAstra.Core.Cursor
 
             var enemyTileSet = new HashSet<Vector2Int>(_cachedEnemyTiles);
             _validMoveTiles = enemyTileSet;
-            _targetTiles = new List<Vector2Int>(_cachedEnemyTiles);
-            _targetTiles.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+            _targetTiles = SortedByGridPosition(_cachedEnemyTiles);
             _targetIndex = 0;
 
             _rangeHighlighter?.ShowAttackRange(enemyTileSet);
@@ -720,6 +722,36 @@ namespace ProjectAstra.Core.Cursor
             SetMode(CursorMode.Targeting);
 
             UpdateCombatForecastForCurrentTarget();
+        }
+
+        private void EnterHealTargetingMode()
+        {
+            if (_cachedHealTiles.Count == 0)
+            {
+                ShowActionMenu();
+                return;
+            }
+
+            _isHealTargeting = true;
+
+            var healTileSet = new HashSet<Vector2Int>(_cachedHealTiles);
+            _validMoveTiles = healTileSet;
+            _targetTiles = SortedByGridPosition(_cachedHealTiles);
+            _targetIndex = 0;
+
+            _rangeHighlighter?.ShowHealRange(healTileSet);
+
+            SetPosition(_targetTiles[0]);
+            SetMode(CursorMode.Targeting);
+
+            UpdateCombatForecastForCurrentTarget();
+        }
+
+        private static List<Vector2Int> SortedByGridPosition(List<Vector2Int> source)
+        {
+            var copy = new List<Vector2Int>(source);
+            copy.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
+            return copy;
         }
 
         private void UpdateCombatForecastForCurrentTarget()
@@ -749,13 +781,7 @@ namespace ProjectAstra.Core.Cursor
             foreach (var tile in attackRange)
             {
                 var unit = FindUnitAt(tile);
-                if (unit == null) continue;
-
-                bool isEnemy = TurnManager.Instance != null
-                    ? TurnManager.Instance.UnitRegistry.GetFaction(unit) == Faction.Enemy
-                    : unit.faction == Faction.Enemy;
-
-                if (isEnemy)
+                if (unit != null && IsEnemy(unit))
                     enemyTiles.Add(tile);
             }
             return enemyTiles;
@@ -775,56 +801,36 @@ namespace ProjectAstra.Core.Cursor
             {
                 var unit = FindUnitAt(tile);
                 if (unit == null || unit == _selectedUnit) continue;
-
-                bool isAlly = TurnManager.Instance != null
-                    ? TurnManager.Instance.UnitRegistry.GetFaction(unit) != Faction.Enemy
-                    : unit.faction != Faction.Enemy;
-
-                if (!isAlly) continue;
+                if (IsEnemy(unit)) continue;
 
                 int hp = unit.UnitInstance != null ? unit.UnitInstance.CurrentHP : unit.currentHP;
                 int maxHP = unit.UnitInstance != null ? unit.UnitInstance.MaxHP : unit.maxHP;
-
                 if (hp < maxHP)
                     allyTiles.Add(tile);
             }
             return allyTiles;
         }
 
-        private void EnterHealTargetingMode()
+        // Prefer the TurnManager-registered faction when available; otherwise
+        // fall back to the unit's own field. A unit that's registered but has
+        // no faction entry counts as not-enemy (matches the original
+        // GetFaction(unit) == Faction.Enemy comparison with a null-valued
+        // nullable Faction returning false).
+        private static bool IsEnemy(TestUnit unit)
         {
-            if (_cachedHealTiles.Count == 0)
-            {
-                ShowActionMenu();
-                return;
-            }
-
-            _isHealTargeting = true;
-
-            var healTileSet = new HashSet<Vector2Int>(_cachedHealTiles);
-            _validMoveTiles = healTileSet;
-            _targetTiles = new List<Vector2Int>(_cachedHealTiles);
-            _targetTiles.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
-            _targetIndex = 0;
-
-            _rangeHighlighter?.ShowHealRange(healTileSet);
-
-            SetPosition(_targetTiles[0]);
-            SetMode(CursorMode.Targeting);
-
-            UpdateCombatForecastForCurrentTarget();
+            return TurnManager.Instance != null
+                ? TurnManager.Instance.UnitRegistry.GetFaction(unit) == Faction.Enemy
+                : unit.faction == Faction.Enemy;
         }
+
+        // --- Staff actions ---
 
         private void TryCommitHeal()
         {
             _combatForecastUI?.Hide();
 
             var target = FindUnitAt(_gridPosition);
-            if (target == null)
-            {
-                CompleteAction();
-                return;
-            }
+            if (target == null) { CompleteAction(); return; }
 
             AnnounceBreaks(_selectedUnit, () =>
             {
@@ -857,66 +863,17 @@ namespace ProjectAstra.Core.Cursor
             CompleteAction();
         }
 
-        private static int GetMagStat(TestUnit unit)
-        {
-            return unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
-        }
+        private static int GetMagStat(TestUnit unit) =>
+            unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
 
-        private void CompleteAction()
-        {
-            if (TryEnterCanto()) return;
-
-            if (_selectedUnit != null)
-            {
-                if (TurnManager.Instance != null)
-                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
-                else
-                    _selectedUnit.MarkActed();
-            }
-
-            _memorizedPosition = null;
-            ResetUnitTilesMode();
-
-            TurnManager.Instance?.CheckAutoEndPlayerPhase();
-        }
-
-        private bool TryEnterCanto()
-        {
-            if (_isCantoMode) return false;
-            if (_selectedUnit == null) return false;
-            if (_lastActionChoice == ActionChoice.Wait || _lastActionChoice == null) return false;
-
-            var cls = _selectedUnit.UnitInstance?.CurrentClass;
-            if (cls == null || !cls.HasCanto) return false;
-
-            int costPaid = _currentReachability.CostMap != null
-                && _currentReachability.CostMap.TryGetValue(_selectedUnit.gridPosition, out var c) ? c : 0;
-            int remaining = _selectedUnit.movementPoints - costPaid;
-            if (remaining <= 0) return false;
-
-            _preCantoMovementPoints = _selectedUnit.movementPoints;
-            _selectedUnit.movementPoints = remaining;
-            _isCantoMode = true;
-
-            EnterUnitSelectedMode();
-
-            // Ensure confirming on the unit's own tile is a legal "stay put" exit.
-            if (_validMoveTiles != null && !_validMoveTiles.Contains(_selectedUnit.gridPosition))
-                _validMoveTiles.Add(_selectedUnit.gridPosition);
-
-            return true;
-        }
+        // --- Combat resolution ---
 
         private void TryCommitAttack()
         {
             _combatForecastUI?.Hide();
 
             var defender = FindUnitAt(_gridPosition);
-            if (defender == null)
-            {
-                CompleteAction();
-                return;
-            }
+            if (defender == null) { CompleteAction(); return; }
 
             if (_selectedUnit.Inventory.IsUnarmed)
             {
@@ -931,36 +888,6 @@ namespace ProjectAstra.Core.Cursor
             ApplyDurability(_selectedUnit, defender, result);
 
             CompleteAction();
-        }
-
-        private void ApplyDurability(TestUnit attacker, TestUnit defender, CombatResult result)
-        {
-            if (result.AttackerFired)
-            {
-                AnnounceBreaks(attacker, () => attacker.Inventory.ConsumeEquippedWeaponUses(1));
-            }
-            if (result.DefenderFired)
-            {
-                AnnounceBreaks(defender, () => defender.Inventory.ConsumeEquippedWeaponUses(1));
-            }
-        }
-
-        private void AnnounceBreaks(TestUnit unit, Action mutate)
-        {
-            void OnDestroyed(InventoryItem item)
-            {
-                if (_toastUI != null)
-                {
-                    string message = item.kind == ItemKind.Weapon
-                        ? $"{item.weapon.name} broke!"
-                        : $"{item.consumable.name} depleted";
-                    _toastUI.Show(message);
-                }
-            }
-
-            unit.Inventory.OnItemDestroyed += OnDestroyed;
-            try { mutate(); }
-            finally { unit.Inventory.OnItemDestroyed -= OnDestroyed; }
         }
 
         private CombatResult ResolveCombat(TestUnit attacker, TestUnit defender)
@@ -981,7 +908,7 @@ namespace ProjectAstra.Core.Cursor
                 atkTerrainDef, atkTerrainAvo, new UnityRng(), atkClass, defClass);
         }
 
-        private CombatantData BuildCombatantData(TestUnit unit, int distance)
+        private static CombatantData BuildCombatantData(TestUnit unit, int distance)
         {
             if (unit.UnitInstance != null)
             {
@@ -991,14 +918,14 @@ namespace ProjectAstra.Core.Cursor
                     unit.equippedWeapon, distance, classCrit);
             }
 
+            // Test-seam fallback for legacy TestUnits without a UnitInstance.
             var stats = StatArray.From(unit.maxHP, 8, 3, 7, 9, 5, 2, 6, 5);
             return CombatantData.FromStats(stats, unit.currentHP, unit.maxHP, unit.equippedWeapon, distance);
         }
 
         private (int def, int avo) GetTerrainBonuses(TestUnit unit)
         {
-            if (_mapRenderer == null || _terrainStatTable == null)
-                return (0, 0);
+            if (_mapRenderer == null || _terrainStatTable == null) return (0, 0);
 
             var terrain = _mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
             var stats = _terrainStatTable.GetStats(terrain);
@@ -1024,36 +951,39 @@ namespace ProjectAstra.Core.Cursor
             }
 
             if (result.TriangleAdvantage != 0)
-                Debug.Log($"[Combat] Weapon Triangle: {(result.TriangleAdvantage > 0 ? "Attacker advantage" : "Defender advantage")}");
+            {
+                string side = result.TriangleAdvantage > 0 ? "Attacker advantage" : "Defender advantage";
+                Debug.Log($"[Combat] Weapon Triangle: {side}");
+            }
             if (result.AttackerEffective)
                 Debug.Log($"[Combat] Effective weapon!");
+
             Debug.Log($"[Combat] Result: {attacker.name} HP={result.AttackerHPAfter}, {defender.name} HP={result.DefenderHPAfter}");
         }
 
         private void ApplyCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
         {
-            if (attacker.UnitInstance != null)
-                attacker.UnitInstance.SetCurrentHP(result.AttackerHPAfter);
-            else
-                attacker.currentHP = result.AttackerHPAfter;
+            SetUnitHP(attacker, result.AttackerHPAfter);
+            SetUnitHP(defender, result.DefenderHPAfter);
 
-            if (defender.UnitInstance != null)
-                defender.UnitInstance.SetCurrentHP(result.DefenderHPAfter);
-            else
-                defender.currentHP = result.DefenderHPAfter;
-
-            if (result.DefenderDied)
-            {
-                UnitDeathHook.HandleDeath(defender, attacker, _deathEventChannel);
-                if (defender.isLord) Convoy.Current = NullConvoy.Instance;
-            }
-            if (result.AttackerDied)
-            {
-                UnitDeathHook.HandleDeath(attacker, defender, _deathEventChannel);
-                if (attacker.isLord) Convoy.Current = NullConvoy.Instance;
-            }
+            if (result.DefenderDied) HandleUnitDeathAfterCombat(defender, attacker);
+            if (result.AttackerDied) HandleUnitDeathAfterCombat(attacker, defender);
 
             GrantCombatExp(attacker, defender, result);
+        }
+
+        private static void SetUnitHP(TestUnit unit, int hp)
+        {
+            if (unit.UnitInstance != null)
+                unit.UnitInstance.SetCurrentHP(hp);
+            else
+                unit.currentHP = hp;
+        }
+
+        private void HandleUnitDeathAfterCombat(TestUnit died, TestUnit killer)
+        {
+            UnitDeathHook.HandleDeath(died, killer, _deathEventChannel);
+            if (died.isLord) Convoy.Current = NullConvoy.Instance;
         }
 
         private static void GrantCombatExp(TestUnit attacker, TestUnit defender, CombatResult result)
@@ -1076,22 +1006,33 @@ namespace ProjectAstra.Core.Cursor
             }
         }
 
-        internal void HandleCancel()
+        private void ApplyDurability(TestUnit attacker, TestUnit defender, CombatResult result)
         {
-            if (!CanCursorMove())
-                return;
-
-            switch (_currentMode)
-            {
-                case CursorMode.UnitSelected:
-                    if (_isCantoMode) { ClearOverlay(); FinalizeCanto(); break; }
-                    DeselectUnit();
-                    break;
-                case CursorMode.Targeting:
-                    CancelTargeting();
-                    break;
-            }
+            if (result.AttackerFired)
+                AnnounceBreaks(attacker, () => attacker.Inventory.ConsumeEquippedWeaponUses(1));
+            if (result.DefenderFired)
+                AnnounceBreaks(defender, () => defender.Inventory.ConsumeEquippedWeaponUses(1));
         }
+
+        // Wraps an inventory mutation so we can surface a toast when an item
+        // breaks or depletes during the mutation.
+        private void AnnounceBreaks(TestUnit unit, Action mutate)
+        {
+            void OnDestroyed(InventoryItem item)
+            {
+                if (_toastUI == null) return;
+                string message = item.kind == ItemKind.Weapon
+                    ? $"{item.weapon.name} broke!"
+                    : $"{item.consumable.name} depleted";
+                _toastUI.Show(message);
+            }
+
+            unit.Inventory.OnItemDestroyed += OnDestroyed;
+            try { mutate(); }
+            finally { unit.Inventory.OnItemDestroyed -= OnDestroyed; }
+        }
+
+        // --- Cancel / cleanup ---
 
         private void DeselectUnit()
         {
@@ -1121,6 +1062,70 @@ namespace ProjectAstra.Core.Cursor
             ShowActionMenu();
         }
 
+        // --- Canto ---
+
+        private void CompleteAction()
+        {
+            if (TryEnterCanto()) return;
+            FinishSelectedUnitTurn();
+        }
+
+        private bool TryEnterCanto()
+        {
+            if (_isCantoMode) return false;
+            if (_selectedUnit == null) return false;
+            if (_lastActionChoice == ActionChoice.Wait || _lastActionChoice == null) return false;
+
+            var cls = _selectedUnit.UnitInstance?.CurrentClass;
+            if (cls == null || !cls.HasCanto) return false;
+
+            int costPaid = _currentReachability.CostMap != null
+                && _currentReachability.CostMap.TryGetValue(_selectedUnit.gridPosition, out var c) ? c : 0;
+            int remaining = _selectedUnit.movementPoints - costPaid;
+            if (remaining <= 0) return false;
+
+            _preCantoMovementPoints = _selectedUnit.movementPoints;
+            _selectedUnit.movementPoints = remaining;
+            _isCantoMode = true;
+
+            EnterUnitSelectedMode();
+
+            // The unit's own tile is a legal "stay put" exit during canto, so
+            // make sure the constraint set includes it even when reachability
+            // would otherwise exclude it.
+            if (_validMoveTiles != null && !_validMoveTiles.Contains(_selectedUnit.gridPosition))
+                _validMoveTiles.Add(_selectedUnit.gridPosition);
+
+            return true;
+        }
+
+        private void FinalizeCanto()
+        {
+            _isCantoMode = false;
+            if (_selectedUnit != null)
+                _selectedUnit.movementPoints = _preCantoMovementPoints;
+            _lastActionChoice = null;
+
+            FinishSelectedUnitTurn();
+        }
+
+        private void FinishSelectedUnitTurn()
+        {
+            if (_selectedUnit != null)
+            {
+                if (TurnManager.Instance != null)
+                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
+                else
+                    _selectedUnit.MarkActed();
+            }
+
+            _memorizedPosition = null;
+            ResetUnitTilesMode();
+            TurnManager.Instance?.CheckAutoEndPlayerPhase();
+        }
+
+        // --- Game state events ---
+
         private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
         {
             if (args.NewState == GameState.BattleMap)
@@ -1131,14 +1136,15 @@ namespace ProjectAstra.Core.Cursor
 
         private void UpdateModeFromGameState()
         {
-            if (GameStateManager.Instance != null && GameStateManager.Instance.CurrentState == GameState.BattleMap)
-                SetMode(CursorMode.Free);
-            else
-                SetMode(CursorMode.Free); // Default to Free when loaded directly
+            // Always start in Free. OnGameStateChanged will lock us back down
+            // if we're not actually in the BattleMap state — and when the
+            // cursor is loaded into a scene directly (test seam), Free is the
+            // correct default anyway.
+            SetMode(CursorMode.Free);
         }
-#endregion
 
-        #region Debug utilities
+        // --- Test seams ---
+
         internal void Initialize(MapRenderer mapRenderer, TerrainStatTable terrainStatTable)
         {
             _mapRenderer = mapRenderer;
@@ -1149,30 +1155,11 @@ namespace ProjectAstra.Core.Cursor
             _currentMode = CursorMode.Free;
         }
 
-        internal void SetSpriteRenderer(SpriteRenderer sr)
-        {
-            _spriteRenderer = sr;
-        }
-
-        internal void SetRangeHighlighter(RangeHighlighter rh)
-        {
-            _rangeHighlighter = rh;
-        }
-
-        internal void SetPathArrowRenderer(PathArrowRenderer par)
-        {
-            _pathArrowRenderer = par;
-        }
-
-        internal void SetActionMenuUI(UnitActionMenuUI ui)
-        {
-            _actionMenuUI = ui;
-        }
-
-        internal void SetUnitMover(UnitMover mover)
-        {
-            _unitMover = mover;
-        }
+        internal void SetSpriteRenderer(SpriteRenderer sr) => _spriteRenderer = sr;
+        internal void SetRangeHighlighter(RangeHighlighter rh) => _rangeHighlighter = rh;
+        internal void SetPathArrowRenderer(PathArrowRenderer par) => _pathArrowRenderer = par;
+        internal void SetActionMenuUI(UnitActionMenuUI ui) => _actionMenuUI = ui;
+        internal void SetUnitMover(UnitMover mover) => _unitMover = mover;
 
         internal void SetModeSprites(Sprite idle, Sprite selected, Sprite targeting)
         {
@@ -1180,7 +1167,5 @@ namespace ProjectAstra.Core.Cursor
             _selectedSprite = selected;
             _targetingSprite = targeting;
         }
-        #endregion
-
     }
 }
