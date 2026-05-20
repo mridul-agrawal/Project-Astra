@@ -2,15 +2,13 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Units
 {
-    /// <summary>
-    /// Sinusoidal vertical bob for flying-unit map sprites, giving the visual cue
-    /// that the unit ignores terrain movement costs. Attach to the sprite child
-    /// (not the root TestUnit) so only visuals bob — grid-position logic still
-    /// reads the root transform, which stays tile-snapped.
-    ///
-    /// Phase is randomised per instance so a squad of fliers doesn't oscillate
-    /// in lockstep.
-    /// </summary>
+    // Sinusoidal vertical bob for flying-unit sprites — a visual cue that the
+    // unit ignores terrain movement costs. Attach to the sprite child (not the
+    // root TestUnit) so only visuals bob; the root transform stays tile-snapped
+    // for grid-position logic.
+    //
+    // Phase is randomised per instance so a squad of fliers doesn't oscillate
+    // in lockstep.
     public class FlyingHoverAnimator : MonoBehaviour
     {
         [SerializeField] private float _amplitude = 0.25f;

@@ -1,6 +1,8 @@
 namespace ProjectAstra.Core.Units
 {
-    // CC-01. Sarathi archetype assigned to allied NPC units.
+    // Sarathi archetype assigned to allied NPC units (CC-01). Stored on unit
+    // assets as the integer value — don't reorder; add new entries only at
+    // the end.
     public enum Personality
     {
         None   = 0,

@@ -1,6 +1,7 @@
 namespace ProjectAstra.Core.Units
 {
-    // SP-03. Elemental affinity.
+    // Elemental affinity (SP-03). Stored on unit assets as the integer value
+    // — don't reorder; add new entries only at the end.
     public enum PanchaBhuta
     {
         None    = 0,

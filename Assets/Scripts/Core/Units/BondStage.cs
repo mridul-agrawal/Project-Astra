@@ -1,6 +1,8 @@
 namespace ProjectAstra.Core.Units
 {
-    // SP-01. Integer values match SupportBond.BondLevel so casts round-trip.
+    // Support bond stages (SP-01). Stored on save data as the integer value —
+    // don't reorder; add new entries only at the end. Values intentionally
+    // match SupportBond.BondLevel so casts round-trip.
     public enum BondStage
     {
         Encounter = 0,
