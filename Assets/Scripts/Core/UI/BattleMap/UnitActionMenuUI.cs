@@ -9,14 +9,12 @@ using ProjectAstra.Core.UI.Inventory;
 
 namespace ProjectAstra.Core.UI.BattleMap
 {
-    /// <summary>
-    /// Unit Action Menu popup — appears after a unit moves, showing context-dependent
-    /// options (Attack, Item, Trade, Wait, etc.). Visual style: Warrior's Command
-    /// (octagonal frame, ember gradients, trishul cursor).
-    ///
-    /// Lifecycle: Show(options, onSelect, onCancel) → input handling → Hide().
-    /// Integration: GridCursor calls Show after movement; HasInputFocus gates cursor input.
-    /// </summary>
+    // Unit Action Menu popup — appears after a unit moves, showing context-
+    // dependent options (Attack, Item, Trade, Wait, …). Visual style:
+    // Warrior's Command (octagonal frame, ember gradients, trishul cursor).
+    //
+    // Lifecycle: Show(options, onSelect, onCancel) → input → Hide().
+    // GridCursor calls Show after movement; HasInputFocus gates cursor input.
     public class UnitActionMenuUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }
@@ -125,7 +123,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             if (HasInputFocus) Hide();
         }
 
-        #region Input handling
+        // --- Input handling ---
 
         private void Navigate(Vector2Int dir)
         {
@@ -171,9 +169,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             return 0;
         }
 
-        #endregion
-
-        #region UI construction
+        // --- UI construction ---
 
         private void BuildUI()
         {
@@ -335,7 +331,5 @@ namespace ProjectAstra.Core.UI.BattleMap
                     _trishulIcons[i].SetActive(selected && !disabled);
             }
         }
-
-        #endregion
     }
 }

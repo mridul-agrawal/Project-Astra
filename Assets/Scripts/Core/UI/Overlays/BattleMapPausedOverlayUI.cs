@@ -6,6 +6,8 @@ using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
+    // Pause overlay shown during BattleMap play. Lists End Turn / Resume /
+    // Save / Settings / Quit; Cancel returns to BattleMap.
     public class BattleMapPausedOverlayUI : MonoBehaviour
     {
         [SerializeField] private Button _endTurnButton;

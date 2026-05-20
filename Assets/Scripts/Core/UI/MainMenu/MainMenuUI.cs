@@ -6,12 +6,11 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.MainMenu
 {
-    /// <summary>
-    /// Main menu controller. Lives on the "MainMenu" root built by MainMenuBuilder.
-    /// Discovers its buttons at OnEnable from ButtonsContainer's children in sibling
-    /// order — index 0 → Cutscene, 1 → PreBattlePrep, 2 → BattleMap. The order must
-    /// match MainMenuBuilder.ButtonLabels.
-    /// </summary>
+    // Main menu controller. Lives on the "MainMenu" root built by
+    // MainMenuBuilder. Discovers its buttons at OnEnable from
+    // ButtonsContainer's children in sibling order — index 0 → Cutscene,
+    // 1 → PreBattlePrep, 2 → BattleMap. Order must match
+    // MainMenuBuilder.ButtonLabels.
     public class MainMenuUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);

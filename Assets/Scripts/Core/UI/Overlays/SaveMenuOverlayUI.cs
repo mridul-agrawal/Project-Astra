@@ -5,9 +5,7 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Save menu overlay — return or cancel goes back to previous state.
-    /// </summary>
+    // Save menu overlay — return or cancel goes back to previous state.
     public class SaveMenuOverlayUI : MonoBehaviour
     {
         [SerializeField] private Button _returnButton;

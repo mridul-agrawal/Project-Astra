@@ -8,12 +8,11 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Modal that appears when a unit tries to acquire an item with a full inventory.
-    /// Shows the incoming item plus all 5 current items so the player can pick which
-    /// slot to discard, or cancel. Implements IInventoryFullPromptHandler so the
-    /// static InventoryAcquisition flow can defer UI to it.
-    /// </summary>
+    // Modal that appears when a unit tries to acquire an item with a full
+    // inventory. Shows the incoming item plus all 5 current items so the
+    // player can pick which slot to discard, or cancel. Implements
+    // IInventoryFullPromptHandler so the static InventoryAcquisition flow
+    // can defer UI to it.
     public class InventoryFullPromptUI : MonoBehaviour, IInventoryFullPromptHandler
     {
         public static bool HasInputFocus { get; private set; }

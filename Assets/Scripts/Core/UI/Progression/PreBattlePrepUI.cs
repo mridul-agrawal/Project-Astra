@@ -6,11 +6,10 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Progression
 {
-    /// <summary>
-    /// Pre Battle Prep controller. Lives on the "PreBattlePrep" root built by PreBattlePrepBuilder.
-    /// Discovers its single button at OnEnable from ButtonsContainer's first child —
-    /// index 0 → BattleMap. The order must match PreBattlePrepBuilder.ButtonLabels.
-    /// </summary>
+    // Pre Battle Prep controller. Lives on the "PreBattlePrep" root built by
+    // PreBattlePrepBuilder. Discovers its single button at OnEnable from
+    // ButtonsContainer's first child — index 0 → BattleMap. Order must match
+    // PreBattlePrepBuilder.ButtonLabels.
     public class PreBattlePrepUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);

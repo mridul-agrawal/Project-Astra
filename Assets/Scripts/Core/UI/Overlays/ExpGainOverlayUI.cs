@@ -5,15 +5,13 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Brief animated counter shown after an EXP-granting action. Counts the
-    /// acting unit's EXP from its pre-grant total to (total + amount), wrapping
-    /// at 100 if the threshold is crossed so the player sees the roll-over.
-    ///
-    /// Drives a non-blocking overlay — state stays on BattleMap. Level-up UI is
-    /// a separate state-transitioned screen; the orchestrator (ExpGranter)
-    /// sequences them.
-    /// </summary>
+    // Brief animated counter shown after an EXP-granting action. Counts the
+    // acting unit's EXP from its pre-grant total to (total + amount),
+    // wrapping at 100 if the threshold is crossed so the player sees the
+    // roll-over.
+    //
+    // Non-blocking — state stays on BattleMap. The level-up UI is a separate
+    // state-transitioned screen; ExpGranter sequences the two.
     public class ExpGainOverlayUI : MonoBehaviour
     {
         [SerializeField] private GameObject _overlayRoot;

@@ -11,27 +11,24 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.BattleMap
 {
-    /// <summary>
-    /// Runtime controller for the Battle Map HUD (Unit Card / Objective Panel / Tile Info Panel).
-    /// Attached to Canvas/BattleMapHUD by BattleMapHUDBuilder; fields are wired at build time.
-    ///
-    /// Subscribes to GridCursor.OnCursorMoved and TurnEventChannel phase/turn events and updates
-    /// the live TMP/Image widgets. Mirrors Fire Emblem GBA HUD behaviour:
-    ///  - Unit Card shows the unit under the cursor and hides when no unit is hovered.
-    ///  - Tile Info Panel auto-swaps between bottom-left and bottom-right based on cursor side.
-    ///  - Both panels hide during non-Player phases; Objective panel stays visible.
-    ///
-    /// Fog-of-War visibility gating is a future task; search for the "FOG OF WAR TODO"
-    /// markers when the MapVisibility system lands.
-    /// </summary>
+    // Runtime controller for the Battle Map HUD (Unit Card / Objective Panel /
+    // Tile Info Panel). Attached to Canvas/BattleMapHUD by BattleMapHUDBuilder;
+    // fields are wired at build time.
+    //
+    // Subscribes to GridCursor.OnCursorMoved and TurnEventChannel phase/turn
+    // events and updates the live TMP/Image widgets. FE GBA behaviour:
+    //   • Unit Card shows the unit under the cursor and hides when none.
+    //   • Tile Info Panel auto-swaps bottom-left ↔ bottom-right based on cursor side.
+    //   • Both panels hide during non-Player phases; Objective panel stays.
+    //
+    // Search for "FOG OF WAR TODO" markers — those branches need MapVisibility
+    // wired when the system lands.
     public class BattleMapHUDController : MonoBehaviour
     {
-        // ------------------------------------------------------------------
-        // References — wired by BattleMapHUDBuilder at build time.
+        // --- Inspector references (wired by BattleMapHUDBuilder at build time).
         // Public fields so the Editor-assembly builder can assign them without
-        // SerializedObject gymnastics. Inspector treats them identically to
-        // [SerializeField] private.
-        // ------------------------------------------------------------------
+        // SerializedObject gymnastics; the Inspector treats them identically
+        // to [SerializeField] private. ---
 
         [Header("Unit Card")]
         public GameObject UnitCardRoot;
@@ -61,9 +58,7 @@ namespace ProjectAstra.Core.UI.BattleMap
         [Header("Configuration")]
         [TextArea] public string ObjectiveText = "Slay the Asura Lord";
 
-        // ------------------------------------------------------------------
-        // Cached at Awake — corner bosses for faction tint, TileInfo rect for side-swap.
-        // ------------------------------------------------------------------
+        // --- Cached at Awake (corner bosses for faction tint, TileInfo rect for side-swap) ---
         private GridCursor _cursor;
         private MapRenderer _map;
         private Image[] _unitCardBosses;
@@ -122,9 +117,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             }
         }
 
-        // ------------------------------------------------------------------
-        // Event handlers
-        // ------------------------------------------------------------------
+        // --- Event handlers ---
 
         private void HandleCursorMoved(Vector2Int pos)
         {
@@ -149,9 +142,7 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void HandleTurnAdvanced(int turnNumber) => SetTurn(turnNumber);
 
-        // ------------------------------------------------------------------
-        // Phase visibility — hide unit/tile panels during non-Player phases.
-        // ------------------------------------------------------------------
+        // --- Phase visibility (hide unit/tile panels during non-Player phases) ---
 
         public void ApplyPhaseVisibility(BattlePhase phase)
         {
@@ -162,9 +153,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             if (UnitCardRoot != null && !playerPhase) UnitCardRoot.SetActive(false);
         }
 
-        // ------------------------------------------------------------------
-        // Tile Info Panel side-swap (FE GBA style — opposite the cursor).
-        // ------------------------------------------------------------------
+        // --- Tile Info Panel side-swap (FE GBA: panel goes opposite the cursor) ---
 
         private void UpdateTileInfoSide(Vector2Int cursorGridPos)
         {
@@ -191,9 +180,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             }
         }
 
-        // ------------------------------------------------------------------
-        // Typed setters — single-responsibility, easy to drive from tests or debug commands.
-        // ------------------------------------------------------------------
+        // --- Typed setters (single responsibility; easy to drive from tests or debug commands) ---
 
         public void SetUnit(TestUnit unit)
         {
@@ -274,9 +261,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             if (TurnNum != null) TurnNum.text = turnNumber.ToString("00");
         }
 
-        // ------------------------------------------------------------------
-        // Unit / terrain display helpers
-        // ------------------------------------------------------------------
+        // --- Unit / terrain display helpers ---
 
         private static string ResolveUnitName(TestUnit u)
         {

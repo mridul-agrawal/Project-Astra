@@ -9,13 +9,11 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Progression
 {
-    /// <summary>
-    /// Modal level-up screen. Displays the unit's portrait, name, the level
-    /// transition, and each of the 9 stats with its gain. Rows fade in one at
-    /// a time; non-zero gains flash accent. Confirm dismisses.
-    ///
-    /// Driven by ExpGranter inside a BattleMap → LevelUpScreen state transition.
-    /// </summary>
+    // Modal level-up screen. Shows the unit's portrait, name, the level
+    // transition, and each of the 9 stats with its gain. Rows fade in one at
+    // a time; non-zero gains flash accent. Confirm dismisses.
+    //
+    // Driven by ExpGranter inside a BattleMap → LevelUpScreen state transition.
     public class LevelUpScreenUI : MonoBehaviour
     {
         [Serializable]

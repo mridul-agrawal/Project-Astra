@@ -7,15 +7,14 @@ using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Cutscene
 {
-    /// <summary>
-    /// Plays an ordered list of dialogue lines through a shared overlay. Confirm
-    /// advances; the last confirm completes the sequence. Caller owns the state
-    /// transitions (unlike DialogueOverlayUI which hardcodes a return-to-BattleMap
-    /// on confirm).
-    ///
-    /// Used by LordDeathWatcher (UM-02) for the Lord's last-words sequence before
-    /// GameOver, but kept generic so any future scripted dialogue can reuse it.
-    /// </summary>
+    // Plays an ordered list of dialogue lines through a shared overlay.
+    // Confirm advances; the last confirm completes the sequence. Caller owns
+    // the state transitions (unlike DialogueOverlayUI, which hardcodes a
+    // return-to-BattleMap on confirm).
+    //
+    // Used by LordDeathWatcher (UM-02) for the Lord's last-words sequence
+    // before GameOver, but kept generic so any future scripted dialogue can
+    // reuse it.
     public class DialogueSequencePlayer : MonoBehaviour
     {
         [SerializeField] private GameObject _overlayRoot;
@@ -28,7 +27,7 @@ namespace ProjectAstra.Core.UI.Cutscene
 
         public bool IsPlaying { get; private set; }
 
-        /// <summary>Coroutine form — yield return Play(lines) to block until done.</summary>
+        // Coroutine form — yield return Play(lines) to block until done.
         public IEnumerator Play(IReadOnlyList<string> lines)
         {
             bool done = false;

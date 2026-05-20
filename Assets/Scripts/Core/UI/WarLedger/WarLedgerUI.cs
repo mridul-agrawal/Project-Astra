@@ -10,20 +10,19 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.WarLedger
 {
-    /// <summary>
-    /// War's Ledger runtime controller. Subscribes to GameStateEventChannel;
-    /// when the state enters WarLedger it reads DeathRegistry / CommitmentTracker
-    /// / ICivilianThreadService / IDeathEpitaphProvider and populates the prefab.
-    /// Dismissed on Confirm — fires a transition to ChapterClear.
-    ///
-    /// Spec-reminders enforced here:
-    ///   - Ledger grants NO stats / XP / gold / karma. Purely informational.
-    ///   - Kept and "Not kept." render in the same typography; the only visual
-    ///     distinction is a vermillion underline under "Kept." (baked into the
-    ///     Middle entry template as a child that the runtime shows/hides).
-    ///   - Right column may be empty (civilian thread stub) — render the header,
-    ///     no row spam.
-    /// </summary>
+    // War's Ledger runtime controller. Subscribes to GameStateEventChannel;
+    // on entering WarLedger it reads DeathRegistry / CommitmentTracker /
+    // ICivilianThreadService / IDeathEpitaphProvider and populates the prefab.
+    // Dismissed on Confirm — fires a transition to ChapterClear.
+    //
+    // Spec invariants enforced here:
+    //   • The Ledger grants no stats / XP / gold / karma. Purely informational.
+    //   • "Kept." and "Not kept." render in the same typography; the only
+    //     visual difference is a vermillion underline under "Kept." (baked
+    //     into the Middle entry template as a child that the runtime
+    //     shows/hides).
+    //   • The right column may be empty (civilian thread stub) — render the
+    //     header, no row spam.
     public class WarLedgerUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }

@@ -5,10 +5,8 @@ using TMPro;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Brief slide-in/hold/slide-out toast for short notifications like
-    /// "Iron Sword broke!". Modeled on PhaseBannerUI's coroutine animation.
-    /// </summary>
+    // Brief slide-in / hold / slide-out toast for short notifications like
+    // "Iron Sword broke!". Modeled on PhaseBannerUI's coroutine animation.
     public class ToastNotificationUI : MonoBehaviour
     {
         const float SlideDuration = 0.2f;

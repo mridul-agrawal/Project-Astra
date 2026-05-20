@@ -12,14 +12,13 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Inventory
 {
-    /// <summary>
-    /// Drives the Indigo Codex inventory popup — a five-slot modal that lists a unit's
-    /// inventory, previews the selected item's stats, and routes Confirm into the
-    /// Equip / Use / Discard / Cancel sub-menu. Visuals come from the
-    /// InventoryPopup.prefab built by InventoryPopupBuilder; this controller only binds
-    /// live data and handles input. Navigation semantics match the original primitive UI
-    /// so GridCursor, UnitActionMenuUI, and ConfirmDialogUI integrations are unchanged.
-    /// </summary>
+    // Drives the Indigo Codex inventory popup — a five-slot modal that lists
+    // a unit's inventory, previews the selected item's stats, and routes
+    // Confirm into the Equip / Use / Discard / Cancel sub-menu. Visuals come
+    // from the InventoryPopup.prefab built by InventoryPopupBuilder; this
+    // controller only binds live data and handles input. Navigation
+    // semantics match the original primitive UI, so GridCursor,
+    // UnitActionMenuUI, and ConfirmDialogUI integrations are unchanged.
     public class InventoryMenuUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }
