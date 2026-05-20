@@ -73,6 +73,7 @@ namespace ProjectAstra.Core.Cursor
         private CursorMode _currentMode = CursorMode.Locked;
         private CursorAnimator _animator;
         private PathfindingService _pathfindingService;
+        private CombatExecutor _combatExecutor;
 
         // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
@@ -131,6 +132,7 @@ namespace ProjectAstra.Core.Cursor
         private void Start()
         {
             InitializePathFindingService();
+            InitializeCombatExecutor();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -216,7 +218,7 @@ namespace ProjectAstra.Core.Cursor
                     break;
                 case CursorMode.Targeting:
                     if (_isHealTargeting) TryCommitHeal();
-                    else TryCommitAttack();
+                    else _combatExecutor.TryCommitAttack(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
                     break;
             }
         }
@@ -274,6 +276,13 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_mapRenderer != null && _terrainStatTable != null)
                 _pathfindingService = new PathfindingService(_mapRenderer, _terrainStatTable);
+        }
+
+        private void InitializeCombatExecutor()
+        {
+            _combatExecutor = new CombatExecutor(
+                _mapRenderer, _terrainStatTable, _deathEventChannel,
+                _combatForecastUI, _toastUI);
         }
 
         private void AddListenersToInputEvents()
@@ -827,7 +836,7 @@ namespace ProjectAstra.Core.Cursor
             var target = FindUnitAt(_gridPosition);
             if (target == null) { CompleteAction(); return; }
 
-            AnnounceBreaks(_selectedUnit, () =>
+            ItemBreakToaster.WithBreakAnnouncements(_selectedUnit, _toastUI, () =>
             {
                 if (_selectedUnit.Inventory.TryUseStaff(target, out int healed, out string fail))
                     Debug.Log($"[Staff] {_selectedUnit.name} healed {target.name} for {healed} HP.");
@@ -842,7 +851,7 @@ namespace ProjectAstra.Core.Cursor
         {
             var allUnits = new List<TestUnit>(FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
 
-            AnnounceBreaks(_selectedUnit, () =>
+            ItemBreakToaster.WithBreakAnnouncements(_selectedUnit, _toastUI, () =>
             {
                 if (_selectedUnit.Inventory.TryUseFortify(allUnits, out var healed, out string fail))
                 {
@@ -860,172 +869,6 @@ namespace ProjectAstra.Core.Cursor
 
         private static int GetMagStat(TestUnit unit) =>
             unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
-
-        // --- Combat resolution ---
-
-        private void TryCommitAttack()
-        {
-            _combatForecastUI?.Hide();
-
-            var defender = FindUnitAt(_gridPosition);
-            if (defender == null) { CompleteAction(); return; }
-
-            if (_selectedUnit.Inventory.IsUnarmed)
-            {
-                Debug.LogWarning($"[Combat] {_selectedUnit.name} is unarmed; cannot attack.");
-                CompleteAction();
-                return;
-            }
-
-            var result = ResolveCombat(_selectedUnit, defender);
-            LogCombatResult(_selectedUnit, defender, result);
-            ApplyCombatResult(_selectedUnit, defender, result);
-            ApplyDurability(_selectedUnit, defender, result);
-
-            CompleteAction();
-        }
-
-        private CombatResult ResolveCombat(TestUnit attacker, TestUnit defender)
-        {
-            int distance = Mathf.Abs(attacker.gridPosition.x - defender.gridPosition.x)
-                         + Mathf.Abs(attacker.gridPosition.y - defender.gridPosition.y);
-
-            var atkData = BuildCombatantData(attacker, distance);
-            var defData = BuildCombatantData(defender, distance);
-
-            var (defTerrainDef, defTerrainAvo) = GetTerrainBonuses(defender);
-            var (atkTerrainDef, atkTerrainAvo) = GetTerrainBonuses(attacker);
-
-            var atkClass = attacker.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
-            var defClass = defender.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
-
-            return CombatRound.Resolve(atkData, defData, defTerrainDef, defTerrainAvo,
-                atkTerrainDef, atkTerrainAvo, new UnityRng(), atkClass, defClass);
-        }
-
-        private static CombatantData BuildCombatantData(TestUnit unit, int distance)
-        {
-            if (unit.UnitInstance != null)
-            {
-                int classCrit = unit.UnitInstance.CurrentClass != null ? unit.UnitInstance.CurrentClass.CritBonus : 0;
-                return CombatantData.FromStats(unit.UnitInstance.Stats,
-                    unit.UnitInstance.CurrentHP, unit.UnitInstance.MaxHP,
-                    unit.equippedWeapon, distance, classCrit);
-            }
-
-            // Test-seam fallback for legacy TestUnits without a UnitInstance.
-            var stats = StatArray.From(unit.maxHP, 8, 3, 7, 9, 5, 2, 6, 5);
-            return CombatantData.FromStats(stats, unit.currentHP, unit.maxHP, unit.equippedWeapon, distance);
-        }
-
-        private (int def, int avo) GetTerrainBonuses(TestUnit unit)
-        {
-            if (_mapRenderer == null || _terrainStatTable == null) return (0, 0);
-
-            var terrain = _mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
-            var stats = _terrainStatTable.GetStats(terrain);
-            return TerrainStatTable.GetTerrainBonuses(stats, unit.movementType);
-        }
-
-        private static void LogCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
-        {
-            foreach (var hit in result.Hits)
-            {
-                string target = hit.Attacker == "Attacker" ? defender.name : attacker.name;
-                string source = hit.Attacker == "Attacker" ? attacker.name : defender.name;
-
-                if (hit.Hit)
-                {
-                    string critText = hit.Crit ? " CRITICAL!" : "";
-                    Debug.Log($"[Combat] {source} → {target}: {hit.Damage} damage{critText}");
-                }
-                else
-                {
-                    Debug.Log($"[Combat] {source} → {target}: MISS");
-                }
-            }
-
-            if (result.TriangleAdvantage != 0)
-            {
-                string side = result.TriangleAdvantage > 0 ? "Attacker advantage" : "Defender advantage";
-                Debug.Log($"[Combat] Weapon Triangle: {side}");
-            }
-            if (result.AttackerEffective)
-                Debug.Log($"[Combat] Effective weapon!");
-
-            Debug.Log($"[Combat] Result: {attacker.name} HP={result.AttackerHPAfter}, {defender.name} HP={result.DefenderHPAfter}");
-        }
-
-        private void ApplyCombatResult(TestUnit attacker, TestUnit defender, CombatResult result)
-        {
-            SetUnitHP(attacker, result.AttackerHPAfter);
-            SetUnitHP(defender, result.DefenderHPAfter);
-
-            if (result.DefenderDied) HandleUnitDeathAfterCombat(defender, attacker);
-            if (result.AttackerDied) HandleUnitDeathAfterCombat(attacker, defender);
-
-            GrantCombatExp(attacker, defender, result);
-        }
-
-        private static void SetUnitHP(TestUnit unit, int hp)
-        {
-            if (unit.UnitInstance != null)
-                unit.UnitInstance.SetCurrentHP(hp);
-            else
-                unit.currentHP = hp;
-        }
-
-        private void HandleUnitDeathAfterCombat(TestUnit died, TestUnit killer)
-        {
-            UnitDeathHook.HandleDeath(died, killer, _deathEventChannel);
-            if (died.isLord) Convoy.Current = NullConvoy.Instance;
-        }
-
-        private static void GrantCombatExp(TestUnit attacker, TestUnit defender, CombatResult result)
-        {
-            if (ExpGranter.Instance == null) return;
-            if (attacker.UnitInstance == null || defender.UnitInstance == null) return;
-
-            if (result.AttackerFired && !result.AttackerDied)
-            {
-                int exp = ExpMath.ComputeCombatExp(
-                    attacker.UnitInstance, defender.UnitInstance, result.DefenderDied);
-                ExpGranter.Instance.Grant(attacker, exp);
-            }
-
-            if (result.DefenderFired && !result.DefenderDied)
-            {
-                int exp = ExpMath.ComputeCombatExp(
-                    defender.UnitInstance, attacker.UnitInstance, result.AttackerDied);
-                ExpGranter.Instance.Grant(defender, exp);
-            }
-        }
-
-        private void ApplyDurability(TestUnit attacker, TestUnit defender, CombatResult result)
-        {
-            if (result.AttackerFired)
-                AnnounceBreaks(attacker, () => attacker.Inventory.ConsumeEquippedWeaponUses(1));
-            if (result.DefenderFired)
-                AnnounceBreaks(defender, () => defender.Inventory.ConsumeEquippedWeaponUses(1));
-        }
-
-        // Wraps an inventory mutation so we can surface a toast when an item
-        // breaks or depletes during the mutation.
-        private void AnnounceBreaks(TestUnit unit, Action mutate)
-        {
-            void OnDestroyed(InventoryItem item)
-            {
-                if (_toastUI == null) return;
-                string message = item.kind == ItemKind.Weapon
-                    ? $"{item.weapon.name} broke!"
-                    : $"{item.consumable.name} depleted";
-                _toastUI.Show(message);
-            }
-
-            unit.Inventory.OnItemDestroyed += OnDestroyed;
-            try { mutate(); }
-            finally { unit.Inventory.OnItemDestroyed -= OnDestroyed; }
-        }
 
         // --- Cancel / cleanup ---
 
