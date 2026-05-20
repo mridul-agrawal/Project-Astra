@@ -6,11 +6,10 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Five-slot inventory attached to each unit. Slot 0..4 maps directly to display
-    /// positions 1..5. The equipped weapon is always the first equippable weapon found
-    /// when scanning slots from index 0 upward, so reorders implicitly re-equip.
-    /// </summary>
+    // Five-slot inventory attached to each unit. Slot 0..4 maps directly to
+    // display positions 1..5. The equipped weapon is always the first
+    // equippable weapon found when scanning slots from index 0 upward, so
+    // reorders implicitly re-equip.
     [DisallowMultipleComponent]
     public class UnitInventory : MonoBehaviour
     {
@@ -25,15 +24,9 @@ namespace ProjectAstra.Core
 
         public TestUnit Owner => _ownerCache ??= GetComponent<TestUnit>();
 
-        private void Awake()
-        {
-            EnsureSlotsAllocated();
-        }
+        private void Awake() => EnsureSlotsAllocated();
 
-        private void OnValidate()
-        {
-            EnsureSlotsAllocated();
-        }
+        private void OnValidate() => EnsureSlotsAllocated();
 
         private void EnsureSlotsAllocated()
         {
@@ -41,7 +34,7 @@ namespace ProjectAstra.Core
                 _slots = new InventoryItem[Capacity];
         }
 
-        #region Read API
+        // --- Read API ---
 
         public InventoryItem GetSlot(int index)
         {
@@ -93,9 +86,7 @@ namespace ProjectAstra.Core
 
         public bool IsUnarmed => EquippedWeaponSlot < 0;
 
-        #endregion
-
-        #region Write API
+        // --- Write API ---
 
         public bool TryAddItem(InventoryItem item, out int slotIndex)
         {
@@ -119,11 +110,10 @@ namespace ProjectAstra.Core
             RaiseChanged();
         }
 
-        /// <summary>
-        /// Wipes every slot. Used by the UM-01 death hook — a dead unit's items
-        /// are lost, not sent to the convoy (FE GBA standard). Fires
-        /// OnInventoryChanged exactly once even if the inventory was already empty.
-        /// </summary>
+        // Wipes every slot. Used by the UM-01 death hook — a dead unit's
+        // items are lost, not sent to the convoy (FE GBA standard). Fires
+        // OnInventoryChanged exactly once even if the inventory was already
+        // empty.
         public void Clear()
         {
             for (int i = 0; i < Capacity; i++) _slots[i] = InventoryItem.None;
@@ -153,9 +143,7 @@ namespace ProjectAstra.Core
             SwapSlots(0, slot);
         }
 
-        #endregion
-
-        #region Combat / use hooks
+        // --- Combat / use hooks ---
 
         public void ConsumeEquippedWeaponUses(int rounds)
         {
@@ -165,18 +153,7 @@ namespace ProjectAstra.Core
 
             var item = _slots[slot];
             for (int i = 0; i < rounds; i++) item.weapon.ConsumeDurability();
-
-            if (item.weapon.IsBroken && !item.weapon.indestructible)
-            {
-                _slots[slot] = InventoryItem.None;
-                RaiseDestroyed(item);
-                RaiseChanged();
-            }
-            else
-            {
-                _slots[slot] = item;
-                RaiseChanged();
-            }
+            FinalizeSlotAfterUse(slot, item);
         }
 
         public bool TryUseStaff(TestUnit target, out int amountHealed, out string failReason)
@@ -201,17 +178,7 @@ namespace ProjectAstra.Core
                 return false;
 
             item.weapon = weapon;
-            if (item.weapon.IsBroken && !item.weapon.indestructible)
-            {
-                _slots[slot] = InventoryItem.None;
-                RaiseDestroyed(item);
-            }
-            else
-            {
-                _slots[slot] = item;
-            }
-
-            RaiseChanged();
+            FinalizeSlotAfterUse(slot, item);
             return true;
         }
 
@@ -239,17 +206,7 @@ namespace ProjectAstra.Core
                 return false;
 
             item.weapon = weapon;
-            if (item.weapon.IsBroken && !item.weapon.indestructible)
-            {
-                _slots[slot] = InventoryItem.None;
-                RaiseDestroyed(item);
-            }
-            else
-            {
-                _slots[slot] = item;
-            }
-
-            RaiseChanged();
+            FinalizeSlotAfterUse(slot, item);
             return true;
         }
 
@@ -278,7 +235,18 @@ namespace ProjectAstra.Core
                 return false;
 
             item.consumable.ConsumeUse();
-            if (item.consumable.IsDepleted)
+            FinalizeSlotAfterUse(slot, item);
+            return true;
+        }
+
+        // Single pattern for "after a use, the item either depletes (clear
+        // slot + fire destroyed) or remains (write the updated item back)".
+        // InventoryItem.IsDepleted already accounts for weapon-indestructible
+        // (WeaponData.IsBroken returns false for indestructibles), so no
+        // separate guard is needed.
+        private void FinalizeSlotAfterUse(int slot, InventoryItem item)
+        {
+            if (item.IsDepleted)
             {
                 _slots[slot] = InventoryItem.None;
                 RaiseDestroyed(item);
@@ -287,21 +255,10 @@ namespace ProjectAstra.Core
             {
                 _slots[slot] = item;
             }
-
             RaiseChanged();
-            return true;
         }
 
-        #endregion
-
-        private void RaiseChanged()
-        {
-            OnInventoryChanged?.Invoke();
-        }
-
-        private void RaiseDestroyed(InventoryItem item)
-        {
-            OnItemDestroyed?.Invoke(item);
-        }
+        private void RaiseChanged() => OnInventoryChanged?.Invoke();
+        private void RaiseDestroyed(InventoryItem item) => OnItemDestroyed?.Invoke(item);
     }
 }
