@@ -28,6 +28,15 @@ namespace ProjectAstra.Core.Combat
         public bool DefenderFired;
     }
 
+    // FE GBA combat-round resolver. Plays the standard exchange:
+    //   1a. Attacker's first hit
+    //   1b. Attacker's brave second hit (if equipped with a brave weapon)
+    //   2.  Defender's counter (if in range)
+    //   3.  Attacker's double (if AS - defAS >= 4)
+    //   4.  Defender's double counter
+    // Combat stops as soon as either combatant hits 0 HP. UnlikelyDeath flags
+    // the survivor for "death by sub-30% true hit" — used later for the
+    // wartime epitaph wording.
     public static class CombatRound
     {
         public static CombatResult Resolve(
@@ -42,107 +51,115 @@ namespace ProjectAstra.Core.Combat
             int atkHP = attacker.currentHP;
             int defHP = defender.currentHP;
             bool unlikelyDeath = false;
+            bool defenderFired = false;
 
             int atkAS = StatUtils.AttackSpeed(attacker.spd, attacker.weapon.weight, attacker.con);
             int defAS = StatUtils.AttackSpeed(defender.spd, defender.weapon.weight, defender.con);
 
             bool attackerCanFire = !attacker.weapon.IsEmpty && !attacker.weapon.IsBroken;
-            bool canCounter = !defender.weapon.IsEmpty && !defender.weapon.IsBroken &&
-                              defender.weapon.CanReachRange(attacker.distance);
+            bool canCounter = !defender.weapon.IsEmpty && !defender.weapon.IsBroken
+                              && defender.weapon.CanReachRange(attacker.distance);
             bool atkDoubles = CombatEngine.CanDoubleAttack(atkAS, defAS);
             bool defDoubles = canCounter && CombatEngine.CanDoubleAttack(defAS, atkAS);
 
-            // Weapon triangle
             int atkAdvantage = WeaponTriangle.ComputeAdvantage(attacker.weapon, defender.weapon);
             int defAdvantage = -atkAdvantage;
 
-            // Effectiveness
             bool atkEffective = attacker.weapon.IsEffectiveAgainst(defenderClassType);
             bool defEffective = canCounter && defender.weapon.IsEffectiveAgainst(attackerClassType);
 
-            // Precompute attacker stats
-            int atkMight = atkEffective
-                ? CombatEngine.ComputeEffectiveMight(attacker.weapon.might, attacker.weapon, defenderClassType)
-                : attacker.weapon.might;
-            int atkHitRaw = CombatEngine.ComputeAttackerHit(attacker.skl, attacker.niyati,
-                attacker.weapon.hit, WeaponTriangle.GetHitBonus(atkAdvantage));
-            int defAvo = CombatEngine.ComputeAvoid(defAS, defender.niyati,
-                defTerrainAvo + WeaponTriangle.GetAvoidBonus(defAdvantage));
-            int atkDisplayedHit = CombatEngine.ComputeDisplayedHit(atkHitRaw, defAvo);
-            int atkDmg = CombatEngine.ComputeDamage(attacker.weapon.damageType,
-                attacker.str, attacker.mag, atkMight,
-                WeaponTriangle.GetDamageBonus(atkAdvantage),
-                defender.def, defender.res, defTerrainDef);
-            int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, attacker.classCrit, defender.niyati);
+            var atkProfile = BuildAttackProfile(attacker, defender, atkAdvantage,
+                defTerrainAvo, defTerrainDef, atkEffective, defenderClassType, defAS);
+            var defProfile = canCounter
+                ? BuildAttackProfile(defender, attacker, defAdvantage,
+                    atkTerrainAvo, atkTerrainDef, defEffective, attackerClassType, atkAS)
+                : default;
 
-            // Precompute defender stats
-            int defDisplayedHit = 0, defDmg = 0, defCrit = 0;
+            CombatResult Conclude() => Build(hits, atkHP, defHP, unlikelyDeath,
+                atkAdvantage, atkEffective, attackerCanFire, defenderFired);
+
+            // 1a. Attacker's first hit.
+            if (attackerCanFire
+                && !TryFireHit("Attacker", atkProfile, rng, hits, ref defHP, ref unlikelyDeath))
+                return Conclude();
+
+            // 1b. Brave second hit, before the counter.
+            if (attackerCanFire && attacker.weapon.brave
+                && !TryFireHit("Attacker", atkProfile, rng, hits, ref defHP, ref unlikelyDeath))
+                return Conclude();
+
+            // 2. Defender's counterattack.
             if (canCounter)
             {
-                int defMight = defEffective
-                    ? CombatEngine.ComputeEffectiveMight(defender.weapon.might, defender.weapon, attackerClassType)
-                    : defender.weapon.might;
-                int defHitRaw = CombatEngine.ComputeAttackerHit(defender.skl, defender.niyati,
-                    defender.weapon.hit, WeaponTriangle.GetHitBonus(defAdvantage));
-                int atkAvo = CombatEngine.ComputeAvoid(atkAS, attacker.niyati,
-                    atkTerrainAvo + WeaponTriangle.GetAvoidBonus(atkAdvantage));
-                defDisplayedHit = CombatEngine.ComputeDisplayedHit(defHitRaw, atkAvo);
-                defDmg = CombatEngine.ComputeDamage(defender.weapon.damageType,
-                    defender.str, defender.mag, defMight,
-                    WeaponTriangle.GetDamageBonus(defAdvantage),
-                    attacker.def, attacker.res, atkTerrainDef);
-                defCrit = CombatEngine.ComputeCritRate(defender.skl, defender.weapon.crit, defender.classCrit, attacker.niyati);
-            }
-
-            bool defenderFired = false;
-
-            // Step 1a: Attacker's first hit
-            if (attackerCanFire)
-            {
-                var hit1 = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
-                hits.Add(hit1);
-                if (hit1.Hit) defHP = Mathf.Max(0, defHP - hit1.Damage);
-                if (defHP <= 0) { if (hit1.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
-            }
-
-            // Step 1b: Brave second hit (before counter)
-            if (attackerCanFire && attacker.weapon.brave)
-            {
-                var hitBrave = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
-                hits.Add(hitBrave);
-                if (hitBrave.Hit) defHP = Mathf.Max(0, defHP - hitBrave.Damage);
-                if (defHP <= 0) { if (hitBrave.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
-            }
-
-            // Step 2: Defender's counterattack
-            if (canCounter)
-            {
-                var hit2 = ResolveHit("Defender", defDisplayedHit, defDmg, defCrit, rng);
-                hits.Add(hit2);
                 defenderFired = true;
-                if (hit2.Hit) atkHP = Mathf.Max(0, atkHP - hit2.Damage);
-                if (atkHP <= 0) { if (hit2.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
+                if (!TryFireHit("Defender", defProfile, rng, hits, ref atkHP, ref unlikelyDeath))
+                    return Conclude();
             }
 
-            // Step 3: Attacker's double attack
-            if (attackerCanFire && atkDoubles)
-            {
-                var hit3 = ResolveHit("Attacker", atkDisplayedHit, atkDmg, atkCrit, rng);
-                hits.Add(hit3);
-                if (hit3.Hit) defHP = Mathf.Max(0, defHP - hit3.Damage);
-                if (defHP <= 0) { if (hit3.TrueHitRoll < 30) unlikelyDeath = true; return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired); }
-            }
+            // 3. Attacker's double.
+            if (attackerCanFire && atkDoubles
+                && !TryFireHit("Attacker", atkProfile, rng, hits, ref defHP, ref unlikelyDeath))
+                return Conclude();
 
-            // Step 4: Defender's double counterattack
+            // 4. Defender's double counter (last step; no early-return needed).
             if (defDoubles)
-            {
-                var hit4 = ResolveHit("Defender", defDisplayedHit, defDmg, defCrit, rng);
-                hits.Add(hit4);
-                if (hit4.Hit) atkHP = Mathf.Max(0, atkHP - hit4.Damage);
-                if (atkHP <= 0 && hit4.TrueHitRoll < 30) unlikelyDeath = true;
-            }
+                TryFireHit("Defender", defProfile, rng, hits, ref atkHP, ref unlikelyDeath);
 
-            return Build(hits, atkHP, defHP, unlikelyDeath, atkAdvantage, atkEffective, attackerCanFire, defenderFired);
+            return Conclude();
+        }
+
+        private struct AttackProfile
+        {
+            public int DisplayedHit;
+            public int Damage;
+            public int CritRate;
+        }
+
+        private static AttackProfile BuildAttackProfile(
+            CombatantData self, CombatantData opponent, int triangleAdvantage,
+            int opponentTerrainAvo, int opponentTerrainDef,
+            bool effective, ClassType opponentClass, int opponentAS)
+        {
+            int might = effective
+                ? CombatEngine.ComputeEffectiveMight(self.weapon.might, self.weapon, opponentClass)
+                : self.weapon.might;
+
+            int rawHit = CombatEngine.ComputeAttackerHit(self.skl, self.niyati,
+                self.weapon.hit, WeaponTriangle.GetHitBonus(triangleAdvantage));
+            int avo = CombatEngine.ComputeAvoid(opponentAS, opponent.niyati,
+                opponentTerrainAvo + WeaponTriangle.GetAvoidBonus(-triangleAdvantage));
+
+            return new AttackProfile
+            {
+                DisplayedHit = CombatEngine.ComputeDisplayedHit(rawHit, avo),
+                Damage = CombatEngine.ComputeDamage(self.weapon.damageType,
+                    self.str, self.mag, might,
+                    WeaponTriangle.GetDamageBonus(triangleAdvantage),
+                    opponent.def, opponent.res, opponentTerrainDef),
+                CritRate = CombatEngine.ComputeCritRate(self.skl, self.weapon.crit,
+                    self.classCrit, opponent.niyati),
+            };
+        }
+
+        // Fires one hit and applies the result. Returns true if combat should
+        // continue, false if the target hit 0 HP (caller should stop).
+        private static bool TryFireHit(
+            string who, AttackProfile profile, IRng rng,
+            List<HitResult> hits, ref int targetHP, ref bool unlikelyDeath)
+        {
+            var hit = ResolveHit(who, profile.DisplayedHit, profile.Damage, profile.CritRate, rng);
+            hits.Add(hit);
+
+            if (hit.Hit) targetHP = Mathf.Max(0, targetHP - hit.Damage);
+
+            if (targetHP <= 0)
+            {
+                // Sub-30% true-hit rolls mark the kill as "unlikely" so the
+                // ledger epitaph can refer to it as a fluke.
+                if (hit.TrueHitRoll < 30) unlikelyDeath = true;
+                return false;
+            }
+            return true;
         }
 
         private static HitResult ResolveHit(string who, int displayedHit, int baseDamage, int critRate, IRng rng)
@@ -168,11 +185,12 @@ namespace ProjectAstra.Core.Combat
                 Hit = hit,
                 Crit = crit,
                 Damage = damage,
-                TrueHitRoll = trueHitRoll
+                TrueHitRoll = trueHitRoll,
             };
         }
 
-        private static CombatResult Build(List<HitResult> hits, int atkHP, int defHP, bool unlikely, int triAdv, bool effective, bool attackerFired, bool defenderFired)
+        private static CombatResult Build(List<HitResult> hits, int atkHP, int defHP, bool unlikely,
+            int triAdv, bool effective, bool attackerFired, bool defenderFired)
         {
             return new CombatResult
             {
