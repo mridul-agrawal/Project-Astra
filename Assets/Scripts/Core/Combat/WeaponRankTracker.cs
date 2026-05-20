@@ -3,8 +3,12 @@ using System.Collections.Generic;
 
 namespace ProjectAstra.Core.Combat
 {
+    // Per-unit weapon proficiency tracker. Holds the current rank in each
+    // weapon type the unit has access to, plus accumulated WEXP toward the
+    // next rank. Rank-ups fire OnRankUp.
     public class WeaponRankTracker
     {
+        // FE GBA WEXP needed to reach the next rank (E→D, D→C, C→B, B→A, A→S).
         private static readonly int[] WexpThresholds = { 1, 40, 71, 121, 201 };
 
         private readonly Dictionary<WeaponType, WeaponRank> _ranks = new();
@@ -28,10 +32,7 @@ namespace ProjectAstra.Core.Combat
             return _wexp.TryGetValue(type, out var wexp) ? wexp : 0;
         }
 
-        public bool HasAccess(WeaponType type)
-        {
-            return _ranks.ContainsKey(type);
-        }
+        public bool HasAccess(WeaponType type) => _ranks.ContainsKey(type);
 
         public bool CanEquip(WeaponData weapon)
         {

@@ -1,5 +1,9 @@
 namespace ProjectAstra.Core.Combat
 {
+    // Rock-paper-scissors advantage between weapon types and between magic
+    // schools. ComputeAdvantage returns +1 / 0 / -1; the Get*Bonus helpers
+    // turn that into the actual hit/damage/avoid offsets fed into the combat
+    // formulas.
     public static class WeaponTriangle
     {
         const int HitBonus = 15;
@@ -19,11 +23,11 @@ namespace ProjectAstra.Core.Combat
             return 0;
         }
 
+        // Sword > Axe > Lance > Sword.
         public static int ComputePhysicalAdvantage(WeaponType attacker, WeaponType defender)
         {
             if (attacker == defender) return 0;
 
-            // Sword > Axe > Lance > Sword
             if (attacker == WeaponType.Sword && defender == WeaponType.Axe) return 1;
             if (attacker == WeaponType.Axe && defender == WeaponType.Lance) return 1;
             if (attacker == WeaponType.Lance && defender == WeaponType.Sword) return 1;
@@ -35,12 +39,12 @@ namespace ProjectAstra.Core.Combat
             return 0;
         }
 
+        // Anima > Dark > Light > Anima.
         public static int ComputeMagicAdvantage(MagicSchool attacker, MagicSchool defender)
         {
             if (attacker == MagicSchool.None || defender == MagicSchool.None) return 0;
             if (attacker == defender) return 0;
 
-            // Anima > Dark > Light > Anima
             if (attacker == MagicSchool.Anima && defender == MagicSchool.Dark) return 1;
             if (attacker == MagicSchool.Dark && defender == MagicSchool.Light) return 1;
             if (attacker == MagicSchool.Light && defender == MagicSchool.Anima) return 1;

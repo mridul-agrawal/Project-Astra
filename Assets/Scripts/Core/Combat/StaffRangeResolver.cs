@@ -4,25 +4,23 @@ using ProjectAstra.Core.Pathfinding;
 
 namespace ProjectAstra.Core.Combat
 {
+    // Staff-specific range rules. Most staves use the literal min/max from
+    // their WeaponData; Ranged and AreaOfEffect staves scale with the user's
+    // Magic stat (max range = Mag / 2, min one tile).
     public static class StaffRangeResolver
     {
         public static int GetEffectiveMinRange(WeaponData staff)
         {
-            if (staff.staffEffect == StaffEffect.AreaOfEffect)
-                return 0;
-            return staff.minRange;
+            return staff.staffEffect == StaffEffect.AreaOfEffect ? 0 : staff.minRange;
         }
 
         public static int GetEffectiveMaxRange(WeaponData staff, int magStat)
         {
-            switch (staff.staffEffect)
+            return staff.staffEffect switch
             {
-                case StaffEffect.Ranged:
-                case StaffEffect.AreaOfEffect:
-                    return Mathf.Max(1, magStat / 2);
-                default:
-                    return staff.maxRange;
-            }
+                StaffEffect.Ranged or StaffEffect.AreaOfEffect => Mathf.Max(1, magStat / 2),
+                _ => staff.maxRange,
+            };
         }
 
         public static bool IsInRange(WeaponData staff, int magStat, Vector2Int from, Vector2Int to)

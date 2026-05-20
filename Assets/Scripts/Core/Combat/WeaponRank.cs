@@ -1,5 +1,8 @@
 namespace ProjectAstra.Core.Combat
 {
+    // Weapon proficiency ranks (E lowest, S highest). Stored on unit rank
+    // trackers and weapon minRank fields as integers; don't reorder. Integer
+    // values match WeaponRankTracker's threshold indexing.
     public enum WeaponRank
     {
         E = 0,
