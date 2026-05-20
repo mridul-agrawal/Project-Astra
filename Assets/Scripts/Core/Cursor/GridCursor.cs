@@ -75,6 +75,7 @@ namespace ProjectAstra.Core.Cursor
         private PathfindingService _pathfindingService;
         private CombatExecutor _combatExecutor;
         private StaffExecutor _staffExecutor;
+        private TargetingFlow _targetingFlow;
 
         // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
@@ -86,11 +87,6 @@ namespace ProjectAstra.Core.Cursor
         private TestUnit _selectedUnit;
         private Pathfinder.ReachabilityResult _currentReachability;
         private Vector2Int _committedDestination;
-
-        // Targeting cycles through pre-computed target tiles instead of grid-walking.
-        private List<Vector2Int> _targetTiles;
-        private int _targetIndex;
-        private bool _isHealTargeting;
 
         // Caches populated when the action menu is built.
         private List<Vector2Int> _cachedEnemyTiles = new();
@@ -135,6 +131,7 @@ namespace ProjectAstra.Core.Cursor
             InitializePathFindingService();
             InitializeCombatExecutor();
             InitializeStaffExecutor();
+            InitializeTargetingFlow();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -186,7 +183,7 @@ namespace ProjectAstra.Core.Cursor
 
             if (_currentMode == CursorMode.Targeting)
             {
-                CycleThroughTargets(direction);
+                _targetingFlow.Cycle(direction);
                 return;
             }
 
@@ -219,8 +216,10 @@ namespace ProjectAstra.Core.Cursor
                     TryCommitMovement();
                     break;
                 case CursorMode.Targeting:
-                    if (_isHealTargeting) _staffExecutor.TryCommitHeal(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
-                    else _combatExecutor.TryCommitAttack(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
+                    if (_targetingFlow.IsHealTargeting)
+                        _staffExecutor.TryCommitHeal(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
+                    else
+                        _combatExecutor.TryCommitAttack(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
                     break;
             }
         }
@@ -290,6 +289,13 @@ namespace ProjectAstra.Core.Cursor
         private void InitializeStaffExecutor()
         {
             _staffExecutor = new StaffExecutor(_combatForecastUI, _toastUI);
+        }
+
+        private void InitializeTargetingFlow()
+        {
+            _targetingFlow = new TargetingFlow(
+                _pathfindingService, _mapRenderer,
+                _rangeHighlighter, _combatForecastUI, this);
         }
 
         private void AddListenersToInputEvents()
@@ -384,20 +390,6 @@ namespace ProjectAstra.Core.Cursor
         private bool IsMovementConstrained() => _validMoveTiles != null;
 
         // --- Cursor movement details ---
-
-        private void CycleThroughTargets(Vector2Int direction)
-        {
-            if (_targetTiles == null || _targetTiles.Count == 0) return;
-
-            int step = (direction.x > 0 || direction.y > 0) ? 1 : -1;
-            _targetIndex = (_targetIndex + step + _targetTiles.Count) % _targetTiles.Count;
-
-            _gridPosition = _targetTiles[_targetIndex];
-            SnapToGridPosition();
-            OnCursorMoved?.Invoke(_gridPosition);
-
-            UpdateCombatForecastForCurrentTarget();
-        }
 
         private void UpdatePathArrow()
         {
@@ -526,7 +518,7 @@ namespace ProjectAstra.Core.Cursor
         {
             var labels = new List<string>();
             _cachedActionChoices.Clear();
-            _cachedEnemyTiles = FindEnemiesInAttackRange();
+            _cachedEnemyTiles = _targetingFlow.GetEnemiesInAttackRange(_selectedUnit, _committedDestination);
 
             TryAddAttackAction(labels);
             TryAddStaffAction(labels);
@@ -583,7 +575,8 @@ namespace ProjectAstra.Core.Cursor
 
         private void TryAddHealAction(List<string> labels)
         {
-            _cachedHealTiles = FindAlliesInHealRange();
+            _cachedHealTiles = _targetingFlow.GetAlliesInHealRange(
+                _selectedUnit, _committedDestination, GetMagStat(_selectedUnit));
             if (_cachedHealTiles.Count == 0) return;
 
             labels.Add("Heal");
@@ -710,29 +703,18 @@ namespace ProjectAstra.Core.Cursor
             _convoyUI.Show(convoy, _selectedUnit, _toastUI, onClose: () => CompleteAction());
         }
 
-        // --- Targeting ---
+        // --- Targeting (entry points; the work lives on _targetingFlow) ---
 
         private void EnterTargetingMode()
         {
-            _isHealTargeting = false;
-
             if (_cachedEnemyTiles.Count == 0)
             {
                 CompleteAction();
                 return;
             }
 
-            var enemyTileSet = new HashSet<Vector2Int>(_cachedEnemyTiles);
-            _validMoveTiles = enemyTileSet;
-            _targetTiles = SortedByGridPosition(_cachedEnemyTiles);
-            _targetIndex = 0;
-
-            _rangeHighlighter?.ShowAttackRange(enemyTileSet);
-
-            SetPosition(_targetTiles[0]);
-            SetMode(CursorMode.Targeting);
-
-            UpdateCombatForecastForCurrentTarget();
+            _validMoveTiles = new HashSet<Vector2Int>(_cachedEnemyTiles);
+            _targetingFlow.EnterAttackTargeting(_selectedUnit, _cachedEnemyTiles);
         }
 
         private void EnterHealTargetingMode()
@@ -743,99 +725,11 @@ namespace ProjectAstra.Core.Cursor
                 return;
             }
 
-            _isHealTargeting = true;
-
-            var healTileSet = new HashSet<Vector2Int>(_cachedHealTiles);
-            _validMoveTiles = healTileSet;
-            _targetTiles = SortedByGridPosition(_cachedHealTiles);
-            _targetIndex = 0;
-
-            _rangeHighlighter?.ShowHealRange(healTileSet);
-
-            SetPosition(_targetTiles[0]);
-            SetMode(CursorMode.Targeting);
-
-            UpdateCombatForecastForCurrentTarget();
+            _validMoveTiles = new HashSet<Vector2Int>(_cachedHealTiles);
+            _targetingFlow.EnterHealTargeting(_selectedUnit, _cachedHealTiles);
         }
 
-        private static List<Vector2Int> SortedByGridPosition(List<Vector2Int> source)
-        {
-            var copy = new List<Vector2Int>(source);
-            copy.Sort((a, b) => a.y != b.y ? a.y.CompareTo(b.y) : a.x.CompareTo(b.x));
-            return copy;
-        }
-
-        private void UpdateCombatForecastForCurrentTarget()
-        {
-            if (_combatForecastUI == null || _selectedUnit == null) return;
-            if (_currentMode != CursorMode.Targeting) { _combatForecastUI.Hide(); return; }
-
-            var target = FindUnitAt(_gridPosition);
-            if (target == null) { _combatForecastUI.Hide(); return; }
-
-            int distance = Mathf.Abs(_selectedUnit.gridPosition.x - target.gridPosition.x)
-                         + Mathf.Abs(_selectedUnit.gridPosition.y - target.gridPosition.y);
-
-            if (_isHealTargeting)
-                _combatForecastUI.ShowStaffHeal(_selectedUnit, target);
-            else
-                _combatForecastUI.ShowCombat(_selectedUnit, target, distance);
-        }
-
-        private List<Vector2Int> FindEnemiesInAttackRange()
-        {
-            var attackRange = _pathfindingService.ComputeAttackRange(
-                new HashSet<Vector2Int> { _committedDestination },
-                _selectedUnit.attackRangeMin, _selectedUnit.attackRangeMax);
-
-            var enemyTiles = new List<Vector2Int>();
-            foreach (var tile in attackRange)
-            {
-                var unit = FindUnitAt(tile);
-                if (unit != null && IsEnemy(unit))
-                    enemyTiles.Add(tile);
-            }
-            return enemyTiles;
-        }
-
-        private List<Vector2Int> FindAlliesInHealRange()
-        {
-            var staff = _selectedUnit.equippedWeapon;
-            int mag = GetMagStat(_selectedUnit);
-
-            var healRange = new HashSet<Vector2Int>();
-            var map = _mapRenderer.CurrentMap;
-            StaffRangeResolver.GetTargetTiles(staff, mag, _committedDestination, map.Width, map.Height, healRange);
-
-            var allyTiles = new List<Vector2Int>();
-            foreach (var tile in healRange)
-            {
-                var unit = FindUnitAt(tile);
-                if (unit == null || unit == _selectedUnit) continue;
-                if (IsEnemy(unit)) continue;
-
-                int hp = unit.UnitInstance != null ? unit.UnitInstance.CurrentHP : unit.currentHP;
-                int maxHP = unit.UnitInstance != null ? unit.UnitInstance.MaxHP : unit.maxHP;
-                if (hp < maxHP)
-                    allyTiles.Add(tile);
-            }
-            return allyTiles;
-        }
-
-        // Prefer the TurnManager-registered faction when available; otherwise
-        // fall back to the unit's own field. A unit that's registered but has
-        // no faction entry counts as not-enemy (matches the original
-        // GetFaction(unit) == Faction.Enemy comparison with a null-valued
-        // nullable Faction returning false).
-        private static bool IsEnemy(TestUnit unit)
-        {
-            return TurnManager.Instance != null
-                ? TurnManager.Instance.UnitRegistry.GetFaction(unit) == Faction.Enemy
-                : unit.faction == Faction.Enemy;
-        }
-
-        // Used by FindAlliesInHealRange and TryAddFortifyAction to gate staff
-        // targeting on the unit's Magic stat.
+        // Used by TryAddFortifyAction to gate staff targeting on the unit's Magic stat.
         private static int GetMagStat(TestUnit unit) =>
             unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
 
@@ -853,7 +747,7 @@ namespace ProjectAstra.Core.Cursor
             _lastActionChoice = null;
             _selectedUnit = null;
             _validMoveTiles = null;
-            _targetTiles = null;
+            _targetingFlow?.ClearState();
             _rangeHighlighter?.ClearAll();
             _pathArrowRenderer?.Clear();
             SetMode(CursorMode.Free);
@@ -861,10 +755,7 @@ namespace ProjectAstra.Core.Cursor
 
         private void CancelTargeting()
         {
-            _isHealTargeting = false;
-            _targetTiles = null;
-            _rangeHighlighter?.ClearAll();
-
+            _targetingFlow.Cancel();
             SetPosition(_committedDestination);
             ShowActionMenu();
         }
