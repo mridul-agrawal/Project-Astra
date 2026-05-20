@@ -5,17 +5,15 @@ using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Pathfinding
 {
-    /// <summary>
-    /// Wires the stateless Pathfinder to live game systems (MapRenderer + TerrainStatTable).
-    /// Not a MonoBehaviour — instantiated by whatever system needs pathfinding.
-    /// Occupancy is passed in as a delegate since the unit management system doesn't exist yet.
-    /// </summary>
+    // Wires the stateless Pathfinder to live game systems (MapRenderer +
+    // TerrainStatTable). Occupancy is passed in as a delegate because callers
+    // own the unit-position lookup, not this service.
     public class PathfindingService
     {
         private readonly MapRenderer _mapRenderer;
         private readonly TerrainStatTable _terrainStatTable;
 
-        /// <summary>Fired when the map changes (tile swap). Callers who cache results should re-compute.</summary>
+        // Fires when a tile swap invalidates any cached reachability.
         public event Action OnMapChanged;
 
         public PathfindingService(MapRenderer mapRenderer, TerrainStatTable terrainStatTable)
