@@ -4,10 +4,11 @@ using ProjectAstra.Core.Pathfinding;
 
 namespace ProjectAstra.Core.Units
 {
-    /// <summary>
-    /// Minimal test unit for exercising cursor, movement, and targeting flows.
-    /// NOT a real unit system — just data + a visual on the Units layer.
-    /// </summary>
+    // Scene-level placeholder for a battle unit — holds grid position, basic
+    // stats, an inventory, and binds to a runtime UnitInstance at Start when a
+    // UnitDefinition is supplied. Named "Test" because the original purpose
+    // was exercising cursor / movement / targeting before the full unit
+    // system landed; now serves as the actual scene-spawned unit component.
     [RequireComponent(typeof(UnitInventory))]
     public class TestUnit : MonoBehaviour
     {
@@ -15,10 +16,13 @@ namespace ProjectAstra.Core.Units
 
         [Header("Unit Identity")]
         public Faction faction = Faction.Player;
-        // Source of truth is UnitDefinition.IsLord — synced in Start. Serialized here so
-        // scene-only test units (no definition) can still flag themselves.
-        // TODO(UM-02-followups): cannot-dismiss guard + mandatory-deployment guard land
-        // when roster and deployment systems ship.
+
+        // TODO(UM-02-followups): cannot-dismiss guard + mandatory-deployment
+        // guard land when roster and deployment systems ship.
+        //
+        // Source of truth is UnitDefinition.IsLord — synced in Start. Kept
+        // serialized so scene-only test units (no definition) can still flag
+        // themselves.
         public bool isLord;
 
         [Header("Unit Stats")]
@@ -50,7 +54,7 @@ namespace ProjectAstra.Core.Units
         private Color _normalColor;
 
         public UnitInstance UnitInstance => _unitInstance;
-        /// <summary>Serialized UnitDefinition reference — accessible before Start binds a UnitInstance.</summary>
+        // Serialized UnitDefinition reference, accessible before Start binds a UnitInstance.
         public UnitDefinition UnitDefinition => _unitDefinition;
         public WeaponRankTracker WeaponRankTracker { get; set; }
         public WeaponType[] AllowedWeaponTypes => _allowedWeaponTypes;
@@ -59,31 +63,20 @@ namespace ProjectAstra.Core.Units
         {
             get
             {
-                if (_inventory == null)
-                {
-                    _inventory = GetComponent<UnitInventory>();
-                    if (_inventory == null) _inventory = gameObject.AddComponent<UnitInventory>();
-                }
+                if (_inventory != null) return _inventory;
+                _inventory = GetComponent<UnitInventory>();
+                if (_inventory == null) _inventory = gameObject.AddComponent<UnitInventory>();
                 return _inventory;
             }
         }
 
-        /// <summary>
-        /// Backwards-compatible accessor for the unit's active weapon. Reads delegate to
-        /// the inventory's first equippable weapon scan; writes place the weapon in slot 0
-        /// so existing setup code (e.g., CursorSceneSetup) keeps working without changes.
-        /// </summary>
+        // Back-compat accessor for the unit's active weapon. Reads delegate to
+        // the inventory's first equippable-weapon scan; writes place the weapon
+        // in slot 0 so existing setup code (CursorSceneSetup) keeps working.
         public WeaponData equippedWeapon
         {
             get => Inventory.GetEquippedWeapon();
             set => Inventory.SetSlot(0, InventoryItem.FromWeapon(value));
-        }
-
-        public void BindUnitInstance(UnitInstance instance)
-        {
-            _unitInstance = instance;
-            movementPoints = instance.EffectiveMovement;
-            movementType = instance.MovementType;
         }
 
         private void Awake()
@@ -93,33 +86,23 @@ namespace ProjectAstra.Core.Units
 
         private void Start()
         {
-            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            if (_spriteRenderer != null)
-                _normalColor = _spriteRenderer.color;
-
-            if (_unitDefinition != null && _unitInstance == null)
-            {
-                var instance = _classOverride != null
-                    ? new UnitInstance(_unitDefinition, _classOverride, _unitDefinition.BaseLevel, _unitDefinition.BaseStats)
-                    : new UnitInstance(_unitDefinition);
-                BindUnitInstance(instance);
-            }
-
-            if (_unitDefinition != null && _unitDefinition.IsLord)
-                isLord = true;
-
-            if (movementType == MovementType.Flying && _spriteRenderer != null
-                && _spriteRenderer.GetComponent<FlyingHoverAnimator>() == null)
-            {
-                _spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
-            }
-
+            CacheSpriteRenderer();
+            BindUnitInstanceFromDefinitionIfNeeded();
+            SyncLordFlagFromDefinition();
+            EnsureFlyingHoverAnimator();
             SnapToGridPosition();
         }
 
         private void OnValidate()
         {
             SnapToGridPosition();
+        }
+
+        public void BindUnitInstance(UnitInstance instance)
+        {
+            _unitInstance = instance;
+            movementPoints = instance.EffectiveMovement;
+            movementType = instance.MovementType;
         }
 
         public void MarkActed()
@@ -137,6 +120,37 @@ namespace ProjectAstra.Core.Units
         public void SnapToGridPosition()
         {
             transform.position = new Vector3(gridPosition.x + 0.5f, gridPosition.y + 0.5f, 0f);
+        }
+
+        private void CacheSpriteRenderer()
+        {
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (_spriteRenderer != null)
+                _normalColor = _spriteRenderer.color;
+        }
+
+        private void BindUnitInstanceFromDefinitionIfNeeded()
+        {
+            if (_unitDefinition == null || _unitInstance != null) return;
+
+            var instance = _classOverride != null
+                ? new UnitInstance(_unitDefinition, _classOverride, _unitDefinition.BaseLevel, _unitDefinition.BaseStats)
+                : new UnitInstance(_unitDefinition);
+            BindUnitInstance(instance);
+        }
+
+        private void SyncLordFlagFromDefinition()
+        {
+            if (_unitDefinition != null && _unitDefinition.IsLord)
+                isLord = true;
+        }
+
+        private void EnsureFlyingHoverAnimator()
+        {
+            if (movementType != MovementType.Flying || _spriteRenderer == null) return;
+            if (_spriteRenderer.GetComponent<FlyingHoverAnimator>() != null) return;
+
+            _spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
         }
 
         private void SetSpriteColor(Color color)

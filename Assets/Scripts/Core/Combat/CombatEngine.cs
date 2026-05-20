@@ -3,6 +3,9 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Combat
 {
+    // Combat-formula library — every per-stat calculation used by CombatRound
+    // and CombatForecast lives here as a static method. Keeping these split
+    // makes it cheap to unit-test each formula in isolation.
     public static class CombatEngine
     {
         public static int ComputeAttackerHit(int skill, int niyati, int weaponHit, int wtHitBonus = 0)
@@ -40,6 +43,9 @@ namespace ProjectAstra.Core.Combat
             return attackerAS - defenderAS >= 4;
         }
 
+        // FE GBA "true hit" — the average of two rolls, so displayed hit
+        // skews favourable for the player (high displayed rates hit much more
+        // often than a single roll would suggest).
         public static int RollTrueHit(int rand1, int rand2)
         {
             return (rand1 + rand2 + 1) / 2;
@@ -58,10 +64,7 @@ namespace ProjectAstra.Core.Combat
             return displayedCritRate > critRoll;
         }
 
-        public static int ApplyCritMultiplier(int baseDamage)
-        {
-            return baseDamage * 3;
-        }
+        public static int ApplyCritMultiplier(int baseDamage) => baseDamage * 3;
 
         public static int ComputeEffectiveMight(int baseMight, WeaponData weapon, ClassType defenderClassType)
         {

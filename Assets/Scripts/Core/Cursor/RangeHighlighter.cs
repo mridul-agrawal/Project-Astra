@@ -5,6 +5,9 @@ using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Cursor
 {
+    // Paints tile-set overlays for cursor feedback — movement range while a
+    // unit is selected, attack range while targeting, heal range for staff
+    // users. Pulses a low-amplitude shimmer over whatever is currently shown.
     public class RangeHighlighter : MonoBehaviour
     {
         private static readonly Color MovementColor = new(0.25f, 0.4f, 1.0f, 0.7f);
@@ -49,25 +52,11 @@ namespace ProjectAstra.Core.Cursor
             StartShimmer();
         }
 
-        public void ShowAttackRange(HashSet<Vector2Int> attackable)
-        {
-            ClearAll();
+        public void ShowAttackRange(HashSet<Vector2Int> attackable) =>
+            ShowSingleColorRange(attackable, AttackColor);
 
-            foreach (var tile in attackable)
-                PlaceOverlay(tile, AttackColor);
-
-            StartShimmer();
-        }
-
-        public void ShowHealRange(HashSet<Vector2Int> healable)
-        {
-            ClearAll();
-
-            foreach (var tile in healable)
-                PlaceOverlay(tile, HealColor);
-
-            StartShimmer();
-        }
+        public void ShowHealRange(HashSet<Vector2Int> healable) =>
+            ShowSingleColorRange(healable, HealColor);
 
         public void ClearAll()
         {
@@ -82,6 +71,16 @@ namespace ProjectAstra.Core.Cursor
             _baseColors.Clear();
         }
 
+        private void ShowSingleColorRange(HashSet<Vector2Int> tiles, Color color)
+        {
+            ClearAll();
+
+            foreach (var tile in tiles)
+                PlaceOverlay(tile, color);
+
+            StartShimmer();
+        }
+
         private void PlaceOverlay(Vector2Int tile, Color color)
         {
             GameObject overlay = GetOrCreateOverlay();
@@ -94,6 +93,24 @@ namespace ProjectAstra.Core.Cursor
             _activeOverlays.Add(overlay);
             _baseColors.Add(color);
         }
+
+        private GameObject GetOrCreateOverlay()
+        {
+            if (_pool.Count > 0)
+                return _pool.Dequeue();
+
+            var overlay = new GameObject("RangeOverlay");
+            overlay.transform.SetParent(_overlayContainer);
+
+            var sr = overlay.AddComponent<SpriteRenderer>();
+            sr.sprite = _overlaySprite;
+            sr.sortingLayerName = "UIOverlay";
+            sr.sortingOrder = -1;
+
+            return overlay;
+        }
+
+        // --- Shimmer pulse ---
 
         private void StartShimmer()
         {
@@ -128,22 +145,6 @@ namespace ProjectAstra.Core.Cursor
 
                 yield return null;
             }
-        }
-
-        private GameObject GetOrCreateOverlay()
-        {
-            if (_pool.Count > 0)
-                return _pool.Dequeue();
-
-            var overlay = new GameObject("RangeOverlay");
-            overlay.transform.SetParent(_overlayContainer);
-
-            var sr = overlay.AddComponent<SpriteRenderer>();
-            sr.sprite = _overlaySprite;
-            sr.sortingLayerName = "UIOverlay";
-            sr.sortingOrder = -1;
-
-            return overlay;
         }
     }
 }

@@ -6,6 +6,9 @@ using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
+    // Slides a "Player Phase / Enemy Phase / Allied Phase" banner across the
+    // screen at phase transitions, holds briefly, then slides back out. Phase
+    // accent + glow material flip per side.
     public class PhaseBannerUI : MonoBehaviour
     {
         static readonly Color PlayerAccent = new(0.831f, 0.635f, 0.298f, 1f);

@@ -6,11 +6,10 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Progression
 {
-    /// <summary>
-    /// Game Over controller. Lives on the "GameOver" root built by GameOverBuilder.
-    /// Discovers its buttons at OnEnable from ButtonsContainer's children in sibling order —
-    /// index 0 → MainMenu, 1 → SaveMenu. The order must match GameOverBuilder.ButtonLabels.
-    /// </summary>
+    // Game Over controller. Lives on the "GameOver" root built by
+    // GameOverBuilder. Discovers buttons at OnEnable from ButtonsContainer's
+    // children in sibling order — index 0 → MainMenu, 1 → SaveMenu. Order
+    // must match GameOverBuilder.ButtonLabels.
     public class GameOverUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);

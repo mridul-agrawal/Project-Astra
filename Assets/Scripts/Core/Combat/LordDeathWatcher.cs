@@ -7,20 +7,18 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Combat
 {
-    /// <summary>
-    /// UM-02 — Lord Permadeath = Game Over.
-    ///
-    /// Listens on the shared UnitDeathEventChannel. When a Lord dies:
-    ///   1. Fades the Lord's sprite over _fadeDurationSeconds (so the death
-    ///      registers visually — today's flow hides units instantly).
-    ///   2. Hides the GameObject.
-    ///   3. Transitions BattleMap → Dialogue and plays the Lord's authored
-    ///      last-words lines through DialogueSequencePlayer.
-    ///   4. Transitions Dialogue → GameOver.
-    ///
-    /// BattleVictoryWatcher early-returns on args.isLord, so this watcher owns
-    /// the end-of-chapter conclusion for Lord deaths.
-    /// </summary>
+    // UM-02 — Lord Permadeath = Game Over.
+    //
+    // Listens on the shared UnitDeathEventChannel. When a Lord dies:
+    //   1. Fades the Lord's sprite over _fadeDurationSeconds (so the death
+    //      registers visually — today's flow hides units instantly).
+    //   2. Hides the GameObject.
+    //   3. Transitions BattleMap → Dialogue and plays the Lord's authored
+    //      last-words lines through DialogueSequencePlayer.
+    //   4. Transitions Dialogue → GameOver.
+    //
+    // BattleVictoryWatcher early-returns on args.isLord, so this watcher owns
+    // the end-of-chapter conclusion for Lord deaths.
     public class LordDeathWatcher : MonoBehaviour
     {
         [SerializeField] private UnitDeathEventChannel _deathChannel;
@@ -92,8 +90,7 @@ namespace ProjectAstra.Core.Combat
 
         private string[] ResolveLastWords(TestUnit victim)
         {
-            var def = victim != null ? victim.UnitDefinition : null;
-            var authored = def != null ? def.LastWordsLines : null;
+            var authored = victim?.UnitDefinition?.LastWordsLines;
             if (authored != null && authored.Length > 0)
                 return authored;
             return new[] { _fallbackLine };

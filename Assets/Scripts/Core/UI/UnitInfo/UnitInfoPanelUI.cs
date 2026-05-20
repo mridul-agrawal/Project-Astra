@@ -11,6 +11,11 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.UnitInfo
 {
+    // UI-02 Unit Info Panel. Three-page modal: Stats / Inventory / Supports.
+    // Pages 0–1 always visible; page 2 only for Player-faction units. Cursor
+    // left/right flips pages; up/down moves row selection within
+    // Inventory/Supports. Confirm opens a detail sub-panel (item or bond).
+    // Cancel closes the whole modal.
     public class UnitInfoPanelUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }

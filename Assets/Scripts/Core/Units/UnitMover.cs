@@ -5,20 +5,17 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Units
 {
-    /// <summary>
-    /// Animates a unit moving tile-by-tile along a given path. Reusable for player,
-    /// enemy, and allied movement. Coroutine-driven with configurable speed.
-    /// </summary>
+    // Animates a unit moving tile-by-tile along a path. Reusable for player,
+    // enemy, and allied movement. Coroutine-driven with configurable speed.
     public class UnitMover : MonoBehaviour
     {
         [SerializeField] private float _tilesPerSecond = 8f;
 
         public bool IsMoving { get; private set; }
 
-        /// <summary>
-        /// Animates the unit along the path tile-by-tile. Updates unit.gridPosition at each step.
-        /// Calls onComplete when finished. Optional onTileEntered fires at each intermediate tile.
-        /// </summary>
+        // Animates the unit along the path tile-by-tile. Updates unit.gridPosition
+        // at each step; calls onComplete when finished. onTileEntered fires at
+        // each intermediate tile.
         public void MoveAlongPath(TestUnit unit, List<Vector2Int> path,
             Action onComplete, Action<Vector2Int> onTileEntered = null)
         {
@@ -31,7 +28,7 @@ namespace ProjectAstra.Core.Units
             StartCoroutine(AnimateMovementAlongPath(unit, path, onComplete, onTileEntered));
         }
 
-        /// <summary>Instantly snaps unit back to a position (no animation). Used for movement undo.</summary>
+        // Snaps the unit back to a position with no animation. Used for movement undo.
         public void UndoMove(TestUnit unit, Vector2Int originalPosition)
         {
             if (unit == null) return;
@@ -39,7 +36,7 @@ namespace ProjectAstra.Core.Units
             unit.SnapToGridPosition();
         }
 
-        private bool IsPathValid(TestUnit unit, List<Vector2Int> path)
+        private static bool IsPathValid(TestUnit unit, List<Vector2Int> path)
         {
             return unit != null && path != null && path.Count > 1;
         }
@@ -63,7 +60,7 @@ namespace ProjectAstra.Core.Units
             onComplete?.Invoke();
         }
 
-        private IEnumerator AnimateSingleStep(TestUnit unit, Vector2Int from, Vector2Int to, float duration)
+        private static IEnumerator AnimateSingleStep(TestUnit unit, Vector2Int from, Vector2Int to, float duration)
         {
             Vector3 fromWorld = new(from.x + 0.5f, from.y + 0.5f, 0f);
             Vector3 toWorld = new(to.x + 0.5f, to.y + 0.5f, 0f);

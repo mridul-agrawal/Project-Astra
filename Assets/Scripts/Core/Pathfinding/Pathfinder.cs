@@ -5,38 +5,28 @@ using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Pathfinding
 {
-    /// <summary>
-    /// Static utility class providing Dijkstra-based pathfinding for the tactical grid.
-    /// All methods are stateless and take terrain/occupancy lookups as delegates,
-    /// making the algorithm fully testable without Unity dependencies.
-    /// </summary>
+    // Stateless Dijkstra pathfinding on the tactical grid. All methods take
+    // terrain and occupancy lookups as delegates, so the algorithm runs without
+    // Unity and is straightforward to unit-test.
     public static class Pathfinder
     {
         public enum OccupantType { None, Ally, Enemy }
 
-        // Horizontal first (E, W) then vertical (N, S) for deterministic tie-breaking
+        // E, W, N, S — horizontal first so equal-cost paths break ties toward
+        // horizontal travel, which reads more naturally on the displayed arrow.
         private static readonly Vector2Int[] CardinalOffsets =
         {
             new(1, 0), new(-1, 0), new(0, 1), new(0, -1)
         };
 
-        /// <summary>
-        /// Holds the result of a Dijkstra flood-fill. Destinations and PassThrough are
-        /// kept separate so the UI can render them differently and movement logic knows
-        /// which tiles are valid stopping points.
-        /// </summary>
+        // Output of a flood-fill. Destinations vs PassThrough are kept separate
+        // so the UI can render them differently — Destinations are valid stopping
+        // points; PassThrough is ally-occupied (walk through, can't stop on).
         public readonly struct ReachabilityResult
         {
-            /// <summary>Tiles the unit can legally stop on.</summary>
             public readonly HashSet<Vector2Int> Destinations;
-
-            /// <summary>Tiles the unit can move through but not stop on (ally-occupied).</summary>
             public readonly HashSet<Vector2Int> PassThrough;
-
-            /// <summary>Minimum movement cost to reach each explored tile.</summary>
             public readonly Dictionary<Vector2Int, int> CostMap;
-
-            /// <summary>Predecessor of each tile on the optimal path from origin.</summary>
             public readonly Dictionary<Vector2Int, Vector2Int> Predecessors;
 
             public ReachabilityResult(
@@ -52,7 +42,7 @@ namespace ProjectAstra.Core.Pathfinding
             }
         }
 
-        /// <summary>Returns the movement cost for a given terrain and movement type. 0 = impassable.</summary>
+        // Movement cost for this terrain × movement type. 0 means impassable.
         public static int GetMovementCost(TerrainStats stats, MovementType moveType)
         {
             return moveType switch
@@ -67,10 +57,9 @@ namespace ProjectAstra.Core.Pathfinding
             };
         }
 
-        /// <summary>
-        /// Dijkstra flood-fill from origin. Returns all reachable tiles split into
-        /// Destinations (can stop) and PassThrough (can traverse, ally-occupied).
-        /// </summary>
+        // Dijkstra flood-fill from origin, returning every tile the unit can
+        // reach within its movement budget. Ally tiles end up in PassThrough
+        // (legal to cross, illegal to stop on); enemies block completely.
         public static ReachabilityResult ComputeReachability(
             Vector2Int origin,
             int movementPoints,
@@ -81,76 +70,33 @@ namespace ProjectAstra.Core.Pathfinding
             Func<TerrainType, TerrainStats> getTerrainStats,
             Func<Vector2Int, OccupantType> getOccupant)
         {
-            var destinations = new HashSet<Vector2Int>();
-            var passThrough = new HashSet<Vector2Int>();
-            var costMap = new Dictionary<Vector2Int, int>();
-            var predecessors = new Dictionary<Vector2Int, Vector2Int>();
-            // Simple list-based frontier — for grids up to 32×32 (1024 nodes) this is fast enough.
-            var frontier = new List<(int cost, Vector2Int pos)>();
+            var search = NewSearch(origin);
 
-            costMap[origin] = 0;
-            destinations.Add(origin);
-            frontier.Add((0, origin));
-
-            while (frontier.Count > 0)
+            while (search.Frontier.Count > 0)
             {
-                int minIndex = FindMinIndex(frontier);
-                var (dequeuedCost, current) = frontier[minIndex];
-                frontier[minIndex] = frontier[frontier.Count - 1];
-                frontier.RemoveAt(frontier.Count - 1);
+                var (cost, current) = PopMinCost(search.Frontier);
+                if (IsStaleFrontierEntry(cost, current, search.CostMap)) continue;
 
-                // Skip stale entries (node was already processed at a lower cost)
-                if (dequeuedCost > GetCost(costMap, current))
-                    continue;
-
-                for (int i = 0; i < CardinalOffsets.Length; i++)
-                {
-                    Vector2Int neighbor = current + CardinalOffsets[i];
-
-                    if (!IsInBounds(neighbor, mapWidth, mapHeight))
-                        continue;
-
-                    int stepCost = GetStepCost(neighbor, moveType, getTerrainType, getTerrainStats);
-                    if (stepCost == 0) continue; // impassable terrain
-
-                    OccupantType occupant = getOccupant(neighbor);
-                    if (occupant == OccupantType.Enemy) continue; // enemy blocks completely
-
-                    int newCost = dequeuedCost + stepCost;
-                    if (newCost > movementPoints) continue; // exceeds movement budget
-
-                    if (!costMap.TryGetValue(neighbor, out int existingCost) || newCost < existingCost)
-                    {
-                        costMap[neighbor] = newCost;
-                        predecessors[neighbor] = current;
-                        frontier.Add((newCost, neighbor));
-
-                        ClassifyTile(neighbor, occupant, destinations, passThrough);
-                    }
-                    else if (newCost == existingCost)
-                    {
-                        UpdatePredecessorIfStraighter(neighbor, current, predecessors);
-                    }
-                }
+                ExpandNeighbors(current, cost, movementPoints, moveType,
+                    mapWidth, mapHeight,
+                    getTerrainType, getTerrainStats, getOccupant,
+                    search);
             }
 
-            return new ReachabilityResult(destinations, passThrough, costMap, predecessors);
+            return new ReachabilityResult(
+                search.Destinations, search.PassThrough,
+                search.CostMap, search.Predecessors);
         }
 
-        /// <summary>
-        /// Reconstructs the optimal path from origin to destination using the predecessor map.
-        /// Returns null if destination is not reachable.
-        /// </summary>
+        // Walks the predecessor chain from destination back to origin. Returns
+        // null if destination wasn't reached or isn't a legal stop.
         public static List<Vector2Int> ReconstructPath(
             Vector2Int origin,
             Vector2Int destination,
             ReachabilityResult result)
         {
-            if (!result.CostMap.ContainsKey(destination))
-                return null;
-
-            if (!result.Destinations.Contains(destination))
-                return null;
+            if (!result.CostMap.ContainsKey(destination)) return null;
+            if (!result.Destinations.Contains(destination)) return null;
 
             var path = new List<Vector2Int>();
             Vector2Int current = destination;
@@ -159,7 +105,7 @@ namespace ProjectAstra.Core.Pathfinding
             {
                 path.Add(current);
                 if (!result.Predecessors.TryGetValue(current, out Vector2Int prev))
-                    return null; // broken chain
+                    return null;
                 current = prev;
             }
 
@@ -168,10 +114,8 @@ namespace ProjectAstra.Core.Pathfinding
             return path;
         }
 
-        /// <summary>
-        /// Computes all tiles attackable from any tile in the destination set,
-        /// using Manhattan distance within [minRange, maxRange].
-        /// </summary>
+        // Every tile attackable from any stopping point, by Manhattan distance.
+        // Stopping points themselves are excluded — you can't attack where you stand.
         public static HashSet<Vector2Int> ComputeAttackRange(
             HashSet<Vector2Int> destinations,
             int minRange,
@@ -182,16 +126,102 @@ namespace ProjectAstra.Core.Pathfinding
             var attackable = new HashSet<Vector2Int>();
 
             foreach (Vector2Int dest in destinations)
-            {
                 AddTilesInRange(dest, minRange, maxRange, mapWidth, mapHeight, attackable);
-            }
 
-            // Remove tiles that are destinations themselves (can't attack where you stand)
             attackable.ExceptWith(destinations);
             return attackable;
         }
 
-        // --- Private helpers ---
+        // --- Search state ---
+
+        // Mutable scratch threaded through the flood-fill. Bundles the four
+        // output collections plus the frontier so helpers don't have to pass
+        // eight parameters around.
+        private class SearchState
+        {
+            public readonly HashSet<Vector2Int> Destinations = new();
+            public readonly HashSet<Vector2Int> PassThrough = new();
+            public readonly Dictionary<Vector2Int, int> CostMap = new();
+            public readonly Dictionary<Vector2Int, Vector2Int> Predecessors = new();
+            // List-based frontier — for 32×32 grids (1024 nodes) this beats a heap.
+            public readonly List<(int cost, Vector2Int pos)> Frontier = new();
+        }
+
+        private static SearchState NewSearch(Vector2Int origin)
+        {
+            var s = new SearchState();
+            s.CostMap[origin] = 0;
+            s.Destinations.Add(origin);
+            s.Frontier.Add((0, origin));
+            return s;
+        }
+
+        private static (int cost, Vector2Int pos) PopMinCost(List<(int cost, Vector2Int pos)> frontier)
+        {
+            int minIndex = FindMinIndex(frontier);
+            var entry = frontier[minIndex];
+            frontier[minIndex] = frontier[frontier.Count - 1];
+            frontier.RemoveAt(frontier.Count - 1);
+            return entry;
+        }
+
+        private static bool IsStaleFrontierEntry(int dequeuedCost, Vector2Int pos, Dictionary<Vector2Int, int> costMap)
+        {
+            return dequeuedCost > GetCost(costMap, pos);
+        }
+
+        // --- Neighbor expansion ---
+
+        private static void ExpandNeighbors(
+            Vector2Int current,
+            int currentCost,
+            int movementPoints,
+            MovementType moveType,
+            int mapWidth,
+            int mapHeight,
+            Func<int, int, TerrainType> getTerrainType,
+            Func<TerrainType, TerrainStats> getTerrainStats,
+            Func<Vector2Int, OccupantType> getOccupant,
+            SearchState search)
+        {
+            for (int i = 0; i < CardinalOffsets.Length; i++)
+            {
+                Vector2Int neighbor = current + CardinalOffsets[i];
+                if (!IsInBounds(neighbor, mapWidth, mapHeight)) continue;
+
+                int stepCost = GetStepCost(neighbor, moveType, getTerrainType, getTerrainStats);
+                if (stepCost == 0) continue;
+
+                OccupantType occupant = getOccupant(neighbor);
+                if (occupant == OccupantType.Enemy) continue;
+
+                int newCost = currentCost + stepCost;
+                if (newCost > movementPoints) continue;
+
+                RelaxEdge(neighbor, current, newCost, occupant, search);
+            }
+        }
+
+        private static void RelaxEdge(
+            Vector2Int neighbor,
+            Vector2Int from,
+            int newCost,
+            OccupantType occupant,
+            SearchState search)
+        {
+            if (!search.CostMap.TryGetValue(neighbor, out int existingCost) || newCost < existingCost)
+            {
+                search.CostMap[neighbor] = newCost;
+                search.Predecessors[neighbor] = from;
+                search.Frontier.Add((newCost, neighbor));
+
+                ClassifyTile(neighbor, occupant, search.Destinations, search.PassThrough);
+                return;
+            }
+
+            if (newCost == existingCost)
+                UpdatePredecessorIfStraighter(neighbor, from, search.Predecessors);
+        }
 
         private static int GetStepCost(
             Vector2Int pos,
@@ -210,23 +240,20 @@ namespace ProjectAstra.Core.Pathfinding
             HashSet<Vector2Int> destinations,
             HashSet<Vector2Int> passThrough)
         {
-            // Remove from previous classification if reclassifying
             if (occupant == OccupantType.Ally)
             {
                 destinations.Remove(tile);
                 passThrough.Add(tile);
+                return;
             }
-            else
-            {
-                passThrough.Remove(tile);
-                destinations.Add(tile);
-            }
+
+            passThrough.Remove(tile);
+            destinations.Add(tile);
         }
 
-        /// <summary>
-        /// When two paths have equal cost, prefer the one that continues in the same
-        /// direction (fewer turns). This produces aesthetically straight paths.
-        /// </summary>
+        // When two paths tie on cost, prefer the one that keeps going in the
+        // same direction. Makes the displayed path look straight instead of
+        // zig-zagging through equivalent diagonals.
         private static void UpdatePredecessorIfStraighter(
             Vector2Int node,
             Vector2Int newPredecessor,
@@ -248,15 +275,16 @@ namespace ProjectAstra.Core.Pathfinding
             Dictionary<Vector2Int, Vector2Int> predecessors)
         {
             Vector2Int incomingDir = node - predecessor;
-
             if (!predecessors.TryGetValue(predecessor, out Vector2Int grandparent))
-                return 0; // no grandparent — no turn possible
+                return 0;
 
             Vector2Int previousDir = predecessor - grandparent;
             return incomingDir == previousDir ? 0 : 1;
         }
 
-        /// <summary>Adds all tiles at Manhattan distance [minRange, maxRange] from center.</summary>
+        // --- Range helpers ---
+
+        // All tiles at Manhattan distance [min, max] from center, clipped to map.
         internal static void AddTilesInRange(
             Vector2Int center,
             int minRange,

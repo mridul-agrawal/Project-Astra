@@ -21,21 +21,12 @@ namespace ProjectAstra.Core.Progression
         public ResolvedCommitment[] resolutionLog;
     }
 
-    /// <summary>
-    /// Session-scoped tracker. One live entry per active Commitment, with a
-    /// runtime resolution state and the chapter it was resolved in. Ledger's
-    /// Middle Column reads `ResolvedThisChapter()` at end-of-chapter.
-    /// </summary>
+    // Session-scoped tracker. One live entry per active Commitment, with a
+    // runtime resolution state and the chapter it was resolved in. The
+    // Ledger's middle column reads ResolvedThisChapter() at end-of-chapter.
     public class CommitmentTracker : MonoBehaviour, IPersistable<CommitmentTrackerDto>
     {
         public static CommitmentTracker Instance { get; private set; }
-
-        private class LiveCommitment
-        {
-            public Commitment Asset;
-            public CommitmentResolution State;
-            public int ChapterResolved;   // 0 while PENDING
-        }
 
         private readonly Dictionary<string, LiveCommitment> _active = new();
         private readonly List<ResolvedCommitment> _resolutionLog = new();
@@ -51,7 +42,7 @@ namespace ProjectAstra.Core.Progression
             if (Instance == this) Instance = null;
         }
 
-        /// <summary>Called by a scene-level CommitmentSet on chapter start.</summary>
+        // Called by a scene-level CommitmentSet on chapter start.
         public void Register(IEnumerable<Commitment> commitments)
         {
             if (commitments == null) return;
@@ -71,11 +62,12 @@ namespace ProjectAstra.Core.Progression
 
             live.State = outcome;
             live.ChapterResolved = ChapterContext.CurrentChapterNumber;
-            _resolutionLog.Add(new ResolvedCommitment {
-                commitmentId   = live.Asset.Id,
-                commitmentText = live.Asset.Text,
-                resolution     = outcome,
-                chapterResolved= live.ChapterResolved,
+            _resolutionLog.Add(new ResolvedCommitment
+            {
+                commitmentId    = live.Asset.Id,
+                commitmentText  = live.Asset.Text,
+                resolution      = outcome,
+                chapterResolved = live.ChapterResolved,
             });
         }
 
@@ -83,7 +75,8 @@ namespace ProjectAstra.Core.Progression
         {
             int ch = ChapterContext.CurrentChapterNumber;
             var filtered = new List<ResolvedCommitment>();
-            foreach (var r in _resolutionLog) if (r.chapterResolved == ch) filtered.Add(r);
+            foreach (var r in _resolutionLog)
+                if (r.chapterResolved == ch) filtered.Add(r);
             return filtered;
         }
 
@@ -91,14 +84,16 @@ namespace ProjectAstra.Core.Progression
 
         public bool AnyPendingActive()
         {
-            foreach (var kv in _active) if (kv.Value.State == CommitmentResolution.Pending) return true;
+            foreach (var kv in _active)
+                if (kv.Value.State == CommitmentResolution.Pending) return true;
             return false;
         }
 
         public CommitmentTrackerDto Serialize()
         {
             var ids = new List<string>(_active.Keys);
-            return new CommitmentTrackerDto {
+            return new CommitmentTrackerDto
+            {
                 activeIds = ids.ToArray(),
                 resolutionLog = _resolutionLog.ToArray(),
             };
@@ -108,19 +103,26 @@ namespace ProjectAstra.Core.Progression
         {
             _resolutionLog.Clear();
             if (dto.resolutionLog != null) _resolutionLog.AddRange(dto.resolutionLog);
-            // activeIds need the Commitment assets to be re-resolved by the caller
-            // since dictionary values hold ScriptableObject refs. Out of scope today.
+            // activeIds need the Commitment assets to be re-resolved by the
+            // caller since dictionary values hold ScriptableObject refs.
+            // Out of scope today.
+        }
+
+        private class LiveCommitment
+        {
+            public Commitment Asset;
+            public CommitmentResolution State;
+            public int ChapterResolved;   // 0 while pending
         }
     }
 
-    /// <summary>
-    /// Scene-level collection. Drop on a chapter root in BattleMap.unity; on
-    /// Start it pushes its commitments into CommitmentTracker.
-    /// </summary>
+    // Scene-level collection — drop on a chapter root in BattleMap.unity.
+    // On Start it pushes its commitments into the CommitmentTracker.
     public class CommitmentSet : MonoBehaviour
     {
         [SerializeField] private Commitment[] _commitments;
-        [SerializeField] private MonoBehaviour[] _evaluators;   // must each implement IChapterOutcomeEvaluator
+        [Tooltip("Each entry must implement IChapterOutcomeEvaluator.")]
+        [SerializeField] private MonoBehaviour[] _evaluators;
 
         private void Start()
         {
@@ -139,12 +141,10 @@ namespace ProjectAstra.Core.Progression
         }
     }
 
-    /// <summary>
-    /// Implement on any MonoBehaviour the chapter author wants to run at
-    /// end-of-battle. CommitmentSet invokes each registered evaluator on
-    /// BattleConcluded; evaluators call CommitmentTracker.Resolve(...) as
-    /// appropriate.
-    /// </summary>
+    // Implement on any MonoBehaviour the chapter author wants to run at
+    // end-of-battle. CommitmentSet invokes each registered evaluator on
+    // BattleConcluded; evaluators call CommitmentTracker.Resolve(...) as
+    // appropriate.
     public interface IChapterOutcomeEvaluator
     {
         void Evaluate(BattleConclusion conclusion, CommitmentTracker tracker);

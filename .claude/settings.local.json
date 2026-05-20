@@ -143,7 +143,14 @@
       "Bash(powershell -NoProfile -Command ' *)",
       "Bash(Select-String \"\\\\.meta$\")",
       "Bash(Measure-Object)",
-      "Bash(Select-Object Count)"
+      "Bash(Select-Object Count)",
+      "Bash(Remove-Item *)",
+      "Skill(frontend-design)",
+      "mcp__pixellab__get_balance",
+      "WebFetch(domain:api.pixellab.ai)",
+      "mcp__pixellab__agent_help",
+      "mcp__pixellab__create_character",
+      "mcp__pixellab__get_character"
     ]
   }
 }

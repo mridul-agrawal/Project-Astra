@@ -5,9 +5,7 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Combat animation overlay — confirm returns to battle map.
-    /// </summary>
+    // Combat animation overlay — confirm returns to battle map.
     public class CombatAnimationOverlayUI : MonoBehaviour
     {
         [SerializeField] private Button _returnButton;

@@ -4,6 +4,11 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Combat
 {
+    // All the stats and rules for a single weapon instance — including its
+    // remaining uses. WeaponData is a value type because every InventoryItem
+    // copies the weapon snapshot it carries (durability lives on the copy).
+    // Stock weapons (IronSword, Fire, Heal, …) are exposed as static factories
+    // so callers don't carry around literal magic numbers.
     [Serializable]
     public struct WeaponData
     {
@@ -35,10 +40,7 @@ namespace ProjectAstra.Core.Combat
         public bool IsEmpty => string.IsNullOrEmpty(name);
         public bool IsBroken => !indestructible && maxUses > 0 && currentUses <= 0;
 
-        public bool CanReachRange(int distance)
-        {
-            return distance >= minRange && distance <= maxRange;
-        }
+        public bool CanReachRange(int distance) => distance >= minRange && distance <= maxRange;
 
         public bool IsEffectiveAgainst(ClassType target)
         {
@@ -54,6 +56,8 @@ namespace ProjectAstra.Core.Combat
             if (maxUses <= 0) return;
             currentUses = Mathf.Max(0, currentUses - amount);
         }
+
+        // --- Stock weapon factories ---
 
         public static WeaponData None => default;
 

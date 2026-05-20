@@ -10,17 +10,15 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Convoy
 {
-    /// <summary>
-    /// Supply Convoy trade screen (Indigo Codex · Variant A). Drives the
-    /// SupplyConvoy.prefab via SupplyConvoyRefs. Navigation model:
-    ///   • opens on Submenu focus; Left/Right toggles Give ↔ Take
-    ///   • Down enters UnitInv (Give) or ConvoyList (Take)
-    ///   • inside list: Up/Down navigates rows, Left/Right cycles category tabs,
-    ///     Confirm executes the current mode (store / withdraw), Up past the top
-    ///     returns to the Submenu
-    ///   • Cancel at any point closes and consumes the lord's action.
-    /// Game logic (TryWithdraw, TryStore) is identical to the legacy primitive UI.
-    /// </summary>
+    // Supply Convoy trade screen (Indigo Codex · Variant A). Drives the
+    // SupplyConvoy.prefab via SupplyConvoyRefs. Navigation:
+    //   • opens on Submenu focus; Left/Right toggles Give ↔ Take
+    //   • Down enters UnitInv (Give) or ConvoyList (Take)
+    //   • in list: Up/Down navigates rows, Left/Right cycles category tabs,
+    //     Confirm executes the current mode (store / withdraw); Up past the
+    //     top returns to the Submenu
+    //   • Cancel at any point closes and consumes the lord's action.
+    // Game logic (TryWithdraw, TryStore) is identical to the legacy primitive UI.
     public class ConvoyUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }

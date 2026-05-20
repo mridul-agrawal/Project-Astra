@@ -7,6 +7,10 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core
 {
+    // Staff usage rules + heal arithmetic. Owns the can-use / can-target /
+    // amount-healed checks for the Heal, Mend, Recover, Physic, and Fortify
+    // staff effects, plus the offensive staff hit formula used by the
+    // forecast UI.
     public static class StaffEffects
     {
         public static bool CanUseStaff(TestUnit healer, WeaponData staff, out string failReason)
@@ -50,18 +54,7 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            int targetHP, targetMaxHP;
-            if (target.UnitInstance != null)
-            {
-                targetHP = target.UnitInstance.CurrentHP;
-                targetMaxHP = target.UnitInstance.MaxHP;
-            }
-            else
-            {
-                targetHP = target.currentHP;
-                targetMaxHP = target.maxHP;
-            }
-
+            GetHP(target, out int targetHP, out int targetMaxHP);
             if (targetHP >= targetMaxHP)
             {
                 failReason = "Target is already at full HP.";
@@ -83,23 +76,17 @@ namespace ProjectAstra.Core
             int missingHP = targetMaxHP - targetCurrentHP;
             if (missingHP <= 0) return 0;
 
-            switch (staff.staffEffect)
+            return staff.staffEffect switch
             {
-                case StaffEffect.FullHeal:
-                    return missingHP;
-
-                case StaffEffect.Ranged:
-                case StaffEffect.AreaOfEffect:
-                    return Mathf.Min(staff.might / 2 + magStat, missingHP);
-
-                case StaffEffect.Heal:
-                default:
-                    return Mathf.Min(staff.might + magStat, missingHP);
-            }
+                StaffEffect.FullHeal => missingHP,
+                StaffEffect.Ranged or StaffEffect.AreaOfEffect => Mathf.Min(staff.might / 2 + magStat, missingHP),
+                _ => Mathf.Min(staff.might + magStat, missingHP), // Heal (and any future variants).
+            };
         }
 
-        // Offensive-staff hit formula (Sleep, Silence): per FE GBA convention.
-        // Keep this here so CombatForecastUI + later runtime use a single source.
+        // Offensive-staff hit formula (Sleep, Silence). FE GBA convention;
+        // shared by CombatForecastUI today and the runtime once those staves
+        // land.
         public static int ComputeStaffHit(int casterMag, int casterSkl, int targetRes)
         {
             return Mathf.Clamp(30 + casterMag * 5 + casterSkl - targetRes * 5, 0, 100);
@@ -110,20 +97,15 @@ namespace ProjectAstra.Core
             out int amountHealed, out string failReason)
         {
             amountHealed = 0;
-            if (!CanUseStaff(healer, staff, out failReason))
-                return false;
-            if (!CanHealTarget(healer, target, staff, GetMag(healer), out failReason))
-                return false;
+            if (!CanUseStaff(healer, staff, out failReason)) return false;
+            if (!CanHealTarget(healer, target, staff, GetMag(healer), out failReason)) return false;
 
-            int currentHP, maxHP;
-            GetHP(target, out currentHP, out maxHP);
-
+            GetHP(target, out int currentHP, out int maxHP);
             amountHealed = ComputeHealAmount(staff, GetMag(healer), currentHP, maxHP);
             ApplyHealing(target, amountHealed);
             staff.ConsumeDurability();
 
             GrantHealExp(healer, target);
-
             return true;
         }
 
@@ -132,23 +114,15 @@ namespace ProjectAstra.Core
             out List<(TestUnit unit, int amount)> healed, out string failReason)
         {
             healed = new List<(TestUnit, int)>();
-            if (!CanUseStaff(healer, staff, out failReason))
-                return false;
+            if (!CanUseStaff(healer, staff, out failReason)) return false;
 
             int mag = GetMag(healer);
 
             foreach (var unit in allUnits)
             {
-                if (unit == null) continue;
-                if (unit.faction != healer.faction && unit.faction != Faction.Allied) continue;
+                if (!IsValidFortifyTarget(healer, unit, staff, mag)) continue;
 
-                if (!StaffRangeResolver.IsInRange(staff, mag, healer.gridPosition, unit.gridPosition))
-                    continue;
-
-                int currentHP, maxHP;
-                GetHP(unit, out currentHP, out maxHP);
-                if (currentHP >= maxHP) continue;
-
+                GetHP(unit, out int currentHP, out int maxHP);
                 int amount = ComputeHealAmount(staff, mag, currentHP, maxHP);
                 if (amount <= 0) continue;
 
@@ -170,6 +144,20 @@ namespace ProjectAstra.Core
             return true;
         }
 
+        // TODO: USE-01 — when rescue system exists, allow targeting carrier's tile to heal carried unit.
+
+        // --- Private helpers ---
+
+        private static bool IsValidFortifyTarget(TestUnit healer, TestUnit unit, WeaponData staff, int mag)
+        {
+            if (unit == null) return false;
+            if (unit.faction != healer.faction && unit.faction != Faction.Allied) return false;
+            if (!StaffRangeResolver.IsInRange(staff, mag, healer.gridPosition, unit.gridPosition)) return false;
+
+            GetHP(unit, out int currentHP, out int maxHP);
+            return currentHP < maxHP;
+        }
+
         private static void GrantHealExp(TestUnit healer, TestUnit healed)
         {
             if (ExpGranter.Instance == null) return;
@@ -180,10 +168,8 @@ namespace ProjectAstra.Core
             ExpGranter.Instance.Grant(healer, exp);
         }
 
-        private static int GetMag(TestUnit unit)
-        {
-            return unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
-        }
+        private static int GetMag(TestUnit unit) =>
+            unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
 
         private static void GetHP(TestUnit unit, out int currentHP, out int maxHP)
         {
@@ -206,7 +192,5 @@ namespace ProjectAstra.Core
             else
                 unit.currentHP = Mathf.Min(unit.maxHP, unit.currentHP + amount);
         }
-
-        // TODO: USE-01 — when rescue system exists, allow targeting carrier's tile to heal carried unit
     }
 }

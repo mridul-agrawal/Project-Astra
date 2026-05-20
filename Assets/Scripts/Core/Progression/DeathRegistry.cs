@@ -31,12 +31,10 @@ namespace ProjectAstra.Core.Progression
         public int unnamedEnemyDeathCount;
     }
 
-    /// <summary>
-    /// Session-scoped registry of every recorded death. Lives on a scene-level
-    /// GameObject in BattleMap; subscribes to UnitDeathEventChannel on Awake.
-    /// IPersistable hook is for the future campaign-save ticket; today nothing
-    /// consumes Serialize/Restore.
-    /// </summary>
+    // Session-scoped registry of every recorded death. Drop on a scene-level
+    // GameObject in BattleMap; subscribes to UnitDeathEventChannel on Awake.
+    // The IPersistable hook is a forward-compatible no-op today — the save
+    // system ticket will eventually consume Serialize/Restore.
     public class DeathRegistry : MonoBehaviour, IPersistable<DeathRegistryDto>
     {
         public static DeathRegistry Instance { get; private set; }
@@ -57,7 +55,8 @@ namespace ProjectAstra.Core.Progression
         {
             int ch = ChapterContext.CurrentChapterNumber;
             var filtered = new List<DeathEntry>();
-            foreach (var e in _entries) if (e.chapterOfDeath == ch) filtered.Add(e);
+            foreach (var e in _entries)
+                if (e.chapterOfDeath == ch) filtered.Add(e);
             return filtered;
         }
 
@@ -66,7 +65,7 @@ namespace ProjectAstra.Core.Progression
         private void Awake()
         {
             // Last-write-wins singleton — scene reloads discard the previous
-            // instance's data naturally. This is the session-scoped semantic
+            // instance's data naturally. Matches the session-scoped semantics
             // UM-01 ships with; replace when the save system lands.
             if (Instance != null && Instance != this) Destroy(Instance.gameObject);
             Instance = this;
@@ -88,7 +87,8 @@ namespace ProjectAstra.Core.Progression
                 return;
             }
 
-            _entries.Add(new DeathEntry {
+            _entries.Add(new DeathEntry
+            {
                 unitId          = args.unitId,
                 unitName        = args.unitName,
                 className       = args.className,
@@ -107,7 +107,8 @@ namespace ProjectAstra.Core.Progression
             _unnamedEnemyDeathCount = 0;
         }
 
-        public DeathRegistryDto Serialize() => new DeathRegistryDto {
+        public DeathRegistryDto Serialize() => new DeathRegistryDto
+        {
             entries = _entries.ToArray(),
             unnamedEnemyDeathCount = _unnamedEnemyDeathCount,
         };

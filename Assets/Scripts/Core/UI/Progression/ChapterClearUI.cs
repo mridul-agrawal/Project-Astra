@@ -6,11 +6,10 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Progression
 {
-    /// <summary>
-    /// Chapter Clear controller. Lives on the "ChapterClear" root built by ChapterClearBuilder.
-    /// Discovers its buttons at OnEnable from ButtonsContainer's children in sibling order —
-    /// index 0 → Cutscene, 1 → SaveMenu. The order must match ChapterClearBuilder.ButtonLabels.
-    /// </summary>
+    // Chapter Clear controller. Lives on the "ChapterClear" root built by
+    // ChapterClearBuilder. Discovers buttons at OnEnable from
+    // ButtonsContainer's children in sibling order — index 0 → Cutscene,
+    // 1 → SaveMenu. Order must match ChapterClearBuilder.ButtonLabels.
     public class ChapterClearUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);

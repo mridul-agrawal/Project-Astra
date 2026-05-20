@@ -4,19 +4,16 @@ using UnityEngine.Tilemaps;
 
 namespace ProjectAstra.Core.Grid
 {
-    /// <summary>
-    /// Orchestrates tilemap rendering for a loaded map. Reads MapData (integer tile IDs),
-    /// resolves them through TilesetDefinitions into Unity TileBase assets, and stamps them
-    /// onto the appropriate Tilemap layer. Also provides runtime tile swapping (for destructible
-    /// walls) and terrain type queries (for movement/combat systems).
-    /// </summary>
+    // Stamps a MapData onto Unity tilemaps and supports runtime tile swaps for destructibles
+    // (walls becoming rubble, etc.). Also exposes terrain-type queries for movement and combat.
     public class MapRenderer : MonoBehaviour
     {
-        // One Tilemap per render layer: Ground, Overlay, Object, Units, UIOverlay
+        // One Tilemap per MapLayer (Ground / Overlay / Object / Units / UI), wired in the Inspector.
         [Header("Tilemap Layers")]
         [SerializeField] private Tilemap[] _tilemaps = new Tilemap[5];
 
-        // Magenta tile shown when a tile ID is invalid or missing
+        // Shown when a tile ID is invalid or its TileBase asset is missing — usually a bright
+        // magenta so authoring errors are loud.
         [Header("Fallback")]
         [SerializeField] private TileBase _errorTile;
 
@@ -24,10 +21,9 @@ namespace ProjectAstra.Core.Grid
 
         public MapData CurrentMap => _currentMap;
 
-        /// <summary>Fired when SwapTile changes a tile, carrying the cell position. Pathfinding subscribes to this.</summary>
+        // Fires when SwapTile mutates a cell. Pathfinding listens so it can rebuild its graph.
         public event Action<Vector2Int> OnTileSwapped;
 
-        /// <summary>Clears all tilemaps, then stamps every layer from the given MapData.</summary>
         public void LoadMap(MapData mapData)
         {
             if (mapData == null)
@@ -39,13 +35,11 @@ namespace ProjectAstra.Core.Grid
             _currentMap = mapData;
             ClearAllTilemaps();
             StampAllLayers(mapData);
-            ValidateGroundLayer(mapData);
+            WarnIfGroundLayerHasHoles(mapData);
         }
 
-        /// <summary>
-        /// Replaces a single tile at runtime (e.g. destructible wall → rubble).
-        /// Updates both the visual tilemap and the backing MapData in a single frame.
-        /// </summary>
+        // Runtime replacement for a single tile (e.g. destructible wall → rubble). Updates the
+        // tilemap visual AND the backing MapData in one call so both stay consistent.
         public void SwapTile(MapLayer layer, int x, int y, int newTileId, int tilesetIndex)
         {
             if (_currentMap == null) return;
@@ -65,7 +59,6 @@ namespace ProjectAstra.Core.Grid
             OnTileSwapped?.Invoke(new Vector2Int(x, y));
         }
 
-        /// <summary>Returns the terrain type at a ground-layer cell. Used by movement, combat, and pathfinding.</summary>
         public TerrainType GetTerrainType(int x, int y)
         {
             if (_currentMap == null) return TerrainType.Void;
@@ -78,8 +71,6 @@ namespace ProjectAstra.Core.Grid
 
             return tileset.GetTerrainType(groundTileId);
         }
-
-        // --- Map loading helpers ---
 
         private void StampAllLayers(MapData mapData)
         {
@@ -99,7 +90,6 @@ namespace ProjectAstra.Core.Grid
             }
         }
 
-        /// <summary>Iterates every cell in a layer and places the resolved tile onto the tilemap.</summary>
         private void StampLayer(Tilemap tilemap, MapData mapData, MapLayerData layerData,
             TilesetDefinition tileset)
         {
@@ -116,9 +106,6 @@ namespace ProjectAstra.Core.Grid
             }
         }
 
-        // --- Tile resolution ---
-
-        /// <summary>Converts a tile ID to a TileBase via the tileset, falling back to the error tile on failure.</summary>
         private TileBase ResolveTile(TilesetDefinition tileset, int tileId, int x, int y)
         {
             if (!tileset.IsValidId(tileId))
@@ -137,10 +124,9 @@ namespace ProjectAstra.Core.Grid
             return tile;
         }
 
-        // --- Validation ---
-
-        /// <summary>Warns about cells with no ground tile — a map authoring error that renders as a black void.</summary>
-        private void ValidateGroundLayer(MapData mapData)
+        // A missing ground tile renders as a black void in-game — almost always a map-authoring
+        // mistake. Warn once per missing cell so it's caught early.
+        private void WarnIfGroundLayerHasHoles(MapData mapData)
         {
             if (!mapData.GetLayerData(MapLayer.Ground).HasValue)
             {
@@ -157,8 +143,6 @@ namespace ProjectAstra.Core.Grid
                 }
             }
         }
-
-        // --- Lookup helpers ---
 
         private Tilemap GetTilemapForLayer(MapLayer layer)
         {

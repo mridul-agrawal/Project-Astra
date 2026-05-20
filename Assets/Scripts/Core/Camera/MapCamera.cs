@@ -3,18 +3,17 @@ using UnityEngine.Rendering.Universal;
 
 namespace ProjectAstra.Core.Camera
 {
-    /// <summary>
-    /// Configures the camera for pixel-perfect tile rendering using URP's PixelPerfectCamera.
-    /// Ensures integer-scale display (1x, 2x, 3x, 4x) with no sub-pixel artifacts, tile bleed,
-    /// or gaps. Automatically handles window resize by recalculating the nearest valid scale.
-    /// </summary>
+    // Configures the scene camera for pixel-perfect tile rendering via URP's PixelPerfectCamera.
+    // Locks display to integer-scale (1x, 2x, 3x, 4x) so no sub-pixel artifacts, tile bleed, or
+    // gaps appear. PixelPerfectCamera handles window-resize rescaling automatically.
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class MapCamera : MonoBehaviour
     {
+        // 240 / 16 PPU = 15 tiles wide. 240×135 is 16:9, upscaled 8× to 1920×1080.
         [Header("Pixel Perfect Settings")]
-        [SerializeField] private int _assetsPPU = 16;             // Must match the tile size in pixels
-        [SerializeField] private int _referenceResolutionX = 240; // 240 / 16 PPU = 15 tiles wide (exact)
-        [SerializeField] private int _referenceResolutionY = 135; // 240x135 = 16:9, 8x upscale to 1920x1080
+        [SerializeField] private int _assetsPPU = 16;
+        [SerializeField] private int _referenceResolutionX = 240;
+        [SerializeField] private int _referenceResolutionY = 135;
 
         private PixelPerfectCamera _pixelPerfect;
         private UnityEngine.Camera _camera;
@@ -26,6 +25,12 @@ namespace ProjectAstra.Core.Camera
 
             EnsurePixelPerfectComponent();
             ConfigurePixelPerfect();
+        }
+
+        private void OnValidate()
+        {
+            if (_pixelPerfect != null)
+                ConfigurePixelPerfect();
         }
 
         private void EnsurePixelPerfectComponent()
@@ -40,15 +45,8 @@ namespace ProjectAstra.Core.Camera
             _pixelPerfect.assetsPPU = _assetsPPU;
             _pixelPerfect.refResolutionX = _referenceResolutionX;
             _pixelPerfect.refResolutionY = _referenceResolutionY;
-            _pixelPerfect.upscaleRT = true;       // Render at reference resolution, then upscale
-            _pixelPerfect.pixelSnapping = true;    // Snap sprites to pixel grid — prevents blurring
-        }
-
-        // Re-apply settings when values are changed in the Inspector
-        private void OnValidate()
-        {
-            if (_pixelPerfect != null)
-                ConfigurePixelPerfect();
+            _pixelPerfect.upscaleRT = true;       // Render at ref resolution, then upscale to window.
+            _pixelPerfect.pixelSnapping = true;   // Snap sprites to the pixel grid — prevents blur.
         }
     }
 }

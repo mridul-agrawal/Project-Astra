@@ -5,6 +5,10 @@ using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core.Units
 {
+    // Runtime state of a unit during a chapter — current stats, HP, level,
+    // EXP, niyati, stress tier, and movement modifiers. UnitDefinition holds
+    // the authored "who the unit is"; UnitInstance holds "what's happened to
+    // them this run".
     public class UnitInstance
     {
         const int MaxNiyatiStoryDelta = 4;
@@ -29,9 +33,9 @@ namespace ProjectAstra.Core.Units
         public bool IsDead => CurrentHP == 0;
         public bool IsAtLevelCap => CurrentClass != null && CurrentClass.IsPromoted && Level >= PromotedLevelCap;
 
-        // SS-11. Internal level used by the EXP scaling formula: promoted units
-        // carry +20 to represent the 20 unpromoted levels gained pre-promotion,
-        // so they gain less EXP against low-level enemies.
+        // SS-11. Promoted units carry +20 to represent the 20 unpromoted
+        // levels gained pre-promotion, so they gain less EXP against low-
+        // level enemies in the FE GBA formula.
         public int EffectiveLevel => CurrentClass != null && CurrentClass.IsPromoted ? Level + 20 : Level;
 
         public int BaseNiyati { get; private set; }
@@ -51,16 +55,7 @@ namespace ProjectAstra.Core.Units
         public event Action<NiyatiSymbol, NiyatiSymbol> OnNiyatiSymbolChanged;
 
         public UnitInstance(UnitDefinition definition)
-        {
-            Definition = definition;
-            CurrentClass = definition.DefaultClass;
-            Level = definition.BaseLevel;
-            Stats = definition.BaseStats;
-            CurrentHP = MaxHP;
-            BaseNiyati = Stats[StatIndex.Niyati];
-            RecalculateHPThreshold();
-            RecalculateNiyatiSymbol();
-        }
+            : this(definition, definition.DefaultClass, definition.BaseLevel, definition.BaseStats) { }
 
         public UnitInstance(UnitDefinition definition, ClassDefinition classOverride, int level, StatArray stats)
         {
@@ -74,7 +69,7 @@ namespace ProjectAstra.Core.Units
             RecalculateNiyatiSymbol();
         }
 
-        #region HP
+        // --- HP ---
 
         public void ApplyDamage(int amount)
         {
@@ -95,25 +90,12 @@ namespace ProjectAstra.Core.Units
             RecalculateHPThreshold();
         }
 
-        private void RecalculateHPThreshold()
-        {
-            var previous = HPThreshold;
-            HPThreshold = StatUtils.CalculateHPThreshold(CurrentHP, MaxHP);
-
-            if (HPThreshold == HPThreshold.Critical)
-                WasCriticalDuringChapter = true;
-
-            if (HPThreshold != previous)
-                OnHPThresholdChanged?.Invoke(previous, HPThreshold);
-        }
-
-        #endregion
-
-        #region Stat boosters
+        // --- Stat boosters ---
 
         public void ApplyStatBoost(StatIndex stat, int amount)
         {
             if (amount <= 0) return;
+
             var updated = Stats;
             updated[stat] += amount;
             if (CurrentClass != null)
@@ -124,9 +106,7 @@ namespace ProjectAstra.Core.Units
                 RecalculateHPThreshold();
         }
 
-        #endregion
-
-        #region Level-up
+        // --- Level-up ---
 
         public StatArray ApplyLevelUp(Func<int, bool> rollFunction)
         {
@@ -139,51 +119,29 @@ namespace ProjectAstra.Core.Units
                 rollFunction);
 
             var updated = Stats;
-            for (int i = 0; i < StatArray.Length; i++)
-            {
-                var idx = (StatIndex)i;
-                updated[idx] += gains[idx];
-            }
+            AddStatsInPlace(ref updated, gains);
             Stats = updated;
+
             Level++;
-
-            if (CurrentHP > MaxHP)
-                CurrentHP = MaxHP;
-
-            RecalculateHPThreshold();
+            ClampHPToMaxAndRefreshThreshold();
             return gains;
         }
 
-        #endregion
-
-        #region Promotion
+        // --- Promotion ---
 
         public void Promote(ClassDefinition newClass)
         {
             CurrentClass = newClass;
 
             var updated = Stats;
-            var bonuses = newClass.PromotionBonuses;
-            var caps = newClass.StatCaps;
-
-            for (int i = 0; i < StatArray.Length; i++)
-            {
-                var idx = (StatIndex)i;
-                updated[idx] += bonuses[idx];
-            }
-
-            StatUtils.ClampStatsToCaps(ref updated, caps);
+            AddStatsInPlace(ref updated, newClass.PromotionBonuses);
+            StatUtils.ClampStatsToCaps(ref updated, newClass.StatCaps);
             Stats = updated;
 
-            if (CurrentHP > MaxHP)
-                CurrentHP = MaxHP;
-
-            RecalculateHPThreshold();
+            ClampHPToMaxAndRefreshThreshold();
         }
 
-        #endregion
-
-        #region Niyati
+        // --- Niyati ---
 
         public void ApplyNiyatiStoryDelta(int delta)
         {
@@ -202,18 +160,7 @@ namespace ProjectAstra.Core.Units
             RecalculateNiyatiSymbol();
         }
 
-        private void RecalculateNiyatiSymbol()
-        {
-            var previous = NiyatiSymbol;
-            NiyatiSymbol = StatUtils.CalculateNiyatiSymbol(Stats[StatIndex.Niyati], BaseNiyati);
-
-            if (NiyatiSymbol != previous)
-                OnNiyatiSymbolChanged?.Invoke(previous, NiyatiSymbol);
-        }
-
-        #endregion
-
-        #region Chapter lifecycle
+        // --- Chapter lifecycle ---
 
         public void OnChapterStart()
         {
@@ -228,36 +175,21 @@ namespace ProjectAstra.Core.Units
             PostSurvivalFlag = WasHPBelow5DuringChapter;
         }
 
-        #endregion
+        // --- Movement modifiers ---
 
-        #region Movement modifiers
+        public void SetMovementOffset(int offset) => MovementOffset = offset;
+        public void ResetMovementOffset() => MovementOffset = 0;
 
-        public void SetMovementOffset(int offset)
-        {
-            MovementOffset = offset;
-        }
+        // --- Stress (USE-04) ---
 
-        public void ResetMovementOffset()
-        {
-            MovementOffset = 0;
-        }
+        public void SetStressTier(int tier) => StressTier = Mathf.Max(0, tier);
 
-        #endregion
+        // --- EXP (SS-11) ---
 
-        #region Stress (USE-04)
-
-        public void SetStressTier(int tier)
-        {
-            StressTier = Mathf.Max(0, tier);
-        }
-
-        #endregion
-
-        #region EXP (SS-11)
-
-        // Adds raw EXP. Returns true if a level-up threshold was crossed; caller is
-        // expected to invoke ApplyLevelUp() and subtract ExpPerLevel as appropriate.
-        // No-op if the unit is at the promoted level cap — caps EXP at ExpPerLevel.
+        // Adds raw EXP. Returns true if a level-up threshold was crossed; the
+        // caller is expected to invoke ApplyLevelUp() and subtract ExpPerLevel
+        // as appropriate. At the promoted level cap, EXP is held at ExpPerLevel
+        // and the method returns false (the level-up never fires).
         public bool AddExp(int amount)
         {
             if (amount <= 0) return false;
@@ -275,6 +207,42 @@ namespace ProjectAstra.Core.Units
             CurrentEXP = Mathf.Max(0, CurrentEXP - ExpPerLevel);
         }
 
-        #endregion
+        // --- Private helpers ---
+
+        private void RecalculateHPThreshold()
+        {
+            var previous = HPThreshold;
+            HPThreshold = StatUtils.CalculateHPThreshold(CurrentHP, MaxHP);
+
+            if (HPThreshold == HPThreshold.Critical)
+                WasCriticalDuringChapter = true;
+
+            if (HPThreshold != previous)
+                OnHPThresholdChanged?.Invoke(previous, HPThreshold);
+        }
+
+        private void RecalculateNiyatiSymbol()
+        {
+            var previous = NiyatiSymbol;
+            NiyatiSymbol = StatUtils.CalculateNiyatiSymbol(Stats[StatIndex.Niyati], BaseNiyati);
+
+            if (NiyatiSymbol != previous)
+                OnNiyatiSymbolChanged?.Invoke(previous, NiyatiSymbol);
+        }
+
+        private void ClampHPToMaxAndRefreshThreshold()
+        {
+            if (CurrentHP > MaxHP) CurrentHP = MaxHP;
+            RecalculateHPThreshold();
+        }
+
+        private static void AddStatsInPlace(ref StatArray target, StatArray delta)
+        {
+            for (int i = 0; i < StatArray.Length; i++)
+            {
+                var idx = (StatIndex)i;
+                target[idx] += delta[idx];
+            }
+        }
     }
 }

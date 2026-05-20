@@ -11,26 +11,27 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Combat
 {
-    /// <summary>
-    /// Experience Scaling orchestrator. Routes EXP grants through:
-    ///   1. Filter (Player faction only; UnitInstance present).
-    ///   2. EXP counter overlay animation.
-    ///   3. AddExp → chained level-up screens while CurrentEXP ≥ 100 and not at
-    ///      promoted cap.
-    ///
-    /// Multiple grants that arrive during an active animation are queued and
-    /// drained in order so the UI never collides.
-    ///
-    /// Unpromoted Lv-20 units silently accumulate EXP in the background (spec:
-    /// "still gain EXP from actions, but the counter does not advance") —
-    /// UnitInfoPanelUI shows '--' for them.
-    /// </summary>
+    // Experience Scaling orchestrator. Routes EXP grants through three steps:
+    //   1. Filter (Player faction only; UnitInstance present).
+    //   2. EXP counter overlay animation.
+    //   3. AddExp → chained level-up screens while CurrentEXP ≥ 100 and not
+    //      at the promoted cap.
+    //
+    // Grants that arrive during an active animation are queued and drained
+    // in order so the UI never collides.
+    //
+    // Unpromoted Lv-20 units silently accumulate EXP in the background (spec:
+    // "still gain EXP from actions, but the counter does not advance") —
+    // UnitInfoPanelUI shows '--' for them.
     public class ExpGranter : MonoBehaviour
     {
         public static ExpGranter Instance { get; private set; }
 
         [SerializeField] private ExpGainOverlayUI _expGainOverlay;
         [SerializeField] private LevelUpScreenUI _levelUpScreen;
+
+        private static readonly Func<int, bool> RollRandom =
+            growthRate => UnityEngine.Random.Range(0, 100) < growthRate;
 
         private readonly Queue<Pending> _queue = new Queue<Pending>();
         private bool _draining;
@@ -55,25 +56,38 @@ namespace ProjectAstra.Core.Combat
 
         public void Grant(TestUnit recipient, int amount, Action onComplete = null)
         {
-            if (amount <= 0 || recipient == null || recipient.faction != Faction.Player || recipient.UnitInstance == null)
+            if (!IsGrantValid(recipient, amount))
             {
                 onComplete?.Invoke();
                 return;
             }
 
-            var inst = recipient.UnitInstance;
-            bool unpromotedCap = inst.CurrentClass != null && !inst.CurrentClass.IsPromoted && inst.Level >= UnitInstance.PromotedLevelCap;
-
-            if (unpromotedCap)
+            if (IsUnpromotedAtLevelCap(recipient.UnitInstance))
             {
-                // Spec: still gain EXP, but counter does not advance and no level-ups fire.
-                inst.AddExp(amount);
+                // Spec: still gain EXP, but counter does not advance and no
+                // level-ups fire.
+                recipient.UnitInstance.AddExp(amount);
                 onComplete?.Invoke();
                 return;
             }
 
             _queue.Enqueue(new Pending { recipient = recipient, amount = amount, onComplete = onComplete });
             if (!_draining) StartCoroutine(Drain());
+        }
+
+        private static bool IsGrantValid(TestUnit recipient, int amount)
+        {
+            return amount > 0
+                && recipient != null
+                && recipient.faction == Faction.Player
+                && recipient.UnitInstance != null;
+        }
+
+        private static bool IsUnpromotedAtLevelCap(UnitInstance inst)
+        {
+            return inst.CurrentClass != null
+                && !inst.CurrentClass.IsPromoted
+                && inst.Level >= UnitInstance.PromotedLevelCap;
         }
 
         private IEnumerator Drain()
@@ -104,9 +118,6 @@ namespace ProjectAstra.Core.Combat
             while (inst.CurrentEXP >= UnitInstance.ExpPerLevel && !inst.IsAtLevelCap)
                 yield return PlayLevelUp(unit);
         }
-
-        private static readonly Func<int, bool> RollRandom =
-            growthRate => UnityEngine.Random.Range(0, 100) < growthRate;
 
         private IEnumerator PlayLevelUp(TestUnit unit)
         {

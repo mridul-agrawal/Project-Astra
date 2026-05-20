@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core;
@@ -18,9 +19,8 @@ namespace ProjectAstra.Core.Tests.Grid
 
             var so = new UnityEditor.SerializedObject(_table);
             var statsProp = so.FindProperty("_stats");
-            statsProp.arraySize = 18;
+            statsProp.arraySize = TerrainStatTable.ExpectedTerrainCount;
 
-            // Set up Plain (index 0)
             var plain = statsProp.GetArrayElementAtIndex((int)TerrainType.Plain);
             plain.FindPropertyRelative("moveCostFoot").intValue = 1;
             plain.FindPropertyRelative("moveCostMounted").intValue = 1;
@@ -31,7 +31,6 @@ namespace ProjectAstra.Core.Tests.Grid
             plain.FindPropertyRelative("defenceBonus").intValue = 0;
             plain.FindPropertyRelative("avoidBonus").intValue = 0;
 
-            // Set up Forest (index 1)
             var forest = statsProp.GetArrayElementAtIndex((int)TerrainType.Forest);
             forest.FindPropertyRelative("moveCostFoot").intValue = 2;
             forest.FindPropertyRelative("moveCostMounted").intValue = 3;
@@ -42,7 +41,6 @@ namespace ProjectAstra.Core.Tests.Grid
             forest.FindPropertyRelative("defenceBonus").intValue = 1;
             forest.FindPropertyRelative("avoidBonus").intValue = 20;
 
-            // Set up Fort (index 9)
             var fort = statsProp.GetArrayElementAtIndex((int)TerrainType.Fort);
             fort.FindPropertyRelative("moveCostFoot").intValue = 1;
             fort.FindPropertyRelative("moveCostMounted").intValue = 1;
@@ -60,7 +58,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [TearDown]
         public void TearDown()
         {
-            Object.DestroyImmediate(_table);
+            UnityEngine.Object.DestroyImmediate(_table);
         }
 
         [Test]
@@ -100,15 +98,19 @@ namespace ProjectAstra.Core.Tests.Grid
         }
 
         [Test]
-        public void TerrainCount_Returns18()
+        public void TerrainCount_MatchesTerrainTypeEnum()
         {
-            Assert.AreEqual(18, _table.TerrainCount);
+            int enumLength = Enum.GetValues(typeof(TerrainType)).Length;
+            Assert.AreEqual(enumLength, _table.TerrainCount);
+            Assert.AreEqual(enumLength, TerrainStatTable.ExpectedTerrainCount,
+                "TerrainStatTable.ExpectedTerrainCount drifted from the TerrainType enum — update one or the other.");
         }
 
         [Test]
         public void GetStats_AllTerrainTypes_DoNotThrow()
         {
-            for (int i = 0; i < 18; i++)
+            int enumLength = Enum.GetValues(typeof(TerrainType)).Length;
+            for (int i = 0; i < enumLength; i++)
             {
                 Assert.DoesNotThrow(() => _table.GetStats((TerrainType)i));
             }
@@ -125,18 +127,20 @@ namespace ProjectAstra.Core.Tests.Grid
             Assert.AreEqual(20, avo);
         }
 
+        // Flying is immune to terrain MOVEMENT cost (handled by Pathfinder), but still gets
+        // terrain COVER bonuses — design clarified during the Flying Terrain Immunity ship.
         [Test]
-        public void GetTerrainBonuses_Flying_AlwaysReturnsZero()
+        public void GetTerrainBonuses_AppliesUniformlyAcrossMovementTypes()
         {
             var forest = _table.GetStats(TerrainType.Forest);
-            var (fDef, fAvo) = TerrainStatTable.GetTerrainBonuses(forest, MovementType.Flying);
-            Assert.AreEqual(0, fDef);
-            Assert.AreEqual(0, fAvo);
+            var foot = TerrainStatTable.GetTerrainBonuses(forest, MovementType.Foot);
+            var flying = TerrainStatTable.GetTerrainBonuses(forest, MovementType.Flying);
+            Assert.AreEqual(foot, flying, "Flying must get the same terrain bonuses as foot.");
 
             var fort = _table.GetStats(TerrainType.Fort);
-            var (ftDef, ftAvo) = TerrainStatTable.GetTerrainBonuses(fort, MovementType.Flying);
-            Assert.AreEqual(0, ftDef);
-            Assert.AreEqual(0, ftAvo);
+            var footFort = TerrainStatTable.GetTerrainBonuses(fort, MovementType.Foot);
+            var flyingFort = TerrainStatTable.GetTerrainBonuses(fort, MovementType.Flying);
+            Assert.AreEqual(footFort, flyingFort);
         }
 
         [Test]
@@ -160,7 +164,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void IsPassable_FootOnWall_False()
         {
-            var stats = _table.GetStats((TerrainType)13); // Wall — not set up, defaults to 0
+            var stats = _table.GetStats(TerrainType.Wall);
             Assert.IsFalse(TerrainStatTable.IsPassable(stats, MovementType.Foot));
         }
 

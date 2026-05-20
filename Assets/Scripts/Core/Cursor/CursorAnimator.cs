@@ -2,10 +2,9 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Cursor
 {
-    /// <summary>
-    /// Drives a sinusoidal alpha pulse on a SpriteRenderer for cursor idle animation.
-    /// Uses Time.time for frame-rate-independent, deterministic oscillation.
-    /// </summary>
+    // Drives a sinusoidal alpha + scale pulse on the cursor SpriteRenderer.
+    // Uses Time.time so the oscillation is frame-rate independent and
+    // deterministic across runs.
     public class CursorAnimator
     {
         private readonly SpriteRenderer _renderer;
@@ -22,6 +21,7 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_renderer == null) return;
 
+            // 0..1 oscillator mapped onto the alpha and scale ranges.
             float t = (Mathf.Sin(Time.time * speed * 2f * Mathf.PI) + 1f) / 2f;
 
             float alpha = Mathf.Lerp(alphaMin, alphaMax, t);

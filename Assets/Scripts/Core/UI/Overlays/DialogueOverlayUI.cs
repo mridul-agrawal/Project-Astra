@@ -5,9 +5,7 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Dialogue overlay — confirm ends dialogue and returns to battle map.
-    /// </summary>
+    // Dialogue overlay — confirm ends dialogue and returns to battle map.
     public class DialogueOverlayUI : MonoBehaviour
     {
         [SerializeField] private Button _endDialogueButton;

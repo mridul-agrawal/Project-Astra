@@ -3,6 +3,9 @@ using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core.Units
 {
+    // Authored data for a single unit (one asset per character). Holds
+    // identity, default class, base stats, growth rates, portraits, and the
+    // story flags (Lord, named commander) that downstream systems key off of.
     [CreateAssetMenu(menuName = "Project Astra/Units/Unit Definition")]
     public class UnitDefinition : ScriptableObject
     {

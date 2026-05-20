@@ -5,12 +5,10 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.Progression
 {
-    /// <summary>
-    /// Spawns a brief world-space "+N" text above a unit when a heal resolves.
-    /// Runtime-built (no prefab) to avoid one-shot overlay infrastructure —
-    /// the float is simple enough that a coroutine-driven fade-up suffices.
-    /// Silent for no-op heals; HealingTileSystem gates the call on gained > 0.
-    /// </summary>
+    // Spawns a brief world-space "+N" text above a unit when a heal resolves.
+    // Runtime-built (no prefab) to avoid one-shot overlay infrastructure —
+    // the float is simple enough that a coroutine-driven fade-up suffices.
+    // Silent for no-op heals; HealingTileSystem gates the call on gained > 0.
     public class HealFloatSpawner : MonoBehaviour
     {
         [Header("Motion")]

@@ -7,10 +7,8 @@ using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Overlays
 {
-    /// <summary>
-    /// Reusable Yes/No modal. Built dynamically the first time Show is called so it can
-    /// be attached to any host GameObject without requiring a prefab.
-    /// </summary>
+    // Reusable Yes/No modal. Built dynamically the first time Show is called
+    // so it can be attached to any host GameObject without requiring a prefab.
     public class ConfirmDialogUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }

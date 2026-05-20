@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core/Grid — Architecture</title>
+<style>
+  :root{
+    --fg:#16191d;
+    --muted:#5a626c;
+    --line:#cfd4da;
+    --line-soft:#e4e7ea;
+    --bg:#ffffff;
+    --panel:#f6f7f8;
+    --enum:#5a626c;
+    --so:#1f6feb;
+    --mono:#1a7f4b;
+    --asset:#9a5b00;
+    --ext:#7a3ea8;
+    --code:#b3261e;
+    --sans:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --codefont:ui-monospace,"Cascadia Code","Segoe UI Mono",Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    color:var(--fg);
+    background:var(--bg);
+    line-height:1.55;
+    font-size:16px;
+    padding:40px 24px 80px;
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  header{border-bottom:2px solid var(--fg);padding-bottom:16px;margin-bottom:32px}
+  h1{font-size:24px;font-weight:700;letter-spacing:-.01em}
+  .subtitle{margin-top:6px;color:var(--muted);font-size:15px}
+  .counts{margin-top:12px;font-size:14px;color:var(--muted)}
+  .counts code{font-family:var(--codefont);color:var(--fg)}
+
+  h2.tier-h{
+    font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    background:var(--panel);border:1px solid var(--line);
+    padding:9px 14px;border-radius:6px 6px 0 0;border-bottom:none;
+  }
+  h2.tier-h .note{font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:13px;margin-left:8px}
+  .tier{border:1px solid var(--line);border-radius:0 0 6px 6px;padding:18px;display:flex;gap:16px;flex-wrap:wrap}
+  .tier + .arrow{margin:0}
+
+  .card{
+    flex:1 1 300px;min-width:280px;
+    border:1px solid var(--line);border-left-width:5px;border-radius:5px;
+    padding:14px 16px;background:var(--bg);
+  }
+  .card .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .card .name{font-family:var(--codefont);font-size:16px;font-weight:700}
+  .tag{
+    font-family:var(--codefont);font-size:12px;font-weight:600;
+    padding:2px 8px;border-radius:4px;border:1px solid var(--line);color:var(--muted);
+    background:var(--panel);
+  }
+  .card .desc{margin-top:8px;font-size:15px;color:var(--fg)}
+  .card .deps{margin-top:10px;font-size:13.5px;color:var(--muted);font-family:var(--codefont)}
+  .card .deps b{color:var(--fg);font-weight:600}
+
+  .c-enum{border-left-color:var(--enum)}
+  .c-so{border-left-color:var(--so)}
+  .c-mono{border-left-color:var(--mono)}
+  .c-asset{border-left-color:var(--asset)}
+  .c-ext{border-left-color:var(--ext)}
+  .t-enum{color:var(--enum)} .t-so{color:var(--so)} .t-mono{color:var(--mono)}
+  .t-asset{color:var(--asset)} .t-ext{color:var(--ext)}
+
+  .arrow{
+    text-align:center;font-size:14px;color:var(--muted);
+    padding:14px 0;font-family:var(--codefont);
+  }
+  .arrow .v{font-size:20px;line-height:1;color:var(--fg)}
+  .arrow .lbl{display:block;margin-top:2px}
+
+  section.block{margin-top:30px}
+
+  h2.plain{
+    font-size:18px;font-weight:700;margin-bottom:4px;
+    border-bottom:1px solid var(--line);padding-bottom:6px;
+  }
+  h2.plain .sub{font-weight:400;font-size:14px;color:var(--muted);margin-left:8px}
+
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:14px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  th{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line)}
+  td.from{font-family:var(--codefont);font-weight:600;white-space:nowrap}
+  td.dir{font-family:var(--codefont);color:var(--muted);text-align:center;width:40px}
+  td.to{font-family:var(--codefont);color:var(--fg)}
+  td.to .x{color:var(--ext);font-weight:600}
+  tr.ext td.dir{color:var(--ext)}
+
+  .seam{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+  .seam .s{
+    flex:1 1 240px;min-width:230px;border:1px solid var(--line);
+    border-left:5px solid var(--ext);border-radius:5px;padding:12px 14px;
+  }
+  .seam .s .sn{font-family:var(--codefont);font-weight:700;font-size:15px}
+  .seam .s .sd{margin-top:6px;font-size:14px;color:var(--muted)}
+  .seam .s .sd code{font-family:var(--codefont);color:var(--code);font-size:13px}
+
+  .legend{margin-top:24px;font-size:14px;color:var(--muted);display:flex;gap:20px;flex-wrap:wrap}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i{width:16px;height:16px;border-radius:3px;display:inline-block}
+
+  footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+  @media print{body{padding:0;font-size:12px}.card:hover{}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Project Astra — Core/Grid · Architecture</h1>
+    <div class="subtitle">Component map for the grid &amp; spatial core. Dependencies flow downward only.</div>
+    <div class="counts">9 files · <code>2 enum</code>, <code>3 ScriptableObject</code>, <code>2 MonoBehaviour</code>, <code>1 static</code>, <code>1 TileBase asset</code></div>
+  </header>
+
+  <!-- TIER 0 -->
+  <h2 class="tier-h">Tier 0 — Foundation <span class="note">plain enums · no dependencies · referenced by save data via integer index (do not reorder)</span></h2>
+  <div class="tier">
+    <div class="card c-enum">
+      <div class="top"><span class="name">MapLayer</span><span class="tag t-enum">enum</span></div>
+      <div class="desc">The five render layers, bottom-to-top: Ground → Overlay → Object → Units → UI.</div>
+    </div>
+    <div class="card c-enum">
+      <div class="top"><span class="name">TerrainType</span><span class="tag t-enum">enum</span></div>
+      <div class="desc">All 19 terrains (Plain, Forest … Throne). Drives movement cost, combat bonuses, and special effects.</div>
+    </div>
+  </div>
+
+  <div class="arrow"><span class="v">↓</span><span class="lbl">indexed / keyed by</span></div>
+
+  <!-- TIER 1 -->
+  <h2 class="tier-h">Tier 1 — Authored Data <span class="note">ScriptableObjects tuned in the Inspector — the "what" of a map</span></h2>
+  <div class="tier">
+    <div class="card c-so">
+      <div class="top"><span class="name">MapData</span><span class="tag t-so">ScriptableObject</span></div>
+      <div class="desc">One battle map's authored data: dimensions, per-layer tile-ID grid, tileset references, unit start positions, event triggers.</div>
+      <div class="deps">uses <b>MapLayer</b> · holds <b>TilesetDefinition[]</b></div>
+    </div>
+    <div class="card c-so">
+      <div class="top"><span class="name">TilesetDefinition</span><span class="tag t-so">ScriptableObject</span></div>
+      <div class="desc">Resolves a tile ID to both a renderable sprite and its TerrainType, so visuals and gameplay data cannot drift apart.</div>
+      <div class="deps">classifies via <b>TerrainType</b> · yields <b>TileBase</b></div>
+    </div>
+    <div class="card c-so">
+      <div class="top"><span class="name">TerrainStatTable</span><span class="tag t-so">ScriptableObject</span></div>
+      <div class="desc">Lookup of per-terrain movement cost, DEF/AVO cover bonuses, and heal-per-turn. One row per TerrainType.</div>
+      <div class="deps">keyed by <b>TerrainType</b> · calls <b>Core/Pathfinding</b> (external)</div>
+    </div>
+    <div class="card c-asset">
+      <div class="top"><span class="name">SyncedAnimatedTile</span><span class="tag t-asset">TileBase asset</span></div>
+      <div class="desc">A self-animating tile (water, lava) pinned to global time so all instances share a frame. Slotted into a TilesetDefinition's tile list.</div>
+      <div class="deps">no code deps · is one of the <b>TileBase</b> assets</div>
+    </div>
+  </div>
+
+  <div class="arrow"><span class="v">↓</span><span class="lbl">read at runtime · LoadMap(MapData)</span></div>
+
+  <!-- TIER 2 -->
+  <h2 class="tier-h">Tier 2 — Runtime <span class="note">MonoBehaviours that live in the scene — the "doing"</span></h2>
+  <div class="tier">
+    <div class="card c-mono">
+      <div class="top"><span class="name">MapBootstrapper</span><span class="tag t-mono">MonoBehaviour</span></div>
+      <div class="desc">Temporary entry point: on Start() it hands a MapData asset to the MapRenderer. To be replaced when scene/chapter loading exists.</div>
+      <div class="deps">→ <b>MapRenderer.LoadMap</b> · holds <b>MapData</b></div>
+    </div>
+    <div class="card c-mono" style="flex:2 1 460px">
+      <div class="top"><span class="name">MapRenderer</span><span class="tag t-mono">MonoBehaviour</span></div>
+      <div class="desc">The workhorse and the folder's outward API. Stamps MapData onto one Unity Tilemap per layer. SwapTile() handles destructibles and fires OnTileSwapped. GetTerrainType(x,y) answers combat and movement.</div>
+      <div class="deps">reads <b>MapData · TilesetDefinition · MapLayer · TerrainType</b> · emits <b>OnTileSwapped</b> (external) · exposes <b>GetTerrainType</b> (external)</div>
+    </div>
+  </div>
+
+  <!-- STANDALONE -->
+  <section class="block">
+    <h2 class="plain">Standalone Utility <span class="sub">no coupling to anything else in Grid</span></h2>
+    <div class="tier" style="border-radius:6px;margin-top:12px">
+      <div class="card c-so" style="border-left-color:var(--muted)">
+        <div class="top"><span class="name">OverlaySpriteFactory</span><span class="tag">static class</span></div>
+        <div class="desc">Generates and caches the 16×16 hover-highlight sprite at runtime (1px border + diagonal gradient). Pure sprite math, consumed by the grid cursor / overlay system elsewhere.</div>
+        <div class="deps">zero Grid dependencies · consumed by <b>Cursor / Overlay</b> (external)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXTERNAL SEAMS -->
+  <section class="block">
+    <h2 class="plain">External Seams <span class="sub">where Grid crosses out of the folder — know these before any refactor</span></h2>
+    <div class="seam">
+      <div class="s">
+        <div class="sn">Core / Pathfinding</div>
+        <div class="sd"><code>TerrainStatTable</code> → passability rule · <code>MapRenderer.OnTileSwapped</code> → graph rebuild on wall break</div>
+      </div>
+      <div class="s">
+        <div class="sn">Combat / Movement</div>
+        <div class="sd"><code>MapRenderer.GetTerrainType(x,y)</code> → cover &amp; cost lookups</div>
+      </div>
+      <div class="s">
+        <div class="sn">Cursor / Overlay (Input)</div>
+        <div class="sd"><code>OverlaySpriteFactory.GetOverlaySprite()</code> → tile hover highlight</div>
+      </div>
+      <div class="s">
+        <div class="sn">Spawn / Event systems</div>
+        <div class="sd"><code>MapData.UnitStartPositions</code> &amp; <code>EventTriggers</code> → placement &amp; map events</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDGE TABLE -->
+  <section class="block">
+    <h2 class="plain">Dependency Edges — Exact <span class="sub">every directed "uses / reads / depends on" relationship</span></h2>
+    <table>
+      <thead><tr><th>From</th><th></th><th>Depends on</th></tr></thead>
+      <tbody>
+        <tr><td class="from">MapData</td><td class="dir">→</td><td class="to">TilesetDefinition (serialized refs) · MapLayer (enum)</td></tr>
+        <tr><td class="from">TilesetDefinition</td><td class="dir">→</td><td class="to">TerrainType (per-tile class) · TileBase (sprite asset)</td></tr>
+        <tr class="ext"><td class="from">TerrainStatTable</td><td class="dir">→</td><td class="to">TerrainType (row key) · <span class="x">Core/Pathfinding.Pathfinder.GetMovementCost</span></td></tr>
+        <tr><td class="from">MapBootstrapper</td><td class="dir">→</td><td class="to">MapRenderer (LoadMap) · MapData (serialized ref)</td></tr>
+        <tr><td class="from">MapRenderer</td><td class="dir">→</td><td class="to">MapData · TilesetDefinition · MapLayer · TerrainType · UnityEngine.Tilemaps</td></tr>
+        <tr class="ext"><td class="from">MapRenderer.OnTileSwapped</td><td class="dir">↗</td><td class="to"><span class="x">Core/Pathfinding</span> — listens, rebuilds graph</td></tr>
+        <tr class="ext"><td class="from">MapRenderer.GetTerrainType</td><td class="dir">↗</td><td class="to"><span class="x">Combat / Movement</span> — terrain queries</td></tr>
+        <tr class="ext"><td class="from">OverlaySpriteFactory</td><td class="dir">↗</td><td class="to"><span class="x">Cursor / Overlay</span> — no inbound Grid deps</td></tr>
+        <tr><td class="from">SyncedAnimatedTile</td><td class="dir">·</td><td class="to">no code deps — asset slotted into TilesetDefinition.tiles[]</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="legend">
+    <span><i style="background:var(--enum)"></i>enum</span>
+    <span><i style="background:var(--so)"></i>ScriptableObject</span>
+    <span><i style="background:var(--mono)"></i>MonoBehaviour</span>
+    <span><i style="background:var(--asset)"></i>TileBase asset</span>
+    <span><i style="background:var(--ext)"></i>external seam</span>
+  </div>
+
+  <footer>Project Astra · Layer 0–1 Engine &amp; Grid Core · generated from source. Dependencies flow downward only.</footer>
+
+</div>
+</body>
+</html>

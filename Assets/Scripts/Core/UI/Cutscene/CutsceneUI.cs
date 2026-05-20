@@ -6,11 +6,10 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Cutscene
 {
-    /// <summary>
-    /// Cutscene controller. Lives on the "Cutscene" root built by CutsceneBuilder.
-    /// Discovers its buttons at OnEnable from ButtonsContainer's children in sibling order —
-    /// index 0 → PreBattlePrep, 1 → BattleMap. The order must match CutsceneBuilder.ButtonLabels.
-    /// </summary>
+    // Cutscene controller. Lives on the "Cutscene" root built by
+    // CutsceneBuilder. Discovers its buttons at OnEnable from
+    // ButtonsContainer's children in sibling order — index 0 → PreBattlePrep,
+    // 1 → BattleMap. Order must match CutsceneBuilder.ButtonLabels.
     public class CutsceneUI : MonoBehaviour
     {
         [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);

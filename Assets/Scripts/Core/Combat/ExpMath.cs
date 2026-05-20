@@ -3,15 +3,13 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Combat
 {
-    /// <summary>
-    /// FE GBA experience formulas. Stateless — pure math on UnitInstance inputs.
-    ///
-    /// Base combat EXP = (31 + defender.EffectiveLevel − attacker.EffectiveLevel) / attacker.ClassPowerFactor.
-    /// Kill bonus = 20 + defender.EffectiveLevel − attacker.EffectiveLevel (+20 if defender is promoted).
-    /// Both are summed for a kill, and clamped to [1, 100].
-    ///
-    /// Heal EXP uses the same shape with the healed ally's level standing in for the enemy's.
-    /// </summary>
+    // FE GBA experience formulas. Stateless — pure math on UnitInstance inputs.
+    //
+    // Base combat EXP = (31 + defender.EffectiveLevel − attacker.EffectiveLevel) / attacker.ClassPowerFactor.
+    // Kill bonus = 20 + defender.EffectiveLevel − attacker.EffectiveLevel (+20 if defender is promoted).
+    // Both are summed for a kill, then clamped to [1, 100].
+    //
+    // Heal EXP uses the same shape with the healed ally's level standing in for the enemy's.
     public static class ExpMath
     {
         public const int MinExpPerAction = 1;

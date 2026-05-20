@@ -4,12 +4,18 @@ using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core
 {
+    // What a consumable does on use. Stored on item assets and inventory
+    // slots as the integer value; don't reorder.
     public enum ConsumableType
     {
         Vulnerary,
         StatBooster,
     }
 
+    // Single-slot consumable item. Value type so each InventoryItem owns its
+    // own use counter — copies of the same consumable can deplete independently.
+    // Stock consumables (Vulnerary, AmritaVastra, …) are exposed as static
+    // factories so callers don't carry literal magic numbers.
     [Serializable]
     public struct ConsumableData
     {
@@ -27,6 +33,8 @@ namespace ProjectAstra.Core
             if (maxUses <= 0) return;
             currentUses = Mathf.Max(0, currentUses - 1);
         }
+
+        // --- Stock consumable factories ---
 
         public static ConsumableData Vulnerary => new()
         {

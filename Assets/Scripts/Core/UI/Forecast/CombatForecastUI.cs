@@ -9,16 +9,14 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Forecast
 {
-    /// <summary>
-    /// Combat Forecast Panel — previews the outcome of a player-chosen attack before commit.
-    /// Drives the CombatForecast.prefab via CombatForecastRefs. Position flips between
-    /// top-right and top-left based on the cursor's map-space position so the panel never
-    /// covers the target tile.
-    ///
-    /// Game logic is read-only: no mutation of units, weapons, or convoy. All numbers come
-    /// from CombatForecast.Compute (pure, in Core/Map), adjusted for weapon triangle and
-    /// effectiveness before being pushed into the UI.
-    /// </summary>
+    // Combat Forecast Panel — previews the outcome of a player-chosen attack
+    // before commit. Drives the CombatForecast.prefab via CombatForecastRefs.
+    // Position flips between top-right and top-left based on the cursor's
+    // map-space position so the panel never covers the target tile.
+    //
+    // Game logic is read-only: no mutation of units, weapons, or convoy. All
+    // numbers come from CombatForecast.Compute (pure, in Core/Map), adjusted
+    // for weapon triangle and effectiveness before being pushed into the UI.
     public class CombatForecastUI : MonoBehaviour
     {
         public static bool IsVisible { get; private set; }

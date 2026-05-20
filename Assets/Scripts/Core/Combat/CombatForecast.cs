@@ -2,6 +2,9 @@ using ProjectAstra.Core.Stats;
 
 namespace ProjectAstra.Core.Combat
 {
+    // Hit / damage / crit numbers shown on the combat-forecast overlay before
+    // the player commits an attack. Mirrors what CombatRound will eventually
+    // compute, but without weapon-triangle bonuses or RNG.
     public struct CombatForecast
     {
         public int AttackerHit;
@@ -29,17 +32,14 @@ namespace ProjectAstra.Core.Combat
             int atkAS = StatUtils.AttackSpeed(attacker.spd, attacker.weapon.weight, attacker.con);
             int defAS = StatUtils.AttackSpeed(defender.spd, defender.weapon.weight, defender.con);
 
-            int atkHit = CombatEngine.ComputeAttackerHit(attacker.skl, attacker.niyati, attacker.weapon.hit);
+            int atkHitRaw = CombatEngine.ComputeAttackerHit(attacker.skl, attacker.niyati, attacker.weapon.hit);
             int defAvo = CombatEngine.ComputeAvoid(defAS, defender.niyati, defenderTerrainAvo);
-
             int atkDmg = CombatEngine.ComputeDamage(attacker.weapon.damageType,
                 attacker.str, attacker.mag, attacker.weapon.might, 0,
                 defender.def, defender.res, defenderTerrainDef);
-
             int atkCrit = CombatEngine.ComputeCritRate(attacker.skl, attacker.weapon.crit, attacker.classCrit, defender.niyati);
 
-            bool canCounter = !defender.weapon.IsEmpty &&
-                              defender.weapon.CanReachRange(attacker.distance);
+            bool canCounter = !defender.weapon.IsEmpty && defender.weapon.CanReachRange(attacker.distance);
 
             int defHit = 0, defDmg = 0, defCrit = 0;
             if (canCounter)
@@ -55,7 +55,7 @@ namespace ProjectAstra.Core.Combat
 
             return new CombatForecast
             {
-                AttackerHit = CombatEngine.ComputeDisplayedHit(atkHit, defAvo),
+                AttackerHit = CombatEngine.ComputeDisplayedHit(atkHitRaw, defAvo),
                 AttackerDamage = atkDmg,
                 AttackerCritRate = atkCrit,
                 AttackerCanDouble = CombatEngine.CanDoubleAttack(atkAS, defAS),
@@ -75,6 +75,9 @@ namespace ProjectAstra.Core.Combat
         }
     }
 
+    // Per-combatant snapshot fed into CombatRound and CombatForecast. Built
+    // by FromStats from a StatArray + the unit's equipped weapon + the
+    // attack distance (so range weapons can compute counter-attack eligibility).
     public struct CombatantData
     {
         public int str, mag, skl, spd, def, res, con, niyati;

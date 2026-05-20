@@ -1,10 +1,9 @@
 namespace ProjectAstra.Core.Pathfinding
 {
-    /// <summary>
-    /// Classification for how a unit traverses terrain. Maps 1:1 to the moveCost fields
-    /// in TerrainStats — each unit has exactly one movement type that determines which
-    /// cost column is used for pathfinding.
-    /// </summary>
+    // How a unit traverses terrain. Each value maps 1:1 to a moveCost column in
+    // TerrainStats. Stored on class assets as an integer, so adding new entries
+    // is fine but reordering will silently rewire which terrain costs every
+    // existing class uses.
     public enum MovementType
     {
         Foot,

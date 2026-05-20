@@ -8,10 +8,9 @@ using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.UI.BattleMap
 {
-    /// <summary>
-    /// Battle map debug UI — phase controls, allies toggle, and transition buttons.
-    /// Press Tab to toggle keyboard focus between this panel and the grid cursor.
-    /// </summary>
+    // Battle map debug UI — phase controls, allies toggle, and transition
+    // buttons. Press Tab to toggle keyboard focus between this panel and the
+    // grid cursor.
     public class BattleMapUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }

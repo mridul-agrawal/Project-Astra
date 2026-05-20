@@ -3,10 +3,9 @@ using System.Collections.Generic;
 
 namespace ProjectAstra.Core
 {
-    /// <summary>
-    /// Shared 100-slot supply convoy for the player's army. Items are auto-sorted
-    /// on every deposit. Plugs into Convoy.Current to replace NullConvoy.
-    /// </summary>
+    // Shared 100-slot supply convoy for the player's army. Items are
+    // auto-sorted on every deposit. Plugs into Convoy.Current to replace
+    // NullConvoy at scene start.
     public class SupplyConvoy : IConvoy
     {
         public const int MaxCapacity = 100;

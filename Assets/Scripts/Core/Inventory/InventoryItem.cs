@@ -4,6 +4,8 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core
 {
+    // Discriminator for the InventoryItem union. Stored on inventory slots
+    // as the integer value; don't reorder.
     public enum ItemKind
     {
         None,
@@ -11,10 +13,9 @@ namespace ProjectAstra.Core
         Consumable,
     }
 
-    /// <summary>
-    /// Discriminated union of weapon or consumable. Lives in a single inventory slot.
-    /// Struct (not class) to mirror WeaponData and avoid GC pressure during inventory scans.
-    /// </summary>
+    // Discriminated union of weapon or consumable — one of these lives in
+    // each inventory slot. Struct (not class) to mirror WeaponData and avoid
+    // GC pressure during inventory scans.
     [Serializable]
     public struct InventoryItem
     {

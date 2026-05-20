@@ -3,7 +3,9 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Input
 {
-    /// <summary>Defines which input actions are allowed per GameState, used by InputManager for context-based action filtering.</summary>
+    // The whitelist of input actions allowed per GameState. InputManager queries this table
+    // on every state change and disables actions that aren't in the current state's set,
+    // so e.g. cursor movement won't trigger during a Dialogue overlay.
     public static class InputContext
     {
         public const string CursorUp = "CursorUp";
@@ -22,6 +24,8 @@ namespace ProjectAstra.Core.Input
         public const string HoldAdvanceDialogue = "HoldAdvanceDialogue";
         public const string NextUnit = "NextUnit";
         public const string PrevUnit = "PrevUnit";
+
+        private static readonly HashSet<string> EmptyActions = new();
 
         private static readonly HashSet<string> CursorAndMenuActions = new()
         {
@@ -61,8 +65,8 @@ namespace ProjectAstra.Core.Input
 
             { GameState.ChapterClear, CursorAndMenuActions },
 
-            // WarLedger is Confirm-only by spec — it is a document, not a menu.
-            // Dismissal is the one allowed input; no Cancel/Back.
+            // WarLedger is Confirm-only by spec — it's a document, not a menu. Dismissal is the
+            // one allowed input; no Cancel/Back.
             { GameState.WarLedger, new HashSet<string> { Confirm } },
 
             { GameState.GameOver, CursorAndMenuActions },
@@ -71,14 +75,14 @@ namespace ProjectAstra.Core.Input
 
             { GameState.SettingsMenu, CursorAndMenuActions },
 
-            // LevelUpScreen is Confirm-only — the modal cannot be cancelled
-            // (FE GBA convention: rolled stats are locked once the screen shows).
+            // LevelUpScreen is Confirm-only — the modal cannot be cancelled (FE GBA convention:
+            // rolled stats are locked once the screen shows).
             { GameState.LevelUpScreen, new HashSet<string> { Confirm } },
         };
 
         public static HashSet<string> GetAllowedActions(GameState state)
         {
-            return ContextMap.TryGetValue(state, out var actions) ? actions : new HashSet<string>();
+            return ContextMap.TryGetValue(state, out var actions) ? actions : EmptyActions;
         }
 
         public static bool IsActionAllowed(GameState state, string actionName)

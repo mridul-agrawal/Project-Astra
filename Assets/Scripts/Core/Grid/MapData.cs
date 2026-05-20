@@ -3,9 +3,15 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Grid
 {
+    // A single battle map's authored data: dimensions, per-layer tile IDs, unit start
+    // positions, and event triggers. Pure data — no rendering. MapRenderer is what stamps
+    // this onto Unity tilemaps; pathfinding and combat read terrain through here too.
     [CreateAssetMenu(menuName = "Project Astra/Map/Map Data")]
     public class MapData : ScriptableObject
     {
+        private const int MinDimension = 1;
+        private const int MaxDimension = 64;
+
         [SerializeField] private string _mapName;
         [SerializeField] private int _width = 4;
         [SerializeField] private int _height = 4;
@@ -29,27 +35,18 @@ namespace ProjectAstra.Core.Grid
 
         public int GetTileId(MapLayer layer, int x, int y)
         {
-            if (!IsInBounds(x, y)) return -1;
+            if (!TryResolveCell(layer, x, y, out int[] layerTiles, out int index))
+                return -1;
 
-            MapLayerData? layerData = FindLayer(layer);
-            if (!layerData.HasValue) return -1;
-
-            int index = ToFlatIndex(x, y);
-            if (index >= layerData.Value.tileIds.Length) return -1;
-
-            return layerData.Value.tileIds[index];
+            return layerTiles[index];
         }
 
         public void SetTileId(MapLayer layer, int x, int y, int tileId)
         {
-            if (!IsInBounds(x, y)) return;
+            if (!TryResolveCell(layer, x, y, out int[] layerTiles, out int index))
+                return;
 
-            MapLayerData? layerData = FindLayer(layer);
-            if (!layerData.HasValue) return;
-
-            int index = ToFlatIndex(x, y);
-            if (index < layerData.Value.tileIds.Length)
-                layerData.Value.tileIds[index] = tileId;
+            layerTiles[index] = tileId;
         }
 
         public MapLayerData? GetLayerData(MapLayer layer)
@@ -57,11 +54,39 @@ namespace ProjectAstra.Core.Grid
             return FindLayer(layer);
         }
 
-        // Converts (x, y) grid coordinates to an index into the flat tile ID array (row-major order)
-        private int ToFlatIndex(int x, int y)
+        // Locates the cell's backing tile array and its flat index; false if it can't.
+        private bool TryResolveCell(MapLayer layer, int x, int y, out int[] layerTiles, out int index)
         {
-            return y * _width + x;
+            layerTiles = null;
+            index = -1;
+
+            if (!IsInBounds(x, y)) return false;
+            if (!TryGetLayerTiles(layer, out int[] tiles)) return false;
+
+            int flatIndex = ToFlatIndex(x, y);
+            if (!IsWithinLayer(tiles, flatIndex)) return false;
+
+            layerTiles = tiles;
+            index = flatIndex;
+            return true;
         }
+
+        private bool TryGetLayerTiles(MapLayer layer, out int[] tiles)
+        {
+            MapLayerData? layerData = FindLayer(layer);
+            if (!layerData.HasValue)
+            {
+                tiles = null;
+                return false;
+            }
+
+            tiles = layerData.Value.tileIds;
+            return true;
+        }
+
+        private bool IsWithinLayer(int[] tiles, int flatIndex) => flatIndex < tiles.Length;
+
+        private int ToFlatIndex(int x, int y) => y * _width + x;
 
         private MapLayerData? FindLayer(MapLayer layer)
         {
@@ -75,8 +100,8 @@ namespace ProjectAstra.Core.Grid
 
         private void OnValidate()
         {
-            _width = Mathf.Clamp(_width, 1, 64);
-            _height = Mathf.Clamp(_height, 1, 64);
+            _width = Mathf.Clamp(_width, MinDimension, MaxDimension);
+            _height = Mathf.Clamp(_height, MinDimension, MaxDimension);
         }
     }
 
