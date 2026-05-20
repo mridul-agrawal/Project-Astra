@@ -76,6 +76,7 @@ namespace ProjectAstra.Core.Cursor
         private CombatExecutor _combatExecutor;
         private StaffExecutor _staffExecutor;
         private TargetingFlow _targetingFlow;
+        private ActionMenuFlow _actionMenuFlow;
 
         // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
@@ -88,18 +89,9 @@ namespace ProjectAstra.Core.Cursor
         private Pathfinder.ReachabilityResult _currentReachability;
         private Vector2Int _committedDestination;
 
-        // Caches populated when the action menu is built.
-        private List<Vector2Int> _cachedEnemyTiles = new();
-        private List<Vector2Int> _cachedHealTiles = new();
-        private List<ActionChoice> _cachedActionChoices = new();
-        private List<TestUnit> _cachedAdjacentAllies = new();
-
         // Canto — cavalry/flying units re-enter movement mode after a primary action.
         private bool _isCantoMode;
         private int _preCantoMovementPoints;
-        private ActionChoice? _lastActionChoice;
-
-        private enum ActionChoice { Attack, Heal, Fortify, Item, Trade, Supply, Wait }
 
         public Vector2Int GridPosition => _gridPosition;
         public CursorMode CurrentMode => _currentMode;
@@ -132,6 +124,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeCombatExecutor();
             InitializeStaffExecutor();
             InitializeTargetingFlow();
+            InitializeActionMenuFlow();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -298,6 +291,14 @@ namespace ProjectAstra.Core.Cursor
                 _rangeHighlighter, _combatForecastUI, this);
         }
 
+        private void InitializeActionMenuFlow()
+        {
+            _actionMenuFlow = new ActionMenuFlow(
+                _actionMenuUI, _inventoryMenuUI, _confirmDialogUI,
+                _tradeUI, _convoyUI, _toastUI,
+                _targetingFlow, _staffExecutor, this);
+        }
+
         private void AddListenersToInputEvents()
         {
             if (InputManager.Instance == null) return;
@@ -388,6 +389,11 @@ namespace ProjectAstra.Core.Cursor
         }
 
         private bool IsMovementConstrained() => _validMoveTiles != null;
+
+        // Lets ActionMenuFlow swap the cursor's allowed-tile set when
+        // entering targeting mode (attack/heal tile set replaces the
+        // movement set).
+        internal void SetValidMoveTiles(HashSet<Vector2Int> tiles) => _validMoveTiles = tiles;
 
         // --- Cursor movement details ---
 
@@ -512,131 +518,19 @@ namespace ProjectAstra.Core.Cursor
             ShowActionMenu();
         }
 
-        // --- Action menu ---
+        // --- Action menu (thin shim; flow lives on _actionMenuFlow) ---
 
         private void ShowActionMenu()
         {
-            var labels = new List<string>();
-            _cachedActionChoices.Clear();
-            _cachedEnemyTiles = _targetingFlow.GetEnemiesInAttackRange(_selectedUnit, _committedDestination);
-
-            TryAddAttackAction(labels);
-            TryAddStaffAction(labels);
-            TryAddItemAction(labels);
-            TryAddTradeAction(labels);
-            TryAddSupplyAction(labels);
-
-            labels.Add("Wait");
-            _cachedActionChoices.Add(ActionChoice.Wait);
-
-            SetMode(CursorMode.ActionMenu);
-            _actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
+            _actionMenuFlow.Show(_selectedUnit, _committedDestination,
+                onComplete: CompleteAction,
+                onCancelToUnitSelected: OnActionCancelled);
         }
 
-        private void TryAddAttackAction(List<string> labels)
-        {
-            if (_cachedEnemyTiles.Count == 0) return;
-            if (_selectedUnit == null || _selectedUnit.Inventory.IsUnarmed) return;
-
-            labels.Add("Attack");
-            _cachedActionChoices.Add(ActionChoice.Attack);
-        }
-
-        private void TryAddStaffAction(List<string> labels)
-        {
-            if (_selectedUnit == null) return;
-
-            var staff = _selectedUnit.equippedWeapon;
-            if (staff.weaponType != WeaponType.Staff) return;
-            if (staff.staffEffect == StaffEffect.None || staff.IsBroken) return;
-
-            if (staff.staffEffect == StaffEffect.AreaOfEffect)
-                TryAddFortifyAction(labels);
-            else
-                TryAddHealAction(labels);
-        }
-
-        private void TryAddFortifyAction(List<string> labels)
-        {
-            var staff = _selectedUnit.equippedWeapon;
-            int mag = GetMagStat(_selectedUnit);
-            var allUnits = FindObjectsByType<TestUnit>(FindObjectsSortMode.None);
-
-            foreach (var u in allUnits)
-            {
-                if (u == _selectedUnit) continue;
-                if (!StaffEffects.CanHealTarget(_selectedUnit, u, staff, mag, out _)) continue;
-
-                labels.Add("Fortify");
-                _cachedActionChoices.Add(ActionChoice.Fortify);
-                return;
-            }
-        }
-
-        private void TryAddHealAction(List<string> labels)
-        {
-            _cachedHealTiles = _targetingFlow.GetAlliesInHealRange(
-                _selectedUnit, _committedDestination, GetMagStat(_selectedUnit));
-            if (_cachedHealTiles.Count == 0) return;
-
-            labels.Add("Heal");
-            _cachedActionChoices.Add(ActionChoice.Heal);
-        }
-
-        private void TryAddItemAction(List<string> labels)
-        {
-            if (_selectedUnit == null || _selectedUnit.Inventory.OccupiedCount == 0) return;
-
-            labels.Add("Item");
-            _cachedActionChoices.Add(ActionChoice.Item);
-        }
-
-        private void TryAddTradeAction(List<string> labels)
-        {
-            _cachedAdjacentAllies = _selectedUnit != null
-                ? AdjacentAllyFinder.FindAdjacentAllies(
-                    _committedDestination, Faction.Player, _selectedUnit, FindUnitAt)
-                : new List<TestUnit>();
-
-            if (_cachedAdjacentAllies.Count == 0) return;
-
-            labels.Add("Trade");
-            _cachedActionChoices.Add(ActionChoice.Trade);
-        }
-
-        private void TryAddSupplyAction(List<string> labels)
-        {
-            if (_selectedUnit == null || !_selectedUnit.isLord) return;
-            if (!Convoy.Current.IsAvailable) return;
-
-            labels.Add("Supply");
-            _cachedActionChoices.Add(ActionChoice.Supply);
-        }
-
-        private void OnActionSelected(int index)
-        {
-            if (index < 0 || index >= _cachedActionChoices.Count)
-            {
-                _lastActionChoice = ActionChoice.Wait;
-                CompleteAction();
-                return;
-            }
-
-            _lastActionChoice = _cachedActionChoices[index];
-
-            switch (_cachedActionChoices[index])
-            {
-                case ActionChoice.Attack: EnterTargetingMode(); break;
-                case ActionChoice.Heal: EnterHealTargetingMode(); break;
-                case ActionChoice.Fortify: _staffExecutor.TryCommitFortify(_selectedUnit, CompleteAction); break;
-                case ActionChoice.Item: OpenInventoryMenu(); break;
-                case ActionChoice.Trade: ShowTradeTargetMenu(); break;
-                case ActionChoice.Supply: OpenConvoyUI(); break;
-                case ActionChoice.Wait:
-                default: CompleteAction(); break;
-            }
-        }
-
+        // The action menu's Cancel button: undo the unit's movement and
+        // unwind back to UnitSelected. Stays in GridCursor because it
+        // touches selection-flow state (_currentReachability, _validMoveTiles,
+        // cursor mode).
         private void OnActionCancelled()
         {
             _combatForecastUI?.Hide();
@@ -649,90 +543,6 @@ namespace ProjectAstra.Core.Cursor
             SetMode(CursorMode.UnitSelected);
         }
 
-        private void OpenInventoryMenu()
-        {
-            if (_selectedUnit == null || _inventoryMenuUI == null)
-            {
-                ShowActionMenu();
-                return;
-            }
-
-            _inventoryMenuUI.Show(_selectedUnit, _confirmDialogUI,
-                onConsumableUsed: () => CompleteAction(),
-                onClose: () => ShowActionMenu());
-        }
-
-        private void ShowTradeTargetMenu()
-        {
-            if (_cachedAdjacentAllies.Count == 1)
-            {
-                OpenTrade(_cachedAdjacentAllies[0]);
-                return;
-            }
-
-            var names = new List<string>();
-            foreach (var ally in _cachedAdjacentAllies)
-                names.Add(ally.name);
-
-            _actionMenuUI?.Show(names,
-                index => OpenTrade(_cachedAdjacentAllies[index]),
-                () => ShowActionMenu());
-        }
-
-        private void OpenTrade(TestUnit target)
-        {
-            if (_selectedUnit == null || _tradeUI == null)
-            {
-                ShowActionMenu();
-                return;
-            }
-
-            var session = new TradeSession(_selectedUnit, target);
-            _tradeUI.Show(session, _confirmDialogUI,
-                onConfirm: () => ShowActionMenu(),
-                onCancel: () => ShowActionMenu());
-        }
-
-        private void OpenConvoyUI()
-        {
-            if (_selectedUnit == null || _convoyUI == null) { ShowActionMenu(); return; }
-
-            var convoy = Convoy.Current as SupplyConvoy;
-            if (convoy == null) { ShowActionMenu(); return; }
-
-            _convoyUI.Show(convoy, _selectedUnit, _toastUI, onClose: () => CompleteAction());
-        }
-
-        // --- Targeting (entry points; the work lives on _targetingFlow) ---
-
-        private void EnterTargetingMode()
-        {
-            if (_cachedEnemyTiles.Count == 0)
-            {
-                CompleteAction();
-                return;
-            }
-
-            _validMoveTiles = new HashSet<Vector2Int>(_cachedEnemyTiles);
-            _targetingFlow.EnterAttackTargeting(_selectedUnit, _cachedEnemyTiles);
-        }
-
-        private void EnterHealTargetingMode()
-        {
-            if (_cachedHealTiles.Count == 0)
-            {
-                ShowActionMenu();
-                return;
-            }
-
-            _validMoveTiles = new HashSet<Vector2Int>(_cachedHealTiles);
-            _targetingFlow.EnterHealTargeting(_selectedUnit, _cachedHealTiles);
-        }
-
-        // Used by TryAddFortifyAction to gate staff targeting on the unit's Magic stat.
-        private static int GetMagStat(TestUnit unit) =>
-            unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
-
         // --- Cancel / cleanup ---
 
         private void DeselectUnit()
@@ -744,7 +554,7 @@ namespace ProjectAstra.Core.Cursor
         private void ResetUnitTilesMode()
         {
             _isCantoMode = false;
-            _lastActionChoice = null;
+            _actionMenuFlow?.ClearLastChoice();
             _selectedUnit = null;
             _validMoveTiles = null;
             _targetingFlow?.ClearState();
@@ -772,7 +582,8 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_isCantoMode) return false;
             if (_selectedUnit == null) return false;
-            if (_lastActionChoice == ActionChoice.Wait || _lastActionChoice == null) return false;
+            var lastChoice = _actionMenuFlow?.LastChoice;
+            if (lastChoice == ActionChoice.Wait || lastChoice == null) return false;
 
             var cls = _selectedUnit.UnitInstance?.CurrentClass;
             if (cls == null || !cls.HasCanto) return false;
@@ -802,7 +613,7 @@ namespace ProjectAstra.Core.Cursor
             _isCantoMode = false;
             if (_selectedUnit != null)
                 _selectedUnit.movementPoints = _preCantoMovementPoints;
-            _lastActionChoice = null;
+            _actionMenuFlow?.ClearLastChoice();
 
             FinishSelectedUnitTurn();
         }
