@@ -74,6 +74,7 @@ namespace ProjectAstra.Core.Cursor
         private CursorAnimator _animator;
         private PathfindingService _pathfindingService;
         private CombatExecutor _combatExecutor;
+        private StaffExecutor _staffExecutor;
 
         // Movement constraint — null means unconstrained (Free mode).
         private HashSet<Vector2Int> _validMoveTiles;
@@ -133,6 +134,7 @@ namespace ProjectAstra.Core.Cursor
         {
             InitializePathFindingService();
             InitializeCombatExecutor();
+            InitializeStaffExecutor();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -217,7 +219,7 @@ namespace ProjectAstra.Core.Cursor
                     TryCommitMovement();
                     break;
                 case CursorMode.Targeting:
-                    if (_isHealTargeting) TryCommitHeal();
+                    if (_isHealTargeting) _staffExecutor.TryCommitHeal(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
                     else _combatExecutor.TryCommitAttack(_selectedUnit, FindUnitAt(_gridPosition), CompleteAction);
                     break;
             }
@@ -283,6 +285,11 @@ namespace ProjectAstra.Core.Cursor
             _combatExecutor = new CombatExecutor(
                 _mapRenderer, _terrainStatTable, _deathEventChannel,
                 _combatForecastUI, _toastUI);
+        }
+
+        private void InitializeStaffExecutor()
+        {
+            _staffExecutor = new StaffExecutor(_combatForecastUI, _toastUI);
         }
 
         private void AddListenersToInputEvents()
@@ -628,7 +635,7 @@ namespace ProjectAstra.Core.Cursor
             {
                 case ActionChoice.Attack: EnterTargetingMode(); break;
                 case ActionChoice.Heal: EnterHealTargetingMode(); break;
-                case ActionChoice.Fortify: TryCommitFortify(); break;
+                case ActionChoice.Fortify: _staffExecutor.TryCommitFortify(_selectedUnit, CompleteAction); break;
                 case ActionChoice.Item: OpenInventoryMenu(); break;
                 case ActionChoice.Trade: ShowTradeTargetMenu(); break;
                 case ActionChoice.Supply: OpenConvoyUI(); break;
@@ -827,46 +834,8 @@ namespace ProjectAstra.Core.Cursor
                 : unit.faction == Faction.Enemy;
         }
 
-        // --- Staff actions ---
-
-        private void TryCommitHeal()
-        {
-            _combatForecastUI?.Hide();
-
-            var target = FindUnitAt(_gridPosition);
-            if (target == null) { CompleteAction(); return; }
-
-            ItemBreakToaster.WithBreakAnnouncements(_selectedUnit, _toastUI, () =>
-            {
-                if (_selectedUnit.Inventory.TryUseStaff(target, out int healed, out string fail))
-                    Debug.Log($"[Staff] {_selectedUnit.name} healed {target.name} for {healed} HP.");
-                else
-                    Debug.LogWarning($"[Staff] Heal failed: {fail}");
-            });
-
-            CompleteAction();
-        }
-
-        private void TryCommitFortify()
-        {
-            var allUnits = new List<TestUnit>(FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
-
-            ItemBreakToaster.WithBreakAnnouncements(_selectedUnit, _toastUI, () =>
-            {
-                if (_selectedUnit.Inventory.TryUseFortify(allUnits, out var healed, out string fail))
-                {
-                    foreach (var (unit, amount) in healed)
-                        Debug.Log($"[Staff] {_selectedUnit.name} healed {unit.name} for {amount} HP (Fortify).");
-                }
-                else
-                {
-                    Debug.LogWarning($"[Staff] Fortify failed: {fail}");
-                }
-            });
-
-            CompleteAction();
-        }
-
+        // Used by FindAlliesInHealRange and TryAddFortifyAction to gate staff
+        // targeting on the unit's Magic stat.
         private static int GetMagStat(TestUnit unit) =>
             unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
 
