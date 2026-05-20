@@ -5,17 +5,16 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core.Progression.Evaluators
 {
-    /// <summary>
-    /// Dev-test evaluator: resolves a list of commitment IDs to authored Kept/Broken
-    /// verdicts when the battle concludes. Not intended for production — content
-    /// teams will write real predicates against chapter-outcome flags (did the village
-    /// burn? did the NPC survive? etc.). This one just lets us exercise the Ledger's
-    /// middle column end-to-end without the full outcome-flag infrastructure.
-    ///
-    /// Attach to a GameObject, wire into CommitmentSet._evaluators, populate the
-    /// <see cref="rules"/> list, and when BattleVictoryWatcher.Conclude runs, each
-    /// rule resolves its target commitment.
-    /// </summary>
+    // Dev-test evaluator — resolves a list of commitment IDs to authored
+    // Kept/Broken verdicts when the battle concludes. NOT for production:
+    // content teams will write real predicates against chapter-outcome flags
+    // (did the village burn? did the NPC survive?). This evaluator lets us
+    // exercise the Ledger's middle column end-to-end without the full
+    // outcome-flag infrastructure.
+    //
+    // Attach to a GameObject, wire into CommitmentSet._evaluators, populate
+    // the rules list. When BattleVictoryWatcher.Conclude runs, each rule
+    // resolves its target commitment.
     public class DeterministicCommitmentEvaluator : MonoBehaviour, IChapterOutcomeEvaluator
     {
         [Serializable]

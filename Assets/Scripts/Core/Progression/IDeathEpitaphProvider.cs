@@ -2,14 +2,11 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core.Progression
 {
-    /// <summary>
-    /// Resolves the one-line epitaph shown in the Ledger's left column for a
-    /// given death. Today we ship a default implementation that returns the
-    /// `oneLineIdentity` for named enemies (authored on UnitDefinition) and a
-    /// generic "who served faithfully" fallback for player units. The
-    /// support-conversation lookup ticket will replace the player-unit branch
-    /// with a real pull from the support log.
-    /// </summary>
+    // Resolves the one-line epitaph shown in the Ledger's left column for a
+    // given death. The default implementation returns the authored
+    // oneLineIdentity for named enemies and a generic "who served faithfully"
+    // line for player units. The support-conversation lookup ticket will
+    // replace the player-unit branch with a real pull from the support log.
     public interface IDeathEpitaphProvider
     {
         string Resolve(UnitDeathEventArgs args);
@@ -39,7 +36,7 @@ namespace ProjectAstra.Core.Progression
                 return "";
 
             // Player units — until the support-log lookup ships, use the
-            // default line. Spec: `[Name], who served faithfully.`
+            // default line. Spec: "[Name], who served faithfully."
             return $"{args.unitName}, who served faithfully.";
         }
     }
