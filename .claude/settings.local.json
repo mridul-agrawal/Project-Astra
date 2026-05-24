@@ -150,7 +150,9 @@
       "WebFetch(domain:api.pixellab.ai)",
       "mcp__pixellab__agent_help",
       "mcp__pixellab__create_character",
-      "mcp__pixellab__get_character"
+      "mcp__pixellab__get_character",
+      "WebFetch(domain:www.pixellab.ai)",
+      "Bash(node *)"
     ]
   }
 }
