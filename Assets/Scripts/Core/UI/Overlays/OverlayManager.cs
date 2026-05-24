@@ -16,11 +16,12 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private GameObject _activeOverlay;
 
+        // Dialogue is intentionally not here: DialogueService owns one persistent
+        // dialogue view across scenes, so OverlayManager must not also spawn one.
         private static readonly HashSet<GameState> ManagedOverlays = new()
         {
             GameState.BattleMapPaused,
             GameState.CombatAnimation,
-            GameState.Dialogue,
             GameState.SaveMenu,
             GameState.SettingsMenu,
         };

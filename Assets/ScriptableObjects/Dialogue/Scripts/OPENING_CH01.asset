@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
+  m_Name: OPENING_CH01
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
+  _scriptId: OPENING_CH01
+  _nodes:
+  - _nodeId: 0
+    _speakerId: NARRATOR
+    _expression: 0
+    _portraitPosition: 3
+    _text: Far from the village, deep in the forest, she gathered what the day had
+      left to give.
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 1
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 0
+    _text: These berries should be enough for tonight.
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 2
+    _speakerId: NARRATOR
+    _expression: 0
+    _portraitPosition: 3
+    _text: A scream tore through the trees.
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 3
+    _speakerId: PROTAGONIST
+    _expression: 4
+    _portraitPosition: 0
+    _text: "That came from home \u2014 no..."
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 4
+    _speakerId: CHILD
+    _expression: 6
+    _portraitPosition: 1
+    _text: "Help! Please \u2014 they're here! Monsters!"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 5
+    _speakerId: PROTAGONIST
+    _expression: 5
+    _portraitPosition: 0
+    _text: Rakshasas. Stay behind me. Where is everyone?
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 6
+    _speakerId: CHILD
+    _expression: 6
+    _portraitPosition: 1
+    _text: At the temple! The gatekeeper is fighting them, but they're losing!
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
+  - _nodeId: 7
+    _speakerId: PROTAGONIST
+    _expression: 5
+    _portraitPosition: 0
+    _text: Then I clear the village first, and reach the temple after. Not one more
+      villager falls.
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 0}
