@@ -1,0 +1,324 @@
+# Project Astra — 60-Minute Prototype Beat-by-Beat Design
+
+*Living document. Each entry below captures the designer's intent as it was expressed. Items marked DEFERRED are decisions postponed to a later pass. Open questions are listed at the bottom.*
+
+---
+
+- **Prototype-Level Pillars (Non-Negotiable Goals)**
+  - *Two outcomes the prototype must achieve. These are the success criteria players, the grant board, and investors should recognize after experiencing the prototype.*
+  - **Pillar 1: Strong, Undeniable Indian Cultural Identity**
+    - Players must feel — undeniably and strongly — that this game is rooted in Indian culture
+    - Specifically anchored in the era of India's ancient epics: Mahabharata, Ramayana — the ancient India period
+    - The world, atmosphere, and mood should evoke that era
+    - This identity must be felt across: art style, narration, gameplay, overall experience
+  - **Pillar 2: A Quality SRPG in the Fire Emblem Lineage**
+    - The prototype must function as a *good* example of its genre (TRPG / SRPG)
+    - Tactics, strategy, and player choices must be well-designed
+    - Players must feel good while thinking through situations on the map and solving the tactical problems presented
+    - Players must walk away having had a good experience of the genre through this game
+  - **Why these are flagged**: These two outcomes are the load-bearing definition of success for this prototype. Every subsequent design decision should be tested against whether it serves one or both.
+
+- **Working Status / Iteration Notes**
+  - Everything captured in this document is a *first draft* — explicitly not a finalized GDD
+  - The narrative, gameplay, design, and art will all be iterated on:
+    - Internally as the team builds the game from this draft
+    - Externally after open playtesting with real players (feedback will be incorporated)
+  - Nothing here is concrete; these are brainstorming and ideating sessions
+  - "We have to start somewhere" — this document is that starting point
+  - **Scoping principle for the prototype**: the prototype must depict the *actual core gameplay* and its narrative feel / identity in a good way. That is the main goal. External lore that does not connect to on-screen gameplay is out of scope for now (see Scene 02 decision).
+
+- **Prototype Macro-Structure (Two Maps)**
+  - The 60-minute prototype consists of **two maps** (not one)
+  - **Map 1 — the simple teaching map**
+    - Extremely simplistic; few units on both the player side and the enemy side
+    - Teaches basic combat
+    - Directly inspired by the first map of Fire Emblem: The Blazing Sword (Lyn + 2 enemies)
+    - Duration target: no more than 15–20 minutes, most probably ~15 minutes — measured from the title screen through to the end of the first map
+  - **Map 2 — the temple defense**
+    - This is where the *majority* of the enemies are headed (they are targeting the temple, see Premise)
+    - Map 2 is where the deeper systems get introduced — deliberately held back from Map 1 to keep Map 1 simple: terrain, inventory, healing items, the weapon triangle, and choke points — each with its own tutorial, delivered separately and in-flow
+    - Narrative hook for healing: inside the temple the player obtains something that heals — a Sanjeevani / herb (jadi booti) / similar — with the priest guiding them
+    - DEFERRED — objective and structure are now defined (see the "Map 2 / Second Chapter" section); the beat-by-beat turn flow and per-system tutorials of Map 2 are still to be done
+  - **Reasoning behind the two-map strategy**
+    - Map 1 should be "simplistically beautiful" — not much happening, designed for a player experiencing this genre for the very first time
+    - An RPG-style, narrative-bound experience where everything flows freely
+    - Only 3–4 things taught total, nothing more (see Map 1 teaching design)
+    - Narrative on Map 1 stays close to Blazing Sword's opening but diverges in content: instead of pirates/brigands, the attackers are Rakshasas (cultural grounding per Pillar 1)
+
+- **Overall Prototype Narrative / Premise**
+  - *This is the high-level narrative for the 60-minute prototype only. The larger overarching lore is intentionally NOT being defined now (see Scene 02 decision + Working Status).*
+  - **The setting**
+    - A small village, beside the mountains
+    - Few facilities; an ancient-style village set among jungles (like ancient villages used to be)
+  - **The temple and the priest**
+    - The village has a temple (mandir)
+    - The temple has a priest — well-known, very experienced
+    - The priest's duty is to guard the temple
+  - **The relic / weapon**
+    - The temple holds relics, including a hidden, powerful weapon — a bow — plus an idol (murti) and similar items
+    - The weapon is genuinely powerful, but most people don't know this — they see it as just an idol, something insignificant
+    - The priest knows its true power
+  - **The threat**
+    - The enemies (across both Map 1 and Map 2) are trying to steal that weapon
+    - They also come to pillage / raid the whole village
+    - The enemies are Rakshasas — non-human
+  - **How the two maps split the threat**
+    - **Map 1**: from the protagonist's point of view, the player simply learns that there is a threat. The player is in the residential area of the village. Not many enemies are here, but some are. The goal is to protect the villagers from these monsters.
+    - **Map 2**: the majority of the enemies are targeting the temple — so the temple becomes the second map.
+
+- **Cast / Characters**
+  - **Main Character — the protagonist (female archer)**
+    - A girl / female character
+    - Very Indian-looking
+    - Working note: a mock-up character called "Indravati" was created earlier (with generated images the designer liked), but the protagonist will NOT be Indravati as-is — her name will be something else (TBD)
+    - Core personality / look: ragged clothes, a forest-warrior impression
+    - NOT trained in martial arts, war, or tactics in a royal setting — she is a *local* warrior (parallel to Lyn, who is also not royally trained)
+    - **Class: Archer** — culturally grounded choice
+      - Reasoning: in India's ancient epics, archers are the dominant category of warriors and are usually the main protagonists (supports Pillar 1)
+    - **Custom attack range: 1–2 tiles** (NOT the standard Fire Emblem archer range)
+      - In Fire Emblem, archers cannot attack adjacent tiles; their range is strictly 2 (must leave one space)
+      - Here, her range will be 1 to 2 instead
+      - Reasoning: the designer does not want the tutorial fight to be one-directional (where one side can attack and the other cannot, purely due to distance). A 1–2 range avoids that.
+      - Also: the designer does not want the main character to wield a second weapon at the very start, so widening the bow's range (1–2) solves the adjacency problem without adding a weapon
+  - **The Gatekeeper — second playable character (mounted tank)**
+    - Another character from the same village, besides the main character
+    - Role: gatekeeper of the village
+    - A novice warrior, like the main character — he doesn't really know how to fight much yet; the two grow together over the course of the game
+    - **Mounted**: he moves and fights while riding an elephant (a small, mountain-type elephant)
+    - **Class archetype: tank / defense** — the armored-knight role (à la Oswin / Wallace in Fire Emblem GBA): a high-defense unit used to block a path or chokepoint and shield ranged units (mages / archers) positioned behind him
+    - **Weapon: lance** (bhaala / spear)
+    - Visual inspiration: a mock-up character with a bluish / silverish tint to his getup who rode a small mountain-type elephant. The final character will be similar in spirit (elephant-mounted) but with a different name and a somewhat different look.
+    - Story status at the start: he is fighting the Rakshasas at the temple — but losing
+    - Name: TBD
+  - **The Priest** — temple guardian; well-known and very experienced
+    - **Playable in Map 2 as a magic wielder (mage)**
+    - Defends the relic during the temple siege; at the end of Map 2, hands the relic weapon (a bow / dhanush) to the main character
+  - **The Child** (relevant to opening Option A) — a young survivor who flees the attack and tells the protagonist what happened
+  - **The Rakshasas** — the enemy units; non-human; want to destroy the village and steal the temple's weapon; on Map 2 they outnumber the player's units
+  - **The General (royal kingdom's army)** — arrives with his army as the relief at the end of Map 2, after the player survives X turns
+  - **Two future playable characters** — arrive alongside the General; they become playable LATER in the game, but are NOT playable in Map 2 (they appear only as the end-of-map relief). Details TBD.
+
+- **Design Intent: Early Segment (0–15 minutes)**
+  - **Primary goal of the early segment**
+    - Introduce the player to the core game mechanics through an indulging layer of narrative and world-building
+    - The player should feel hooked
+  - **Player experience targets**
+    - Engagement should be rewarding; should feel awesome to play; enjoyment of the process is the priority
+  - **What the player should learn in this window**
+    - Basic core combat, on-map game mechanics, foundational tutorial content (for someone who has never played this kind of game before)
+  - **Design principles to enforce**
+    - New mechanics should feel natural, never forced
+    - Everything should feel like something naturally flowing
+    - The player must not feel overwhelmed by too many mechanics or too much new stuff appearing on screen
+    - Cinematic feel — helps layer information (mechanics + narrative) in a way that is more indulgible and emotionally connectable
+    - **Teach gameplay through narrative, never as a tutorial**: the player must feel a *mission* is running, not that they are sitting and reading a book to memorize for an exam. The game sells an *experience*. So deliver the gameplay mechanics through the narrative.
+
+- **Core Design Principle: In-Flow Tutorials & "Pseudo-Control"**
+  - *A foundational rule that governs every tutorial / teaching moment in the game, not just Map 1.*
+  - **Tutorials must live inside the game flow — never feel external or paused**
+    - It must NOT feel like the game has been paused while a load of instructions / text is dumped on the player
+    - The tutorial must NOT feel like an external or independent experience
+    - It must be embedded within the game flow itself
+    - Anti-pattern to avoid: the "study session" / classroom feeling
+    - Anti-pattern to avoid: the typical modern mobile-game tutorial — 15–30 minutes of "tap here, now tap there, now here," where the game essentially plays itself and the player just presses next/next or hits the keys shown on screen. The player understands what's happening, but it feels like a chore, not play.
+  - **"Pseudo-control" — the core technique**
+    - Goal: give the player a feeling of control and freedom, while the designer quietly retains control over the narrative beats that must happen
+    - Do NOT strip control from the player; if it feels too restrictive, the experience breaks
+    - Do NOT over-restrict to the point the player can't even move the cursor around the map — that is explicitly unwanted
+    - But also do NOT give so much freedom that the intended narrative beat fails to happen
+    - The balance: the enemy AI and the map's narrative beats run in a fairly *controlled* way, while the player is *gifted* pseudo-controls that make them feel free
+  - **How pseudo-control is delivered (the mechanism)**
+    - Every required action is wrapped in a narratively-bound, targeted reason — there is always an in-fiction "why" for what the player is nudged to do
+    - The player retains real freedom to explore: move the cursor around, select their unit, see all movable tiles (blue) and attackable tiles highlighted, look at what they *could* do
+    - The required destination/action is marked distinctly (e.g., a target tile highlighted in a different color — purple — distinct from the normal blue movement tiles)
+    - If the player strays from the intended beat (e.g., selects a different tile), the player character delivers an on-map dialogue that gently redirects them back — in-fiction, not a system message — e.g., "That's not the right direction. I need to get near the village."
+    - Net effect: the player feels they chose freely, but the necessary beat still occurs
+
+- **Reference: Fire Emblem: The Blazing Sword (GBA) — Opening Chapter as Design Model**
+  - *Core childhood inspiration. The designer describes Blazing Sword's design as "diamond perfect" — it feels right across many levels, even if the underlying design science isn't fully articulable.*
+  - **What happens in Blazing Sword's opening (as remembered)**
+    - The main character Lyn — whom the player does not yet know — is introduced through a very short opening
+    - A small crisis appears almost immediately; Lyn is living in a village (a tent or similar)
+    - News arrives that brigands (not pirates — brigands) are coming to attack; reason unclear, possibly just pillaging
+    - This becomes the first playable map; only 2 enemies on the map, nobody else; that is the entire setup
+  - **Why this opening worked (qualities to emulate)**
+    - Taught movement WITHOUT any dedicated instructions/tutorial screen; pushed the player straight into gameplay
+    - 4–5 dialogues created a situation, then dropped straight into play
+    - Surprising in approach but flowed so perfectly the player never questions it
+    - Nothing felt overwhelming while teaching: movement, attacking, item use (vulneraries), achieving the objective (exact opening objective not remembered)
+    - 4–5 things taught at a surface level, easily and enjoyably
+  - **How they pulled it off**
+    - Very basic map, fewer enemies, no deep tactical thinking required; narratively the player just had to clear an objective
+    - In minimum time, the player learned the basics AND the *feel* of the game
+  - **The scripted-critical-hit moment (a "feel" teaching example)**
+    - Lyn ends up at very low HP (1, 2, or 3); programmatically guaranteed to land a critical hit on the enemy no matter what
+    - Teaches critical-hit mechanics in a narratively rewarding way; the player feels happy / elated
+    - The designer's term for the whole opening: "simplistically beautiful"
+    - **Project Astra must reproduce this "cornered" feeling** — see Map 1 teaching design
+  - **What the designer wants to take from this**
+    - The model for Project Astra's own early-minute experience and how to deliver first-time gameplay learning — adapted (not copied) into an original, culturally-rooted world
+
+- **Narrative Presentation Conventions (global rules — apply across the whole prototype)**
+  - **Normal mode — portrait-to-portrait dialogue**
+    - For standard, lower-intensity moments
+    - Left portrait + right portrait, characters appearing to face each other; dialogue box at the bottom; text appears line by line
+    - Reference: Blazing Sword — portraits with changing expressions for emotion
+  - **High-intensity mode — bespoke still images**
+    - For moments of high narrative intensity / cinematic weight
+    - A dedicated full-screen still image (pixel-art), designed only for that moment, not reused elsewhere
+    - Narration OR character dialogue plays over it — NOT in the traditional dialogue-box format
+    - Reference points: Blazing Sword (~20 such moments across the game — e.g., Eliwood killing the dragon; Lyn asleep in a tent and being woken); Telltale Games (purpose-built stills); Elden Ring opening (stills + voiceover → awesomeness, enthusiasm, mystery)
+    - Purpose: cinematic impact beyond what portrait-dialogue can reach
+  - **Combat screen (battle / animation view)**
+    - A dedicated screen that opens when a unit attacks, showing the attacker and defender and playing the attack animations (the exchange of blows)
+    - First appears the first time the player attacks on Map 1 — so it should feel impactful
+    - Can carry pre-combat and post-combat dialogue: characters may speak right before and right after a clash (reference: Blazing Sword / Sacred Stones on GBA, where boss fights exchanged dialogue on the combat screen). Useful for important confrontations.
+
+- **Music / Audio — Polishing Layer (DEFERRED, low priority for now)**
+  - Music will change based on the scene: a distinct thematic track on the title screen; possibly something (or nothing) on the dialogue/opening screen; a track for the actual level; and a separate combat track when the combat screen is active
+  - Reference: like Pokémon (wild-encounter battle music kicks in) and Fire Emblem (dedicated combat music)
+  - Explicitly treated as a *polishing layer* — it may be mentioned inside beats but is not a priority during this design pass
+
+- **Scene 01 — Opening Sequence (Title Screen Entry)**
+  - **Beat 1: Studio / Company Splash Screen** — parent company / studio logo; the very first thing the player sees on launch
+  - **Beat 2: Game Title Screen**
+    - Appears after the splash; the player's first real impression of tone and identity
+    - Title screen art — DEFERRED (art pass)
+    - Title screen music — DEFERRED (music pass)
+    - "Press any key to start" — small, at the bottom of the screen
+    - Player input triggers the next sequence
+
+- **Scene 02 — Opening Narrative Setup (post-title-screen)**
+  - **DECISION MADE: no Elden Ring–style cinematic in the prototype's opening**
+    - The Elden Ring–style cinematic (showing the game's boss enemies + the lore of the Rakshasa uprising) was strongly considered and is something the designer would love to do
+    - It is being CUT from the prototype opening because:
+      - The overall overarching narrative / lore is not defined yet, and cannot be invented right now
+      - It is costly for the prototype and would be an external element not connecting to on-screen gameplay
+    - DEFERRED, not deleted: this cinematic-style intro is intended for later, once the full lore is written (after the prototype earns grants/funding and dedicated narrative designers/writers are hired)
+    - Alternative for grant board: concept sketches / an overview MAY be shown at the END of the prototype to convey the larger vision — kept separate from the playable gameplay
+  - **CHOSEN direction for the opening: narrative bits that set up Map 1 (identifying the threat)**
+    - Delivered after the title screen, with specific background visuals (per Narrative Presentation Conventions)
+    - **Option A (the leading option, as described):**
+      - The protagonist is away from the village — e.g., out in the woods, hunting or foraging (collecting berries/food for dinner)
+      - Being far away, she doesn't know what's happening back home
+      - She suddenly hears screams and comes running back
+      - She arrives to find the village under attack — some villagers have already fallen, and two Rakshasas are advancing on the residential area
+      - She finds a fleeing child, who tells her what's happening — including that the **temple is under attack**
+      - Priority decision (seeds the Map 1 → Map 2 order): the temple matters, but the villagers are in immediate danger right here. She decides to save the villagers in front of her FIRST, and head to the temple afterward.
+      - She asks the child about the village gatekeeper (the elephant-mounted character, by name) — where is he? The child says he is fighting the Rakshasas at the temple, but they are losing.
+      - The game then cuts to the battle map (Map 1): 2–3 non-human enemies attacking the village
+    - **Option B (the Elden Ring cinematic):** considered and deferred (see decision above)
+  - DEFERRED: exact dialogue lines, the specific still images, audio direction
+
+- **Map 1 / First Chapter — Gameplay & Teaching Design**
+  - **Mission essence (what Map 1 is, at its simplest)**
+    - The enemies are present; the player (the main character) must survive; and she must make sure no villager is hurt
+    - "Keep it simple, stupid" — Map 1 deliberately teaches the bare minimum
+  - **DESIGN CHANGE — no items / inventory / healing on Map 1**
+    - Items, inventory, and healing are NOT introduced on Map 1 at all — they move to Map 2
+    - Map 1's action menu has only two options: **Attack** and **Wait**. Nothing else.
+    - Reasoning: if the player could heal, winning becomes easy right after a heal — which kills the tension. Instead, Map 1 *corners* the player (no options left) and uses that cornered moment to introduce the critical attack, which delivers far stronger victory feedback than a heal would.
+    - This SUPERSEDES the earlier idea of a heal-or-die vulnerary moment on Map 1. Terrain, inventory, healing, weapon triangle, and choke points are all Map 2 material (see Macro-Structure).
+  - **Framing constraints**
+    - Total experience (title screen → end of Map 1) ≤ ~15 minutes
+    - The protagonist is a novice fighter (start of the learning curve): low HP, low strength, low stats overall — she doesn't really know how to fight big battles, but knows enough to fight these enemies regardless
+    - Both sides have low stats — BUT the enemies are *portrayed* as overpowering on the map
+    - It must NOT look easy — the player should feel cornered, with survival genuinely in doubt
+    - Internally she may feel a bit helpless, but she is courageous — this colours her dialogue
+  - **What Map 1 teaches (the bare minimum, all via narrative, never a tutorial screen)**
+    - Movement on the grid map
+    - Player phase / enemy phase (the alternating turn structure)
+    - Basic combat: move within range of an enemy and Attack
+    - Dodge — that attacks can miss / be evaded (shown on the enemy's strike)
+    - Critical attack — introduced at the climax (triple damage)
+    - Completing the objective
+    - Together these give the player the core game loop AND the *feel* of the game for the first time
+  - **Turn structure to convey**: turn-based, alternating — player turn → enemy turn → player turn → enemy turn …
+  - **Grid movement to convey**: movement measured in tiles on a grid (e.g., ~4–5 movement = that many tiles), like a chessboard
+  - **The enemies on Map 1**
+    - A regular Rakshasa (the first enemy) and a mini-boss Rakshasa (the second enemy, slightly higher stats — harder to kill)
+    - Enemy objective: reach and destroy the residential area / villagers, so they advance toward the village
+    - The mini-boss is effectively **stationary** — it does not move (or, at most, only begins moving once the first enemy is dead). Because it doesn't move, the *player* always initiates the boss combat, which keeps the climax controlled.
+  - **Overall shape: Map 1 resolves in ~4 turns**
+    - Turn 1 — Movement (intercept the first enemy)
+    - Turn 2 — Attack (first combat; combat screen debut; dodge taught)
+    - Turn 3 — Movement (finish the first enemy, then move freely toward the mini-boss)
+    - Turn 4 — Single-turn combat with the mini-boss (attack → dodge → critical kill)
+    - The designer estimates this single-enemy stretch took ~5 minutes to plan beat by beat
+  - **Beat-by-beat (a worked demonstration of pseudo-control)**
+    - *Layout assumption (tentative): the player enters from the right; the enemy advances north → south; the village is to the south; a forest (or similar) is to the north.*
+    - Immediate first objective on arrival: stop the Rakshasas before they reach the village (urgency established)
+    - **Turn 1 — teaching MOVEMENT**
+      - Beat: the main character must intercept the enemy — she moves toward it as it moves toward the village
+      - Player selects the character (prompted by the character/tile highlighting) and explores the cursor; movable tiles highlight (blue), attackable tiles highlight too
+      - A distinct **target tile in a different color (e.g., purple)** marks the intercept tile she is bound to reach
+      - On-map dialogue: "I need to get near the village so I can reach there and protect the villagers before the enemy does"
+      - PSEUDO-CONTROL: free to pick another tile, but a wrong pick triggers a redirect line — "It's not the right direction to move in. I need to go near the village" — steering back to the purple tile
+      - Player moves to the target tile → enemy phase: the enemy moves closer (prompt notes this) → end of Turn 1, both sides now in range of each other
+    - **Turn 2 — teaching ATTACK (+ combat screen debut + dodge)**
+      - On-map dialogue: "The enemy is in my range now — I should attack before it reaches the village and kills them"
+      - The enemy's in-range tiles highlight as movable destinations (she can attack from any of them, since the enemy is in range)
+      - PSEUDO-CONTROL still tight here (we're still teaching the *core* of movement + attacking): picking a non-attacking tile triggers "I won't be able to attack the Rakshasa from this position — I need to move in closer"
+      - The player moves to a valid attack tile → for the FIRST TIME, the **unit action menu** appears (only **Attack** and **Wait**)
+      - The **Attack** option is highlighted; on-map dialogue indicates the intent without a forceful "click Attack" — e.g., "I need to attack the enemy right now." Clicking anything else triggers a corrective line — "I need to attack — there's no time for anything else." So the player ends up choosing Attack.
+      - On Attack → the **combat screen opens for the first time** (should feel impactful). The main character may speak a pre-combat dialogue here (helpless inside, but courageous). Then the blow-exchange animations play.
+      - Outcome of Turn 2: one exchange happens but the first enemy does NOT die. In the enemy phase, the enemy strikes back — and the player **dodges** one of the blows (hard-coded) to teach that attacks can be evaded. Net: the enemy is now low; the player sits at ~60–70% HP (took roughly one blow).
+    - **Turn 3 — finishing the first enemy + FREE movement toward the mini-boss**
+      - Player phase: the player finishes off the first enemy
+      - On-map dialogue: "I've cleared this Rakshasa, the village seems safe now — but I think there's another one up north. Let me go and deal with it too."
+      - She shifts from defensive to offensive, a little more confident now
+      - FREEDOM opens up here: from Turn 3 onward there is no forced highlighted target tile — the player can move freely, take a roundabout path, and approach the mini-boss to the north however they like (the core of movement is already taught)
+    - **Turn 4 — single-turn combat with the mini-boss (the cornered climax)**
+      - The mini-boss is stationary, so the **player initiates**
+      - Player phase: the player attacks the mini-boss. The strike lands (illustrative: boss HP ~16 → ~12, since the boss has higher stats). The boss's counter brings the player down to ~1–2 HP — she's now on the brink of death, with no heal available
+      - Enemy phase: the mini-boss attacks again — but the player **dodges** it (hard-coded), then **counters with a CRITICAL ATTACK**
+      - Critical = triple damage (illustrative: a normal hit was ~4, so the crit does ~12) → the mini-boss dies
+      - This introduces the critical attack, and the cornered-then-crit victory delivers the Blazing-Sword-style "I was about to die, but I pulled it off" satisfaction — much stronger than a heal-and-win would feel
+      - Map 1 ends here (~4 turns total)
+    - *Note: all HP / damage numbers above are illustrative placeholders, not locked values.*
+
+- **Bridge: Map 1 → Map 2 (Transition Narrative)**
+  - **Core narrative goal of the whole prototype (restated)**: the temple is under attack and the priest is defending the hidden weapon / relic. Map 2 is where this thread is resolved.
+  - **The objective hand-off (delivered naturally in the game flow, right after Map 1 clears)**
+    - With the villagers now safe (Map 1 done), the next objective surfaces on its own: get to the temple and help
+    - Stakes if she doesn't hurry: the priest will die; the gatekeeper — already losing his fight there — will die; and the weapon / relic will be stolen
+  - This is an in-flow transition into Map 2 — no external framing needed. The objective chain (save the villagers → save the temple) was already seeded in the opening dialogue (Scene 02), so reaching the temple feels like the natural next step rather than a hand-wave.
+  - DEFERRED: how the transition is presented on screen (a dialogue beat, a still image, a short march-to-the-temple moment, etc.)
+
+- **Map 2 / Second Chapter — Gameplay & Teaching Design (the temple defense)**
+  - *Entry into Map 2 follows the Bridge above: villagers safe → she heads to the temple → a new map (the temple) loads.*
+  - **Core objective: DEFEND, not attack**
+    - Protect the relic / weapon kept in the temple for X number of turns
+    - This is a survival / defense scenario — survive and hold, rather than push out and wipe the enemy
+    - The enemies outnumber the player's units
+  - **Structural reference (Blazing Sword — the map where Dorcas first appears)**
+    - In that Blazing Sword map there is an internal fort / small area holding an NPC who must be protected for X turns
+    - Map 2's objective takes the same shape: hold and protect the relic inside the temple for X turns
+  - **Map geography**
+    - The temple has walls, which create chokepoints
+    - Outside the temple is a sizeable traversable area (as in that FE level)
+    - Map 2 is where the deeper systems are introduced (deliberately held back from Map 1): terrain, inventory, healing items, weapon triangle, chokepoints — each via its own in-flow tutorial (see Macro-Structure)
+  - **Playable units on Map 2 (three)**
+    - The Priest — magic wielder (mage)
+    - The Main Character — archer (range 1–2)
+    - The Gatekeeper — elephant-mounted tank, wields a lance
+  - **Win condition: reinforcements after X turns**
+    - Survive X turns → the royal kingdom's army General arrives with his army as the relief
+    - Two characters arrive among them who will be playable later in the game, but are NOT playable in Map 2
+  - **Map 2 payoff (the prototype's core narrative reward)**
+    - As soon as Map 2 ends, the priest gives the relic weapon — a bow (dhanush) — to the main character
+    - This is the same hidden, powerful relic established in the Premise (the bow the Rakshasas came to steal), now passing to the protagonist
+  - DEFERRED: the value of X (turns); exact enemy composition and counts; the individual system tutorials (terrain / inventory / healing / weapon triangle / chokepoints); the beat-by-beat turn flow; the General's and the two future characters' details
+
+---
+
+## Open Questions / Items to Revisit
+- **Opening approach (Scene 02): Option A vs. Option B** — currently leaning Option A (protagonist away → returns to attack → child → battle map). Option B (Elden Ring cinematic) deferred. Confirm Option A as the working direction, or refine its specifics (is she hunting, foraging, resting?).
+- **Protagonist's name** — not "Indravati" (that was a mock-up). Final/working name TBD.
+- **Archer phrasing confirmation** — captured the protagonist as an *archer* (with 1–2 range) per the repeated stated intent and the Indian-epics reasoning. One line in the input said "I don't want the main protagonist to be an archer," which reads as a slip given the surrounding context — flag if this should actually be a different class.
+- **Map 2 (temple defense)** — premise + the systems it will introduce are now noted (terrain, inventory, healing, weapon triangle, choke points, plus the in-temple healing-item narrative hook). Full beat-by-beat design still to be done.
+- **Map 1 turn-sequencing reconstruction** — the input revised live, so I reconstructed the cleanest reading: the first enemy is finished at the start of Turn 3, then free movement toward the mini-boss fills the rest of Turn 3, with the boss fight as Turn 4. If you actually intended the first enemy to die during Turn 2's exchanges (leaving Turn 3 purely for movement), tell me and I'll re-slot it.
+- **Combat values are placeholders** — the HP/damage figures (player ~10 HP, boss ~16, normal hit ~4, crit ×3) are illustrative only, captured to preserve your intended *feel* (cornered → dodge → crit), not as balance decisions.
+- **Map 2 specifics open** — the value of X (survival turns), the enemy composition/counts, and the ordering of the per-system tutorials (terrain / inventory / healing / weapon triangle / chokepoints) are all still to be decided.
+- **Roster scope** — Map 2 has three playable units (priest / main character / gatekeeper). The two relief characters who arrive with the General become playable later, not in Map 2. You paused on whether the overall roster grows beyond these — flagged to revisit.
+- **Overall overarching lore** — intentionally deferred to post-grant (dedicated narrative designers/writers). Prototype stays scoped to the 60-minute on-screen experience.

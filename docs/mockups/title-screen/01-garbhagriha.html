@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Title Concept 01 — Garbhagriha (Moonlit Sanctum)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500&display=swap" rel="stylesheet">
+<style>
+/* ─── EFFECT SPECS (source of truth for the eventual Unity composite) ──────────
+   bow halo .....: drop-shadow 0 0 28px rgba(150,180,255,.55) + 0 0 70px rgba(110,140,230,.40)
+   moon shaft ...: linear-gradient top→bottom rgba(180,205,255,.18) → transparent, blur 14px
+   prompt .......: #c2cbe6, text-shadow 0 0 14px rgba(150,180,255,.5), letter-spacing .62em, pulse 3.4s
+   palette ......: #04050a / #0a0f1f / #18203c indigo · #cdd6f0 cold light · #e8c264 relic gold
+   ──────────────────────────────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:radial-gradient(ellipse 90% 80% at 50% 38%, #141d39 0%, #0a0f1f 42%, #04050a 100%);
+  font-family:'Cormorant Garamond',serif}
+
+/* faint wall texture */
+.wall{position:absolute;inset:0;opacity:.5;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 140px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 96px)}
+
+/* subliminal yantra ring behind the relic */
+.yantra{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);
+  width:760px;height:760px;border-radius:50%;opacity:.10;
+  border:1px solid #d8c9a0;box-shadow:0 0 0 1px rgba(216,201,160,.4) inset, 0 0 60px rgba(180,200,255,.15)}
+.yantra::before,.yantra::after{content:"";position:absolute;inset:90px;border-radius:50%;border:1px solid rgba(216,201,160,.5)}
+.yantra::after{inset:170px;border-style:dashed}
+
+/* cold moon shaft from above */
+.shaft{position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:560px;height:900px;filter:blur(14px);
+  background:linear-gradient(to bottom, rgba(190,212,255,.20), rgba(150,180,255,.05) 58%, transparent);
+  clip-path:polygon(40% 0,60% 0,84% 100%,16% 100%)}
+
+/* drifting dust motes */
+.motes span{position:absolute;width:3px;height:3px;border-radius:50%;
+  background:rgba(205,218,255,.85);filter:blur(.4px);animation:drift 9s linear infinite}
+@keyframes drift{0%{transform:translateY(40px);opacity:0}15%{opacity:.9}100%{transform:translateY(-360px);opacity:0}}
+
+/* relic */
+.hero{position:absolute;left:50%;top:43%;transform:translate(-50%,-50%);
+  filter:drop-shadow(0 0 28px rgba(150,180,255,.55)) drop-shadow(0 0 70px rgba(110,140,230,.40))}
+.bow{width:300px;height:560px;display:block}
+
+/* pedestal */
+.pedestal{position:absolute;left:50%;bottom:150px;transform:translateX(-50%);
+  width:300px;height:120px;
+  background:linear-gradient(180deg,#1a2138,#0c1124);
+  clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);
+  box-shadow:0 -10px 40px rgba(150,180,255,.12)}
+.pedestal::after{content:"";position:absolute;top:0;left:8%;right:8%;height:8px;
+  background:linear-gradient(90deg,transparent,rgba(216,201,160,.5),transparent)}
+
+.prompt{position:absolute;bottom:78px;left:0;right:0;text-align:center;
+  font-weight:500;font-size:30px;letter-spacing:.62em;text-indent:.62em;
+  color:#c2cbe6;text-shadow:0 0 14px rgba(150,180,255,.5);animation:pulse 3.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.32}50%{opacity:1}}
+
+.vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 72% 72% at 50% 44%, transparent 38%, rgba(0,0,0,.78) 100%)}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="wall"></div>
+  <div class="yantra"></div>
+  <div class="shaft"></div>
+  <div class="motes">
+    <span style="left:47%;top:30%;animation-delay:0s"></span>
+    <span style="left:52%;top:24%;animation-delay:1.4s"></span>
+    <span style="left:49%;top:38%;animation-delay:2.7s"></span>
+    <span style="left:54%;top:33%;animation-delay:3.9s"></span>
+    <span style="left:45%;top:27%;animation-delay:5.1s"></span>
+    <span style="left:51%;top:42%;animation-delay:6.3s"></span>
+    <span style="left:48%;top:21%;animation-delay:7.6s"></span>
+  </div>
+  <div class="pedestal"></div>
+  <div class="hero">
+    <svg class="bow" viewBox="0 0 260 700" aria-hidden="true">
+      <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff0c2"/><stop offset=".5" stop-color="#e8c264"/><stop offset="1" stop-color="#9a6f1f"/>
+        </linearGradient>
+        <linearGradient id="goldhi" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff7e0"/><stop offset="1" stop-color="#d9b257"/>
+        </linearGradient>
+      </defs>
+      <line x1="200" y1="48" x2="200" y2="652" stroke="#e9e2cf" stroke-opacity=".45" stroke-width="2.5"/>
+      <path d="M200,48 C112,140 84,300 84,350 C84,400 112,560 200,652" fill="none" stroke="url(#gold)" stroke-width="13" stroke-linecap="round"/>
+      <path d="M200,48 C112,140 84,300 84,350 C84,400 112,560 200,652" fill="none" stroke="url(#goldhi)" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+      <rect x="70" y="312" width="28" height="76" rx="9" fill="#3f2a10" stroke="url(#gold)" stroke-width="2.5"/>
+      <g stroke="url(#goldhi)" stroke-width="3" opacity=".7">
+        <line x1="150" y1="92" x2="168" y2="104"/><line x1="116" y1="160" x2="136" y2="168"/>
+        <line x1="150" y1="608" x2="168" y2="596"/><line x1="116" y1="540" x2="136" y2="532"/>
+      </g>
+      <circle cx="200" cy="48" r="11" fill="url(#gold)"/><circle cx="200" cy="652" r="11" fill="url(#gold)"/>
+      <circle cx="200" cy="48" r="4" fill="#fff7e0"/><circle cx="200" cy="652" r="4" fill="#fff7e0"/>
+    </svg>
+  </div>
+  <div class="prompt">press any key</div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+</div>
+</body>
+</html>

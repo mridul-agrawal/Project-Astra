@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Title Concept 03 — Pratah (Dawn Through the Jali)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&display=swap" rel="stylesheet">
+<style>
+/* ─── EFFECT SPECS (source of truth for the eventual Unity composite) ──────────
+   bow halo .....: drop-shadow 0 0 26px rgba(255,210,130,.60) + 0 0 90px rgba(255,180,90,.40)
+   dawn beam ....: linear-gradient 135deg rgba(255,225,150,.30) → transparent, blur 20px, +god-rays
+   prompt .......: #ffe6b0, text-shadow 0 0 14px rgba(255,180,90,.55), letter-spacing .56em, pulse 3.6s
+   palette ......: #070b18 indigo · #112b32 teal shadow · #e8a13c / #ffd98a amber · #fff3d6 light
+   ──────────────────────────────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;overflow:hidden}
+.stage{position:relative;width:1920px;height:1080px;overflow:hidden;
+  background:linear-gradient(168deg, #070b18 0%, #0c1626 38%, #20221f 70%, #3a2a14 100%);
+  font-family:'Cormorant Garamond',serif}
+
+/* bright aperture behind the lattice */
+.aperture{position:absolute;top:-120px;left:-160px;width:980px;height:1180px;
+  background:radial-gradient(ellipse 60% 55% at 60% 40%, #fff3d6 0%, #ffd98a 26%, rgba(232,161,60,.35) 52%, transparent 72%);
+  filter:blur(8px)}
+
+/* jali (lattice screen) silhouette the light pours through */
+.jali{position:absolute;top:-40px;left:-40px;width:560px;height:880px;opacity:.9;
+  background:
+    repeating-linear-gradient(0deg, #060912 0 8px, transparent 8px 64px),
+    repeating-linear-gradient(90deg, #060912 0 8px, transparent 8px 64px),
+    repeating-linear-gradient(0deg, rgba(255,220,150,.10) 0 64px, transparent 64px 65px);
+  -webkit-mask-image:radial-gradient(ellipse 80% 80% at 30% 40%, #000 30%, transparent 78%);
+          mask-image:radial-gradient(ellipse 80% 80% at 30% 40%, #000 30%, transparent 78%);
+  transform:rotate(-2deg)}
+
+/* diagonal dawn beam + god-rays */
+.beam{position:absolute;top:-160px;left:-120px;width:1500px;height:1700px;transform:rotate(10deg);filter:blur(18px);
+  background:linear-gradient(120deg, rgba(255,228,158,.30) 0%, rgba(255,205,120,.07) 46%, transparent 66%)}
+.rays{position:absolute;top:-200px;left:0;width:1300px;height:1500px;transform:rotate(18deg);mix-blend-mode:screen;opacity:.5;
+  background:repeating-linear-gradient(92deg, transparent 0 60px, rgba(255,224,150,.10) 60px 78px, transparent 78px 150px);
+  filter:blur(6px)}
+
+/* foreground pillars for depth */
+.pillar{position:absolute;bottom:0;top:0;width:150px;background:linear-gradient(90deg,#03060e,#0c1822 60%,#142a30)}
+.pillar.l{left:0;box-shadow:14px 0 50px rgba(0,0,0,.6)}
+.pillar.r{right:0;background:linear-gradient(270deg,#03060e,#0c1822 60%,#142a30);box-shadow:-14px 0 50px rgba(0,0,0,.6)}
+.pillar::before{content:"";position:absolute;top:0;width:100%;height:60px;background:linear-gradient(180deg,#22424a,#0c1822)}
+
+/* dust motes in the beam */
+.motes span{position:absolute;width:4px;height:4px;border-radius:50%;
+  background:rgba(255,232,170,.85);filter:blur(.5px);animation:drift 11s linear infinite}
+@keyframes drift{0%{transform:translate(0,40px);opacity:0}18%{opacity:.9}100%{transform:translate(80px,-420px);opacity:0}}
+
+/* relic, lower-center, catching the dawn */
+.hero{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);
+  filter:drop-shadow(0 0 26px rgba(255,210,130,.60)) drop-shadow(0 0 90px rgba(255,180,90,.40))}
+.bow{width:300px;height:560px;display:block}
+
+/* long cast shadow */
+.castshadow{position:absolute;left:50%;bottom:120px;transform:translateX(-30%) skewX(38deg);
+  width:280px;height:180px;background:radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%);filter:blur(12px)}
+
+.pedestal{position:absolute;left:50%;bottom:118px;transform:translateX(-50%);
+  width:320px;height:118px;background:linear-gradient(180deg,#16323a,#091820);
+  clip-path:polygon(17% 0,83% 0,100% 100%,0 100%);box-shadow:0 -8px 40px rgba(255,200,120,.2)}
+.pedestal::after{content:"";position:absolute;top:0;left:8%;right:8%;height:8px;
+  background:linear-gradient(90deg,transparent,rgba(255,217,138,.7),transparent)}
+
+.prompt{position:absolute;bottom:72px;left:0;right:0;text-align:center;font-style:italic;
+  font-weight:500;font-size:31px;letter-spacing:.56em;text-indent:.56em;
+  color:#ffe6b0;text-shadow:0 0 14px rgba(255,180,90,.55);animation:pulse 3.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.34}50%{opacity:1}}
+
+.vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 78% at 46% 52%, transparent 40%, rgba(0,0,0,.72) 100%)}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="aperture"></div>
+  <div class="jali"></div>
+  <div class="beam"></div>
+  <div class="rays"></div>
+  <div class="motes">
+    <span style="left:30%;top:34%;animation-delay:0s"></span>
+    <span style="left:36%;top:42%;animation-delay:2.1s"></span>
+    <span style="left:42%;top:30%;animation-delay:4s"></span>
+    <span style="left:33%;top:48%;animation-delay:5.8s"></span>
+    <span style="left:39%;top:38%;animation-delay:7.7s"></span>
+    <span style="left:46%;top:44%;animation-delay:9.2s"></span>
+  </div>
+  <div class="castshadow"></div>
+  <div class="pedestal"></div>
+  <div class="hero">
+    <svg class="bow" viewBox="0 0 260 700" aria-hidden="true">
+      <defs>
+        <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff3d0"/><stop offset=".5" stop-color="#f0c266"/><stop offset="1" stop-color="#8f6620"/>
+        </linearGradient>
+        <linearGradient id="goldhi" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fffaec"/><stop offset="1" stop-color="#e3bd62"/>
+        </linearGradient>
+      </defs>
+      <line x1="200" y1="48" x2="200" y2="652" stroke="#fff0cf" stroke-opacity=".5" stroke-width="2.5"/>
+      <path d="M200,48 C112,140 84,300 84,350 C84,400 112,560 200,652" fill="none" stroke="url(#gold)" stroke-width="13" stroke-linecap="round"/>
+      <path d="M200,48 C112,140 84,300 84,350 C84,400 112,560 200,652" fill="none" stroke="url(#goldhi)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+      <rect x="70" y="312" width="28" height="76" rx="9" fill="#46300f" stroke="url(#gold)" stroke-width="2.5"/>
+      <g stroke="url(#goldhi)" stroke-width="3" opacity=".75">
+        <line x1="150" y1="92" x2="168" y2="104"/><line x1="116" y1="160" x2="136" y2="168"/>
+        <line x1="150" y1="608" x2="168" y2="596"/><line x1="116" y1="540" x2="136" y2="532"/>
+      </g>
+      <circle cx="200" cy="48" r="11" fill="url(#gold)"/><circle cx="200" cy="652" r="11" fill="url(#gold)"/>
+      <circle cx="200" cy="48" r="4" fill="#fffaec"/><circle cx="200" cy="652" r="4" fill="#fffaec"/>
+    </svg>
+  </div>
+  <div class="prompt">press any key</div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+</div>
+</body>
+</html>

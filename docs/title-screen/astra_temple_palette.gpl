@@ -1,0 +1,35 @@
+GIMP Palette
+Name: Astra Temple
+Columns: 5
+# Master palette for the Project Astra title screen (warm temple sanctum + relic bow).
+# Warm scene, shadows converge on cool indigo-plum, highlights warm toward candle-white.
+# Each object uses the RAMP that fits it; cohesion comes from sharing this one set.
+#
+236 217 176	ST1 stone light
+210 174 124	ST2 stone
+163 124 87	ST3 stone mid
+111 80 68	ST4 stone dark
+67 48 62	ST5 stone shadow (plum)
+255 239 174	GD1 gold light
+244 201 91	GD2 brass bright
+206 149 48	GD3 gold
+148 98 31	GD4 brass dark
+89 54 25	GD5 brass deep
+255 247 210	FR1 flame core (hot white)
+255 214 107	FR2 flame yellow
+255 159 62	FR3 flame orange
+234 92 43	FR4 flame red
+158 51 32	FR5 ember
+255 210 74	MG1 marigold yellow
+249 165 44	MG2 marigold orange
+220 116 22	MG3 marigold deep
+151 71 14	MG4 marigold shadow
+148 168 78	LF1 leaf light
+78 106 45	LF2 leaf dark
+110 94 126	SH1 shadow violet-gray (smoke)
+75 58 92	SH2 shadow plum
+45 33 64	SH3 shadow indigo
+24 18 34	SH4 shadow near-black
+255 249 230	LT1 warm white (brightest light)
+252 244 216	LT2 divine highlight (bow's "other" glint)
+40 26 36	OUT outline dark
