@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Pathfinding;
@@ -53,6 +54,9 @@ namespace ProjectAstra.Core.Cursor
 
         [Header("UM-01 War's Ledger")]
         [SerializeField] private UnitDeathEventChannel _deathEventChannel;
+
+        [Header("Tutorial Dialogue")]
+        [SerializeField] private BattleDialogueEventChannel _battleDialogueChannel;
 
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -199,16 +203,23 @@ namespace ProjectAstra.Core.Cursor
             {
                 case CursorMode.Free:
                     _unitSelectionFlow.TrySelectUnit(_gridPosition);
+                    if (_currentMode == CursorMode.UnitSelected)
+                        _battleDialogueChannel?.Raise(BattleDialogueEventType.UnitSelected);
                     break;
                 case CursorMode.UnitSelected:
                     _unitSelectionFlow.TryCommitMovement(_gridPosition);
+                    _battleDialogueChannel?.Raise(BattleDialogueEventType.MoveConfirmed);
                     break;
                 case CursorMode.Targeting:
                     var selected = _unitSelectionFlow.SelectedUnit;
+                    var target = FindUnitAt(_gridPosition);
                     if (_targetingFlow.IsHealTargeting)
-                        _staffExecutor.TryCommitHeal(selected, FindUnitAt(_gridPosition), _unitSelectionFlow.CompleteAction);
+                        _staffExecutor.TryCommitHeal(selected, target, _unitSelectionFlow.CompleteAction);
                     else
-                        _combatExecutor.TryCommitAttack(selected, FindUnitAt(_gridPosition), _unitSelectionFlow.CompleteAction);
+                    {
+                        if (target != null) _battleDialogueChannel?.Raise(BattleDialogueEventType.PreCombat);
+                        _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
+                    }
                     break;
             }
         }

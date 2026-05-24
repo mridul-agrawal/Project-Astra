@@ -4656,6 +4656,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 112478693}
   m_CullTransparentMesh: 1
+--- !u!1 &113097125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 113097127}
+  - component: {fileID: 113097126}
+  m_Layer: 0
+  m_Name: DialogueTriggerDriver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &113097126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113097125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 102df106fca12ac42ae5dd71efd666c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueTriggerDriver
+  _turnChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
+  _battleChannel: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
+  _triggers:
+  - _event: 0
+    _turnFilter: 1
+    _script: {fileID: 11400000, guid: 61401fd2e8939ad4cb7f554665e61a84, type: 2}
+    _fireOnce: 1
+--- !u!4 &113097127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113097125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &114592168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19919,6 +19970,7 @@ MonoBehaviour:
   _unitInfoPanelUI: {fileID: 934369861}
   _combatForecastUI: {fileID: 1467876469}
   _deathEventChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
+  _battleDialogueChannel: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
   _spriteRenderer: {fileID: 2111737127}
   _idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
   _selectedSprite: {fileID: 21300000, guid: a989ce4cdbdf47d0a3c2cb441d3982ab, type: 3}
@@ -33414,6 +33466,7 @@ MonoBehaviour:
   _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
   _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
   _hasAllies: 0
+  _aiPhaseDelaySeconds: 1
 --- !u!4 &1225757592
 Transform:
   m_ObjectHideFlags: 0
@@ -59855,3 +59908,4 @@ SceneRoots:
   - {fileID: 1301574310}
   - {fileID: 1995867635}
   - {fileID: 843855193}
+  - {fileID: 113097127}
