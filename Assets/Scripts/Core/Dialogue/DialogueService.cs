@@ -33,8 +33,6 @@ namespace ProjectAstra.Core.Dialogue
             public Action OnComplete;
         }
 
-        public bool IsPlaying => _runner != null && _runner.IsRunning;
-
         public void Play(DialogueScript script, DialogueContext context, Action onComplete = null)
         {
             if (script == null) { Debug.LogError("[DialogueService] Play called with null script."); return; }

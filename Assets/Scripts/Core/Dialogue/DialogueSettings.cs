@@ -7,9 +7,11 @@ namespace ProjectAstra.Core.Dialogue
     [CreateAssetMenu(fileName = "DialogueSettings", menuName = "Project Astra/Dialogue/Dialogue Settings")]
     public class DialogueSettings : ScriptableObject
     {
+        private const float MinCharsPerSecond = 1f;
+
         [Tooltip("Default text-crawl speed in characters per second, when a line doesn't override it.")]
         [SerializeField] private float _charsPerSecond = 40f;
 
-        public float CharsPerSecond => Mathf.Max(1f, _charsPerSecond);
+        public float CharsPerSecond => Mathf.Max(MinCharsPerSecond, _charsPerSecond);
     }
 }

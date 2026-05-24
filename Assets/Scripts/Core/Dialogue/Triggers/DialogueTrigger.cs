@@ -8,7 +8,7 @@ namespace ProjectAstra.Core.Dialogue
     // turn), play Script. FireOnce triggers retire after their first play so a line
     // doesn't repeat every turn.
     [Serializable]
-    public class DialogueTrigger
+    internal class DialogueTrigger
     {
         [SerializeField] private BattleDialogueEventType _event;
 
@@ -53,7 +53,7 @@ namespace ProjectAstra.Core.Dialogue
 
     // Picks the first matching, un-spent trigger for an event and retires it.
     // Plain class so the matching rules unit-test without a scene.
-    public class DialogueTriggerSet
+    internal class DialogueTriggerSet
     {
         private readonly IReadOnlyList<DialogueTrigger> _triggers;
 

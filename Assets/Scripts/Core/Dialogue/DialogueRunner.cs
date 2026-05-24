@@ -7,8 +7,10 @@ namespace ProjectAstra.Core.Dialogue
     // letter by letter, waits for the player (or an auto-advance timer), and
     // raises OnComplete at the end. Pure C# and time is fed in through Tick, so
     // it unit-tests without a Canvas — same shape as DelayedAutoShift.
-    public class DialogueRunner
+    internal class DialogueRunner
     {
+        private const float MinCharsPerSecond = 1f;
+
         private readonly DialogueScript _script;
         private readonly DialogueSpeakerRegistry _registry;
         private readonly IDialogueView _view;
@@ -33,7 +35,7 @@ namespace ProjectAstra.Core.Dialogue
             _registry = registry;
             _view = view;
             _context = context;
-            _defaultCharsPerSecond = Mathf.Max(1f, defaultCharsPerSecond);
+            _defaultCharsPerSecond = Mathf.Max(MinCharsPerSecond, defaultCharsPerSecond);
         }
 
         public void Start()
