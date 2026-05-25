@@ -198,10 +198,7 @@
                 { "name": "", "id": "b0120001", "path": "<Keyboard>/space", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "SkipAnimation", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0120002", "path": "<Gamepad>/buttonSouth", "interactions": "", "processors": "", "groups": "Gamepad", "action": "SkipAnimation", "isComposite": false, "isPartOfComposite": false },
 
-                { "name": "", "id": "b0130001", "path": "<Keyboard>/z", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "SkipDialogue", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0130002", "path": "<Keyboard>/enter", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "SkipDialogue", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0130003", "path": "<Keyboard>/space", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "SkipDialogue", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0130004", "path": "<Gamepad>/buttonSouth", "interactions": "", "processors": "", "groups": "Gamepad", "action": "SkipDialogue", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b0130001", "path": "<Keyboard>/m", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "SkipDialogue", "isComposite": false, "isPartOfComposite": false },
 
                 { "name": "", "id": "b0140001", "path": "<Keyboard>/a", "interactions": "Hold", "processors": "", "groups": "Keyboard&Mouse", "action": "HoldAdvanceDialogue", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0140002", "path": "<Gamepad>/buttonEast", "interactions": "Hold", "processors": "", "groups": "Gamepad", "action": "HoldAdvanceDialogue", "isComposite": false, "isPartOfComposite": false },
