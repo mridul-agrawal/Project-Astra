@@ -13,6 +13,9 @@
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 
+# Local-only reference assets (FE-Repo placeholder/reference art) — never commit, never ships
+/_reference/
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/

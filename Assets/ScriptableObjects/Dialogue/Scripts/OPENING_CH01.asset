@@ -18,16 +18,17 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: Far from the village, deep in the forest, she gathered what the day had
-      left to give.
+    _text: Below the mountains, where the jungle keeps its oldest secrets, there
+      was a village that asked little of the world.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
   - _nodeId: 1
-    _speakerId: PROTAGONIST
+    _speakerId: NARRATOR
     _expression: 0
-    _portraitPosition: 0
-    _text: These berries should be enough for tonight.
+    _portraitPosition: 3
+    _text: And a girl who hunted its forests. She could read a trail like scripture,
+      and loose an arrow before a deer thought to run.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
@@ -35,48 +36,39 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: A scream tore through the trees.
+    _text: This dusk, she tracked alone, the way she liked best.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
   - _nodeId: 3
     _speakerId: PROTAGONIST
-    _expression: 4
+    _expression: 0
     _portraitPosition: 0
-    _text: "That came from home \u2014 no..."
+    _text: Fresh tracks. Still soft at the edges.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
   - _nodeId: 4
-    _speakerId: CHILD
-    _expression: 6
-    _portraitPosition: 1
-    _text: "Help! Please \u2014 they're here! Monsters!"
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 0
+    _text: "But these aren't deer. Not boar. \u2026Nothing I've ever tracked."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
   - _nodeId: 5
     _speakerId: PROTAGONIST
-    _expression: 5
+    _expression: 4
     _portraitPosition: 0
-    _text: Rakshasas. Stay behind me. Where is everyone?
+    _text: "Too deep. Clawed. And they don't wander like a beast \u2014 they go straight."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}
   - _nodeId: 6
-    _speakerId: CHILD
-    _expression: 6
-    _portraitPosition: 1
-    _text: At the temple! The gatekeeper is fighting them, but they're losing!
-    _textSpeedOverride: -1
-    _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
-  - _nodeId: 7
     _speakerId: PROTAGONIST
-    _expression: 5
+    _expression: 0
     _portraitPosition: 0
-    _text: Then I clear the village first, and reach the temple after. Not one more
-      villager falls.
+    _text: "\u2026Straight for the village!"
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 0}

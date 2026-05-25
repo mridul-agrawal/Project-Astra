@@ -152,7 +152,9 @@
       "mcp__pixellab__create_character",
       "mcp__pixellab__get_character",
       "WebFetch(domain:www.pixellab.ai)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "WebFetch(domain:feuniverse.us)",
+      "WebFetch(domain:feessentials.com)"
     ]
   }
 }
