@@ -37,6 +37,7 @@ namespace ProjectAstra.Core.Dialogue
         public bool AutoAdvances => _autoAdvanceDelay > 0f;
         public float AutoAdvanceDelay => _autoAdvanceDelay;
 
+        // For Testing Only! This is a bit of a code smell but it's just to avoid copy-pasting the same boilerplate in a few dozen tests.
         internal static DialogueNode CreateForTest(int nodeId, string speakerId, string text,
             DialogueExpression expression = DialogueExpression.Neutral,
             PortraitPosition position = PortraitPosition.Left,

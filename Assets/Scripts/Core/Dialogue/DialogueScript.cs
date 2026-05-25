@@ -14,6 +14,7 @@ namespace ProjectAstra.Core.Dialogue
         public string ScriptId => _scriptId;
         public IReadOnlyList<DialogueNode> Nodes => _nodes;
 
+        // Test helper to create a script without needing to create an asset file. Not intended for production use.
         internal static DialogueScript CreateForTest(string scriptId, params DialogueNode[] nodes)
         {
             var script = CreateInstance<DialogueScript>();

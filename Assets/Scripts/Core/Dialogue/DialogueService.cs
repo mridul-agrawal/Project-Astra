@@ -29,11 +29,11 @@ namespace ProjectAstra.Core.Dialogue
         private struct Pending
         {
             public DialogueScript Script;
-            public DialogueContext Context;
+            public DialogueTriggeringContext Context;
             public Action OnComplete;
         }
 
-        public void Play(DialogueScript script, DialogueContext context, Action onComplete = null)
+        public void Play(DialogueScript script, DialogueTriggeringContext context, Action onComplete = null)
         {
             if (script == null) { Debug.LogError("[DialogueService] Play called with null script."); return; }
 
@@ -63,9 +63,9 @@ namespace ProjectAstra.Core.Dialogue
                 return;
             }
 
-            var instance = Instantiate(prefab);
-            DontDestroyOnLoad(instance);
-            _view = instance.GetComponent<IDialogueView>();
+            var viewInstance = Instantiate(prefab);
+            DontDestroyOnLoad(viewInstance);
+            _view = viewInstance.GetComponent<IDialogueView>();
             if (_view == null)
             {
                 Debug.LogError($"[DialogueService] Prefab at Resources/{ViewResourcePath} has no IDialogueView component.");
@@ -79,7 +79,7 @@ namespace ProjectAstra.Core.Dialogue
             var pending = _queue.Dequeue();
             _currentCallback = pending.OnComplete;
 
-            EnterBattleMapStateIfNeeded(pending.Context);
+            ExitBattleMapStateIfNeeded(pending.Context);
 
             _runner = new DialogueRunner(pending.Script, _speakerRegistry, _view, pending.Context, _settings.CharsPerSecond);
             _runner.OnComplete += HandleRunnerComplete;
@@ -95,21 +95,21 @@ namespace ProjectAstra.Core.Dialogue
             UnbindInput();
 
             // Hand control back to the map only once nothing else is queued.
-            if (_queue.Count == 0) ExitBattleMapStateIfHeld();
+            if (_queue.Count == 0) EnterBattleMapStateIfHeld();
 
             callback?.Invoke();
 
             if (_queue.Count > 0) StartNext();
         }
 
-        private void EnterBattleMapStateIfNeeded(DialogueContext context)
+        private void ExitBattleMapStateIfNeeded(DialogueTriggeringContext context)
         {
-            if (context != DialogueContext.BattleMap || _holdsBattleMapState) return;
+            if (context != DialogueTriggeringContext.BattleMap || _holdsBattleMapState) return;
             GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(DialogueService));
             _holdsBattleMapState = true;
         }
 
-        private void ExitBattleMapStateIfHeld()
+        private void EnterBattleMapStateIfHeld()
         {
             if (!_holdsBattleMapState) return;
             GameStateManager.Instance?.RequestTransition(GameState.BattleMap, nameof(DialogueService));

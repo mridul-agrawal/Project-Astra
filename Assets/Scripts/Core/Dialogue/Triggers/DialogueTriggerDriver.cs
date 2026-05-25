@@ -42,7 +42,7 @@ namespace ProjectAstra.Core.Dialogue
         private void Fire(BattleDialogueEventType eventType, int turn)
         {
             var script = _set.Resolve(eventType, turn);
-            if (script != null) DialogueService.Instance?.Play(script, DialogueContext.BattleMap);
+            if (script != null) DialogueService.Instance?.Play(script, DialogueTriggeringContext.BattleMap);
         }
 
         private static int CurrentTurn()

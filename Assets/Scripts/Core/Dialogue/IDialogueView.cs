@@ -26,7 +26,7 @@ namespace ProjectAstra.Core.Dialogue
     // runner can be unit-tested against a fake, with no Canvas or Unity time.
     public interface IDialogueView
     {
-        void Show(DialogueContext context);
+        void Show(DialogueTriggeringContext context);
         void ShowLine(in DialogueLineView line);
         void SetVisibleCharacters(int count);
         void SetContinueHintVisible(bool visible);

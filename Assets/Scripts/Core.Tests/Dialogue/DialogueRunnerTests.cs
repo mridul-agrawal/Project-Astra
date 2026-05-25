@@ -25,7 +25,7 @@ namespace ProjectAstra.Core.Tests.Dialogue
 
         private DialogueRunner Build(DialogueScript script)
         {
-            var runner = new DialogueRunner(script, _registry, _view, DialogueContext.Cutscene, Speed);
+            var runner = new DialogueRunner(script, _registry, _view, DialogueTriggeringContext.Cutscene, Speed);
             runner.OnComplete += () => _completeCount++;
             return runner;
         }
@@ -209,7 +209,7 @@ namespace ProjectAstra.Core.Tests.Dialogue
             public bool HintVisible;
             public readonly List<DialogueLineView> Lines = new();
 
-            public void Show(DialogueContext context) => ShowCount++;
+            public void Show(DialogueTriggeringContext context) => ShowCount++;
 
             public void ShowLine(in DialogueLineView line)
             {

@@ -14,7 +14,7 @@ namespace ProjectAstra.Core.Dialogue
         private readonly DialogueScript _script;
         private readonly DialogueSpeakerRegistry _registry;
         private readonly IDialogueView _view;
-        private readonly DialogueContext _context;
+        private readonly DialogueTriggeringContext _context;
         private readonly float _defaultCharsPerSecond;
 
         private int _index;
@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Dialogue
         public bool IsRunning { get; private set; }
 
         public DialogueRunner(DialogueScript script, DialogueSpeakerRegistry registry,
-            IDialogueView view, DialogueContext context, float defaultCharsPerSecond)
+            IDialogueView view, DialogueTriggeringContext context, float defaultCharsPerSecond)
         {
             _script = script;
             _registry = registry;

@@ -14,7 +14,7 @@ namespace ProjectAstra.Core.UI.Cutscene
         private void OnEnable()
         {
             if (DialogueService.Instance != null && _openingScript != null)
-                DialogueService.Instance.Play(_openingScript, DialogueContext.Cutscene, GoToBattleMap);
+                DialogueService.Instance.Play(_openingScript, DialogueTriggeringContext.Cutscene, GoToBattleMap);
             else
                 FallBackToBattleMap();
         }

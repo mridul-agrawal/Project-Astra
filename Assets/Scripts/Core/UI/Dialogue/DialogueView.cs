@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.UI.Dialogue
         [SerializeField] private TMP_Text _bodyText;
         [SerializeField] private GameObject _continueHint;
 
-        public void Show(DialogueContext context)
+        public void Show(DialogueTriggeringContext context)
         {
             if (_root != null) _root.SetActive(true);
         }

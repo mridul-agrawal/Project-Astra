@@ -4,7 +4,7 @@ namespace ProjectAstra.Core.Dialogue
     // frame and whose game state owns the moment — the text and advance logic
     // are identical everywhere. The prototype uses these two; PreBattle,
     // PostBattle, and Camp join later.
-    public enum DialogueContext
+    public enum DialogueTriggeringContext
     {
         // Full-screen story presentation in the Cutscene scene (the opening narrative).
         Cutscene,
