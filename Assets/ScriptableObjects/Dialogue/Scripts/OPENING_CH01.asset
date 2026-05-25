@@ -18,20 +18,20 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: Below the mountains, where the jungle keeps its oldest secrets, there
-      was a village that asked little of the world.
+    _text: "Below the mountains, where the jungle keeps its oldest secrets, \nthere
+      was a village that asked little of the world."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 1
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: And a girl who hunted its forests. She could read a trail like scripture,
-      and loose an arrow before a deer thought to run.
+    _text: "And a girl who hunted its forests. \nShe could read a trail like scripture,
+      and loose an arrow before a deer thought to run."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 2
     _speakerId: NARRATOR
     _expression: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
     _text: This dusk, she tracked alone, the way she liked best.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 3
     _speakerId: PROTAGONIST
     _expression: 0
@@ -47,7 +47,7 @@ MonoBehaviour:
     _text: Fresh tracks. Still soft at the edges.
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
   - _nodeId: 4
     _speakerId: PROTAGONIST
     _expression: 0
@@ -55,7 +55,7 @@ MonoBehaviour:
     _text: "But these aren't deer. Not boar. \u2026Nothing I've ever tracked."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
   - _nodeId: 5
     _speakerId: PROTAGONIST
     _expression: 4
@@ -63,7 +63,7 @@ MonoBehaviour:
     _text: "Too deep. Clawed. And they don't wander like a beast \u2014 they go straight."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
   - _nodeId: 6
     _speakerId: PROTAGONIST
     _expression: 0
@@ -71,4 +71,4 @@ MonoBehaviour:
     _text: "\u2026Straight for the village!"
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}

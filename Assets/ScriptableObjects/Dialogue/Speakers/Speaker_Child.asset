@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueSpeaker
   _speakerId: CHILD
   _displayName: Village Child
-  _portraits: []
+  _portraits:
+  - Expression: 0
+    Sprite: {fileID: 0}
