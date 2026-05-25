@@ -9,8 +9,8 @@ namespace ProjectAstra.Core.Dialogue
     [Serializable]
     public class DialogueNode
     {
-        [SerializeField] private int _nodeId;
-        [SerializeField] private string _speakerId;
+        [HideInInspector, SerializeField] private int _nodeId;
+        [SpeakerId, SerializeField] private string _speakerId;
         [SerializeField] private DialogueExpression _expression = DialogueExpression.Neutral;
         [SerializeField] private PortraitPosition _portraitPosition = PortraitPosition.Left;
         [SerializeField, TextArea(2, 5)] private string _text;
@@ -36,6 +36,9 @@ namespace ProjectAstra.Core.Dialogue
 
         public bool AutoAdvances => _autoAdvanceDelay > 0f;
         public float AutoAdvanceDelay => _autoAdvanceDelay;
+
+        // Kept in sync with list position by DialogueScript.OnValidate — never hand-set.
+        internal void SetNodeId(int id) => _nodeId = id;
 
         // For Testing Only! This is a bit of a code smell but it's just to avoid copy-pasting the same boilerplate in a few dozen tests.
         internal static DialogueNode CreateForTest(int nodeId, string speakerId, string text,

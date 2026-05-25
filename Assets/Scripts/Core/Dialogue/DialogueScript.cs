@@ -14,6 +14,14 @@ namespace ProjectAstra.Core.Dialogue
         public string ScriptId => _scriptId;
         public IReadOnlyList<DialogueNode> Nodes => _nodes;
 
+        // Node ids always mirror list position, so designers never hand-number them
+        // when adding or reordering nodes in the inspector.
+        private void OnValidate()
+        {
+            for (int i = 0; i < _nodes.Count; i++)
+                _nodes[i]?.SetNodeId(i);
+        }
+
         // Test helper to create a script without needing to create an asset file. Not intended for production use.
         internal static DialogueScript CreateForTest(string scriptId, params DialogueNode[] nodes)
         {
