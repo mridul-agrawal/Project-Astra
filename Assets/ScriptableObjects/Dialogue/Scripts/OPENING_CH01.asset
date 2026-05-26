@@ -171,9 +171,7 @@ MonoBehaviour:
     _expression: 0
     _portraitPosition: 1
     _portraitFacing: 0
-    _text: 'You did right to run. Where are the others?
-
-'
+    _text: "You did right to run. \nWhere are the others?"
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
