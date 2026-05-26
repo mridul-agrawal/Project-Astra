@@ -1065,6 +1065,7 @@ MonoBehaviour:
   _rightPortrait: {fileID: 5799429085657150624}
   _centerPortrait: {fileID: 2178218945655704695}
   _nameLabel: {fileID: 820467185623035213}
+  _namePlate: {fileID: 4431038815897238687}
   _bodyText: {fileID: 2395186237505034604}
   _continueHint: {fileID: 1801104972045718467}
 --- !u!1 &7964131568160570304

@@ -19,6 +19,8 @@ namespace ProjectAstra.Core.UI.Dialogue
         [SerializeField] private Image _rightPortrait;
         [SerializeField] private Image _centerPortrait;
         [SerializeField] private TMP_Text _nameLabel;
+        [Tooltip("The whole nameplate panel (plate + label). Hidden for narrator / empty-name lines.")]
+        [SerializeField] private GameObject _namePlate;
         [SerializeField] private TMP_Text _bodyText;
         [SerializeField] private GameObject _continueHint;
 
@@ -30,7 +32,7 @@ namespace ProjectAstra.Core.UI.Dialogue
         public void ShowLine(in DialogueLineView line)
         {
             ApplyBackground(line.Background);
-            ApplyPortrait(line.Portrait, line.Position);
+            ApplyPortrait(line.Portrait, line.Position, line.Facing);
             ApplyName(line.SpeakerName);
             _bodyText.text = line.Text ?? string.Empty;
             _bodyText.maxVisibleCharacters = 0;
@@ -58,14 +60,27 @@ namespace ProjectAstra.Core.UI.Dialogue
 
         // Assigns the speaking portrait to its side and keeps it; the active side is
         // lit, every other shown portrait dims — the "facing each other" feel.
-        private void ApplyPortrait(Sprite portrait, PortraitPosition position)
+        private void ApplyPortrait(Sprite portrait, PortraitPosition position, PortraitFacing facing)
         {
             if (portrait != null && position != PortraitPosition.None)
-                AssignPortrait(SlotFor(position), portrait);
+            {
+                var slot = SlotFor(position);
+                AssignPortrait(slot, portrait);
+                ApplyFacing(slot, facing);
+            }
 
             Tint(_leftPortrait, position == PortraitPosition.Left);
             Tint(_rightPortrait, position == PortraitPosition.Right);
             Tint(_centerPortrait, position == PortraitPosition.Center);
+        }
+
+        // Art faces Left by default; Right mirrors the portrait horizontally.
+        private static void ApplyFacing(Image slot, PortraitFacing facing)
+        {
+            if (slot == null) return;
+            var scale = slot.rectTransform.localScale;
+            scale.x = Mathf.Abs(scale.x) * (facing == PortraitFacing.Right ? -1f : 1f);
+            slot.rectTransform.localScale = scale;
         }
 
         private Image SlotFor(PortraitPosition position) => position switch
@@ -88,11 +103,16 @@ namespace ProjectAstra.Core.UI.Dialogue
             slot.color = active ? ActiveTint : DimTint;
         }
 
+        // Narrator/system lines have no name — hide the whole plate so an empty plate
+        // doesn't linger, and bring it back the moment a real speaker appears.
         private void ApplyName(string speakerName)
         {
-            if (_nameLabel == null) return;
-            _nameLabel.text = speakerName ?? string.Empty;
-            _nameLabel.gameObject.SetActive(!string.IsNullOrEmpty(speakerName));
+            bool hasName = !string.IsNullOrEmpty(speakerName);
+            if (_nameLabel != null) _nameLabel.text = speakerName ?? string.Empty;
+
+            var plate = _namePlate != null ? _namePlate
+                      : _nameLabel != null ? _nameLabel.gameObject : null;
+            if (plate != null) plate.SetActive(hasName);
         }
     }
 }

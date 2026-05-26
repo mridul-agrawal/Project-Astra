@@ -13,6 +13,10 @@ namespace ProjectAstra.Core.Dialogue
         [SpeakerId, SerializeField] private string _speakerId;
         [SerializeField] private DialogueExpression _expression = DialogueExpression.Neutral;
         [SerializeField] private PortraitPosition _portraitPosition = PortraitPosition.Left;
+
+        [Tooltip("Which way the portrait looks. Art faces Left by default; Right flips it horizontally (scale.x × −1).")]
+        [SerializeField] private PortraitFacing _portraitFacing = PortraitFacing.Left;
+
         [SerializeField, TextArea(2, 5)] private string _text;
 
         [Tooltip("Characters per second for this line. Leave below 0 to use the global text speed.")]
@@ -28,6 +32,7 @@ namespace ProjectAstra.Core.Dialogue
         public string SpeakerId => _speakerId;
         public DialogueExpression Expression => _expression;
         public PortraitPosition PortraitPosition => _portraitPosition;
+        public PortraitFacing PortraitFacing => _portraitFacing;
         public string Text => _text;
         public Sprite FullScreenImage => _fullScreenImage;
 
@@ -44,7 +49,8 @@ namespace ProjectAstra.Core.Dialogue
         internal static DialogueNode CreateForTest(int nodeId, string speakerId, string text,
             DialogueExpression expression = DialogueExpression.Neutral,
             PortraitPosition position = PortraitPosition.Left,
-            float textSpeedOverride = -1f, float autoAdvanceDelay = 0f)
+            float textSpeedOverride = -1f, float autoAdvanceDelay = 0f,
+            PortraitFacing facing = PortraitFacing.Left)
         {
             return new DialogueNode
             {
@@ -53,6 +59,7 @@ namespace ProjectAstra.Core.Dialogue
                 _text = text,
                 _expression = expression,
                 _portraitPosition = position,
+                _portraitFacing = facing,
                 _textSpeedOverride = textSpeedOverride,
                 _autoAdvanceDelay = autoAdvanceDelay
             };

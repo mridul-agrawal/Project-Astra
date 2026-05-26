@@ -8,14 +8,17 @@ namespace ProjectAstra.Core.Dialogue
     {
         public readonly Sprite Portrait;
         public readonly PortraitPosition Position;
+        public readonly PortraitFacing Facing;
         public readonly string SpeakerName;
         public readonly string Text;
         public readonly Sprite Background;
 
-        public DialogueLineView(Sprite portrait, PortraitPosition position, string speakerName, string text, Sprite background)
+        public DialogueLineView(Sprite portrait, PortraitPosition position, PortraitFacing facing,
+            string speakerName, string text, Sprite background)
         {
             Portrait = portrait;
             Position = position;
+            Facing = facing;
             SpeakerName = speakerName;
             Text = text;
             Background = background;

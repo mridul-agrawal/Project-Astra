@@ -201,6 +201,17 @@ namespace ProjectAstra.Core.Tests.Dialogue
             Assert.IsTrue(_view.HintVisible, "an empty line is instantly 'complete' and waits for confirm");
         }
 
+        [Test]
+        public void PortraitFacing_ThreadsThroughToLine()
+        {
+            var script = DialogueScript.CreateForTest("S",
+                DialogueNode.CreateForTest(0, "A", "Hi", facing: PortraitFacing.Right));
+
+            Build(script).Start();
+
+            Assert.AreEqual(PortraitFacing.Right, _view.Lines[0].Facing);
+        }
+
         private sealed class FakeView : IDialogueView
         {
             public int ShowCount;

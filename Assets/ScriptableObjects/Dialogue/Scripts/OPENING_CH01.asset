@@ -18,8 +18,8 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: "Below the mountains, where the jungle keeps its oldest secrets, \nthere
-      was a village that asked little of the world."
+    _portraitFacing: 0
+    _text: "Below the mountains, \nwhere the jungle keeps its oldest secrets,"
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
@@ -27,8 +27,10 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: "And a girl who hunted its forests. \nShe could read a trail like scripture,
-      and loose an arrow before a deer thought to run."
+    _portraitFacing: 0
+    _text: 'there was a village that asked little of the world.
+
+'
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
@@ -36,31 +38,40 @@ MonoBehaviour:
     _speakerId: NARRATOR
     _expression: 0
     _portraitPosition: 3
-    _text: This dusk, she tracked alone, the way she liked best.
+    _portraitFacing: 0
+    _text: "And a girl who hunted its forests. \n"
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 3
-    _speakerId: PROTAGONIST
+    _speakerId: NARRATOR
     _expression: 0
-    _portraitPosition: 0
-    _text: Fresh tracks. Still soft at the edges.
+    _portraitPosition: 3
+    _portraitFacing: 0
+    _text: "She could read a trail like scripture, \nand loose an arrow before a
+      deer thought to run."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+    _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 4
-    _speakerId: PROTAGONIST
+    _speakerId: NARRATOR
     _expression: 0
-    _portraitPosition: 0
-    _text: "But these aren't deer. Not boar. \u2026Nothing I've ever tracked."
+    _portraitPosition: 3
+    _portraitFacing: 0
+    _text: 'This dusk, she tracked alone,
+
+      the way she liked best.'
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+    _fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
   - _nodeId: 5
     _speakerId: PROTAGONIST
-    _expression: 4
+    _expression: 0
     _portraitPosition: 0
-    _text: "Too deep. Clawed. And they don't wander like a beast \u2014 they go straight."
+    _portraitFacing: 1
+    _text: 'Fresh tracks. Still soft at the edges.
+
+'
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
@@ -68,7 +79,181 @@ MonoBehaviour:
     _speakerId: PROTAGONIST
     _expression: 0
     _portraitPosition: 0
-    _text: "\u2026Straight for the village!"
+    _portraitFacing: 1
+    _text: "But these aren't deer. \nNot boar. \u2026Nothing I've ever tracked."
     _textSpeedOverride: -1
     _autoAdvanceDelay: 0
     _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - _nodeId: 7
+    _speakerId: PROTAGONIST
+    _expression: 4
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "Too deep...  Clawed... \nAnd they don't wander like a beast."
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - _nodeId: 8
+    _speakerId: PROTAGONIST
+    _expression: 4
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "They go straight...\n\u2026Straight for the village!"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - _nodeId: 9
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "There is smoke in the sky too\u2026. \r\nWait! Its coming from the same
+      direction!"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - _nodeId: 10
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "From the Village\u2026 from Home!\r\nI must return quickly!"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - _nodeId: 11
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "Aranya! Aranya\u2014!\n"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 12
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: "- I'm here\u2026 Breathe.\r\n- Look at me\u2026 what happened?"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 13
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: "I'm here\u2026 Breathe.\rLook at me\u2026 what happened?"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 14
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "They came out of the dark. \r\nMonsters\u2026 Rakshas."
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 15
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "They burned the granary! \r\nand Maa told me to run and not look back"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 16
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: 'You did right to run. Where are the others?
+
+'
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 17
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: 'Others are Hiding.
+
+      The Rakshas are attacking the temple too.'
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 18
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: "The temple\u2026\r\nGajen, the gatekeeper\u2026 where is he?"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 19
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "At the temple. Fighting them. \nBut he can't hold them alone."
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 20
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: 'Then he won''t be alone for long.
+
+'
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 21
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: 'But the villagers are helpless here.
+
+      I must hold them here first'
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 22
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: 'Then help Gajen at the temple.
+
+'
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 23
+    _speakerId: PROTAGONIST
+    _expression: 0
+    _portraitPosition: 1
+    _portraitFacing: 0
+    _text: "Now go and Hide. \r\nand don't come out until it's quiet. Promise me"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - _nodeId: 24
+    _speakerId: CHILD
+    _expression: 0
+    _portraitPosition: 0
+    _portraitFacing: 1
+    _text: "\u2026Promise.\n"
+    _textSpeedOverride: -1
+    _autoAdvanceDelay: 0
+    _fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}

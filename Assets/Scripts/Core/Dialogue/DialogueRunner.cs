@@ -136,7 +136,7 @@ namespace ProjectAstra.Core.Dialogue
 
             if (DialogueSpeakerRegistry.IsNarrator(node.SpeakerId))
             {
-                line = new DialogueLineView(null, node.PortraitPosition, string.Empty, node.Text, node.FullScreenImage);
+                line = new DialogueLineView(null, node.PortraitPosition, node.PortraitFacing, string.Empty, node.Text, node.FullScreenImage);
                 return true;
             }
 
@@ -144,7 +144,7 @@ namespace ProjectAstra.Core.Dialogue
                 return false;
 
             var portrait = hidden ? null : speaker.ResolvePortrait(node.Expression);
-            line = new DialogueLineView(portrait, node.PortraitPosition, speaker.DisplayName, node.Text, node.FullScreenImage);
+            line = new DialogueLineView(portrait, node.PortraitPosition, node.PortraitFacing, speaker.DisplayName, node.Text, node.FullScreenImage);
             return true;
         }
 
