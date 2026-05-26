@@ -16,6 +16,9 @@
 # Local-only reference assets (FE-Repo placeholder/reference art) — never commit, never ships
 /_reference/
 
+# Ad-hoc play-mode screenshot captures dropped at the repo root during dev
+/dlg_runtime.png
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
