@@ -18,14 +18,19 @@ namespace ProjectAstra.Core.UI.Dialogue
         [SerializeField] private Image _leftPortrait;
         [SerializeField] private Image _rightPortrait;
         [SerializeField] private Image _centerPortrait;
-        [SerializeField] private TMP_Text _nameLabel;
-        [Tooltip("The whole nameplate panel (plate + label). Hidden for narrator / empty-name lines.")]
-        [SerializeField] private GameObject _namePlate;
+
+        [Header("Nameplates — shown on the active speaker's side")]
+        [SerializeField] private GameObject _namePlateLeft;
+        [SerializeField] private TMP_Text _nameLabelLeft;
+        [SerializeField] private GameObject _namePlateRight;
+        [SerializeField] private TMP_Text _nameLabelRight;
+
         [SerializeField] private TMP_Text _bodyText;
         [SerializeField] private GameObject _continueHint;
 
         public void Show(DialogueTriggeringContext context)
         {
+            ResetPortraits();
             if (_root != null) _root.SetActive(true);
         }
 
@@ -33,7 +38,7 @@ namespace ProjectAstra.Core.UI.Dialogue
         {
             ApplyBackground(line.Background);
             ApplyPortrait(line.Portrait, line.Position, line.Facing);
-            ApplyName(line.SpeakerName);
+            ApplyName(line.SpeakerName, line.Position);
             _bodyText.text = line.Text ?? string.Empty;
             _bodyText.maxVisibleCharacters = 0;
             SetContinueHintVisible(false);
@@ -103,16 +108,38 @@ namespace ProjectAstra.Core.UI.Dialogue
             slot.color = active ? ActiveTint : DimTint;
         }
 
-        // Narrator/system lines have no name — hide the whole plate so an empty plate
-        // doesn't linger, and bring it back the moment a real speaker appears.
-        private void ApplyName(string speakerName)
+        // Narrator/system lines have no name — hide both plates; otherwise show the
+        // plate on the active speaker's side (Left/Center → left, Right → right).
+        private void ApplyName(string speakerName, PortraitPosition position)
         {
             bool hasName = !string.IsNullOrEmpty(speakerName);
-            if (_nameLabel != null) _nameLabel.text = speakerName ?? string.Empty;
+            bool right = position == PortraitPosition.Right;
+            SetPlate(_namePlateLeft, _nameLabelLeft, hasName && !right, speakerName);
+            SetPlate(_namePlateRight, _nameLabelRight, hasName && right, speakerName);
+        }
 
-            var plate = _namePlate != null ? _namePlate
-                      : _nameLabel != null ? _nameLabel.gameObject : null;
-            if (plate != null) plate.SetActive(hasName);
+        private static void SetPlate(GameObject plate, TMP_Text label, bool show, string speakerName)
+        {
+            if (show && label != null) label.text = speakerName;
+            if (plate != null) plate.SetActive(show);
+        }
+
+        // A fresh conversation shouldn't inherit the previous one's portraits.
+        private void ResetPortraits()
+        {
+            ResetSlot(_leftPortrait);
+            ResetSlot(_rightPortrait);
+            ResetSlot(_centerPortrait);
+        }
+
+        private static void ResetSlot(Image slot)
+        {
+            if (slot == null) return;
+            slot.sprite = null;
+            slot.enabled = false;
+            var scale = slot.rectTransform.localScale;
+            scale.x = Mathf.Abs(scale.x);
+            slot.rectTransform.localScale = scale;
         }
     }
 }

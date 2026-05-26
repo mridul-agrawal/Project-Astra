@@ -10,26 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
-  m_Name: MAP1_T1_MOVE
+  m_Name: MAP1_T1_MOVE.backup
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
   _scriptId: MAP1_T1_MOVE
-  _segments:
-  - _background: {fileID: 0}
-    _textSpeed: -1
-    _autoAdvanceDelay: 0
-    _lines:
-    - _speakerId: PROTAGONIST
-      _expression: 5
-      _portraitPosition: 0
-      _portraitFacing: 0
-      _text: "I need to get near the village \u2014 I have to reach the people before
-        the Rakshasas do."
   _nodes:
   - _nodeId: 0
     _speakerId: PROTAGONIST
     _expression: 5
     _portraitPosition: 0
-    _portraitFacing: 0
     _text: "I need to get near the village \u2014 I have to reach the people before
       the Rakshasas do."
     _textSpeedOverride: -1

@@ -24,6 +24,7 @@ namespace ProjectAstra.Core.Dialogue
         private float _revealed;
         private float _autoAdvanceElapsed;
         private bool _crawlComplete;
+        private int _lastShown;
 
         public event Action OnComplete;
         public bool IsRunning { get; private set; }
@@ -84,6 +85,7 @@ namespace ProjectAstra.Core.Dialogue
             _text = node.Text ?? string.Empty;
             _charsPerSecond = node.HasTextSpeedOverride ? node.TextSpeedOverride : _defaultCharsPerSecond;
             _revealed = 0f;
+            _lastShown = 0;
             _autoAdvanceElapsed = 0f;
             _crawlComplete = false;
             _view.SetVisibleCharacters(0);
@@ -96,13 +98,20 @@ namespace ProjectAstra.Core.Dialogue
         {
             _revealed += _charsPerSecond * deltaTime;
             int shown = Mathf.Min((int)_revealed, _text.Length);
-            _view.SetVisibleCharacters(shown);
+            // Only touch the view when the visible count actually changes — writing
+            // maxVisibleCharacters every frame forces a TMP mesh rebuild and tanks FPS.
+            if (shown != _lastShown)
+            {
+                _lastShown = shown;
+                _view.SetVisibleCharacters(shown);
+            }
             if (shown >= _text.Length) CompleteCrawl();
         }
 
         private void CompleteCrawl()
         {
             _crawlComplete = true;
+            _lastShown = _text.Length;
             _view.SetVisibleCharacters(_text.Length);
             // A line that advances on its own shouldn't beg for a button press.
             _view.SetContinueHintVisible(!_node.AutoAdvances);

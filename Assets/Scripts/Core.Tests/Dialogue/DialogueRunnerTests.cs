@@ -212,12 +212,29 @@ namespace ProjectAstra.Core.Tests.Dialogue
             Assert.AreEqual(PortraitFacing.Right, _view.Lines[0].Facing);
         }
 
+        [Test]
+        public void Typewriter_OnlyWritesViewWhenVisibleCountChanges()
+        {
+            var script = DialogueScript.CreateForTest("S",
+                DialogueNode.CreateForTest(0, "A", "Hi")); // 2 chars, Speed = 10/s
+            var runner = Build(script);
+            runner.Start();
+            int afterStart = _view.VisibleSetCount; // BeginCrawl wrote 0 once
+
+            for (int i = 0; i < 20; i++) runner.Tick(0.001f); // 0.02s total -> 0.2 chars, still 0
+            Assert.AreEqual(afterStart, _view.VisibleSetCount, "no redundant view writes while the count is unchanged");
+
+            runner.Tick(0.1f); // crosses to 1 char
+            Assert.AreEqual(afterStart + 1, _view.VisibleSetCount);
+        }
+
         private sealed class FakeView : IDialogueView
         {
             public int ShowCount;
             public int HideCount;
             public int LastVisible;
             public bool HintVisible;
+            public int VisibleSetCount;
             public readonly List<DialogueLineView> Lines = new();
 
             public void Show(DialogueTriggeringContext context) => ShowCount++;
@@ -229,7 +246,7 @@ namespace ProjectAstra.Core.Tests.Dialogue
                 HintVisible = false;
             }
 
-            public void SetVisibleCharacters(int count) => LastVisible = count;
+            public void SetVisibleCharacters(int count) { LastVisible = count; VisibleSetCount++; }
             public void SetContinueHintVisible(bool visible) => HintVisible = visible;
             public void Hide() => HideCount++;
         }

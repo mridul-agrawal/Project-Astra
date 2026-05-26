@@ -54,11 +54,13 @@ namespace ProjectAstra.EditorTools
             var fullScreen = BuildFullScreenImage(content);
             var (left, right, center) = BuildPortraits(content);
             var box = BuildDialogueBox(content);
-            var nameLabel = BuildNameLabel(box);
+            var (plateLeft, labelLeft) = BuildNamePlate(box, right: false);
+            var (plateRight, labelRight) = BuildNamePlate(box, right: true);
             var bodyText = BuildBodyText(box);
             var continueHint = BuildContinueHint(box);
 
-            WireView(rootGo, content, fullScreen, left, right, center, nameLabel, bodyText, continueHint);
+            WireView(rootGo, content, fullScreen, left, right, center,
+                plateLeft, labelLeft, plateRight, labelRight, bodyText, continueHint);
             content.SetActive(false);
 
             SavePrefab(rootGo);
@@ -151,21 +153,24 @@ namespace ProjectAstra.EditorTools
             return box;
         }
 
-        private static TMP_Text BuildNameLabel(GameObject box)
+        // One plate per side; the runner shows only the active speaker's. The label's
+        // own GameObject doubles as the plate, so toggling it hides the whole thing.
+        private static (GameObject plate, TMP_Text label) BuildNamePlate(GameObject box, bool right)
         {
-            var go = new GameObject("NameLabel", typeof(RectTransform));
+            var go = new GameObject(right ? "NamePlateRight" : "NamePlateLeft", typeof(RectTransform));
             go.transform.SetParent(box.transform, false);
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0.02f, 1f);
-            rect.anchorMax = new Vector2(0.4f, 1f);
+            rect.anchorMin = new Vector2(right ? 0.6f : 0.02f, 1f);
+            rect.anchorMax = new Vector2(right ? 0.98f : 0.4f, 1f);
             rect.pivot = new Vector2(0f, 0f);
             rect.sizeDelta = new Vector2(0f, 48f);
-            rect.anchoredPosition = new Vector2(20f, 6f);
+            rect.anchoredPosition = new Vector2(right ? -20f : 20f, 6f);
             var tmp = go.AddComponent<TextMeshProUGUI>();
             tmp.fontSize = 30;
             tmp.fontStyle = FontStyles.Bold;
+            tmp.alignment = right ? TextAlignmentOptions.Right : TextAlignmentOptions.Left;
             tmp.color = new Color(0.961f, 0.835f, 0.541f, 1f);
-            return tmp;
+            return (go, tmp);
         }
 
         private static TMP_Text BuildBodyText(GameObject box)
@@ -204,7 +209,10 @@ namespace ProjectAstra.EditorTools
         }
 
         private static void WireView(GameObject rootGo, GameObject content, Image fullScreen,
-            Image left, Image right, Image center, TMP_Text nameLabel, TMP_Text bodyText, GameObject continueHint)
+            Image left, Image right, Image center,
+            GameObject namePlateLeft, TMP_Text nameLabelLeft,
+            GameObject namePlateRight, TMP_Text nameLabelRight,
+            TMP_Text bodyText, GameObject continueHint)
         {
             var view = rootGo.AddComponent<DialogueView>();
             var so = new SerializedObject(view);
@@ -213,7 +221,10 @@ namespace ProjectAstra.EditorTools
             so.FindProperty("_leftPortrait").objectReferenceValue = left;
             so.FindProperty("_rightPortrait").objectReferenceValue = right;
             so.FindProperty("_centerPortrait").objectReferenceValue = center;
-            so.FindProperty("_nameLabel").objectReferenceValue = nameLabel;
+            so.FindProperty("_namePlateLeft").objectReferenceValue = namePlateLeft;
+            so.FindProperty("_nameLabelLeft").objectReferenceValue = nameLabelLeft;
+            so.FindProperty("_namePlateRight").objectReferenceValue = namePlateRight;
+            so.FindProperty("_nameLabelRight").objectReferenceValue = nameLabelRight;
             so.FindProperty("_bodyText").objectReferenceValue = bodyText;
             so.FindProperty("_continueHint").objectReferenceValue = continueHint;
             so.ApplyModifiedPropertiesWithoutUndo();

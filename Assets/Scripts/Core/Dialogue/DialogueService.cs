@@ -51,7 +51,7 @@ namespace ProjectAstra.Core.Dialogue
 
         private void Update()
         {
-            if (_runner != null && _runner.IsRunning) _runner.Tick(Time.deltaTime);
+            if (_runner != null && _runner.IsRunning) _runner.Tick(Time.unscaledDeltaTime);
         }
 
         private void InstantiateView()

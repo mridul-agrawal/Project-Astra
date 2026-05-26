@@ -45,6 +45,25 @@ namespace ProjectAstra.Core.Dialogue
         // Kept in sync with list position by DialogueScript.OnValidate — never hand-set.
         internal void SetNodeId(int id) => _nodeId = id;
 
+        // Builds the runtime node the runner consumes by flattening a segment + line:
+        // the line supplies speaker/expression/portrait/text, the segment supplies the
+        // shared background, crawl speed, and auto-advance.
+        internal static DialogueNode CreateRuntime(int nodeId, DialogueLine line, DialogueSegment segment)
+        {
+            return new DialogueNode
+            {
+                _nodeId = nodeId,
+                _speakerId = line.SpeakerId,
+                _expression = line.Expression,
+                _portraitPosition = line.PortraitPosition,
+                _portraitFacing = line.PortraitFacing,
+                _text = line.Text,
+                _fullScreenImage = segment.Background,
+                _textSpeedOverride = segment.TextSpeed,
+                _autoAdvanceDelay = segment.AutoAdvanceDelay
+            };
+        }
+
         // For Testing Only! This is a bit of a code smell but it's just to avoid copy-pasting the same boilerplate in a few dozen tests.
         internal static DialogueNode CreateForTest(int nodeId, string speakerId, string text,
             DialogueExpression expression = DialogueExpression.Neutral,
