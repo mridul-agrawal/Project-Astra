@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Astra · Dialogue UI — 480×270 Layout Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Space+Mono:wght@400;700&family=Pixelify+Sans:wght@400;500;600&family=Silkscreen&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c0a0f; --ink2:#13101a; --panel:#1a1622; --line:#2c2436;
+    --fog:#b7adc4; --fog2:#7c7388; --paper:#efe7da; --gold:#e3b366; --gold-deep:#b9842f; --ember:#e8762e;
+
+    /* ===== DIALOGUE DESIGN TOKENS — defined in native 480×270 px ===== */
+    --box-fill:#e4ddc9;            /* warm parchment, FE-style */
+    --box-fill-2:#d6cdb4;
+    --box-edge:#2f2c4a;            /* navy border */
+    --box-ink:#2a2740;             /* text */
+    --box-hi:#fbf6e6;              /* inner highlight line */
+    --teal:#2fb6c0;               /* continue arrow */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:radial-gradient(1100px 620px at 80% -10%,rgba(227,179,102,.10),transparent 60%),var(--ink);
+    color:var(--paper);font-family:"Fraunces",Georgia,serif;line-height:1.5;-webkit-font-smoothing:antialiased;padding:0 0 120px}
+  .mono{font-family:"Space Mono",monospace}
+
+  header{max-width:1040px;margin:0 auto;padding:56px 24px 6px}
+  .kicker{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+  h1{font-weight:400;font-size:clamp(36px,5.5vw,64px);line-height:1;letter-spacing:-.02em}
+  h1 em{font-style:italic;color:var(--gold)}
+  .lede{max-width:64ch;margin-top:18px;font-size:17px;color:var(--fog)}
+  .lede b{color:var(--paper);font-weight:600}
+
+  /* the shared 480×270 spec, shown as the build contract */
+  .tokens{max-width:1040px;margin:30px auto 0;padding:18px 22px;background:var(--ink2);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px}
+  .tokens h3{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+  .tokens .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 18px;font-family:"Space Mono",monospace;font-size:12.5px;color:var(--fog)}
+  .tokens .grid b{color:var(--paper)}
+
+  .controls{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px);background:linear-gradient(var(--ink),rgba(12,10,15,.8));border-bottom:1px solid var(--line);margin-top:30px}
+  .controls .row{max-width:1040px;margin:0 auto;padding:13px 24px;display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center}
+  .ctl-label{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--fog2)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+  .seg button{font-family:"Space Mono",monospace;font-size:12px;color:var(--fog);background:transparent;border:0;padding:7px 13px;cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}
+  .seg button:hover{color:var(--paper);background:rgba(227,179,102,.08)}
+  .seg button.on{background:var(--gold);color:#1a1206;font-weight:700}
+
+  .lib{max-width:1040px;margin:42px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:54px}
+  .card .head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+  .card .vno{font-family:"Silkscreen",monospace;font-size:18px;color:var(--gold)}
+  .card .vname{font-size:25px;font-weight:600}
+  .card .vtag{font-family:"Space Mono",monospace;font-size:12px;color:var(--fog2)}
+
+  /* === pixel-perfect stage: native 480×270, displayed at 2× (=960×540) === */
+  .wrap{width:960px;max-width:100%;aspect-ratio:16/9;position:relative;border-radius:5px;overflow:hidden;
+        box-shadow:0 26px 54px -28px rgba(0,0,0,.85),0 0 0 1px var(--line)}
+  .stage{position:absolute;top:0;left:0;width:480px;height:270px;transform:scale(2);transform-origin:top left;
+         background:#241a17 url("../../Assets/Art/title screen 01.png") center/cover no-repeat;image-rendering:pixelated}
+  .stage *{image-rendering:pixelated}
+  .vis{position:absolute;top:6px;right:6px;font-family:"Silkscreen",monospace;font-size:7px;color:#fff;
+       background:rgba(8,5,12,.6);border:1px solid rgba(227,179,102,.45);padding:2px 4px;border-radius:2px;z-index:9}
+
+  /* dialogue atoms — ALL values in native 480×270 px ---------------------------- */
+  .dbox{position:absolute;background:linear-gradient(180deg,var(--box-fill),var(--box-fill-2));
+        border:2px solid var(--box-edge);border-radius:3px;
+        box-shadow:inset 0 0 0 1px var(--box-hi)}
+  .dtext{display:block;font-family:"Pixelify Sans",sans-serif;font-weight:500;color:var(--box-ink);
+         font-size:14px;line-height:17px}
+  .plate{position:absolute;background:linear-gradient(180deg,var(--box-fill),var(--box-fill-2));
+         border:2px solid var(--box-edge);border-radius:3px;box-shadow:inset 0 0 0 1px var(--box-hi);
+         font-family:"Pixelify Sans",sans-serif;font-weight:600;color:var(--box-ink);font-size:11px;
+         padding:1px 7px;line-height:16px;white-space:nowrap;z-index:4}
+  .arrow{position:absolute;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;
+         border-top:6px solid var(--teal);animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.1}}
+  .bust{position:absolute;overflow:hidden;background:linear-gradient(160deg,#3c2a1e,#1c1220);
+        border:2px solid var(--box-edge);border-radius:2px;box-shadow:inset 0 0 0 1px var(--box-hi)}
+  .bust svg{width:100%;height:100%;display:block}
+
+  /* ===== A · bottom box + nameplate (≙ reference Img 3) ===== */
+  .a .dbox{left:8px;top:188px;width:464px;height:74px;padding:9px 14px}
+  .a .plate{left:14px;top:170px}
+  .a .arrow{left:452px;top:248px}
+
+  /* ===== B · speech bubble + tail (≙ reference Img 4) ===== */
+  .b .dbox{left:54px;top:28px;width:372px;height:62px;padding:8px 13px}
+  .b .tail{position:absolute;left:300px;top:84px;width:14px;height:14px;transform:rotate(45deg);
+           background:var(--box-fill-2);border:2px solid var(--box-edge);z-index:1}
+  .b .dbox{z-index:2}
+  .b .dtext{font-size:14px}
+  .b .arrow{left:350px;top:40px}
+
+  /* ===== C · bottom box + bust portrait + nameplate (FE conversation) ===== */
+  .c .dbox{left:8px;top:188px;width:464px;height:74px;padding:9px 14px}
+  .c .bust{left:10px;top:112px;width:62px;height:76px}
+  .c .plate{left:80px;top:170px}
+  .c .arrow{left:452px;top:248px}
+
+  /* ===== D · cinematic narration / bespoke still ===== */
+  .d .bar{position:absolute;left:0;width:480px;background:#000;z-index:3}
+  .d .bar.top{top:0;height:22px}
+  .d .bar.bot{top:248px;height:22px}
+  .d .scrim{position:absolute;left:0;top:176px;width:480px;height:72px;z-index:2;
+            background:linear-gradient(180deg,transparent,rgba(6,4,12,.72))}
+  .d .narr{position:absolute;left:64px;top:206px;width:352px;z-index:4;text-align:center;
+           font-family:"Pixelify Sans",sans-serif;font-weight:500;color:#f5edde;font-size:14px;line-height:18px;
+           text-shadow:0 1px 0 rgba(0,0,0,.95),0 0 5px rgba(0,0,0,.9)}
+  .d .arrow{left:404px;top:230px;z-index:5}
+
+  /* the text-area guide (caption) */
+  .spec{margin-top:14px;display:grid;grid-template-columns:1.2fr 1.4fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  @media(max-width:760px){.spec{grid-template-columns:1fr}}
+  .spec div{background:var(--ink2);padding:12px 15px}
+  .spec .k{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:5px}
+  .spec .v{font-size:14px;color:var(--fog)}
+  .spec .v b{color:var(--paper);font-weight:600}
+  .spec .px{font-family:"Space Mono",monospace;font-size:12px;color:var(--gold)}
+
+  .dims{max-width:1040px;margin:74px auto 0;padding:0 24px}
+  .dims h2{font-size:30px;font-weight:600;letter-spacing:-.01em}
+  .dims .sub{font-family:"Space Mono",monospace;font-size:12px;color:var(--fog2);letter-spacing:.04em;margin:6px 0 22px}
+  .dims h3{font-family:"Silkscreen",monospace;font-size:13px;color:var(--gold);margin:26px 0 9px}
+  table.dim{width:100%;border-collapse:collapse;font-size:14px;background:var(--ink2);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  table.dim th,table.dim td{text-align:left;padding:8px 14px;border-bottom:1px solid var(--line)}
+  table.dim tr:last-child td{border-bottom:0}
+  table.dim th{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);background:rgba(227,179,102,.05)}
+  table.dim td{color:var(--fog)}
+  table.dim td:first-child{color:var(--paper);font-weight:600}
+  table.dim .num{font-family:"Space Mono",monospace;color:var(--gold);font-size:13px}
+  table.dim .sub-row td:first-child{color:var(--fog2);font-weight:400;padding-left:24px}
+  .dims .note{font-size:13.5px;color:var(--fog);margin-top:16px;border-left:3px solid var(--ember);padding-left:14px}
+  .dims .note b{color:var(--paper)}
+  footer{max-width:1040px;margin:74px auto 0;padding:0 24px;color:var(--fog2);font-size:14px}
+  footer code{font-family:"Space Mono",monospace;color:var(--gold);font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Project Astra · Concept Phase · v2 (rebuilt on the pixel grid)</div>
+  <h1>Dialogue UI —<br><em>480×270 Layout Library</em></h1>
+  <p class="lede">Rebuilt the right way: every element is specced in <b>native 480×270 pixels</b> (the game then scales ×4 to 1920×1080). Each mockup is a real 480×270 stage shown at 2×, pixel-snapped, over the temple background — so the proportions you see <b>are</b> the build spec. Boxes sit in the bottom ~27%, text is a small pixel font, the scene stays visible. A and B mirror your two FE references; C and D extend them.</p>
+
+  <div class="tokens">
+    <h3>Shared design tokens — native 480×270 px (×4 in game)</h3>
+    <div class="grid">
+      <span>Box height: <b>74&nbsp;px</b> (≈27%)</span>
+      <span>Box margin: <b>8&nbsp;px</b></span>
+      <span>Border: <b>2&nbsp;px</b> navy + 1px inner hi</span>
+      <span>Body text: <b>14&nbsp;px</b> / 17px line</span>
+      <span>Lines: <b>2</b> (max 3)</span>
+      <span>Nameplate: <b>20&nbsp;px</b> tall, 11px text</span>
+      <span>Portrait bust: <b>62×76&nbsp;px</b></span>
+      <span>Continue arrow: <b>8&nbsp;px</b> teal ▼</span>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="row">
+    <span class="ctl-label">Sample line</span>
+    <span class="seg" id="lenSeg">
+      <button data-len="short">Short (1 line)</button>
+      <button data-len="medium" class="on">Medium (2 lines)</button>
+      <button data-len="long">Long (3 lines)</button>
+    </span>
+    <span class="mono" style="color:var(--fog2);font-size:12px">← see how each layout holds the same text at true pixel size</span>
+  </div>
+</div>
+
+<main class="lib" id="lib">
+
+  <!-- A -->
+  <section class="card">
+    <div class="head"><span class="vno">A</span><span class="vname">Bottom Box + Nameplate</span><span class="vtag">// ≙ your reference Img 3 (FE7 talk)</span></div>
+    <div class="wrap"><div class="stage a">
+      <span class="vis">SCENE 73%</span>
+      <div class="plate">Aranya</div>
+      <div class="dbox"><span class="dtext dt"></span></div>
+      <span class="arrow"></span>
+    </div></div>
+    <div class="spec">
+      <div><span class="k">Px spec</span><span class="v px">box 464×74 @(8,188)<br>plate @(14,170) · arrow @(452,248)</span></div>
+      <div><span class="k">Best for</span><span class="v">The default conversation. Faithful FE7 — separate nameplate plate, full scene above.</span></div>
+      <div><span class="k">Notes</span><span class="v"><b>No portrait</b> — relies on the scene/character art behind, like the reference.</span></div>
+    </div>
+  </section>
+
+  <!-- B -->
+  <section class="card">
+    <div class="head"><span class="vno">B</span><span class="vname">Speech Bubble + Tail</span><span class="vtag">// ≙ your reference Img 4</span></div>
+    <div class="wrap"><div class="stage b">
+      <span class="vis">SCENE 80%</span>
+      <div class="tail"></div>
+      <div class="dbox"><span class="dtext dt"></span><span class="arrow"></span></div>
+    </div></div>
+    <div class="spec">
+      <div><span class="k">Px spec</span><span class="v px">bubble 372×62 @(54,28)<br>tail 14px @(300,84)</span></div>
+      <div><span class="k">Best for</span><span class="v">Lighter, character-anchored lines. The <b>tail points at the speaker</b> — no nameplate needed.</span></div>
+      <div><span class="k">Notes</span><span class="v">Tail position should track who's talking. Keeps the most scene of any boxed style.</span></div>
+    </div>
+  </section>
+
+  <!-- C -->
+  <section class="card">
+    <div class="head"><span class="vno">C</span><span class="vname">Bottom Box + Bust Portrait</span><span class="vtag">// FE conversation with a portrait</span></div>
+    <div class="wrap"><div class="stage c">
+      <span class="vis">SCENE 70%</span>
+      <div class="bust"><svg viewBox="0 0 100 120" preserveAspectRatio="xMidYMax meet"><circle cx="50" cy="40" r="23" fill="#caa06e"/><path d="M16 120 Q16 80 50 76 Q84 80 84 120Z" fill="#8c5b32"/></svg></div>
+      <div class="plate">Aranya</div>
+      <div class="dbox"><span class="dtext dt"></span></div>
+      <span class="arrow"></span>
+    </div></div>
+    <div class="spec">
+      <div><span class="k">Px spec</span><span class="v px">box 464×74 @(8,188)<br>bust 62×76 @(10,112) · plate @(80,176)</span></div>
+      <div><span class="k">Best for</span><span class="v">When you want the speaker's <b>expression</b> shown (our portrait+expression system).</span></div>
+      <div><span class="k">Notes</span><span class="v">Bust stands on the box's top-left corner; plate sits beside it. Text uses full box width.</span></div>
+    </div>
+  </section>
+
+  <!-- D -->
+  <section class="card">
+    <div class="head"><span class="vno">D</span><span class="vname">Cinematic Narration</span><span class="vtag">// narrator lines · bespoke stills</span></div>
+    <div class="wrap"><div class="stage d">
+      <span class="vis">SCENE 100% (letterboxed)</span>
+      <div class="bar top"></div><div class="bar bot"></div>
+      <div class="scrim"></div>
+      <div class="narr dt"></div>
+      <span class="arrow"></span>
+    </div></div>
+    <div class="spec">
+      <div><span class="k">Px spec</span><span class="v px">bars 22px · text @(64,206) w352<br>scrim gradient @(0,176)</span></div>
+      <div><span class="k">Best for</span><span class="v">The narrator ("Far from the village…") and high-intensity full-screen stills.</span></div>
+      <div><span class="k">Notes</span><span class="v">No box, no plate — letterbox + scrim. The art carries it.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<section class="dims">
+  <h2>Element Dimensions</h2>
+  <div class="sub">native 480×270 px (authoring size) · ×4 column = in-game at 1920×1080 · origin = top-left, +x → right, +y → down</div>
+
+  <h3>Screen &amp; shared tokens</h3>
+  <table class="dim">
+    <tr><th>Token</th><th>Design (480×270)</th><th>×4 (in-game)</th></tr>
+    <tr><td>Full screen</td><td class="num">480 × 270</td><td class="num">1920 × 1080</td></tr>
+    <tr><td>Outer margin</td><td class="num">8</td><td class="num">32</td></tr>
+    <tr><td>Box border</td><td class="num">2 (+1 inner highlight)</td><td class="num">8 (+4)</td></tr>
+    <tr><td>Body text</td><td class="num">14 · 17 line-height</td><td class="num">56 · 68</td></tr>
+    <tr><td>Nameplate text</td><td class="num">11 · 16 line-height</td><td class="num">44 · 64</td></tr>
+    <tr><td>Continue arrow ▼</td><td class="num">8 × 6</td><td class="num">32 × 24</td></tr>
+  </table>
+
+  <h3>A · Bottom Box + Nameplate &nbsp;(≙ ref Img 3)</h3>
+  <table class="dim">
+    <tr><th>Element</th><th>Pos (x, y)</th><th>Size @480</th><th>Size ×4</th></tr>
+    <tr><td>Dialog box</td><td class="num">8, 188</td><td class="num">464 × 74</td><td class="num">1856 × 296</td></tr>
+    <tr class="sub-row"><td>↳ text area</td><td class="num">22, 197</td><td class="num">436 × 56</td><td class="num">1744 × 224</td></tr>
+    <tr><td>Nameplate</td><td class="num">14, 170</td><td class="num">auto × 22</td><td class="num">auto × 88</td></tr>
+    <tr><td>Continue arrow</td><td class="num">452, 248</td><td class="num">8 × 6</td><td class="num">32 × 24</td></tr>
+  </table>
+
+  <h3>B · Speech Bubble + Tail &nbsp;(≙ ref Img 4)</h3>
+  <table class="dim">
+    <tr><th>Element</th><th>Pos (x, y)</th><th>Size @480</th><th>Size ×4</th></tr>
+    <tr><td>Bubble</td><td class="num">54, 28</td><td class="num">372 × 62</td><td class="num">1488 × 248</td></tr>
+    <tr class="sub-row"><td>↳ text area</td><td class="num">67, 36</td><td class="num">346 × 46</td><td class="num">1384 × 184</td></tr>
+    <tr><td>Tail (rotated square)</td><td class="num">300, 84</td><td class="num">14 × 14</td><td class="num">56 × 56</td></tr>
+    <tr><td>Continue arrow <span style="color:var(--fog2)">(bubble-relative)</span></td><td class="num">350, 40</td><td class="num">8 × 6</td><td class="num">32 × 24</td></tr>
+    <tr><td>Nameplate</td><td class="num">—</td><td class="num">none (tail = speaker)</td><td class="num">—</td></tr>
+  </table>
+
+  <h3>C · Bottom Box + Bust Portrait</h3>
+  <table class="dim">
+    <tr><th>Element</th><th>Pos (x, y)</th><th>Size @480</th><th>Size ×4</th></tr>
+    <tr><td>Dialog box</td><td class="num">8, 188</td><td class="num">464 × 74</td><td class="num">1856 × 296</td></tr>
+    <tr class="sub-row"><td>↳ text area</td><td class="num">22, 197</td><td class="num">436 × 56</td><td class="num">1744 × 224</td></tr>
+    <tr><td>Portrait bust</td><td class="num">10, 112</td><td class="num">62 × 76</td><td class="num">248 × 304</td></tr>
+    <tr><td>Nameplate</td><td class="num">80, 170</td><td class="num">auto × 22</td><td class="num">auto × 88</td></tr>
+    <tr><td>Continue arrow</td><td class="num">452, 248</td><td class="num">8 × 6</td><td class="num">32 × 24</td></tr>
+  </table>
+
+  <h3>D · Cinematic Narration / Bespoke Still</h3>
+  <table class="dim">
+    <tr><th>Element</th><th>Pos (x, y)</th><th>Size @480</th><th>Size ×4</th></tr>
+    <tr><td>Letterbox bar — top</td><td class="num">0, 0</td><td class="num">480 × 22</td><td class="num">1920 × 88</td></tr>
+    <tr><td>Letterbox bar — bottom</td><td class="num">0, 248</td><td class="num">480 × 22</td><td class="num">1920 × 88</td></tr>
+    <tr><td>Scrim (gradient)</td><td class="num">0, 176</td><td class="num">480 × 72</td><td class="num">1920 × 288</td></tr>
+    <tr><td>Narration text</td><td class="num">64, 206</td><td class="num">352 × ~36</td><td class="num">1408 × ~144</td></tr>
+    <tr><td>Continue arrow</td><td class="num">404, 230</td><td class="num">8 × 6</td><td class="num">32 × 24</td></tr>
+  </table>
+
+  <p class="note"><b>Nameplate</b> width is content-driven (grows with the name) at a fixed <b>22px</b> height — give me a fixed width to lock it. <b>Portrait bust 62×76</b> is sized to stand on the box's top-left corner without touching the text; a full-height standing portrait would be a different number. All values are starting points — name a target and I'll update the mockup and this table together.</p>
+</section>
+
+<footer>
+  <p>Native 480×270, shown at 2×, over <code>Assets/Art/title screen 01.png</code>. Portraits are silhouette placeholders; box is FE-style parchment (final palette/font skinned in Unity). The px coordinates above are the literal build spec. · The engine already supports per-context framing (<code>DialogueTriggeringContext</code>), so a typical pick is <b>C</b> for portrait conversation, <b>B</b> for light beats, <b>D</b> for narration.</p>
+</footer>
+
+<script>
+  const SAMPLES={
+    short:"You're safe now.",
+    medium:"I am Aranya. Stay behind me — where is everyone?",
+    long:"I am Aranya, of this village. Stay behind me and keep low — the temple, is it still standing?"
+  };
+  const NARR={
+    short:"A scream tore through the trees.",
+    medium:"Far from the village, deep in the forest, she gathered what the day had left to give.",
+    long:"Far from the village, deep in the forest, she gathered what the day had left to give — and never heard the first scream over the wind."
+  };
+  function setLen(len){
+    document.querySelectorAll('.dtext.dt').forEach(e=>e.textContent=SAMPLES[len]);
+    document.querySelectorAll('.narr.dt').forEach(e=>e.textContent=NARR[len]);
+    document.querySelectorAll('#lenSeg button').forEach(b=>b.classList.toggle('on',b.dataset.len===len));
+  }
+  document.querySelectorAll('#lenSeg button').forEach(b=>b.onclick=()=>setLen(b.dataset.len));
+  setLen('medium');
+</script>
+</body>
+</html>

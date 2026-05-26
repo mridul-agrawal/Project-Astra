@@ -18,8 +18,34 @@ namespace ProjectAstra.EditorTools
         const float CanvasHeight = 1080f;
         const string PrefabPath  = "Assets/Resources/UI/DialogueView.prefab";
 
+        // Create-only scaffold: builds the prefab the first time and NEVER overwrites an
+        // existing one, so manual edits in the Unity editor are always safe. To deliberately
+        // regenerate the default layout from scratch, use "Rebuild Dialogue View (OVERWRITE)".
         [MenuItem("Project Astra/Build Dialogue View (prefab)")]
-        public static void BuildPrefab()
+        public static void BuildIfMissing()
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null)
+            {
+                Debug.LogWarning($"[DialogueViewBuilder] {PrefabPath} already exists — left untouched so your manual " +
+                                 "edits are safe. Use 'Project Astra/Rebuild Dialogue View (OVERWRITE)' to regenerate from scratch.");
+                return;
+            }
+            Generate();
+        }
+
+        // Deliberate, confirmed regeneration. Only discards manual edits when you say so.
+        [MenuItem("Project Astra/Rebuild Dialogue View (OVERWRITE)")]
+        public static void RebuildOverwrite()
+        {
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null &&
+                !EditorUtility.DisplayDialog("Rebuild DialogueView from scratch?",
+                    $"This discards any manual edits to {PrefabPath} and regenerates the default layout.\n\nThis cannot be undone.",
+                    "Overwrite", "Cancel"))
+                return;
+            Generate();
+        }
+
+        private static void Generate()
         {
             EnsureFolderExists();
 

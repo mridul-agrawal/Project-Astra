@@ -16,4 +16,4 @@ MonoBehaviour:
   _displayName: Aranya
   _portraits:
   - Expression: 0
-    Sprite: {fileID: 0}
+    Sprite: {fileID: 21300000, guid: 2ec72ea8574078a42973c480905fff89, type: 3}
