@@ -15,6 +15,7 @@ MonoBehaviour:
   _unitName: Aranya
   _unitId: aranya
   _defaultClass: {fileID: 11400000, guid: 42860aaef314de14a96b9e41ba8a216b, type: 2}
+  _defaultLoadout: {fileID: 11400000, guid: 6ba4f49110879e344a1884975623a714, type: 2}
   _baseStats:
     _values: 140000000700000002000000060000000800000005000000030000000700000006000000
   _baseLevel: 1

@@ -48,9 +48,21 @@ namespace ProjectAstra.Core.Units
             unit.faction = FactionFromTeam(start.team);
             unit.gridPosition = start.position;
             unit.InitializeFromDefinition(definition);
+            SeedInventory(unit, start, definition);
 
             AttachSprite(unitGO, definition.MapSprite != null ? definition.MapSprite : _fallbackSprite);
             unit.SnapToGridPosition();
+        }
+
+        // Bakes the unit's starting kit into its inventory. A per-map override on
+        // the start position wins over the character's default loadout.
+        private static void SeedInventory(TestUnit unit, UnitStartPosition start, UnitDefinition definition)
+        {
+            InventoryLoadout loadout = start.loadoutOverride != null
+                ? start.loadoutOverride
+                : definition.DefaultLoadout;
+            if (loadout != null)
+                loadout.Apply(unit.Inventory);
         }
 
         private static void AttachSprite(GameObject unitGO, Sprite sprite)

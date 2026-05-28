@@ -121,6 +121,9 @@ namespace ProjectAstra.Core.Grid
         public Vector2Int position;
         public string unitId;
         public int team;
+
+        [Tooltip("Optional: overrides the unit definition's default loadout for this placement on this map.")]
+        public InventoryLoadout loadoutOverride;
     }
 
     [Serializable]

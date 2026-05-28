@@ -16,6 +16,10 @@ namespace ProjectAstra.Core.Units
         [Header("Class")]
         [SerializeField] private ClassDefinition _defaultClass;
 
+        [Header("Inventory")]
+        [Tooltip("Default starting kit, baked into the unit's inventory on spawn. A per-map UnitStartPosition override takes precedence.")]
+        [SerializeField] private InventoryLoadout _defaultLoadout;
+
         [Header("Base Stats (Level 1)")]
         [SerializeField] private StatArray _baseStats;
         [SerializeField] private int _baseLevel = 1;
@@ -54,6 +58,7 @@ namespace ProjectAstra.Core.Units
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
+        public InventoryLoadout DefaultLoadout => _defaultLoadout;
         public StatArray BaseStats => _baseStats;
         public int BaseLevel => _baseLevel;
         public StatArray PersonalGrowths => _personalGrowths;
