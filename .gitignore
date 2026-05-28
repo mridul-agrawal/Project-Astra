@@ -107,3 +107,10 @@ crashlytics-build.properties
 
 # Marketing / devlog working files — kept local, not versioned.
 /marketing/
+
+# Third-party Asset Store packages live under Assets/External Assets/ and are kept
+# local — NOT committed wholesale. We harvest only the specific assets we use into
+# our own working sub-folders and commit those copies. See
+# docs/external-asset-packages.md for what each package offers.
+/Assets/External Assets/
+/Assets/External Assets.meta
