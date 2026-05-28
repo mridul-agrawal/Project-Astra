@@ -255,8 +255,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Aranya
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
-  m_sharedMaterial: {fileID: -5779514755759598980, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
+  m_sharedMaterial: {fileID: 5567353023438049929, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -280,8 +280,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44
-  m_fontSizeBase: 44
+  m_fontSize: 39
+  m_fontSizeBase: 39
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -293,7 +293,7 @@ MonoBehaviour:
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 64
+  m_lineSpacing: 57
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -756,8 +756,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Aranya
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
-  m_sharedMaterial: {fileID: -5779514755759598980, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
+  m_sharedMaterial: {fileID: 5567353023438049929, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -781,8 +781,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 44
-  m_fontSizeBase: 44
+  m_fontSize: 39
+  m_fontSizeBase: 39
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -794,7 +794,7 @@ MonoBehaviour:
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 64
+  m_lineSpacing: 57
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
@@ -937,8 +937,8 @@ MonoBehaviour:
 
     blah blah blah'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
-  m_sharedMaterial: {fileID: -5779514755759598980, guid: 40798dd649420cd48a3e014c2afbfdd5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
+  m_sharedMaterial: {fileID: 5567353023438049929, guid: 3a147d1a2d7550042b0dacf752396858, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -962,8 +962,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 56
-  m_fontSizeBase: 56
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -975,7 +975,7 @@ MonoBehaviour:
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
   m_wordSpacing: 0
-  m_lineSpacing: 68
+  m_lineSpacing: 61
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

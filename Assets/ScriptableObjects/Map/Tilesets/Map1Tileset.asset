@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6aa9fbe11c97eaf48a08f532e14b6d6f, type: 3}
+  m_Name: Map1Tileset
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Grid.TilesetDefinition
+  _tilesetName: Map1 Placeholder
+  _sourceTexture: {fileID: 0}
+  _tilePixelSize: 256
+  _tiles:
+  - tileAsset: {fileID: 11400000, guid: caedc367d72c8a8428e70251d4a730ed, type: 2}
+    terrainType: 0
+  - tileAsset: {fileID: 11400000, guid: 3b820f3562f50974093ac43d45ed11fd, type: 2}
+    terrainType: 4
+  - tileAsset: {fileID: 11400000, guid: bb88f7fab627b8d4fb069358815fb298, type: 2}
+    terrainType: 7
+  - tileAsset: {fileID: 11400000, guid: 0723110dd2356454580484f033ad29b4, type: 2}
+    terrainType: 13
+  - tileAsset: {fileID: 11400000, guid: 7e6354ce8ef11a845a30a819fe3aa474, type: 2}
+    terrainType: 13
+  - tileAsset: {fileID: 11400000, guid: 16b5c9130279cc04db17d742ba35b858, type: 2}
+    terrainType: 0

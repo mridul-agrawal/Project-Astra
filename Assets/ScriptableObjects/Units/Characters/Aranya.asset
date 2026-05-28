@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
+  m_Name: Aranya
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
+  _unitName: Aranya
+  _unitId: aranya
+  _defaultClass: {fileID: 11400000, guid: 42860aaef314de14a96b9e41ba8a216b, type: 2}
+  _baseStats:
+    _values: 140000000700000002000000060000000800000005000000030000000700000006000000
+  _baseLevel: 1
+  _personalGrowths:
+    _values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
+  _mapSprite: {fileID: 21300000, guid: 7e3c28c97d7c8c248b8237b529a82dff, type: 3}
+  _portrait: {fileID: 0}
+  _woundedPortrait: {fileID: 0}
+  _criticalPortrait: {fileID: 0}
+  _deceasedPortrait: {fileID: 0}
+  _stressedOverlay: {fileID: 0}
+  _affinity: 0
+  _personality: 0
+  _isNamedCommander: 0
+  _oneLineIdentity: 
+  _isLord: 1
+  _lastWordsLines:
+  - Gandiva... slips from my grasp.
+  - Krishna... was this the path you saw?
+  - The story... ends here...

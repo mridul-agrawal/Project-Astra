@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  html,body{margin:0;padding:0}
+  #frame{width:128px;height:128px;position:relative;display:flex;align-items:center;justify-content:center}
+  .tile{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:66px}
+  .t-plain{background:#d7c08a}
+  .t-plain2{background:#cfb67e}
+  .t-tree{background:#2f5d42}
+  .t-hut{background:#8a5630}
+  .t-water{background:repeating-linear-gradient(180deg,#3f7fa6,#3f7fa6 16px,#4a8cb3 16px,#4a8cb3 32px)}
+  .t-bridge{background:repeating-linear-gradient(90deg,#b88a4e,#b88a4e 18px,#a67a40 18px,#a67a40 24px)}
+  .terr{filter:saturate(.85)}
+  .tok{width:108px;height:108px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+       font-size:56px;color:#fff;border:5px solid rgba(255,255,255,.92);box-shadow:0 3px 6px rgba(0,0,0,.45)}
+  .k-aranya{background:radial-gradient(circle at 30% 30%,#5aa8ef,#2e7dd0)}
+  .k-rak{background:radial-gradient(circle at 30% 30%,#e0685a,#c0392b)}
+  .k-boss{background:radial-gradient(circle at 30% 30%,#b23a44,#7d1620);border:6px solid #f1b30a}
+  .k-villager{background:radial-gradient(circle at 30% 30%,#f0c860,#e0a82e)}
+</style>
+</head>
+<body>
+<div id="frame"></div>
+<script>
+  const a = new URLSearchParams(location.search).get("a") || "plains";
+  const frame = document.getElementById("frame");
+  function tile(cls, glyph){
+    const d = document.createElement("div"); d.className = "tile " + cls;
+    if(glyph){ const s=document.createElement("span"); s.className="terr"; s.textContent=glyph; d.appendChild(s); }
+    return d;
+  }
+  function tok(cls, glyph){
+    const t = document.createElement("div"); t.className = "tok " + cls; t.textContent = glyph; return t;
+  }
+  const map = {
+    plains:     ()=>tile("t-plain"),
+    plains_alt: ()=>tile("t-plain2"),
+    water:      ()=>tile("t-water"),
+    bridge:     ()=>tile("t-bridge"),
+    forest:     ()=>tile("t-tree","🌲"),
+    hut:        ()=>tile("t-hut","🛖"),
+    aranya:     ()=>tok("k-aranya","🏹"),
+    raider:     ()=>tok("k-rak","👹"),
+    miniboss:   ()=>tok("k-boss","👹"),
+    villager:   ()=>tok("k-villager","🧑"),
+  };
+  frame.appendChild((map[a] || map.plains)());
+</script>
+</body>
+</html>

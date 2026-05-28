@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
@@ -92,7 +93,7 @@ namespace ProjectAstra.Core.UI.MainMenu
             InputManager.Instance.OnConfirm    -= ConfirmSelection;
         }
 
-        private void GoToCutscene()      => GameStateManager.Instance.RequestTransition(GameState.Cutscene,      nameof(MainMenuUI));
+        private void GoToCutscene()      => GameFlow.Instance.Begin();   // "New Game" → start the campaign at its first beat
         private void GoToPreBattlePrep() => GameStateManager.Instance.RequestTransition(GameState.PreBattlePrep, nameof(MainMenuUI));
         private void GoToBattleMap()     => GameStateManager.Instance.RequestTransition(GameState.BattleMap,     nameof(MainMenuUI));
 

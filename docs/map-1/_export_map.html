@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  html,body{margin:0;padding:0}
+  #root{
+    width:768px; height:928px; background:#efe7d4;
+    font:14px/1.4 "Segoe UI",Arial,sans-serif; color:#2b2620;
+    padding:0; position:relative; overflow:hidden;
+  }
+  .title{padding:14px 0 6px; text-align:center; font-size:18px; font-weight:700; letter-spacing:.3px}
+  .titlesub{text-align:center; font-size:12px; color:#7a7160; margin-bottom:12px}
+  .center{display:flex; justify-content:center}
+  .grid{display:grid; grid-template-columns:repeat(11,64px); border:3px solid #2a241c}
+  .cell{width:64px;height:64px;border:1px solid rgba(0,0,0,.22);position:relative;
+        display:flex;align-items:center;justify-content:center;font-size:30px}
+  .t-plain{background:#d7c08a} .grid .cell:nth-child(odd).t-plain{background:#cfb67e}
+  .t-tree{background:#2f5d42}
+  .t-hut{background:#8a5630}
+  .t-water{background:repeating-linear-gradient(180deg,#3f7fa6,#3f7fa6 8px,#4a8cb3 8px,#4a8cb3 16px)}
+  .t-bridge{background:repeating-linear-gradient(90deg,#b88a4e,#b88a4e 9px,#a67a40 9px,#a67a40 12px)}
+  .terr{filter:saturate(.85)}
+  .tok{position:absolute;width:74%;height:74%;border-radius:50%;display:flex;align-items:center;
+       justify-content:center;font-size:26px;color:#fff;border:3px solid rgba(255,255,255,.9);
+       box-shadow:0 2px 5px rgba(0,0,0,.45)}
+  .k-aranya{background:radial-gradient(circle at 30% 30%,#5aa8ef,#2e7dd0)}
+  .k-rak{background:radial-gradient(circle at 30% 30%,#e0685a,#c0392b)}
+  .k-boss{background:radial-gradient(circle at 30% 30%,#b23a44,#7d1620);width:86%;height:86%;border:4px solid #f1b30a}
+  .k-villager{background:radial-gradient(circle at 30% 30%,#f0c860,#e0a82e);width:56%;height:56%;font-size:18px}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center;padding:16px 40px 0;font-size:13px}
+  .li{display:flex;align-items:center;gap:8px}
+  .sw{width:20px;height:20px;border-radius:4px;border:1px solid rgba(0,0,0,.3);display:inline-block}
+  .dt{width:18px;height:18px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .compass{position:absolute;left:18px;top:64px;font-size:12px;color:#7a7160;font-weight:700;text-align:center}
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="title">Map 1 — The Bridge at Suvarnapur</div>
+  <div class="titlesub">11 × 11 battle-map layout · north = top (forest) · south = bottom (village)</div>
+  <div class="center"><div id="grid" class="grid"></div></div>
+  <div class="legend">
+    <div class="li"><span class="sw" style="background:#d7c08a"></span>Plains (grass)</div>
+    <div class="li"><span class="sw" style="background:#3f7fa6"></span>Stream (water)</div>
+    <div class="li"><span class="sw" style="background:#b88a4e"></span>Footbridge</div>
+    <div class="li"><span class="sw" style="background:#2f5d42"></span>Forest (jungle)</div>
+    <div class="li"><span class="sw" style="background:#8a5630"></span>Hut (village home)</div>
+    <div class="li"><span class="dt k-aranya"></span>Aranya — archer</div>
+    <div class="li"><span class="dt k-rak"></span>Raider rakshasa</div>
+    <div class="li"><span class="dt k-boss" style="width:18px;height:18px;border-width:2px"></span>Mini-boss rakshasa</div>
+    <div class="li"><span class="dt k-villager" style="width:16px;height:16px"></span>Villager</div>
+  </div>
+</div>
+<script>
+const TERR=[
+ "TTTTTTTTTTT",
+ "TTT.....TTT",
+ "TT.......TT",
+ "T.........T",
+ "...........",
+ "WWWWWBWWWWW",
+ "....H.H....",
+ "..H.....H..",
+ "....H.H....",
+ "HH.......HH",
+ "...........",
+];
+const W=11,H=11;
+const tClass=c=>({T:"t-tree",H:"t-hut",W:"t-water",B:"t-bridge"})[c]||"t-plain";
+const tGlyph=c=>({T:"🌲",H:"🛖"})[c]||"";
+const tokens=[
+ {c:5,r:1,kind:"boss",g:"👹"},
+ {c:5,r:3,kind:"rak",g:"👹"},
+ {c:8,r:8,kind:"aranya",g:"🏹"},
+ {c:5,r:8,kind:"villager",g:"🧑"},
+ {c:2,r:9,kind:"villager",g:"🧑"},
+ {c:8,r:9,kind:"villager",g:"🧑"},
+];
+const grid=document.getElementById("grid");
+for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+ const ch=TERR[r][c];
+ const cell=document.createElement("div");
+ cell.className="cell "+tClass(ch);
+ const g=tGlyph(ch); if(g){const s=document.createElement("span");s.className="terr";s.textContent=g;cell.appendChild(s);}
+ grid.appendChild(cell);
+}
+tokens.forEach(t=>{
+ const cell=grid.children[t.r*W+t.c];
+ const d=document.createElement("div");
+ d.className="tok k-"+t.kind; d.textContent=t.g; cell.appendChild(d);
+});
+</script>
+</body>
+</html>

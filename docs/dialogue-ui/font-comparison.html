@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dialogue Font Comparison — Project Astra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Noto+Serif+Devanagari:wght@400;500;600&family=Inter:wght@400;500;600&family=Mulish:wght@400;500;600&family=Pixelify+Sans:wght@400;500&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0c0a0f; --ink2:#13101a; --line:#2c2436; --fog:#b7adc4; --fog2:#7c7388;
+    --gold:#e3b366; --gold-deep:#b9842f;
+    /* real dialogue-box tokens (from mockups.html) */
+    --box-fill:#e4ddc9; --box-fill-2:#d6cdb4; --box-edge:#2f2c4a; --box-ink:#2a2740; --box-hi:#fbf6e6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(1100px 620px at 80% -10%,rgba(227,179,102,.10),transparent 60%),var(--ink);
+       color:var(--fog);font-family:"Inter",system-ui,sans-serif;line-height:1.5;padding:48px 24px 120px}
+  .wrap{max-width:1080px;margin:0 auto}
+  .kicker{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  h1{font-family:"EB Garamond",serif;font-weight:500;font-size:42px;line-height:1.05;color:#efe7da;letter-spacing:-.01em}
+  .lede{max-width:70ch;margin-top:16px;color:var(--fog);font-size:16px}
+  .lede b{color:#efe7da;font-weight:600}
+  .note{max-width:70ch;margin-top:14px;font-size:13.5px;color:var(--fog2);border-left:3px solid var(--gold-deep);padding-left:14px}
+
+  .stack{margin-top:44px;display:flex;flex-direction:column;gap:34px}
+
+  .spec{position:relative}
+  .spec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:12px}
+  .spec-name{font-family:"EB Garamond",serif;font-size:23px;color:#efe7da;font-weight:600}
+  .spec-trait{font-family:"Space Mono",monospace;font-size:11.5px;color:var(--fog2);letter-spacing:.04em}
+  .tag{font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+       padding:3px 8px;border-radius:99px;border:1px solid var(--gold-deep);color:var(--gold)}
+  .tag.cur{border-color:#7a3b3b;color:#e08a8a}
+
+  /* the real FE-style dialogue box */
+  .dbox{position:relative;background:linear-gradient(180deg,var(--box-fill),var(--box-fill-2));
+        border:2px solid var(--box-edge);border-radius:4px;
+        box-shadow:inset 0 0 0 1px var(--box-hi),0 22px 46px -26px rgba(0,0,0,.8);
+        padding:40px 34px 32px;min-height:150px}
+  .plate{position:absolute;left:24px;top:-18px;background:linear-gradient(180deg,var(--box-fill),var(--box-fill-2));
+         border:2px solid var(--box-edge);border-radius:3px;box-shadow:inset 0 0 0 1px var(--box-hi);
+         padding:5px 18px;color:var(--box-ink)}
+  .dtext{color:var(--box-ink);max-width:54ch}
+  .dtext p+p{margin-top:12px}
+
+  /* per-font tuning: optically matched cap-height so the TYPEFACE is what you judge, not its default scale.
+     (In Unity I re-tune Font Size to the mockup's cap height regardless.) */
+  .f-pixelify .dtext{font-family:"Pixelify Sans",sans-serif;font-weight:500;font-size:21px;line-height:1.55}
+  .f-pixelify .plate{font-family:"Pixelify Sans",sans-serif;font-weight:500;font-size:16px}
+  .f-garamond .dtext{font-family:"EB Garamond",serif;font-weight:500;font-size:27px;line-height:1.42}
+  .f-garamond .plate{font-family:"EB Garamond",serif;font-weight:600;font-size:21px}
+  .f-noto .dtext{font-family:"Noto Serif Devanagari",serif;font-weight:500;font-size:23px;line-height:1.5}
+  .f-noto .plate{font-family:"Noto Serif Devanagari",serif;font-weight:600;font-size:18px}
+  .f-cormorant .dtext{font-family:"Cormorant Garamond",serif;font-weight:500;font-size:31px;line-height:1.32}
+  .f-cormorant .plate{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:24px}
+  .f-inter .dtext{font-family:"Inter",sans-serif;font-weight:400;font-size:23px;line-height:1.5}
+  .f-inter .plate{font-family:"Inter",sans-serif;font-weight:600;font-size:18px}
+  .f-mulish .dtext{font-family:"Mulish",sans-serif;font-weight:400;font-size:23px;line-height:1.5}
+  .f-mulish .plate{font-family:"Mulish",sans-serif;font-weight:700;font-size:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Project Astra · Dialogue UI</div>
+  <h1>Pick the dialogue font</h1>
+  <p class="lede">The same box, nameplate, and real lines from <b>OPENING_CH01</b>, rendered in each candidate. The top one (<b>Pixelify Sans</b>) is what's in the prefab now — your baseline to judge the rest against.</p>
+  <p class="note">Sizes here are optically matched (equal cap-height) so you're comparing the <i>typeface itself</i>, not its default scale. Whichever you pick, I'll set the size in Unity to match the mockup's intended cap-height.</p>
+
+  <div class="stack">
+
+    <div class="spec f-pixelify">
+      <div class="spec-head"><span class="spec-name">Pixelify Sans</span><span class="spec-trait">pixel / dot display font</span><span class="tag cur">Current</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec f-garamond">
+      <div class="spec-head"><span class="spec-name">EB Garamond</span><span class="spec-trait">warm humanist serif · best body readability</span><span class="tag">Recommended</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec f-noto">
+      <div class="spec-head"><span class="spec-name">Noto Serif Devanagari</span><span class="spec-trait">legible · native Devanagari support · on-theme</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec f-cormorant">
+      <div class="spec-head"><span class="spec-name">Cormorant Garamond</span><span class="spec-trait">elegant high-contrast display serif · dramatic</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec f-inter">
+      <div class="spec-head"><span class="spec-name">Inter</span><span class="spec-trait">clean modern sans · maximum plain readability</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec f-mulish">
+      <div class="spec-head"><span class="spec-name">Mulish</span><span class="spec-trait">soft rounded humanist sans · friendly</span></div>
+      <div class="dbox">
+        <div class="plate">Aranya</div>
+        <div class="dtext">
+          <p>Fresh tracks. Still soft at the edges. But these aren't deer. Not boar. …Nothing I've ever tracked.</p>
+          <p>Below the mountains, where the jungle keeps its oldest secrets, there was a village that asked little of the world.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

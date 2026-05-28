@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project Astra — Map 1 Layout v2 (Playbook-Applied)</title>
+<style>
+  :root{
+    --cell: 48px;
+    --mini: 30px;
+    --plain: #d7c08a;
+    --plain2:#cfb67e;
+    --tree:  #2f5d42;
+    --hut:   #8a5630;
+    --water: #3f7fa6;
+    --bridge:#b88a4e;
+    --ink:   #2b2620;
+    --paper: #f5efe2;
+    --line:  rgba(0,0,0,.18);
+    --aranya:#2e7dd0;
+    --rak:   #c0392b;
+    --boss:  #7d1620;
+    --villager:#e0a82e;
+    --intercept:#9b5de5;
+    --intent:#e23b2e;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:#e9e2d2; color:var(--ink);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:1040px; margin:0 auto; padding:32px 24px 80px}
+  h1{font-size:26px; margin:0 0 2px; letter-spacing:.2px}
+  h2{font-size:19px; margin:38px 0 12px; border-bottom:2px solid rgba(0,0,0,.12); padding-bottom:6px}
+  h3{font-size:15px; margin:0 0 6px}
+  .sub{color:#6b6253; font-size:14px; margin:0 0 4px}
+  .tag{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+       background:#5a3a8a; color:#f5efe2; padding:3px 9px; border-radius:20px; margin-bottom:18px}
+  p{margin:0 0 12px}
+  .lead{font-size:16px}
+  .panel{background:var(--paper); border:1px solid rgba(0,0,0,.1); border-radius:12px; padding:20px 22px;
+         box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .arc{font-weight:600; color:#7a4a1e}
+  .ref{display:inline-block; font-size:11px; font-weight:700; color:#5a3a8a; background:#ece3f6;
+       border:1px solid #cdb8e6; border-radius:5px; padding:0 5px; margin:0 1px; vertical-align:1px; white-space:nowrap}
+
+  .callout{background:#eef4fb; border:1px solid #b6cfe8; border-left:5px solid var(--aranya); border-radius:10px; padding:14px 18px; margin:14px 0}
+  .callout h3{color:#1c578f}
+
+  /* ---- map ---- */
+  .mapframe{display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap}
+  .gradbar{width:30px; align-self:stretch; border-radius:8px;
+    background:linear-gradient(to bottom, #b13a2e 0%, #c98b2e 50%, #4f8a52 100%);
+    position:relative; min-height:200px; color:#fff; font-size:10px; font-weight:700; text-transform:uppercase}
+  .gradbar span{position:absolute; left:50%; transform:translateX(-50%) rotate(180deg); writing-mode:vertical-rl}
+  .gradbar .top{top:8px} .gradbar .bot{bottom:8px}
+
+  .gridbox{display:inline-block}
+  .colhead{display:flex; margin-left:26px}
+  .colhead div{width:var(--cell); text-align:center; font-size:11px; color:#857a66; font-weight:700}
+  .rownum{width:26px; display:flex; align-items:center; justify-content:center; font-size:11px; color:#857a66; font-weight:700}
+  .grid{display:grid; border:2px solid #3a3329; border-radius:4px; overflow:hidden; position:relative}
+  .grid::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(to bottom, rgba(40,30,60,.28), rgba(255,200,120,.04) 55%, rgba(120,60,10,.10));}
+  .cell{width:var(--cell); height:var(--cell); position:relative; border:.5px solid var(--line);
+        display:flex; align-items:center; justify-content:center; font-size:20px}
+  .t-plain{background:var(--plain)}
+  .grid .cell:nth-child(odd).t-plain{background:var(--plain2)}
+  .t-tree{background:var(--tree)}
+  .t-hut{background:var(--hut)}
+  .t-water{background:repeating-linear-gradient(180deg,#3f7fa6,#3f7fa6 6px,#4a8cb3 6px,#4a8cb3 12px)}
+  .t-bridge{background:repeating-linear-gradient(90deg,#b88a4e,#b88a4e 7px,#a67a40 7px,#a67a40 9px)}
+  .terr{opacity:.92; filter:saturate(.85)}
+
+  /* tile marks */
+  .m-intercept{box-shadow: inset 0 0 0 3px var(--intercept)}
+  .m-intercept::before{content:"✦"; position:absolute; color:#fff; font-size:13px; text-shadow:0 0 6px var(--intercept); z-index:2}
+  .m-intent{box-shadow: inset 0 0 0 3px var(--intent)}
+  .m-intent::after{content:""; position:absolute; inset:4px; border:2px dashed rgba(226,59,46,.9); border-radius:3px; z-index:1}
+  .m-danger{box-shadow: inset 0 0 0 3px rgba(226,59,46,.55)}
+  .m-path{box-shadow: inset 0 0 0 3px rgba(46,125,208,.7)}
+  .m-attack{box-shadow: inset 0 0 0 3px rgba(192,57,43,.95)}
+  .m-crit{box-shadow: inset 0 0 0 3px #f1b30a; animation:pulse 1.1s infinite}
+  @keyframes pulse{0%,100%{box-shadow:inset 0 0 0 3px #f1b30a}50%{box-shadow:inset 0 0 0 6px #ffd34d}}
+
+  /* unit tokens */
+  .tok{position:absolute; z-index:3; width:74%; height:74%; border-radius:50%;
+       display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff;
+       box-shadow:0 2px 5px rgba(0,0,0,.4); border:2px solid rgba(255,255,255,.85)}
+  .tok.ghost{opacity:.32; border-style:dashed}
+  .k-aranya{background:radial-gradient(circle at 30% 30%, #5aa8ef, var(--aranya))}
+  .k-rak{background:radial-gradient(circle at 30% 30%, #e0685a, var(--rak))}
+  .k-boss{background:radial-gradient(circle at 30% 30%, #b23a44, var(--boss)); width:88%; height:88%;
+          border:3px solid #f1b30a; font-size:22px}
+  .k-villager{background:radial-gradient(circle at 30% 30%, #f0c860, var(--villager)); width:58%; height:58%; font-size:13px}
+
+  /* legend */
+  .legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-size:13px}
+  .legend .li{display:flex; align-items:center; gap:7px}
+  .swatch{width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,.25); display:inline-block}
+  .dot{width:16px; height:16px; border-radius:50%; display:inline-block; border:2px solid #fff; box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .ring{width:16px;height:16px;border-radius:4px;display:inline-block}
+
+  /* turns */
+  .turns{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+  .turn{background:var(--paper); border:1px solid rgba(0,0,0,.1); border-radius:12px; padding:16px}
+  .turn .gh{display:flex; align-items:baseline; gap:8px; margin-bottom:10px}
+  .turn .num{font-size:13px; font-weight:800; background:#3a3329; color:#fff; border-radius:6px; padding:2px 8px}
+  .turn .grid{--cell:var(--mini)}
+  .turn .cell{font-size:13px}
+  .turn .k-boss{font-size:14px} .turn .tok{font-size:12px}
+  .turn .teach{font-size:13px; color:#52493a; margin-top:10px}
+  .teach b{color:var(--ink)}
+
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 6px}
+  th,td{border:1px solid rgba(0,0,0,.15); padding:7px 10px; text-align:left; vertical-align:top}
+  th{background:#e3dac6}
+  code{background:#e3dac6; padding:1px 6px; border-radius:4px; font-size:13px}
+  .q{background:#fff4dc; border:1px solid #e7c878; border-radius:12px; padding:16px 20px}
+  .q h3{color:#8a5a10}
+  ul{margin:6px 0 12px; padding-left:22px} li{margin:4px 0}
+  .muted{color:#7a7160; font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">Proposal v2 · playbook-applied</span>
+  <h1>Map 1 — The Bridge at Suvarnapur</h1>
+  <p class="sub">Same locked goals as v1 (≤15 min · ~4 turns · teach movement, phases, attack, dodge, crit) — but every choice now traces to the <em>SRPG Prototype Design Playbook</em>. The headline change: the map is built around <strong>protecting a person the enemy is visibly racing toward</strong>, with enemy intent telegraphed from turn 1.</p>
+
+  <div class="callout">
+    <h3>Headline principle — telegraph enemy intent <span class="ref">§1 #1</span></h3>
+    <p style="margin:0">The playbook's single highest-leverage Act-1 decision: every enemy's intent must be readable in 2–3 seconds. v1 had none. In v2 the raider shows a <span style="color:var(--intent);font-weight:700">red intent path</span> from turn 1 — it is heading across the bridge for a specific villager. The player <em>reads the threat</em> and the correct move (cork the bridge) becomes self-evident <span class="ref">§2 "correct move = obvious move"</span>. No tutorial popup required.</p>
+  </div>
+
+  <h2>The idea: hold the line, then take the fight back</h2>
+  <div class="panel">
+    <p class="lead">A stream divides the map. The village lives on the <strong>south bank</strong>; the Rakshasas spilled from the <strong>forest to the north</strong>. One footbridge connects them — the only way across.</p>
+    <p><span class="arc">Defend (turns 1–2).</span> A raider is charging the bridge to reach the villagers. Aranya races to cork the bridge — one tile decides whether the village bleeds. This is a <strong>protect / defensive</strong> objective, not "kill all" <span class="ref">§1 #4</span><span class="ref">§6 win-conditions</span>: every turn is under pressure because the enemy is racing a target, not waiting to be hunted.</p>
+    <p style="margin-bottom:0"><span class="arc">Pursue (turns 3–4).</span> Raider down, she crosses the bridge north into the forest mouth to end the mini-boss that's been looming. Her bottom-to-top push <em>is</em> her arc: shield the home, then carry the fight to them.</p>
+  </div>
+
+  <h2>The map &nbsp;<span class="muted" style="font-weight:400">11 × 11 — fits on one screen, no scrolling <span class="ref">§3 board readability</span></span></h2>
+  <div class="mapframe">
+    <div class="gradbar"><span class="top">danger →</span><span class="bot">safe</span></div>
+    <div id="main" class="gridbox"></div>
+  </div>
+
+  <div class="legend">
+    <div class="li"><span class="swatch" style="background:var(--plain)"></span> Plains</div>
+    <div class="li"><span class="swatch" style="background:var(--water)"></span> Stream — impassable</div>
+    <div class="li"><span class="swatch" style="background:var(--bridge)"></span> Footbridge — the crossing</div>
+    <div class="li"><span class="swatch" style="background:var(--tree)"></span> Forest — impassable</div>
+    <div class="li"><span class="swatch" style="background:var(--hut)"></span> Hut — impassable</div>
+    <div class="li"><span class="ring" style="box-shadow:inset 0 0 0 3px var(--intercept)"></span> Cork tile (Aranya's T1 target)</div>
+    <div class="li"><span class="ring" style="box-shadow:inset 0 0 0 3px var(--intent)"></span> Enemy intent (telegraph)</div>
+    <div class="li"><span class="dot k-aranya"></span> Aranya 🏹</div>
+    <div class="li"><span class="dot k-rak"></span> Raider 👹</div>
+    <div class="li"><span class="dot k-boss" style="width:16px;height:16px;border-width:2px"></span> Mini-boss (stationary)</div>
+    <div class="li"><span class="dot k-villager" style="width:14px;height:14px"></span> Villager (protect)</div>
+  </div>
+  <p class="muted" style="margin-top:10px">Note the terrain is <b>passability only</b> — water, forest and huts shape movement, but nothing carries a defence/avoid/heal bonus. Map 1 still teaches no terrain <em>system</em> <span class="ref">§3 every tile does work</span>; it simply uses shape, which needs no popup.</p>
+
+  <h2>Key positions</h2>
+  <table>
+    <tr><th>Element</th><th>Tile (col, row)</th><th>Why here (playbook)</th></tr>
+    <tr><td>Aranya — start</td><td><code>(8, 8)</code></td><td>South bank, beside the homes — she's defending from inside the village. Reaches the cork in one move (≈5).</td></tr>
+    <tr><td>Cork tile <span style="color:var(--intercept)">✦</span></td><td><code>(5, 6)</code></td><td>South foot of the bridge, pinched by huts at <code>(4,6)</code>/<code>(6,6)</code>. Standing here stops the raider cold. The single obvious correct move <span class="ref">§2</span><span class="ref">§3 chokepoint</span>.</td></tr>
+    <tr><td>Footbridge</td><td><code>(5, 5)</code></td><td>The only crossing — the stream is impassable everywhere else, so all threat funnels here.</td></tr>
+    <tr><td>First raider</td><td><code>(5, 3)</code></td><td>Charges the bridge toward the villagers. Intent telegraphed along <code>(5,4)→(5,5)</code> <span class="ref">§1 #1</span>. AI: advance to nearest villager; attack blocker if corked <span class="ref">§6 scripted AI</span>.</td></tr>
+    <tr><td>Mini-boss</td><td><code>(5, 1)</code></td><td>Stationary at the forest mouth — player initiates the climax <span class="ref">§6 boss doesn't move</span>. (Passive-boss risk <span class="ref">§8 #6</span> doesn't apply on a 4-turn map — see tradeoffs.)</td></tr>
+    <tr><td>Threatened villager</td><td><code>(5, 8)</code></td><td>Directly behind the cork — the one Aranya is bodily shielding. The reason the bridge matters.</td></tr>
+    <tr><td>Other villagers</td><td><code>(2, 9)</code>, <code>(8, 9)</code></td><td>The people on the south bank. Win = none of them dies <span class="ref">§6 protect-NPC</span>.</td></tr>
+  </table>
+
+  <h2>The four turns</h2>
+  <div class="turns">
+    <div class="turn"><div class="gh"><span class="num">Turn 1</span><h3>Read the telegraph · Move</h3></div>
+      <div id="t1" class="gridbox"></div>
+      <div class="teach"><b>Teaches movement + reading intent <span class="ref">§1 #1</span><span class="ref">§2 Lyn Ch.1</span>.</b> The raider's red path points across the bridge at the villager. Aranya dashes to cork the bridge's south foot. Enemy phase: the raider charges onto the bridge — now blocked and in range. <span class="muted">"Not one more. They take no one else."</span></div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 2</span><h3>Attack + Dodge</h3></div>
+      <div id="t2" class="gridbox"></div>
+      <div class="teach"><b>Combat-screen debut.</b> She strikes at range 1 across the bridge — her 1–2 range means she can trade up close, so the duel is two-directional <span class="ref">§8 #2 lord identity</span>. The raider counters and she <b>dodges</b> (hard-coded), teaching evasion.</div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 3</span><h3>Finish · cross · pursue</h3></div>
+      <div id="t3" class="gridbox"></div>
+      <div class="teach"><b>Freedom opens.</b> Raider down, the south bank is safe, the purple guide drops. She crosses the bridge north toward the looming mini-boss <span class="ref">§4 Act 1 ends by changing the objective</span>.</div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 4</span><h3>Cornered crit</h3></div>
+      <div id="t4" class="gridbox"></div>
+      <div class="teach"><b>The signature beat.</b> She initiates on the stationary boss, hemmed by trees; its counter drops her to ~2 HP, then she dodges and lands a guaranteed <b>crit</b> ×3 to win — the Lyn-vs-Batta scripted crit <span class="ref">§4 Act 1</span>, the lord's identity made unmissable <span class="ref">§1 #10</span>.</div>
+    </div>
+  </div>
+
+  <h2>Playbook principles applied</h2>
+  <table>
+    <tr><th>Principle</th><th>How v2 uses it</th></tr>
+    <tr><td><span class="ref">§1 #1</span> Telegraph intent</td><td>Raider's attack path shown from turn 1; the threatened villager glows. The puzzle is readable at a glance.</td></tr>
+    <tr><td><span class="ref">§1 #2</span> One mechanic / 3–5 min</td><td>Movement + combat only, like FE7 Lyn Ch.1. No terrain system, no items, no weapon triangle — all held for Map 2.</td></tr>
+    <tr><td><span class="ref">§1 #4</span> Defensive win condition</td><td>"No villager dies," with the enemy racing a target — every turn is pressured, no dead turns chasing a straggler.</td></tr>
+    <tr><td><span class="ref">§1 #10</span> / <span class="ref">§8 #2</span> Lord identity in 3 turns</td><td>Range 1–2 (turn 2) + guaranteed crit climax (turn 4). The protagonist plays unlike a generic infantry unit.</td></tr>
+    <tr><td><span class="ref">§2</span> Correct move = obvious move</td><td>The bridge cork is geometrically the only way to stop the raider; the telegraph makes that legible without a popup.</td></tr>
+    <tr><td><span class="ref">§3</span> Chokepoint / board readability</td><td>One footbridge over an impassable stream; 11×11 fits on screen, "chess-like" readability.</td></tr>
+    <tr><td><span class="ref">§6</span> Scripted, legible AI</td><td>Raider = "advance to nearest villager, attack blocker." Boss = "hold until raider falls." Predictable within one turn.</td></tr>
+    <tr><td><span class="ref">§7</span> Conditional dialogue</td><td>Boss taunt on first sight (turn 3); Aranya's low-HP line at ~2 HP right before the crit (turn 4) <span class="ref">§7 minimum-viable list</span>.</td></tr>
+    <tr><td><span class="ref">§8 #3</span> Narrative-combat unity</td><td>The combat <em>is</em> the cutscene's stakes — her village, her people, the very threat the opening set up. No disconnect.</td></tr>
+    <tr><td><span class="ref">§8 #5</span> No ambush spawns</td><td>Zero reinforcements; both enemies visible at start. Nothing punishes the player without information.</td></tr>
+  </table>
+
+  <h2>How v2 differs from v1 — and the one tradeoff</h2>
+  <div class="q">
+    <h3>Read this before choosing between the two</h3>
+    <ul>
+      <li><b>v1</b> was an open <em>intercept-then-hunt</em>: get near the village, kill the advancing raider, walk north, kill the boss. No enemy telegraph, no concrete person at risk, no chokepoint.</li>
+      <li><b>v2</b> is a <em>telegraphed protect-the-bridge</em> map: a named threat racing a visible victim, a single legible defensive tile, then the pursuit. It scores far higher against the playbook (telegraph, defensive objective, obvious-correct-move, narrative unity).</li>
+      <li><b style="color:#8a5a10">The tradeoff:</b> v2 introduces a <b>soft chokepoint</b> (the footbridge). Your design doc explicitly reserves <em>chokepoints for Map 2</em>. v2's bridge is fiction-justified (a stream crossing, not a taught "defensive-formation" system) and needs no tutorial — but it does put a chokepoint on screen earlier than the doc planned. If you want Map 1 to stay strictly chokepoint-free, we keep v1's open field and just bolt on the telegraph + protect-objective from v2.</li>
+    </ul>
+  </div>
+
+  <p class="muted" style="margin-top:28px">Proposal only — nothing built. Applies <code>docs/game-design/SRPG Prototype Design Playbook.md</code> to the locked Map-1 spec in <code>docs/project_astra_prototype_design 001.md</code>. v1 preserved at <code>docs/map-1/layout.html</code>.</p>
+
+</div>
+
+<script>
+const TERR = [
+  "TTTTTTTTTTT",
+  "TTT.....TTT",
+  "TT.......TT",
+  "T.........T",
+  "...........",
+  "WWWWWBWWWWW",
+  "....H.H....",
+  "..H.....H..",
+  "....H.H....",
+  "HH.......HH",
+  "...........",
+];
+const W = 11, H = 11;
+const tClass = c => ({T:"t-tree",H:"t-hut",W:"t-water",B:"t-bridge"})[c] || "t-plain";
+const tGlyph = c => ({T:"🌲",H:"🛖"})[c] || "";
+
+function tokenEl(k){
+  const d = document.createElement("div");
+  d.className = "tok " + (k.ghost?"ghost ":"") + ({aranya:"k-aranya",rak:"k-rak",boss:"k-boss",villager:"k-villager"})[k.kind];
+  d.textContent = ({aranya:"🏹",rak:"👹",boss:"👹",villager:"🧑"})[k.kind];
+  return d;
+}
+
+function render(id, opts){
+  const o = Object.assign({labels:false, tokens:[], marks:{}}, opts);
+  const box = document.getElementById(id);
+  box.innerHTML = "";
+
+  if(o.labels){
+    const ch = document.createElement("div"); ch.className="colhead";
+    for(let c=0;c<W;c++){ const d=document.createElement("div"); d.textContent=c; ch.appendChild(d); }
+    box.appendChild(ch);
+  }
+  const rowwrap = document.createElement("div");
+  rowwrap.style.display="flex"; rowwrap.style.alignItems="stretch";
+
+  if(o.labels){
+    const rn = document.createElement("div");
+    rn.style.display="flex"; rn.style.flexDirection="column";
+    for(let r=0;r<H;r++){ const d=document.createElement("div"); d.className="rownum"; d.style.flex="1"; d.textContent=r; rn.appendChild(d); }
+    rowwrap.appendChild(rn);
+  }
+
+  const grid = document.createElement("div");
+  grid.className="grid";
+  grid.style.gridTemplateColumns = "repeat("+W+", var(--cell))";
+
+  for(let r=0;r<H;r++){
+    for(let c=0;c<W;c++){
+      const ch = TERR[r][c];
+      const cell = document.createElement("div");
+      cell.className = "cell " + tClass(ch);
+      const g = tGlyph(ch); if(g){ const s=document.createElement("span"); s.className="terr"; s.textContent=g; cell.appendChild(s); }
+      const key = c+","+r;
+      if(o.marks[key]) o.marks[key].forEach(m => cell.classList.add(m));
+      grid.appendChild(cell);
+    }
+  }
+  rowwrap.appendChild(grid);
+  box.appendChild(rowwrap);
+
+  o.tokens.forEach(k=>{ grid.children[k.r*W + k.c].appendChild(tokenEl(k)); });
+}
+
+const M = (arr, cls) => { const o={}; arr.forEach(([c,r])=> o[c+","+r]=[cls]); return o; };
+const merge = (...xs) => { const o={}; xs.forEach(x=>{ for(const k in x){ o[k]=(o[k]||[]).concat(x[k]); } }); return o; };
+
+const villagers = [{c:5,r:8,kind:"villager"},{c:2,r:9,kind:"villager"},{c:8,r:9,kind:"villager"}];
+
+// ---- main board: telegraph + cork ----
+render("main", {
+  labels:true,
+  marks: merge(
+    M([[5,6]],"m-intercept"),
+    M([[5,4],[5,5]],"m-intent"),
+    M([[5,8]],"m-danger")
+  ),
+  tokens:[ {c:5,r:1,kind:"boss"}, {c:5,r:3,kind:"rak"}, {c:8,r:8,kind:"aranya"}, ...villagers ]
+});
+
+// ---- Turn 1 ----
+render("t1", {
+  marks: merge(
+    M([[8,8],[7,8],[7,7],[6,7],[5,7]],"m-path"),
+    M([[5,6]],"m-intercept"),
+    M([[5,4]],"m-intent")
+  ),
+  tokens:[ {c:5,r:1,kind:"boss"},
+    {c:5,r:3,kind:"rak",ghost:true}, {c:5,r:5,kind:"rak"},
+    {c:8,r:8,kind:"aranya",ghost:true}, {c:5,r:6,kind:"aranya"}, ...villagers ]
+});
+
+// ---- Turn 2 ----
+render("t2", {
+  marks: merge(M([[5,5]],"m-attack")),
+  tokens:[ {c:5,r:1,kind:"boss"}, {c:5,r:5,kind:"rak"}, {c:5,r:6,kind:"aranya"}, ...villagers ]
+});
+
+// ---- Turn 3 ----
+render("t3", {
+  marks: merge(M([[5,6],[5,5],[5,4]],"m-path")),
+  tokens:[ {c:5,r:1,kind:"boss"}, {c:5,r:6,kind:"aranya",ghost:true}, {c:5,r:3,kind:"aranya"}, ...villagers ]
+});
+
+// ---- Turn 4 ----
+render("t4", {
+  marks: merge(M([[5,3]],"m-path"), M([[5,1]],"m-crit")),
+  tokens:[ {c:5,r:1,kind:"boss"}, {c:5,r:3,kind:"aranya",ghost:true}, {c:5,r:2,kind:"aranya"}, ...villagers ]
+});
+</script>
+</body>
+</html>

@@ -15343,6 +15343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 506087792}
   - component: {fileID: 506087791}
+  - component: {fileID: 506087793}
   m_Layer: 0
   m_Name: MapBootstrapper
   m_TagString: Untagged
@@ -15363,6 +15364,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapBootstrapper
   _mapRenderer: {fileID: 268787981}
+  _unitSpawner: {fileID: 506087793}
+  _battleContext: {fileID: 11400000, guid: db91d601e9bc1a44ab520e682cf60915, type: 2}
   _mapData: {fileID: 11400000, guid: 3e9be69f80946f845b57c0b282bb258e, type: 2}
 --- !u!4 &506087792
 Transform:
@@ -15379,6 +15382,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &506087793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 506087790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07556e342a4d7d40909e78446741e9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitSpawner
+  _unitDatabase: {fileID: 11400000, guid: 8cf1ddc7cbb7fa34f944d8b6a8e3f53b, type: 2}
+  _fallbackSprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
 --- !u!1 &513047623
 GameObject:
   m_ObjectHideFlags: 0

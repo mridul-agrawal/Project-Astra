@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7761063ff8de89c4e9e34b200e7ded54, type: 3}
+  m_Name: UnitDatabase
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitDatabase
+  _units:
+  - {fileID: 11400000, guid: cb3b8824251e3d64abc604e49f9488bc, type: 2}
+  - {fileID: 11400000, guid: e14da73106751fd458f76003d34e69c5, type: 2}
+  - {fileID: 11400000, guid: 2671cb1b4fcde9049a13aa0d5b1e9ee2, type: 2}
+  - {fileID: 11400000, guid: 9b8c6d8da77ecce4ebc1bb412787d483, type: 2}
+  - {fileID: 11400000, guid: d3f1b7fa0391d7a4f8c3707b94986492, type: 2}
+  - {fileID: 11400000, guid: 4f29fa27463b3854a928a52f29fe3663, type: 2}
+  - {fileID: 11400000, guid: 77b0b5ce412237347a8e81f50d27e400, type: 2}
+  - {fileID: 11400000, guid: e0dfaaa9985351546a53d07271fe68a5, type: 2}
+  - {fileID: 11400000, guid: 21dbed90cf67e094db83f36e66765ddd, type: 2}

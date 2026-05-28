@@ -13,6 +13,7 @@ namespace ProjectAstra.Core.Grid
         private const int MaxDimension = 64;
 
         [SerializeField] private string _mapName;
+        [SerializeField] private MapId _id;
         [SerializeField] private int _width = 4;
         [SerializeField] private int _height = 4;
         [SerializeField] private TilesetDefinition[] _tilesets = Array.Empty<TilesetDefinition>();
@@ -21,6 +22,7 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private EventTrigger[] _eventTriggers = Array.Empty<EventTrigger>();
 
         public string MapName => _mapName;
+        public MapId Id => _id;
         public int Width => _width;
         public int Height => _height;
         public TilesetDefinition[] Tilesets => _tilesets;

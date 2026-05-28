@@ -154,7 +154,10 @@
       "WebFetch(domain:www.pixellab.ai)",
       "Bash(node *)",
       "WebFetch(domain:feuniverse.us)",
-      "WebFetch(domain:feessentials.com)"
+      "WebFetch(domain:feessentials.com)",
+      "Bash(cmd /c start \"\" \"docs\\\\map-1\\\\layout.html\")",
+      "Bash(cmd /c start \"\" \"docs\\\\map-1\\\\layout_v2.html\")",
+      "Bash('C:/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 --window-size=768,928 --virtual-time-budget=4000 '--screenshot=C:/Unity Projects/Project Astra/docs/map-1/map1_layout.png' file:///C:/Unity%20Projects/Project%20Astra/docs/map-1/_export_map.html)"
     ]
   }
 }

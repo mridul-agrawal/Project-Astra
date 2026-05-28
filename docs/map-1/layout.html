@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Project Astra — Map 1 Layout (Proposal)</title>
+<style>
+  :root{
+    --cell: 48px;
+    --mini: 30px;
+    --plain: #d7c08a;      /* dry earth / grass */
+    --plain2:#cfb67e;
+    --tree:  #2f5d42;      /* deep jungle */
+    --hut:   #8a5630;      /* thatch / mud */
+    --ink:   #2b2620;
+    --paper: #f5efe2;
+    --line:  rgba(0,0,0,.18);
+    --aranya:#2e7dd0;
+    --rak:   #c0392b;
+    --boss:  #7d1620;
+    --villager:#e0a82e;
+    --intercept:#9b5de5;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#e9e2d2; color:var(--ink);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:1040px; margin:0 auto; padding:32px 24px 80px}
+  h1{font-size:26px; margin:0 0 2px; letter-spacing:.2px}
+  h2{font-size:19px; margin:38px 0 12px; border-bottom:2px solid rgba(0,0,0,.12); padding-bottom:6px}
+  h3{font-size:15px; margin:0 0 6px}
+  .sub{color:#6b6253; font-size:14px; margin:0 0 4px}
+  .tag{display:inline-block; font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+       background:#3a3329; color:#f5efe2; padding:3px 9px; border-radius:20px; margin-bottom:18px}
+  p{margin:0 0 12px}
+  .lead{font-size:16px}
+  .panel{background:var(--paper); border:1px solid rgba(0,0,0,.1); border-radius:12px; padding:20px 22px;
+         box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .arc{font-weight:600; color:#7a4a1e}
+
+  /* ---- map ---- */
+  .mapframe{display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap}
+  .gradbar{width:30px; align-self:stretch; border-radius:8px;
+    background:linear-gradient(to bottom, #b13a2e 0%, #c98b2e 50%, #4f8a52 100%);
+    position:relative; min-height:200px; color:#fff; font-size:10px; font-weight:700; text-transform:uppercase}
+  .gradbar span{position:absolute; left:50%; transform:translateX(-50%) rotate(180deg); writing-mode:vertical-rl}
+  .gradbar .top{top:8px} .gradbar .bot{bottom:8px}
+
+  .gridbox{display:inline-block}
+  .colhead,.rowwrap{display:flex}
+  .colhead{margin-left:26px}
+  .colhead div{width:var(--cell); text-align:center; font-size:11px; color:#857a66; font-weight:700}
+  .rownum{width:26px; display:flex; align-items:center; justify-content:center; font-size:11px; color:#857a66; font-weight:700}
+  .grid{display:grid; border:2px solid #3a3329; border-radius:4px; overflow:hidden}
+  .cell{width:var(--cell); height:var(--cell); position:relative; border:.5px solid var(--line);
+        display:flex; align-items:center; justify-content:center; font-size:20px}
+  .t-plain{background:var(--plain)}
+  .grid .cell:nth-child(odd).t-plain{background:var(--plain2)}
+  .t-tree{background:var(--tree)}
+  .t-hut{background:var(--hut)}
+  .terr{opacity:.9; filter:saturate(.8)}
+
+  /* dusk vignette over the whole grid */
+  .grid{position:relative}
+  .grid::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(to bottom, rgba(40,30,60,.30), rgba(255,200,120,.04) 55%, rgba(120,60,10,.10));}
+
+  /* tile marks */
+  .m-intercept{box-shadow: inset 0 0 0 3px var(--intercept); }
+  .m-intercept::before{content:"✦"; position:absolute; color:#fff; font-size:14px; text-shadow:0 0 6px var(--intercept); z-index:2}
+  .m-path{box-shadow: inset 0 0 0 3px rgba(46,125,208,.7)}
+  .m-attack{box-shadow: inset 0 0 0 3px rgba(192,57,43,.9)}
+  .m-crit{box-shadow: inset 0 0 0 3px #f1b30a; animation:pulse 1.1s infinite}
+  @keyframes pulse{0%,100%{box-shadow:inset 0 0 0 3px #f1b30a}50%{box-shadow:inset 0 0 0 6px #ffd34d}}
+
+  /* unit tokens */
+  .tok{position:absolute; z-index:3; width:74%; height:74%; border-radius:50%;
+       display:flex; align-items:center; justify-content:center; font-size:18px; color:#fff;
+       box-shadow:0 2px 5px rgba(0,0,0,.4); border:2px solid rgba(255,255,255,.85)}
+  .tok.ghost{opacity:.32; border-style:dashed}
+  .k-aranya{background:radial-gradient(circle at 30% 30%, #5aa8ef, var(--aranya))}
+  .k-rak{background:radial-gradient(circle at 30% 30%, #e0685a, var(--rak))}
+  .k-boss{background:radial-gradient(circle at 30% 30%, #b23a44, var(--boss)); width:86%; height:86%;
+          border:3px solid #f1b30a; font-size:22px}
+  .k-villager{background:radial-gradient(circle at 30% 30%, #f0c860, var(--villager)); width:60%; height:60%; font-size:14px}
+  .toklabel{position:absolute; bottom:1px; right:2px; font-size:9px; font-weight:800; color:#fff;
+            text-shadow:0 1px 2px #000; z-index:4; letter-spacing:.3px}
+
+  /* legend */
+  .legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-size:13px}
+  .legend .li{display:flex; align-items:center; gap:7px}
+  .swatch{width:18px; height:18px; border-radius:4px; border:1px solid rgba(0,0,0,.25); display:inline-block}
+  .dot{width:16px; height:16px; border-radius:50%; display:inline-block; border:2px solid #fff; box-shadow:0 1px 2px rgba(0,0,0,.3)}
+
+  /* turns */
+  .turns{display:grid; grid-template-columns:repeat(2,1fr); gap:18px}
+  .turn{background:var(--paper); border:1px solid rgba(0,0,0,.1); border-radius:12px; padding:16px}
+  .turn .gh{display:flex; align-items:baseline; gap:8px; margin-bottom:10px}
+  .turn .num{font-size:13px; font-weight:800; background:#3a3329; color:#fff; border-radius:6px; padding:2px 8px}
+  .turn .grid{--cell:var(--mini)}
+  .turn .cell{font-size:13px}
+  .turn .k-boss{font-size:14px} .turn .tok{font-size:12px}
+  .turn .teach{font-size:13px; color:#52493a; margin-top:10px}
+  .teach b{color:var(--ink)}
+
+  table{border-collapse:collapse; width:100%; font-size:14px; margin:4px 0 6px}
+  th,td{border:1px solid rgba(0,0,0,.15); padding:7px 10px; text-align:left; vertical-align:top}
+  th{background:#e3dac6}
+  code{background:#e3dac6; padding:1px 6px; border-radius:4px; font-size:13px}
+  .q{background:#fff4dc; border:1px solid #e7c878; border-radius:12px; padding:16px 20px}
+  .q h3{color:#8a5a10}
+  ul{margin:6px 0 12px; padding-left:22px} li{margin:3px 0}
+  .muted{color:#7a7160; font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="tag">Proposal · for review</span>
+  <h1>Map 1 — The Village Lane</h1>
+  <p class="sub">The simple teaching map. Title&nbsp;screen&nbsp;→&nbsp;end&nbsp;of&nbsp;Map&nbsp;1 in ≤15&nbsp;min · resolves in ~4 turns · teaches movement, phases, attack, dodge, and the climactic critical hit — all through the fiction, no tutorial screens.</p>
+
+  <h2>The idea: a vertical threat gradient</h2>
+  <div class="panel">
+    <p class="lead">The map reads <strong>south = safe, north = danger</strong>, and Aranya's whole arc is a bottom-to-top push.</p>
+    <p><span class="arc">South — the homes.</span> Huts and villagers at the bottom edge: what she's protecting. It's literally behind her when she plants her feet.<br>
+    <span class="arc">Middle — the commons.</span> Open ground where the first Rakshasa is already bearing down on the homes. The contested space.<br>
+    <span class="arc">North — the forest mouth.</span> The dark treeline the Rakshasas spilled from, where the stationary mini-boss waits. The trees pinch inward — the climax happens in a hemmed-in space, so it <em>feels</em> cornered.</p>
+    <p style="margin-bottom:0">She arrives home to a monster at the doorstep <strong>(defend — max urgency)</strong>, then carries the fight back into the woods to finish the threat <strong>(offense — growing nerve)</strong>. Her direction of travel <em>is</em> her arc.</p>
+  </div>
+
+  <h2>The map &nbsp;<span class="muted" style="font-weight:400">11 wide × 10 tall</span></h2>
+  <div class="mapframe">
+    <div class="gradbar"><span class="top">danger →</span><span class="bot">safe</span></div>
+    <div id="main" class="gridbox"></div>
+  </div>
+
+  <div class="legend">
+    <div class="li"><span class="swatch" style="background:var(--plain)"></span> Plains (no bonus)</div>
+    <div class="li"><span class="swatch" style="background:var(--tree)"></span> Tree — impassable frame</div>
+    <div class="li"><span class="swatch" style="background:var(--hut)"></span> Hut — impassable</div>
+    <div class="li"><span class="swatch" style="background:var(--intercept)"></span> Intercept tile (purple guide)</div>
+    <div class="li"><span class="dot k-aranya"></span> Aranya (archer, range 1–2)</div>
+    <div class="li"><span class="dot k-rak"></span> Rakshasa — advancing</div>
+    <div class="li"><span class="dot k-boss" style="width:16px;height:16px;border-width:2px"></span> Mini-boss — stationary</div>
+    <div class="li"><span class="dot k-villager" style="width:14px;height:14px"></span> Villager</div>
+  </div>
+
+  <h2>Key positions</h2>
+  <table>
+    <tr><th>Element</th><th>Tile (col, row)</th><th>Note</th></tr>
+    <tr><td>Aranya — start</td><td><code>(9, 7)</code></td><td>Enters from the east lane, beside the homes.</td></tr>
+    <tr><td>First Rakshasa</td><td><code>(5, 4)</code></td><td>Advancing south toward the homes. Moves each turn.</td></tr>
+    <tr><td>Mini-boss Rakshasa</td><td><code>(5, 1)</code></td><td>Stationary at the forest mouth — so the <em>player</em> always initiates the climax.</td></tr>
+    <tr><td>Intercept tile</td><td><code>(5, 6)</code></td><td>Turn-1 bound target, highlighted purple. Plugs the lane between enemy and homes.</td></tr>
+    <tr><td>Villagers</td><td><code>(2, 7)</code>, <code>(5, 9)</code></td><td>Representative of "the people" — the protect-zone.</td></tr>
+    <tr><td>Homes</td><td>rows 8–9 (south band)</td><td>Huts, impassable.</td></tr>
+    <tr><td>Forest</td><td>row 0 + side columns</td><td>Trees, impassable — funnels movement toward the center spine.</td></tr>
+  </table>
+  <p class="muted">Distances are tuned to movement ≈ 5. Stats aren't locked; if Aranya's move lands at 4, the intercept tile nudges one row south — the shape is unaffected.</p>
+
+  <h2>The four turns</h2>
+  <div class="turns">
+    <div class="turn"><div class="gh"><span class="num">Turn 1</span><h3>Movement</h3></div>
+      <div id="t1" class="gridbox"></div>
+      <div class="teach"><b>Teaches grid movement &amp; phases.</b> Aranya dashes from the east lane to the purple intercept tile, planting herself between the Rakshasa and the homes. On the enemy phase it closes in — now in range. <span class="muted">"I need to get near the village before the Rakshasas do."</span></div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 2</span><h3>Attack + Dodge</h3></div>
+      <div id="t2" class="gridbox"></div>
+      <div class="teach"><b>Combat-screen debut.</b> She attacks at range 1; the Rakshasa survives and counters — and she <b>dodges</b> (hard-coded), teaching that attacks can miss. She sits at ~60–70% HP.</div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 3</span><h3>Finish + free move</h3></div>
+      <div id="t3" class="gridbox"></div>
+      <div class="teach"><b>Freedom opens.</b> She finishes the first Rakshasa, the purple guidance drops, and she pushes north up the center clearing toward the forest. <span class="muted">"The village seems safe — but there's another one up north."</span></div>
+    </div>
+    <div class="turn"><div class="gh"><span class="num">Turn 4</span><h3>Cornered climax</h3></div>
+      <div id="t4" class="gridbox"></div>
+      <div class="teach"><b>The critical hit.</b> She initiates on the stationary mini-boss, hemmed by trees. Its counter drops her to ~2 HP — then she dodges and lands a guaranteed <b>crit</b> (×3) to win. The Blazing-Sword "about to die, but I pulled it off" beat.</div>
+    </div>
+  </div>
+
+  <h2>Calls I made — flip any</h2>
+  <ul>
+    <li><b>Size 11×10.</b> Big enough that the intercept <em>race</em> and the <em>north push</em> feel like two distinct movements. Could compress to ~9×9 for a tighter Lyn-mode feel, at some cost to the race tension.</li>
+    <li><b>Entry: south-east lane.</b> Matches the design doc's "from the right." Alternative is due-east-center — minor.</li>
+    <li><b>No mechanical terrain.</b> Trees and huts are pure framing/passability — per the locked "no terrain bonuses on Map 1." A decorative stream or dirt path could be added for flavor only.</li>
+  </ul>
+
+  <div class="q">
+    <h3>One open question before I go further</h3>
+    <p style="margin-bottom:0">Are the villagers <b>targetable units the Rakshasas can reach and kill</b> (a real fail-state), or set-dressing? The objective "no villager is hurt" implies the former — which means the first Rakshasa's path must credibly <em>threaten</em> a specific villager so the intercept feels earned. That changes exactly where the enemy and homes sit.</p>
+  </div>
+
+  <p class="muted" style="margin-top:28px">Proposal only — nothing built yet. Source: <code>docs/project_astra_prototype_design 001.md</code> → "Map 1 / First Chapter" + the committed opening dialogue. The earlier single-map <code>flow_design.md</code> (temple gate / Vikram / Veerasen) is superseded and does not govern Map 1.</p>
+
+</div>
+
+<script>
+// ---- map data (north = row 0 at top) ----
+const TERR = [
+  "TTTTTTTTTTT",
+  "TTT.....TTT",
+  "TT.......TT",
+  "T.........T",
+  "...........",
+  "...........",
+  "...........",
+  "...........",
+  "HH.HH.HH.HH",
+  "HH.HH.HH.HH",
+];
+const W = 11, H = 10;
+const tClass = c => c==="T" ? "t-tree" : c==="H" ? "t-hut" : "t-plain";
+const tGlyph = c => c==="T" ? "🌲" : c==="H" ? "🛖" : "";
+
+function tokenEl(k){
+  const d = document.createElement("div");
+  d.className = "tok " + (k.ghost ? "ghost " : "") + ({aranya:"k-aranya",rak:"k-rak",boss:"k-boss",villager:"k-villager"})[k.kind];
+  d.textContent = ({aranya:"🏹",rak:"👹",boss:"👹",villager:"🧑"})[k.kind];
+  return d;
+}
+
+// opts: {labels, tokens:[{c,r,kind,ghost}], marks:{ "c,r":["m-path",...] }}
+function render(id, opts){
+  const o = Object.assign({labels:false, tokens:[], marks:{}}, opts);
+  const box = document.getElementById(id);
+  box.innerHTML = "";
+
+  if(o.labels){
+    const ch = document.createElement("div"); ch.className="colhead";
+    for(let c=0;c<W;c++){ const d=document.createElement("div"); d.textContent=c; ch.appendChild(d); }
+    box.appendChild(ch);
+  }
+  const rowwrap = document.createElement("div");
+  rowwrap.style.display = "flex"; rowwrap.style.alignItems = "stretch";
+
+  if(o.labels){
+    const rn = document.createElement("div");
+    rn.style.display="flex"; rn.style.flexDirection="column";
+    for(let r=0;r<H;r++){ const d=document.createElement("div"); d.className="rownum";
+      d.style.flex="1"; d.textContent=r; rn.appendChild(d); }
+    rowwrap.appendChild(rn);
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  grid.style.gridTemplateColumns = "repeat("+W+", var(--cell))";
+
+  for(let r=0;r<H;r++){
+    for(let c=0;c<W;c++){
+      const ch = TERR[r][c];
+      const cell = document.createElement("div");
+      cell.className = "cell " + tClass(ch);
+      const g = tGlyph(ch); if(g){ const s=document.createElement("span"); s.className="terr"; s.textContent=g; cell.appendChild(s); }
+      const key = c+","+r;
+      if(o.marks[key]) o.marks[key].forEach(m => cell.classList.add(m));
+      grid.appendChild(cell);
+    }
+  }
+  rowwrap.appendChild(grid);
+  box.appendChild(rowwrap);
+
+  // place tokens absolutely over their cells
+  o.tokens.forEach(k=>{
+    const idx = k.r*W + k.c;
+    const cell = grid.children[idx];
+    const t = tokenEl(k);
+    cell.appendChild(t);
+  });
+}
+
+// straight path helper (vertical or horizontal segments)
+const M = (arr, cls) => { const o={}; arr.forEach(([c,r])=> o[c+","+r]=[cls]); return o; };
+const merge = (...xs) => Object.assign({}, ...xs);
+
+// ---- main board ----
+render("main", {
+  labels:true,
+  marks: merge(M([[5,6]],"m-intercept")),
+  tokens:[
+    {c:5,r:1,kind:"boss"},
+    {c:5,r:4,kind:"rak"},
+    {c:9,r:7,kind:"aranya"},
+    {c:2,r:7,kind:"villager"},
+    {c:5,r:9,kind:"villager"},
+  ]
+});
+
+// ---- Turn 1: move (9,7)->(5,6); enemy (5,4)->(5,5) ----
+render("t1", {
+  marks: merge(
+    M([[9,7],[8,7],[7,7],[6,7],[5,7]],"m-path"),
+    M([[5,6]],"m-intercept")
+  ),
+  tokens:[
+    {c:5,r:1,kind:"boss"},
+    {c:5,r:4,kind:"rak",ghost:true},
+    {c:5,r:5,kind:"rak"},
+    {c:9,r:7,kind:"aranya",ghost:true},
+    {c:5,r:6,kind:"aranya"},
+    {c:2,r:7,kind:"villager"},{c:5,r:9,kind:"villager"},
+  ]
+});
+
+// ---- Turn 2: attack r at (5,5) from (5,6) ----
+render("t2", {
+  marks: merge(M([[5,5]],"m-attack")),
+  tokens:[
+    {c:5,r:1,kind:"boss"},
+    {c:5,r:5,kind:"rak"},
+    {c:5,r:6,kind:"aranya"},
+    {c:2,r:7,kind:"villager"},{c:5,r:9,kind:"villager"},
+  ]
+});
+
+// ---- Turn 3: r dead; move (5,6)->(5,3) ----
+render("t3", {
+  marks: merge(M([[5,6],[5,5],[5,4]],"m-path")),
+  tokens:[
+    {c:5,r:1,kind:"boss"},
+    {c:5,r:6,kind:"aranya",ghost:true},
+    {c:5,r:3,kind:"aranya"},
+    {c:2,r:7,kind:"villager"},{c:5,r:9,kind:"villager"},
+  ]
+});
+
+// ---- Turn 4: move (5,3)->(5,2), crit boss (5,1) ----
+render("t4", {
+  marks: merge(M([[5,3]],"m-path"), M([[5,1]],"m-crit")),
+  tokens:[
+    {c:5,r:1,kind:"boss"},
+    {c:5,r:3,kind:"aranya",ghost:true},
+    {c:5,r:2,kind:"aranya"},
+    {c:2,r:7,kind:"villager"},{c:5,r:9,kind:"villager"},
+  ]
+});
+</script>
+</body>
+</html>

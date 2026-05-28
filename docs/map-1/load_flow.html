@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Map 1 — Load Flow (cutscene → fully loaded battle)</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2328; --muted:#6b6f76;
+    --line:#e2e2dd; --code-bg:#f4f5f7; --code-ink:#2b2f36;
+    --new:#0f9b8e;        /* new scripts */
+    --engine:#3a6ea5;     /* existing engine scripts */
+    --data:#b9770e;       /* SO data assets */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:940px;margin:0 auto;padding:34px 24px 90px}
+  h1{font-size:25px;margin:0 0 4px}
+  h2{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+     margin:40px 0 14px;font-weight:700}
+  p{margin:0 0 12px}
+  .sub{color:var(--muted);margin-bottom:22px}
+  code,pre{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+  .tldr{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px}
+  .tldr b{color:var(--new)}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0 4px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .chip{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* phase */
+  .phase{margin-top:34px}
+  .phase-h{font-weight:700;font-size:15px;margin:0 0 4px}
+  .phase-d{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+
+  /* beat card */
+  .beat{position:relative;background:var(--panel);border:1px solid var(--line);
+        border-left:4px solid var(--engine);border-radius:8px;padding:13px 16px 14px;margin:0 0 10px}
+  .beat.new{border-left-color:var(--new)}
+  .beat .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .num{font-weight:800;color:#aaa;font-size:13px;min-width:20px}
+  .sig{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;font-weight:600}
+  .sig .cls{color:var(--engine)}
+  .beat.new .sig .cls{color:var(--new)}
+  .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+       padding:2px 7px;border-radius:20px;color:#fff;background:var(--engine)}
+  .tag.new{background:var(--new)}
+  .what{font-size:14px;margin:2px 0 9px}
+  pre{background:var(--code-bg);border:1px solid var(--line);border-radius:6px;
+      padding:10px 12px;overflow-x:auto;font-size:12.5px;line-height:1.5;color:var(--code-ink);margin:0}
+  pre .c{color:#8a929c}        /* comment */
+  pre .k{color:#b9770e}        /* keyword-ish highlight */
+  .data{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .data b{color:var(--data)}
+  .arrow{text-align:center;color:#c4c4bd;font-size:15px;line-height:1;margin:-4px 0 6px}
+
+  /* pipelines */
+  .pipe{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:0 0 14px}
+  .pipe h3{margin:0 0 12px;font-size:14px}
+  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12.5px}
+  .box{border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:#fcfcfb;
+       font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+  .box.data{border-color:#e6c68f;background:#fdf7ea;color:#7a5306}
+  .box.new{border-color:#aeded8;background:#eafaf7;color:#0c7468}
+  .box.rt{border-color:#bcd0e6;background:#eef4fb;color:#2c537d}
+  .to{color:#b3b3ac;font-weight:700}
+  .note{color:var(--muted);font-size:12.5px;margin-top:10px}
+
+  .seams{background:#eafaf7;border:1px solid #bfe7e0;border-radius:10px;padding:16px 20px;margin:6px 0 4px}
+  .seams h3{margin:0 0 8px;color:#0c7468;font-size:14px}
+  .seams ul{margin:0;padding-left:20px}
+  .seams li{margin:5px 0;font-size:14px}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:34px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Map 1 — the load flow</h1>
+  <p class="sub">From the last line of the opening cutscene to a fully-rendered battle map with units. Beat-by-beat through the code.</p>
+
+  <div class="tldr">
+    <b>One sentence:</b> the cutscene stashes <i>which</i> map to load in a shared <code>BattleContext</code> asset → the state machine swaps to the BattleMap scene → <code>MapBootstrapper</code> reads that pending map, paints its tiles, and asks <code>UnitSpawner</code> to instantiate the units the map authored → <code>TurnManager</code> finds them and begins Player Phase.
+  </div>
+
+  <div class="legend">
+    <span><i class="chip" style="background:var(--new)"></i> new script (this work)</span>
+    <span><i class="chip" style="background:var(--engine)"></i> existing engine script</span>
+    <span><i class="chip" style="background:var(--data)"></i> ScriptableObject data asset</span>
+  </div>
+
+  <!-- PHASE A -->
+  <div class="phase">
+    <div class="phase-h">A · The cutscene hands off</div>
+    <div class="phase-d">The opening dialogue runs; finishing it fires a callback that was registered when the scene opened.</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">1</span><span class="sig"><span class="cls">CutsceneUI</span>.OnEnable / DialogueService</span><span class="tag">engine</span></div>
+      <div class="what">When the Cutscene scene opened, the opening script was played with <code>GoToBattleMap</code> handed in as the <i>on-complete</i> callback. The player's final CONFIRM exhausts the last node and the callback fires.</div>
+<pre><span class="c">// CutsceneUI.OnEnable()</span>
+DialogueService.Instance.Play(_openingScript,
+    DialogueTriggeringContext.Cutscene, GoToBattleMap); <span class="c">// ← onComplete</span></pre>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat new">
+      <div class="top"><span class="num">2</span><span class="sig"><span class="cls">CutsceneUI</span>.GoToBattleMap()</span><span class="tag">engine · edited</span></div>
+      <div class="what">The seam we added: <b>before</b> asking to change state, it records which map this cutscene leads into, into the shared <code>BattleContext</code> asset.</div>
+<pre>private void GoToBattleMap()
+{
+    <span class="c">// _battleMap = Map1_BridgeAtSuvarnapur (wired in the Inspector)</span>
+    if (_battleContext != null &amp;&amp; _battleMap != null)
+        _battleContext.<span class="k">RequestMap</span>(_battleMap);          <span class="c">// remember the map</span>
+    GameStateManager.Instance.RequestTransition(GameState.BattleMap, "CutsceneUI");
+}</pre>
+      <div class="data">touches <b>BattleContext</b> (sets its pending map) + <b>MapData</b> (Map 1 reference)</div>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat new">
+      <div class="top"><span class="num">3</span><span class="sig"><span class="cls">BattleContext</span>.RequestMap()</span><span class="tag new">new</span></div>
+      <div class="what">A tiny runtime-variable ScriptableObject. It just holds the map in memory — but because it's an <i>asset</i>, that value survives the scene swap that's about to happen.</div>
+<pre>private MapData _pendingMap;
+public void RequestMap(MapData map) =&gt; _pendingMap = map;
+public MapData Consume() { var m = _pendingMap; _pendingMap = null; return m; }</pre>
+    </div>
+  </div>
+
+  <!-- PHASE B -->
+  <div class="phase">
+    <div class="phase-h">B · State machine → scene swap</div>
+    <div class="phase-d">No map data travels through the transition itself — the state machine only flips a state; the map waits in the BattleContext asset.</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">4</span><span class="sig"><span class="cls">GameStateManager</span>.RequestTransition()</span><span class="tag">engine</span></div>
+      <div class="what">Validates the move (<code>Cutscene → BattleMap</code>) against the transition table, then raises a state-changed event on a shared channel.</div>
+<pre>if (IsIllegalTransition(target, requester)) return false;
+ExecuteTransition(target);                       <span class="c">// _currentState = BattleMap</span>
+_stateChangedChannel.<span class="k">Raise</span>(new StateChangeArgs {
+    PreviousState = Cutscene, NewState = BattleMap });</pre>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">5</span><span class="sig"><span class="cls">SceneLoader</span>.OnStateChanged()</span><span class="tag">engine</span></div>
+      <div class="what">Subscribed to that channel. It loads the Unity scene <i>named after the enum</i>. The <code>BattleContext</code> asset is untouched by the load, so the pending map carries across.</div>
+<pre>if (!SceneStates.Contains(args.NewState)) return;
+SceneManager.<span class="k">LoadScene</span>(args.NewState.ToString());   <span class="c">// "BattleMap"</span></pre>
+      <div class="data">the <b>BattleContext</b> asset persists across <code>LoadScene</code> — this is how "which map" crosses the scene boundary</div>
+    </div>
+  </div>
+
+  <!-- PHASE C -->
+  <div class="phase">
+    <div class="phase-h">C · BattleMap boots — paint the tiles</div>
+    <div class="phase-d">Scene objects wake up. <code>MapBootstrapper</code> is forced to run first via <code>[DefaultExecutionOrder(-100)]</code>, so the map + units exist before the turn system looks for them.</div>
+
+    <div class="beat new">
+      <div class="top"><span class="num">6</span><span class="sig"><span class="cls">MapBootstrapper</span>.Start()</span><span class="tag">engine · edited</span></div>
+      <div class="what">Consumes the pending map (falling back to its serialized map for direct editor-play), renders it, then spawns its units.</div>
+<pre><span class="k">[DefaultExecutionOrder(-100)]</span>   <span class="c">// before TurnManager</span>
+private void Start()
+{
+    MapData map = _battleContext.Consume();   <span class="c">// Map1, then clears it</span>
+    if (map == null) map = _mapData;          <span class="c">// fallback (TestMap16x16)</span>
+    _mapRenderer.LoadMap(map);                <span class="c">// → beat 7</span>
+    _unitSpawner.SpawnUnits(map);             <span class="c">// → beat 8</span>
+}</pre>
+      <div class="data">reads <b>BattleContext</b> (consume) → gets the <b>MapData</b> to use</div>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">7</span><span class="sig"><span class="cls">MapRenderer</span>.LoadMap()</span><span class="tag">engine</span></div>
+      <div class="what">Clears the tilemaps and stamps every cell. Each cell's integer tile-id is looked up in the map's tileset to get a real <code>TileBase</code>, which is set on the Unity Tilemap.</div>
+<pre>_currentMap = mapData; ClearAllTilemaps();
+<span class="c">// per layer, per (x,y):</span>
+int tileId = mapData.<span class="k">GetTileId</span>(layer, x, y);   <span class="c">// flat tileIds[y*W + x]</span>
+TileBase tile = tileset.<span class="k">GetTile</span>(tileId);      <span class="c">// id → TileBase</span>
+tilemap.SetTile(new Vector3Int(x, y, 0), tile);</pre>
+      <div class="data">reads <b>MapData</b>.layers[].tileIds + <b>TilesetDefinition</b> (see "How a map stores its tiles")</div>
+    </div>
+  </div>
+
+  <!-- PHASE D -->
+  <div class="phase">
+    <div class="phase-h">D · Spawn the units from data</div>
+    <div class="phase-d">The heart of the new unit system — units are no longer hand-placed; they come straight out of the map's authored list.</div>
+
+    <div class="beat new">
+      <div class="top"><span class="num">8</span><span class="sig"><span class="cls">UnitSpawner</span>.SpawnUnits()</span><span class="tag new">new</span></div>
+      <div class="what">If the map authored any units, it clears whatever was in the scene and instantiates one GameObject per authored position. Maps with an empty list are left alone (the old test map keeps its hand-placed units).</div>
+<pre>public void SpawnUnits(MapData map)
+{
+    if (map.UnitStartPositions.Length == 0) return;   <span class="c">// legacy maps untouched</span>
+    ClearExistingUnits();                             <span class="c">// data map owns its roster</span>
+    foreach (var start in map.UnitStartPositions)
+        SpawnUnit(start);                             <span class="c">// → beat 9</span>
+}</pre>
+      <div class="data">reads <b>MapData</b>.unitStartPositions = { position, unitId, team }</div>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat new">
+      <div class="top"><span class="num">9</span><span class="sig"><span class="cls">UnitSpawner</span>.SpawnUnit() + <span class="cls">UnitDatabase</span></span><span class="tag new">new</span></div>
+      <div class="what">Resolve the string <code>unitId</code> → a <code>UnitDefinition</code> asset, build the GameObject, set its faction (from the team number) and grid position, give it the definition + its map sprite.</div>
+<pre>_unitDatabase.<span class="k">TryResolve</span>(start.unitId, out UnitDefinition def);  <span class="c">// "aranya" → asset</span>
+var go = new GameObject(def.UnitName);
+var unit = go.AddComponent&lt;TestUnit&gt;();          <span class="c">// auto-adds UnitInventory</span>
+unit.faction = <span class="k">FactionFromTeam</span>(start.team);   <span class="c">// 0/1/2 → Player/Enemy/Allied</span>
+unit.gridPosition = start.position;
+unit.<span class="k">InitializeFromDefinition</span>(def);            <span class="c">// hand it the data asset</span>
+AttachSprite(go, def.MapSprite ?? _fallbackSprite);
+unit.SnapToGridPosition();</pre>
+      <div class="data">reads <b>UnitDatabase</b> (id→def) → <b>UnitDefinition</b> (class, stats, mapSprite, isLord)</div>
+    </div>
+    <div class="arrow">▼</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">10</span><span class="sig"><span class="cls">TestUnit</span>.Start()</span><span class="tag">engine · edited</span></div>
+      <div class="what">On its first frame each spawned unit turns its <code>UnitDefinition</code> into a live <code>UnitInstance</code> — which is where real HP / movement / class come from.</div>
+<pre>BindUnitInstanceFromDefinitionIfNeeded();   <span class="c">// new UnitInstance(_unitDefinition)</span>
+<span class="c">// BindUnitInstance(instance):</span>
+movementPoints = instance.EffectiveMovement;   <span class="c">// from class</span>
+maxHP = instance.MaxHP; currentHP = instance.CurrentHP;   <span class="c">// from base stats</span></pre>
+      <div class="data">builds <b>UnitInstance</b> from <b>UnitDefinition</b> + its <b>ClassDefinition</b></div>
+    </div>
+  </div>
+
+  <!-- PHASE E -->
+  <div class="phase">
+    <div class="phase-h">E · The turn system picks them up</div>
+    <div class="phase-d">Because the bootstrapper ran first, the units already exist when the turn manager scans the scene.</div>
+
+    <div class="beat">
+      <div class="top"><span class="num">11</span><span class="sig"><span class="cls">TurnManager</span>.Start → StartBattle()</span><span class="tag">engine</span></div>
+      <div class="what">Sees the state is already BattleMap, registers every <code>TestUnit</code> in the scene by faction, and begins Player Phase. <b>Map 1 is now fully loaded and playable.</b></div>
+<pre>public void StartBattle() {
+    _turnCounter = 1;
+    RegisterSceneUnits();   <span class="c">// FindObjectsByType&lt;TestUnit&gt;() → register by faction</span>
+    BeginPhase();           <span class="c">// PlayerPhase; cursor handed to player</span>
+}</pre>
+      <div class="data">finds the 6 spawned units → <b>UnitRegistry</b> (Player 1 / Enemy 2 / Allied 3)</div>
+    </div>
+  </div>
+
+  <!-- DATA MODEL -->
+  <h2>How a map stores its tiles</h2>
+  <div class="pipe">
+    <h3>Tile pipeline — an int becomes a painted tile</h3>
+    <div class="row">
+      <span class="box data">MapData.layers[].tileIds[ ]<br><span style="color:#a07a2a">flat ints, row-major</span></span>
+      <span class="to">→</span>
+      <span class="box data">tilesetIndex → MapData.tilesets[ ]</span>
+      <span class="to">→</span>
+      <span class="box data">TilesetDefinition._tiles[id]<br><span style="color:#a07a2a">{ TileBase, TerrainType }</span></span>
+      <span class="to">→</span>
+      <span class="box rt">Tilemap.SetTile(x,y)</span>
+    </div>
+    <div class="note">Map 1's grid is 11×11 = 121 ints. id 0=plains, 1=water, 2=bridge, 3=forest, 4=hut. The same <code>TerrainType</code> on each entry is what movement/combat read (water/forest/hut = impassable). <b>North is stored at high y</b> (mockup row 0 → grid y = 10), so Unity's y-up renders it the right way round.</div>
+  </div>
+
+  <h2>How a map stores its units</h2>
+  <div class="pipe">
+    <h3>Unit pipeline — an authored row becomes a living unit</h3>
+    <div class="row">
+      <span class="box data">MapData.unitStartPositions[ ]<br><span style="color:#a07a2a">{ position, unitId, team }</span></span>
+      <span class="to">→</span>
+      <span class="box new">UnitDatabase.TryResolve(unitId)</span>
+      <span class="to">→</span>
+      <span class="box data">UnitDefinition<br><span style="color:#a07a2a">class · stats · mapSprite · isLord</span></span>
+      <span class="to">→</span>
+      <span class="box rt">TestUnit + UnitInstance<br><span style="color:#3a6ea5">live HP / move / faction</span></span>
+    </div>
+    <div class="note">Map 1 authors 6 rows: <code>aranya</code>@(8,2) team 0, <code>rakshasa_raider</code>@(5,7) &amp; <code>rakshasa_miniboss</code>@(5,9) team 1, three <code>villager</code> team 2. The <code>team</code> int maps to the faction; the <code>unitId</code> string is the only link between the map and the character data.</div>
+  </div>
+
+  <h2>The two seams this added</h2>
+  <div class="seams">
+    <h3>Everything else already existed — we inserted exactly two joints</h3>
+    <ul>
+      <li><b>BattleContext</b> (+ optional MapCatalog) — lets <i>anything</i> (cutscene, menu, future world-map) say "load this map next" at runtime, instead of a hardcoded Inspector field. The map travels across the scene swap inside this asset.</li>
+      <li><b>UnitSpawner</b> (+ UnitDatabase + <code>UnitDefinition.mapSprite</code>) — turns <code>MapData.unitStartPositions</code> (which existed but was never read) into actual units, so units travel <i>with</i> the map.</li>
+    </ul>
+  </div>
+
+  <p class="foot">Scripts new in this work: <code>BattleContext</code>, <code>MapCatalog</code>, <code>UnitDatabase</code>, <code>UnitSpawner</code>. Edited: <code>MapData</code> (+mapId), <code>UnitDefinition</code> (+mapSprite), <code>MapBootstrapper</code>, <code>CutsceneUI</code>, <code>TestUnit</code>. The <code>[DefaultExecutionOrder(-100)]</code> on MapBootstrapper is what guarantees beats 6–10 finish before beat 11.</p>
+
+</div>
+</body>
+</html>

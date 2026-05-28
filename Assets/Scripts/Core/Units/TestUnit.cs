@@ -103,6 +103,16 @@ namespace ProjectAstra.Core.Units
             _unitInstance = instance;
             movementPoints = instance.EffectiveMovement;
             movementType = instance.MovementType;
+            maxHP = instance.MaxHP;
+            currentHP = instance.CurrentHP;
+        }
+
+        // Runtime injection used by UnitSpawner: sets the authored definition before Start so
+        // TestUnit's own binding step builds the UnitInstance from it.
+        public void InitializeFromDefinition(UnitDefinition definition, ClassDefinition classOverride = null)
+        {
+            _unitDefinition = definition;
+            if (classOverride != null) _classOverride = classOverride;
         }
 
         public void MarkActed()

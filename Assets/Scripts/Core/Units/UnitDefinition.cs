@@ -23,6 +23,9 @@ namespace ProjectAstra.Core.Units
         [Header("Growth Rates (0-100)")]
         [SerializeField] private StatArray _personalGrowths;
 
+        [Header("Map sprite (on-grid token)")]
+        [SerializeField] private Sprite _mapSprite;
+
         [Header("Portrait (full HP)")]
         [SerializeField] private Sprite _portrait;
 
@@ -54,6 +57,7 @@ namespace ProjectAstra.Core.Units
         public StatArray BaseStats => _baseStats;
         public int BaseLevel => _baseLevel;
         public StatArray PersonalGrowths => _personalGrowths;
+        public Sprite MapSprite => _mapSprite;
         public Sprite Portrait => _portrait;
         public Sprite WoundedPortrait => _woundedPortrait;
         public Sprite CriticalPortrait => _criticalPortrait;
