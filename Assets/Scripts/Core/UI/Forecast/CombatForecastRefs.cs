@@ -5,16 +5,16 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.Forecast
 {
-    // Ref-holder attached to the CombatForecast prefab root by CombatForecastBuilder.
-    // CombatForecastUI reads these fields to drive the live text + HP bars + state badges.
+    // Ref-holder attached to the CombatForecast prefab root. CombatForecastUI reads
+    // these fields to drive the live text + HP bars + state badges. Only references
+    // the UI actually drives are kept — static chrome (panel art, header/footer text,
+    // ATK/DEF tags) lives in the prefab and is never touched by code.
     public class CombatForecastRefs : MonoBehaviour
     {
         [Serializable]
         public class UnitSide
         {
-            [Header("Header band")]
-            public Image sideTagBg;            // tag_atk or tag_def sprite
-            public TextMeshProUGUI sideTagLabel;
+            [Header("Identity")]
             public TextMeshProUGUI unitName;
             public TextMeshProUGUI unitSub;     // "Class · House"
 
@@ -23,7 +23,6 @@ namespace ProjectAstra.Core.UI.Forecast
             public TextMeshProUGUI classValue;
 
             [Header("Weapon row")]
-            public Image weaponRowBg;
             public Image weaponIcon;
             public TextMeshProUGUI weaponName;
             public TextMeshProUGUI weaponArrow; // "▲" / "▼" / hidden
@@ -34,31 +33,23 @@ namespace ProjectAstra.Core.UI.Forecast
             public Image hpTrackBg;
             public Image hpFill;                    // width driven by current%
             public Image hpPredOverlay;             // width + left driven by delta
-            public RectTransform koBadgeTransform;  // parent of the KO badge (activate/deactivate)
+            public RectTransform koBadgeTransform;  // KO badge parent (activate/deactivate)
 
             [Header("Badges")]
             public GameObject effectiveChip;        // activate when isEffective
 
             [Header("Doubling chip")]
             public GameObject doubleChipRoot;       // hidden by default
-            public Image doubleChipBg;              // swap: chip_double_as / chip_double_brave / chip_double_combined
+            public Image doubleChipBg;              // swap: chipDoubleAs / Brave / Combined
             public TextMeshProUGUI doubleChipNumber;  // "×2" / "×4"
-            public TextMeshProUGUI doubleChipTag;     // "AS Double" / "Brave" / "Combined"
+            public TextMeshProUGUI doubleChipTag;     // "AS DOUBLE" / "BRAVE" / "COMBINED"
         }
-
-        [Header("Panel chrome")]
-        public Image panelComposite;          // the big 960×720 baked chrome
-        public TextMeshProUGUI headerTitle;   // "COMBAT FORECAST"
-        public TextMeshProUGUI vsTag;
 
         [Header("DMG hero numbers (spine)")]
         public TextMeshProUGUI attackerDmgNum;
         public TextMeshProUGUI defenderDmgNum;
-        public TextMeshProUGUI attackerDmgLabel;
-        public TextMeshProUGUI defenderDmgLabel;
 
-        [Header("Stat rows (HIT, CRIT)")]
-        public TextMeshProUGUI hitLabel, critLabel;
+        [Header("Stat row values (HIT, CRIT)")]
         public TextMeshProUGUI hitAttackerVal, hitDefenderVal;
         public TextMeshProUGUI critAttackerVal, critDefenderVal;
 
@@ -70,24 +61,15 @@ namespace ProjectAstra.Core.UI.Forecast
         public UnitSide left  = new UnitSide();
         public UnitSide right = new UnitSide();
 
-        [Header("Footer hints")]
-        public TextMeshProUGUI footerHints;
-
-        [Header("Shared sprites (state swaps)")]
-        public Sprite chipEffective;
+        [Header("Doubling-chip sprites (state swap)")]
         public Sprite chipDoubleAs;
         public Sprite chipDoubleBrave;
         public Sprite chipDoubleCombined;
-        public Sprite tagAtk;
-        public Sprite tagDef;
-        public Sprite hpTrack;
+
+        [Header("HP-fill sprites (state swap)")]
         public Sprite hpFillGreen;
         public Sprite hpFillYellow;
         public Sprite hpFillRed;
-        public Sprite hpPred;
-        public Sprite badgeKo;
-        public Sprite ribbonNoCounter;
-        public Sprite weaponRow;
 
         [Header("Weapon-icon sigils (reused from InventoryPopup)")]
         public Sprite sigilSword;
