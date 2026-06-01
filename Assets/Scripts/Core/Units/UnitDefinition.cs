@@ -55,6 +55,16 @@ namespace ProjectAstra.Core.Units
         [Tooltip("2–4 authored lines played as a dialogue sequence when this unit dies. Only consulted when IsLord is true.")]
         [SerializeField, TextArea(1, 3)] private string[] _lastWordsLines;
 
+        [Header("Combat Voice Barks (Phase D — Normal mode only)")]
+        [Tooltip("Played at the wind-up of this unit's attack. Random pick. Empty = silent.")]
+        [SerializeField] private AudioClip[] _attackBarks;
+        [Tooltip("Played when this unit is hit. Random pick. Empty = silent.")]
+        [SerializeField] private AudioClip[] _hitBarks;
+        [Tooltip("Played when this unit lands a crit. Random pick. Empty = silent.")]
+        [SerializeField] private AudioClip[] _critBarks;
+        [Tooltip("Played as this unit dies. Single clip. Null = silent.")]
+        [SerializeField] private AudioClip _deathBark;
+
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
@@ -74,5 +84,16 @@ namespace ProjectAstra.Core.Units
         public string OneLineIdentity => _oneLineIdentity;
         public bool IsLord => _isLord;
         public string[] LastWordsLines => _lastWordsLines;
+        public AudioClip DeathBark => _deathBark;
+
+        public AudioClip PickAttackBark() => PickRandom(_attackBarks);
+        public AudioClip PickHitBark()    => PickRandom(_hitBarks);
+        public AudioClip PickCritBark()   => PickRandom(_critBarks);
+
+        private static AudioClip PickRandom(AudioClip[] clips)
+        {
+            if (clips == null || clips.Length == 0) return null;
+            return clips[Random.Range(0, clips.Length)];
+        }
     }
 }

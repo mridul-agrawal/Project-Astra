@@ -53,6 +53,9 @@ namespace ProjectAstra.Core.Input
             { GameState.PreBattlePrep, new HashSet<string>
                 { CursorUp, CursorDown, CursorLeft, CursorRight, Confirm, Cancel, Pause } },
 
+            // BattleMap intentionally allows SkipAnimation — when the player
+            // holds Skip while confirming a target, the dispatcher flips the
+            // animation speed for that single combat (per-combat override).
             { GameState.BattleMap, AllActions },
 
             { GameState.BattleMapPaused, CursorAndMenuActions },

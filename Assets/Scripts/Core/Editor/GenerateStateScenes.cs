@@ -15,6 +15,7 @@ using ProjectAstra.Core.Scenes;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.UI.CombatAnimation;
 using ProjectAstra.Core.UI.MainMenu;
 using ProjectAstra.Core.UI.Overlays;
 
@@ -59,7 +60,7 @@ namespace ProjectAstra.Core.Editor
             { GameState.TitleScreen,      typeof(TitleScreenUI) },
             { GameState.BattleMap,        typeof(BattleMapUI) },
             { GameState.BattleMapPaused,  typeof(BattleMapPausedOverlayUI) },
-            { GameState.CombatAnimation,  typeof(CombatAnimationOverlayUI) },
+            { GameState.CombatAnimation,  typeof(CombatPlaybackController) },
             { GameState.Dialogue,         typeof(DialogueOverlayUI) },
             { GameState.SaveMenu,         typeof(SaveMenuOverlayUI) },
             { GameState.SettingsMenu,     typeof(SettingsMenuOverlayUI) },

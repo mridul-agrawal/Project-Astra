@@ -22,7 +22,7 @@ MonoBehaviour:
   _personalGrowths:
     _values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
   _mapSprite: {fileID: 21300000, guid: 7e3c28c97d7c8c248b8237b529a82dff, type: 3}
-  _portrait: {fileID: 0}
+  _portrait: {fileID: 21300000, guid: 2ec72ea8574078a42973c480905fff89, type: 3}
   _woundedPortrait: {fileID: 0}
   _criticalPortrait: {fileID: 0}
   _deceasedPortrait: {fileID: 0}

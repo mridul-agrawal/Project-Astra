@@ -1,0 +1,3055 @@
+fileFormatVersion: 2
+guid: d53997154d3fb0347965fbb99f534112
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6254651200428864577
+    second: Enemy Nameplate Panel_0
+  - first:
+      213: 9077067394237063970
+    second: Enemy Nameplate Panel_1
+  - first:
+      213: 6585360433211543245
+    second: Enemy Nameplate Panel_2
+  - first:
+      213: -5928140801376109615
+    second: Enemy Nameplate Panel_3
+  - first:
+      213: -6110531473523769304
+    second: Enemy Nameplate Panel_4
+  - first:
+      213: -1884135894937943882
+    second: Enemy Nameplate Panel_5
+  - first:
+      213: 4243091398925274672
+    second: Enemy Nameplate Panel_6
+  - first:
+      213: -7498288169353152725
+    second: Enemy Nameplate Panel_7
+  - first:
+      213: 2487722603008279924
+    second: Enemy Nameplate Panel_8
+  - first:
+      213: 6963096577772424799
+    second: Enemy Nameplate Panel_9
+  - first:
+      213: -2259300492185351333
+    second: Enemy Nameplate Panel_10
+  - first:
+      213: -2359179216754948135
+    second: Enemy Nameplate Panel_11
+  - first:
+      213: 3533009317643457849
+    second: Enemy Nameplate Panel_12
+  - first:
+      213: -2511932125820795375
+    second: Enemy Nameplate Panel_13
+  - first:
+      213: 1130729763211208677
+    second: Enemy Nameplate Panel_14
+  - first:
+      213: 7406387112228604903
+    second: Enemy Nameplate Panel_15
+  - first:
+      213: -8770544920320192698
+    second: Enemy Nameplate Panel_16
+  - first:
+      213: -6173087475912785668
+    second: Enemy Nameplate Panel_17
+  - first:
+      213: 531985614547368325
+    second: Enemy Nameplate Panel_18
+  - first:
+      213: 491533455946989906
+    second: Enemy Nameplate Panel_19
+  - first:
+      213: -7475699013344832684
+    second: Enemy Nameplate Panel_20
+  - first:
+      213: 3932894062715924080
+    second: Enemy Nameplate Panel_21
+  - first:
+      213: -2013486792262852020
+    second: Enemy Nameplate Panel_22
+  - first:
+      213: 3172583470372792468
+    second: Enemy Nameplate Panel_23
+  - first:
+      213: 1945656439726909483
+    second: Enemy Nameplate Panel_24
+  - first:
+      213: 3519334868432487860
+    second: Enemy Nameplate Panel_25
+  - first:
+      213: -8288994414363605487
+    second: Enemy Nameplate Panel_26
+  - first:
+      213: 8708365132105974094
+    second: Enemy Nameplate Panel_27
+  - first:
+      213: 4954517033154852833
+    second: Enemy Nameplate Panel_28
+  - first:
+      213: 4851920162844871096
+    second: Enemy Nameplate Panel_29
+  - first:
+      213: 5924641215600910281
+    second: Enemy Nameplate Panel_30
+  - first:
+      213: 7250017978896853993
+    second: Enemy Nameplate Panel_31
+  - first:
+      213: 1660462079742720943
+    second: Enemy Nameplate Panel_32
+  - first:
+      213: -6715769134623103630
+    second: Enemy Nameplate Panel_33
+  - first:
+      213: -14954998363376627
+    second: Enemy Nameplate Panel_34
+  - first:
+      213: -7506057121357153373
+    second: Enemy Nameplate Panel_35
+  - first:
+      213: -8656224172392067553
+    second: Enemy Nameplate Panel_36
+  - first:
+      213: 7494826105805019008
+    second: Enemy Nameplate Panel_37
+  - first:
+      213: 2154991304829412329
+    second: Enemy Nameplate Panel_38
+  - first:
+      213: -8449357901117285577
+    second: Enemy Nameplate Panel_39
+  - first:
+      213: -5930296110565589787
+    second: Enemy Nameplate Panel_40
+  - first:
+      213: -2523217055929703649
+    second: Enemy Nameplate Panel_41
+  - first:
+      213: 2604824099469115956
+    second: Enemy Nameplate Panel_42
+  - first:
+      213: -8871861055728888842
+    second: Enemy Nameplate Panel_43
+  - first:
+      213: 7689611407560301162
+    second: Enemy Nameplate Panel_44
+  - first:
+      213: -3127524940529017055
+    second: Enemy Nameplate Panel_45
+  - first:
+      213: 6770790152394917655
+    second: Enemy Nameplate Panel_46
+  - first:
+      213: 2298572534721064063
+    second: Enemy Nameplate Panel_47
+  - first:
+      213: 4915989419625421018
+    second: Enemy Nameplate Panel_48
+  - first:
+      213: 1255306368709605771
+    second: Enemy Nameplate Panel_49
+  - first:
+      213: -5253684936513074631
+    second: Enemy Nameplate Panel_50
+  - first:
+      213: -2108378818644536779
+    second: Enemy Nameplate Panel_51
+  - first:
+      213: -7278609705687027459
+    second: Enemy Nameplate Panel_52
+  - first:
+      213: -430896242321980059
+    second: Enemy Nameplate Panel_53
+  - first:
+      213: 1298698961605020357
+    second: Enemy Nameplate Panel_54
+  - first:
+      213: -6048658350490020618
+    second: Enemy Nameplate Panel_55
+  - first:
+      213: 7579621093397754176
+    second: Enemy Nameplate Panel_56
+  - first:
+      213: -1645430170509696306
+    second: Enemy Nameplate Panel_57
+  - first:
+      213: -8943397209931914972
+    second: Enemy Nameplate Panel_58
+  - first:
+      213: -3460900146253567680
+    second: Enemy Nameplate Panel_59
+  - first:
+      213: 8988151166208785960
+    second: Enemy Nameplate Panel_60
+  - first:
+      213: 8493356553566753372
+    second: Enemy Nameplate Panel_61
+  - first:
+      213: -5045501880733477920
+    second: Enemy Nameplate Panel_62
+  - first:
+      213: 1705139734075321519
+    second: Enemy Nameplate Panel_63
+  - first:
+      213: 8408245445912873017
+    second: Enemy Nameplate Panel_64
+  - first:
+      213: 5632855482997128469
+    second: Enemy Nameplate Panel_65
+  - first:
+      213: -8428757658196957652
+    second: Enemy Nameplate Panel_66
+  - first:
+      213: -2559499242919969882
+    second: Enemy Nameplate Panel_67
+  - first:
+      213: 982582676294074984
+    second: Enemy Nameplate Panel_68
+  - first:
+      213: 5420519635391533598
+    second: Enemy Nameplate Panel_69
+  - first:
+      213: 8066214104866241700
+    second: Enemy Nameplate Panel_70
+  - first:
+      213: 33240558435728976
+    second: Enemy Nameplate Panel_71
+  - first:
+      213: -1479839114942124808
+    second: Enemy Nameplate Panel_72
+  - first:
+      213: -8630498167339080944
+    second: Enemy Nameplate Panel_73
+  - first:
+      213: 6665525989696050399
+    second: Enemy Nameplate Panel_74
+  - first:
+      213: -5793444896574027069
+    second: Enemy Nameplate Panel_75
+  - first:
+      213: -850497886992045255
+    second: Enemy Nameplate Panel_76
+  - first:
+      213: -690655751323509935
+    second: Enemy Nameplate Panel_77
+  - first:
+      213: -6439335177086337318
+    second: Enemy Nameplate Panel_78
+  - first:
+      213: -5734854467170537478
+    second: Enemy Nameplate Panel_79
+  - first:
+      213: -9178724498301014831
+    second: Enemy Nameplate Panel_80
+  - first:
+      213: -4829476133354395126
+    second: Enemy Nameplate Panel_81
+  - first:
+      213: 7701038971131802905
+    second: Enemy Nameplate Panel_82
+  - first:
+      213: 5471299620493380562
+    second: Enemy Nameplate Panel_83
+  - first:
+      213: 1994443225581511208
+    second: Enemy Nameplate Panel_84
+  - first:
+      213: -78019655201763115
+    second: Enemy Nameplate Panel_85
+  - first:
+      213: -2974653289313979493
+    second: Enemy Nameplate Panel_86
+  - first:
+      213: -4438687666018661481
+    second: Enemy Nameplate Panel_87
+  - first:
+      213: -8388069199434936844
+    second: Enemy Nameplate Panel_88
+  - first:
+      213: -1975299310838652141
+    second: Enemy Nameplate Panel_89
+  - first:
+      213: -1982536822052842349
+    second: Enemy Nameplate Panel_90
+  - first:
+      213: 805199275691611374
+    second: Enemy Nameplate Panel_91
+  - first:
+      213: -7879769666948788289
+    second: Enemy Nameplate Panel_92
+  - first:
+      213: -8490410551984021720
+    second: Enemy Nameplate Panel_93
+  - first:
+      213: -7370677960245562289
+    second: Enemy Nameplate Panel_94
+  - first:
+      213: 3845046289249472642
+    second: Enemy Nameplate Panel_95
+  - first:
+      213: 7049869279949156578
+    second: Enemy Nameplate Panel_96
+  - first:
+      213: 4878437363856648891
+    second: Enemy Nameplate Panel_97
+  - first:
+      213: -7406785411473687165
+    second: Enemy Nameplate Panel_98
+  - first:
+      213: 5977018764447161357
+    second: Enemy Nameplate Panel_99
+  - first:
+      213: 2547198858925517647
+    second: Enemy Nameplate Panel_100
+  - first:
+      213: -4354833769692056622
+    second: Enemy Nameplate Panel_101
+  - first:
+      213: -1884840518455185142
+    second: Enemy Nameplate Panel_102
+  - first:
+      213: -6484550388844996870
+    second: Enemy Nameplate Panel_103
+  - first:
+      213: 5451717542157090579
+    second: Enemy Nameplate Panel_104
+  - first:
+      213: -2504601747135372806
+    second: Enemy Nameplate Panel_105
+  - first:
+      213: -4992585594452725113
+    second: Enemy Nameplate Panel_106
+  - first:
+      213: 8349286171498112348
+    second: Enemy Nameplate Panel_107
+  - first:
+      213: -1011443905424582008
+    second: Enemy Nameplate Panel_108
+  - first:
+      213: 7673660300118405331
+    second: Enemy Nameplate Panel_109
+  - first:
+      213: 3699885473600004220
+    second: Enemy Nameplate Panel_110
+  - first:
+      213: 1120511003386812324
+    second: Enemy Nameplate Panel_111
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1536
+        height: 1024
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbb877c2fd30339a0800000000000000
+      internalID: -6254651200428864577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_1
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 1006
+        width: 8
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 223e7c3e3b838fd70800000000000000
+      internalID: 9077067394237063970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_2
+      rect:
+        serializedVersion: 2
+        x: 974
+        y: 1016
+        width: 44
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dce8c7b5c66e36b50800000000000000
+      internalID: 6585360433211543245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_3
+      rect:
+        serializedVersion: 2
+        x: 995
+        y: 1008
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1db3a7b89530bbda0800000000000000
+      internalID: -5928140801376109615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_4
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 1016
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82085c3fff7033ba0800000000000000
+      internalID: -6110531473523769304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_5
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 994
+        width: 100
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b049a9d2643ad5e0800000000000000
+      internalID: -1884135894937943882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_6
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 1008
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 03ec47e752d72ea30800000000000000
+      internalID: 4243091398925274672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_7
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 999
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b27f03a33aab0f790800000000000000
+      internalID: -7498288169353152725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_8
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 971
+        width: 8
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 475c404e68a268220800000000000000
+      internalID: 2487722603008279924
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_9
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 991
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5e0dd60273e1a060800000000000000
+      internalID: 6963096577772424799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_10
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 975
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5b4d623c2a55a0e0800000000000000
+      internalID: -2259300492185351333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_11
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 951
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d746d77003824fd0800000000000000
+      internalID: -2359179216754948135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_12
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 964
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93598467145c70130800000000000000
+      internalID: 3533009317643457849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_13
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 960
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1164f845a03d32dd0800000000000000
+      internalID: -2511932125820795375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_14
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 952
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e76a219ab821bf00800000000000000
+      internalID: 1130729763211208677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_15
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 952
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ebca6d76d5c8c660800000000000000
+      internalID: 7406387112228604903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_16
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 943
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64f45b10dd3c84680800000000000000
+      internalID: -8770544920320192698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_17
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 936
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cf04ec6a5a9c45aa0800000000000000
+      internalID: -6173087475912785668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_18
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 928
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 589b6bc091ef16700800000000000000
+      internalID: 531985614547368325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_19
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 919
+        width: 6
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 251c0fce21742d600800000000000000
+      internalID: 491533455946989906
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_20
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 891
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 453d7d5fa5bf04890800000000000000
+      internalID: -7475699013344832684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_21
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 899
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07eec6b0052749630800000000000000
+      internalID: 3932894062715924080
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_22
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 896
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c426b3b2e68ae04e0800000000000000
+      internalID: -2013486792262852020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_23
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 896
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 498a8d37bd7470c20800000000000000
+      internalID: 3172583470372792468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_24
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 862
+        width: 8
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b28afd0393c500b10800000000000000
+      internalID: 1945656439726909483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_25
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 884
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b58096aa6037d030800000000000000
+      internalID: 3519334868432487860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_26
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 880
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11609a24f7397fc80800000000000000
+      internalID: -8288994414363605487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_27
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 871
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e410391e2f35ad870800000000000000
+      internalID: 8708365132105974094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_28
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 865
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e731d2ddfaf1c440800000000000000
+      internalID: 4954517033154852833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_29
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 864
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b98ce87eab755340800000000000000
+      internalID: 4851920162844871096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_30
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 854
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9cfd785abcd883250800000000000000
+      internalID: 5924641215600910281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_31
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 836
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9eba75780fc3d9460800000000000000
+      internalID: 7250017978896853993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_32
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 819
+        width: 7
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fab321ac6752b0710800000000000000
+      internalID: 1660462079742720943
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_33
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 807
+        width: 9
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 275e141cd8bccc2a0800000000000000
+      internalID: -6715769134623103630
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_34
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 797
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d043fea128edacff0800000000000000
+      internalID: -14954998363376627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_35
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 791
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ab37b121d025d790800000000000000
+      internalID: -7506057121357153373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_36
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 779
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1ecb645af9eed780800000000000000
+      internalID: -8656224172392067553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_37
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 774
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 08715d942a8f20860800000000000000
+      internalID: 7494826105805019008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_38
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 776
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e3a9629c2118ed10800000000000000
+      internalID: 2154991304829412329
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_39
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 768
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73b93cb61c9ddba80800000000000000
+      internalID: -8449357901117285577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_40
+      rect:
+        serializedVersion: 2
+        x: 995
+        y: 770
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ec7bd48b1b53bda0800000000000000
+      internalID: -5930296110565589787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_41
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 760
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f136a1ac47bbbfcd0800000000000000
+      internalID: -2523217055929703649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_42
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 339
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 432cb3fa7b1362420800000000000000
+      internalID: 2604824099469115956
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_43
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 336
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f358acff51d0e480800000000000000
+      internalID: -8871861055728888842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_44
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 331
+        width: 6
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a6a5c6875dcf6ba60800000000000000
+      internalID: 7689611407560301162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_45
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 315
+        width: 8
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12fd79d03acc894d0800000000000000
+      internalID: -3127524940529017055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_46
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 320
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 717463a35cda6fd50800000000000000
+      internalID: 6770790152394917655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_47
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 320
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7ca48eba8b26ef10800000000000000
+      internalID: 2298572534721064063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_48
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 328
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad81a54c45a193440800000000000000
+      internalID: 4915989419625421018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_49
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 302
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b89b83fcd7ebb6110800000000000000
+      internalID: 1255306368709605771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_50
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 312
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93a415da2692717b0800000000000000
+      internalID: -5253684936513074631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_51
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 312
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5321cb692a88db2e0800000000000000
+      internalID: -2108378818644536779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_52
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 296
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df070d1590f2dfa90800000000000000
+      internalID: -7278609705687027459
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_53
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 296
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 565095d8626250af0800000000000000
+      internalID: -430896242321980059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_54
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 303
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5cac2a423d7e50210800000000000000
+      internalID: 1298698961605020357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_55
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 286
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f497530749de0ca0800000000000000
+      internalID: -6048658350490020618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_56
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 279
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 041f704d939303960800000000000000
+      internalID: 7579621093397754176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_57
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 287
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec22f005af14a29e0800000000000000
+      internalID: -1645430170509696306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_58
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 283
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 421e9c82f9ba2e380800000000000000
+      internalID: -8943397209931914972
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_59
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 271
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 049657357a968ffc0800000000000000
+      internalID: -3460900146253567680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_60
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 272
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82e33694dd35cbc70800000000000000
+      internalID: 8988151166208785960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_61
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 272
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c52151629c67ed570800000000000000
+      internalID: 8493356553566753372
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_62
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 246
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e3d05d85c6caf9b0800000000000000
+      internalID: -5045501880733477920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_63
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 220
+        width: 8
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: faca6fdcd8fd9a710800000000000000
+      internalID: 1705139734075321519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_64
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 240
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 938ceeb2fa610b470800000000000000
+      internalID: 8408245445912873017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_65
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 232
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51db727b73ceb2e40800000000000000
+      internalID: 5632855482997128469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_66
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 208
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c26215d3199070b80800000000000000
+      internalID: -8428757658196957652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_67
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 200
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6abbfd6dff4da7cd0800000000000000
+      internalID: -2559499242919969882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_68
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 200
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86206f6fcb5d2ad00800000000000000
+      internalID: 982582676294074984
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_69
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 190
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e12da85a3ed893b40800000000000000
+      internalID: 5420519635391533598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_70
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 198
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ac3cc2edf2f0ff60800000000000000
+      internalID: 8066214104866241700
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_71
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 192
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 05e72bd9c18167000800000000000000
+      internalID: 33240558435728976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_72
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 180
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8fc652d5a2e867be0800000000000000
+      internalID: -1479839114942124808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_73
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 184
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0132815a4af4a3880800000000000000
+      internalID: -8630498167339080944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_74
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 158
+        width: 10
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd497f87294b08c50800000000000000
+      internalID: 6665525989696050399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_75
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 168
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cac7e1cf8c899fa0800000000000000
+      internalID: -5793444896574027069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_76
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 176
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 93b6e9b8dac6234f0800000000000000
+      internalID: -850497886992045255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_77
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 150
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15b1840e04c4a66f0800000000000000
+      internalID: -690655751323509935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_78
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 159
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ade771406c2e2a6a0800000000000000
+      internalID: -6439335177086337318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_79
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 136
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: affecb52f34b960b0800000000000000
+      internalID: -5734854467170537478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_80
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 135
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1dca79323be9e9080800000000000000
+      internalID: -9178724498301014831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_81
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 139
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0a2f2c5b014afcb0800000000000000
+      internalID: -4829476133354395126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_82
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 126
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91530c374269fda60800000000000000
+      internalID: 7701038971131802905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_83
+      rect:
+        serializedVersion: 2
+        x: 995
+        y: 131
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dbcc334406fdeb40800000000000000
+      internalID: 5471299620493380562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_84
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 111
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8226871fb8fadab10800000000000000
+      internalID: 1994443225581511208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_85
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 120
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d053367981daeef0800000000000000
+      internalID: -78019655201763115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_86
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 75
+        width: 10
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b933e700898e7b6d0800000000000000
+      internalID: -2974653289313979493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_87
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 103
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79bcc0eb51d9662c0800000000000000
+      internalID: -4438687666018661481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_88
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 91
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4fd09484187979b80800000000000000
+      internalID: -8388069199434936844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_89
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 103
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 313636c0eb35694e0800000000000000
+      internalID: -1975299310838652141
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_90
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 93
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3949867a34d9c74e0800000000000000
+      internalID: -1982536822052842349
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_91
+      rect:
+        serializedVersion: 2
+        x: 1089
+        y: 98
+        width: 8
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee41001a974ac2b00800000000000000
+      internalID: 805199275691611374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_92
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 80
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fbf8e999c3f65a290800000000000000
+      internalID: -7879769666948788289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_93
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 88
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82f93cb46900c2a80800000000000000
+      internalID: -8490410551984021720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_94
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 68
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4433c9527716b990800000000000000
+      internalID: -7370677960245562289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_95
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 72
+        width: 7
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28016a76a395c5530800000000000000
+      internalID: 3845046289249472642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_96
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 56
+        width: 7
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e0fe4022ca26d160800000000000000
+      internalID: 7049869279949156578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_97
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 72
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bba2ba37fe0b3b340800000000000000
+      internalID: 4878437363856648891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_98
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 48
+        width: 8
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38db09d39efc53990800000000000000
+      internalID: -7406785411473687165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_99
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 35
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0c97be06e2a2f250800000000000000
+      internalID: 5977018764447161357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_100
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 46
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4b2986ddd7795320800000000000000
+      internalID: 2547198858925517647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_101
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 35
+        width: 7
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d331a562c58093c0800000000000000
+      internalID: -4354833769692056622
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_102
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 43
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a013737e883b7d5e0800000000000000
+      internalID: -1884840518455185142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_103
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 11
+        width: 8
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af6d5c827cf3206a0800000000000000
+      internalID: -6484550388844996870
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_104
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 23
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31ff90c583468ab40800000000000000
+      internalID: 5451717542157090579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_105
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 24
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af16c2e1bfddd3dd0800000000000000
+      internalID: -2504601747135372806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_106
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 26
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 782b9eb8ad5c6bab0800000000000000
+      internalID: -4992585594452725113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_107
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 19
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c55e93c598f9ed370800000000000000
+      internalID: 8349286171498112348
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_108
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 0
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88a1fea7021a6f1f0800000000000000
+      internalID: -1011443905424582008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_109
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 8
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d0339bd2615e7a60800000000000000
+      internalID: 7673660300118405331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_110
+      rect:
+        serializedVersion: 2
+        x: 1087
+        y: 10
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c706e834c32a85330800000000000000
+      internalID: 3699885473600004220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Enemy Nameplate Panel_111
+      rect:
+        serializedVersion: 2
+        x: 1041
+        y: 0
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a799c322dadc8f00800000000000000
+      internalID: 1120511003386812324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Enemy Nameplate Panel_0: -6254651200428864577
+      Enemy Nameplate Panel_1: 9077067394237063970
+      Enemy Nameplate Panel_10: -2259300492185351333
+      Enemy Nameplate Panel_100: 2547198858925517647
+      Enemy Nameplate Panel_101: -4354833769692056622
+      Enemy Nameplate Panel_102: -1884840518455185142
+      Enemy Nameplate Panel_103: -6484550388844996870
+      Enemy Nameplate Panel_104: 5451717542157090579
+      Enemy Nameplate Panel_105: -2504601747135372806
+      Enemy Nameplate Panel_106: -4992585594452725113
+      Enemy Nameplate Panel_107: 8349286171498112348
+      Enemy Nameplate Panel_108: -1011443905424582008
+      Enemy Nameplate Panel_109: 7673660300118405331
+      Enemy Nameplate Panel_11: -2359179216754948135
+      Enemy Nameplate Panel_110: 3699885473600004220
+      Enemy Nameplate Panel_111: 1120511003386812324
+      Enemy Nameplate Panel_12: 3533009317643457849
+      Enemy Nameplate Panel_13: -2511932125820795375
+      Enemy Nameplate Panel_14: 1130729763211208677
+      Enemy Nameplate Panel_15: 7406387112228604903
+      Enemy Nameplate Panel_16: -8770544920320192698
+      Enemy Nameplate Panel_17: -6173087475912785668
+      Enemy Nameplate Panel_18: 531985614547368325
+      Enemy Nameplate Panel_19: 491533455946989906
+      Enemy Nameplate Panel_2: 6585360433211543245
+      Enemy Nameplate Panel_20: -7475699013344832684
+      Enemy Nameplate Panel_21: 3932894062715924080
+      Enemy Nameplate Panel_22: -2013486792262852020
+      Enemy Nameplate Panel_23: 3172583470372792468
+      Enemy Nameplate Panel_24: 1945656439726909483
+      Enemy Nameplate Panel_25: 3519334868432487860
+      Enemy Nameplate Panel_26: -8288994414363605487
+      Enemy Nameplate Panel_27: 8708365132105974094
+      Enemy Nameplate Panel_28: 4954517033154852833
+      Enemy Nameplate Panel_29: 4851920162844871096
+      Enemy Nameplate Panel_3: -5928140801376109615
+      Enemy Nameplate Panel_30: 5924641215600910281
+      Enemy Nameplate Panel_31: 7250017978896853993
+      Enemy Nameplate Panel_32: 1660462079742720943
+      Enemy Nameplate Panel_33: -6715769134623103630
+      Enemy Nameplate Panel_34: -14954998363376627
+      Enemy Nameplate Panel_35: -7506057121357153373
+      Enemy Nameplate Panel_36: -8656224172392067553
+      Enemy Nameplate Panel_37: 7494826105805019008
+      Enemy Nameplate Panel_38: 2154991304829412329
+      Enemy Nameplate Panel_39: -8449357901117285577
+      Enemy Nameplate Panel_4: -6110531473523769304
+      Enemy Nameplate Panel_40: -5930296110565589787
+      Enemy Nameplate Panel_41: -2523217055929703649
+      Enemy Nameplate Panel_42: 2604824099469115956
+      Enemy Nameplate Panel_43: -8871861055728888842
+      Enemy Nameplate Panel_44: 7689611407560301162
+      Enemy Nameplate Panel_45: -3127524940529017055
+      Enemy Nameplate Panel_46: 6770790152394917655
+      Enemy Nameplate Panel_47: 2298572534721064063
+      Enemy Nameplate Panel_48: 4915989419625421018
+      Enemy Nameplate Panel_49: 1255306368709605771
+      Enemy Nameplate Panel_5: -1884135894937943882
+      Enemy Nameplate Panel_50: -5253684936513074631
+      Enemy Nameplate Panel_51: -2108378818644536779
+      Enemy Nameplate Panel_52: -7278609705687027459
+      Enemy Nameplate Panel_53: -430896242321980059
+      Enemy Nameplate Panel_54: 1298698961605020357
+      Enemy Nameplate Panel_55: -6048658350490020618
+      Enemy Nameplate Panel_56: 7579621093397754176
+      Enemy Nameplate Panel_57: -1645430170509696306
+      Enemy Nameplate Panel_58: -8943397209931914972
+      Enemy Nameplate Panel_59: -3460900146253567680
+      Enemy Nameplate Panel_6: 4243091398925274672
+      Enemy Nameplate Panel_60: 8988151166208785960
+      Enemy Nameplate Panel_61: 8493356553566753372
+      Enemy Nameplate Panel_62: -5045501880733477920
+      Enemy Nameplate Panel_63: 1705139734075321519
+      Enemy Nameplate Panel_64: 8408245445912873017
+      Enemy Nameplate Panel_65: 5632855482997128469
+      Enemy Nameplate Panel_66: -8428757658196957652
+      Enemy Nameplate Panel_67: -2559499242919969882
+      Enemy Nameplate Panel_68: 982582676294074984
+      Enemy Nameplate Panel_69: 5420519635391533598
+      Enemy Nameplate Panel_7: -7498288169353152725
+      Enemy Nameplate Panel_70: 8066214104866241700
+      Enemy Nameplate Panel_71: 33240558435728976
+      Enemy Nameplate Panel_72: -1479839114942124808
+      Enemy Nameplate Panel_73: -8630498167339080944
+      Enemy Nameplate Panel_74: 6665525989696050399
+      Enemy Nameplate Panel_75: -5793444896574027069
+      Enemy Nameplate Panel_76: -850497886992045255
+      Enemy Nameplate Panel_77: -690655751323509935
+      Enemy Nameplate Panel_78: -6439335177086337318
+      Enemy Nameplate Panel_79: -5734854467170537478
+      Enemy Nameplate Panel_8: 2487722603008279924
+      Enemy Nameplate Panel_80: -9178724498301014831
+      Enemy Nameplate Panel_81: -4829476133354395126
+      Enemy Nameplate Panel_82: 7701038971131802905
+      Enemy Nameplate Panel_83: 5471299620493380562
+      Enemy Nameplate Panel_84: 1994443225581511208
+      Enemy Nameplate Panel_85: -78019655201763115
+      Enemy Nameplate Panel_86: -2974653289313979493
+      Enemy Nameplate Panel_87: -4438687666018661481
+      Enemy Nameplate Panel_88: -8388069199434936844
+      Enemy Nameplate Panel_89: -1975299310838652141
+      Enemy Nameplate Panel_9: 6963096577772424799
+      Enemy Nameplate Panel_90: -1982536822052842349
+      Enemy Nameplate Panel_91: 805199275691611374
+      Enemy Nameplate Panel_92: -7879769666948788289
+      Enemy Nameplate Panel_93: -8490410551984021720
+      Enemy Nameplate Panel_94: -7370677960245562289
+      Enemy Nameplate Panel_95: 3845046289249472642
+      Enemy Nameplate Panel_96: 7049869279949156578
+      Enemy Nameplate Panel_97: 4878437363856648891
+      Enemy Nameplate Panel_98: -7406785411473687165
+      Enemy Nameplate Panel_99: 5977018764447161357
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

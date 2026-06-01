@@ -19273,6 +19273,7 @@ MonoBehaviour:
   _unitInfoPanelUI: {fileID: 934369861}
   _combatForecastUI: {fileID: 1467876469}
   _deathEventChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
+  _skipModeController: {fileID: 1745841787}
   _battleDialogueChannel: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
   _spriteRenderer: {fileID: 2111737127}
   _idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
@@ -27007,7 +27008,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 992180728}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 81d0aa79fb870f34c8a75d9545bb5683, type: 3}
   m_Name: 
@@ -45662,6 +45663,97 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1738786867}
   m_CullTransparentMesh: 1
+--- !u!1 &1745841784
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1745841788}
+  - component: {fileID: 1745841787}
+  - component: {fileID: 1745841786}
+  - component: {fileID: 1745841785}
+  m_Layer: 0
+  m_Name: CombatRuntime
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1745841785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745841784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 551dbfdcc4ad9034c8f02630f946dd59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Combat.Playback.CombatAnimationSettingsRef
+  _asset: {fileID: 11400000, guid: 9a3bb83a7be03d74fac4d3be9242edd9, type: 2}
+--- !u!114 &1745841786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745841784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24a8763de17782b49a7320ff3e86af6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.MapDamageFloat
+  _floatUpSeconds: 0.8
+  _holdSeconds: 0.18
+  _riseDistance: 0.65
+  _spawnOffset: {x: 0, y: 0.6, z: 0}
+  _fontSize: 56
+  _damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
+  _critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
+  _missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
+  _outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  _canvasScale: 0.025
+  _sortingLayerName: UIOverlay
+  _sortingOrder: 100
+--- !u!114 &1745841787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745841784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d4dc7fd5ad64514ca7c17a3f11f838f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatAnimation.SkipModePlaybackController
+  _damageFloat: {fileID: 1745841786}
+  _audioMap: {fileID: 11400000, guid: c7b95e35473e8974085f9e22ea5eec1c, type: 2}
+  _interHitGap: 0.15
+  _hpDrainDuration: 0.1
+  _deathFadeDuration: 0.3
+  _hpBarHideDelay: 0.3
+  _hitFlashDuration: 0.1
+  _hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+--- !u!4 &1745841788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745841784}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1748647878
 GameObject:
   m_ObjectHideFlags: 0
@@ -58166,3 +58258,4 @@ SceneRoots:
   - {fileID: 1995867635}
   - {fileID: 843855193}
   - {fileID: 113097127}
+  - {fileID: 1745841788}

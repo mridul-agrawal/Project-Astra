@@ -15,12 +15,14 @@ MonoBehaviour:
   _unitName: Rakshasa-Pati
   _unitId: rakshasa_pati
   _defaultClass: {fileID: 11400000, guid: 712d738c1fb0e0943b6a1f3b4f389058, type: 2}
+  _defaultLoadout: {fileID: 0}
   _baseStats:
     _values: 
   _baseLevel: 3
   _personalGrowths:
     _values: 
-  _portrait: {fileID: 0}
+  _mapSprite: {fileID: 0}
+  _portrait: {fileID: 21300000, guid: 2b6392d2491586646801df49de61bb15, type: 3}
   _woundedPortrait: {fileID: 0}
   _criticalPortrait: {fileID: 0}
   _deceasedPortrait: {fileID: 0}
@@ -29,3 +31,5 @@ MonoBehaviour:
   _personality: 0
   _isNamedCommander: 1
   _oneLineIdentity: Commander of the Eastern Wall, sworn to protect the border villages.
+  _isLord: 0
+  _lastWordsLines: []

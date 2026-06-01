@@ -5,73 +5,30 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.Forecast
 {
-    // Ref-holder attached to the CombatForecast prefab root. CombatForecastUI reads
-    // these fields to drive the live text + HP bars + state badges. Only references
-    // the UI actually drives are kept — static chrome (panel art, header/footer text,
-    // ATK/DEF tags) lives in the prefab and is never touched by code.
+    // Ref-holder on the CombatForecast prefab root. Matches the two-panel layout
+    // (Left = attacker, Right = defender): each side has a name, portrait, equipped
+    // weapon (name + icon), the Atk/Hit/Crit values, and an HP number.
+    // CombatForecastUI fills these every cursor move from the computed forecast.
     public class CombatForecastRefs : MonoBehaviour
     {
         [Serializable]
         public class UnitSide
         {
-            [Header("Identity")]
             public TextMeshProUGUI unitName;
-            public TextMeshProUGUI unitSub;     // "Class · House"
-
-            [Header("Meta")]
-            public TextMeshProUGUI levelValue;
-            public TextMeshProUGUI classValue;
-
-            [Header("Weapon row")]
-            public Image weaponIcon;
+            public Image portrait;
             public TextMeshProUGUI weaponName;
-            public TextMeshProUGUI weaponArrow; // "▲" / "▼" / hidden
-
-            [Header("HP")]
-            public TextMeshProUGUI hpNumeric;      // "34 / 34"
-            public TextMeshProUGUI hpDelta;        // "−9" (vermillion) or hidden
-            public Image hpTrackBg;
-            public Image hpFill;                    // width driven by current%
-            public Image hpPredOverlay;             // width + left driven by delta
-            public RectTransform koBadgeTransform;  // KO badge parent (activate/deactivate)
-
-            [Header("Badges")]
-            public GameObject effectiveChip;        // activate when isEffective
-
-            [Header("Doubling chip")]
-            public GameObject doubleChipRoot;       // hidden by default
-            public Image doubleChipBg;              // swap: chipDoubleAs / Brave / Combined
-            public TextMeshProUGUI doubleChipNumber;  // "×2" / "×4"
-            public TextMeshProUGUI doubleChipTag;     // "AS DOUBLE" / "BRAVE" / "COMBINED"
+            public Image weaponIcon;
+            public TextMeshProUGUI atkValue;   // attacker/defender damage per hit
+            public TextMeshProUGUI hitValue;   // "%"
+            public TextMeshProUGUI critValue;  // "%"
+            public TextMeshProUGUI hpValue;    // current HP
         }
-
-        [Header("DMG hero numbers (spine)")]
-        public TextMeshProUGUI attackerDmgNum;
-        public TextMeshProUGUI defenderDmgNum;
-
-        [Header("Stat row values (HIT, CRIT)")]
-        public TextMeshProUGUI hitAttackerVal, hitDefenderVal;
-        public TextMeshProUGUI critAttackerVal, critDefenderVal;
-
-        [Header("No-counter ribbon")]
-        public GameObject noCounterRibbon;
-        public TextMeshProUGUI noCounterLabel;    // "CANNOT COUNTER" / "OUT OF RANGE"
 
         [Header("Unit sides")]
         public UnitSide left  = new UnitSide();
         public UnitSide right = new UnitSide();
 
-        [Header("Doubling-chip sprites (state swap)")]
-        public Sprite chipDoubleAs;
-        public Sprite chipDoubleBrave;
-        public Sprite chipDoubleCombined;
-
-        [Header("HP-fill sprites (state swap)")]
-        public Sprite hpFillGreen;
-        public Sprite hpFillYellow;
-        public Sprite hpFillRed;
-
-        [Header("Weapon-icon sigils (reused from InventoryPopup)")]
+        [Header("Weapon-icon sigils (by weapon type)")]
         public Sprite sigilSword;
         public Sprite sigilLance;
         public Sprite sigilAxe;

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Combat.Playback;
+using ProjectAstra.Core.UI.CombatAnimation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Input;
@@ -55,6 +57,9 @@ namespace ProjectAstra.Core.Cursor
         [Header("UM-01 War's Ledger")]
         [SerializeField] private UnitDeathEventChannel _deathEventChannel;
 
+        [Header("Combat Animation")]
+        [SerializeField] private SkipModePlaybackController _skipModeController;
+
         [Header("Tutorial Dialogue")]
         [SerializeField] private BattleDialogueEventChannel _battleDialogueChannel;
 
@@ -105,6 +110,15 @@ namespace ProjectAstra.Core.Cursor
         }
 
         private void OnDisable()
+        {
+            RemoveListenersFromInputEvents();
+            RemoveListenersFromGameStateEvents();
+        }
+
+        // Safety net: scene unload during the same frame as a queued input
+        // callback can leave OnDisable's unsubscribe behind, leaking a stale
+        // delegate into the DontDestroyOnLoad InputManager.
+        private void OnDestroy()
         {
             RemoveListenersFromInputEvents();
             RemoveListenersFromGameStateEvents();
@@ -218,6 +232,7 @@ namespace ProjectAstra.Core.Cursor
                     else
                     {
                         if (target != null) _battleDialogueChannel?.Raise(BattleDialogueEventType.PreCombat);
+                        ApplyPerCombatSpeedOverrideIfHeld();
                         _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
                     }
                     break;
@@ -287,9 +302,10 @@ namespace ProjectAstra.Core.Cursor
         private void InitializeCombatExecutor()
         {
             if (_combatExecutor != null) return;
+            var dispatcher = new CombatPlaybackDispatcher(_skipModeController);
             _combatExecutor = new CombatExecutor(
                 _mapRenderer, _terrainStatTable, _deathEventChannel,
-                _combatForecastUI, _toastUI);
+                _combatForecastUI, _toastUI, dispatcher);
         }
 
         private void InitializeStaffExecutor()
@@ -387,6 +403,22 @@ namespace ProjectAstra.Core.Cursor
 
             if (target != null)
                 _spriteRenderer.sprite = target;
+        }
+
+        // Hold SkipAnimation while confirming a target to flip the combat-anim
+        // speed for that single combat. Persisted Normal/Fast → Skip; persisted
+        // Skip → Normal. The dispatcher clears the override on combat complete.
+        private static void ApplyPerCombatSpeedOverrideIfHeld()
+        {
+            var im = InputManager.Instance;
+            var settings = CombatAnimationSettingsRef.Current;
+            if (im == null || settings == null) return;
+            if (!im.IsActionHeld(InputContext.SkipAnimation)) return;
+            var current = settings.EffectiveSpeed;
+            var flipped = current == CombatAnimationSpeed.Skip
+                ? CombatAnimationSpeed.Normal
+                : CombatAnimationSpeed.Skip;
+            settings.SetOneShotOverride(flipped);
         }
 
         private Vector2Int ClampToMapBounds(Vector2Int pos)

@@ -212,6 +212,16 @@ namespace ProjectAstra.Core.Input
             if (action != null) action.canceled += callback;
         }
 
+        // Whether an action is currently being held down. Used by callers that
+        // need a modifier-key check at decision time (e.g. hold SkipAnimation
+        // while confirming an attack to flip the playback speed for that one
+        // combat).
+        public bool IsActionHeld(string actionName)
+        {
+            var action = _gameplayMap?.FindAction(actionName);
+            return action != null && action.IsPressed();
+        }
+
         #endregion
 
         // Cancel takes priority over Confirm when both fire on the same frame —
