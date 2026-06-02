@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.UI.BattleMap;
@@ -24,9 +23,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
     {
         [Header("Visual helpers (assign in scene)")]
         [SerializeField] private MapDamageFloat _damageFloat;
-
-        [Header("Audio")]
-        [SerializeField] private WeaponAudioMap _audioMap;
 
         [Header("Timing (Skip mode)")]
         [SerializeField] private float _interHitGap = 0.15f;
@@ -67,7 +63,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
                 int newHp = Mathf.Max(0, curHp - damage);
 
                 CombatResultApplicator.ApplyHitDamage(receiver, newHp);
-                PlayHitSfx(attacker, hit.Hit, hit.Crit);
 
                 if (_damageFloat != null)
                 {
@@ -103,16 +98,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
             CombatResultApplicator.Finalize(ctx);
             ctx.OnComplete?.Invoke();
-        }
-
-        private void PlayHitSfx(TestUnit attacker, bool hit, bool crit)
-        {
-            if (_audioMap == null) return;
-            if (!hit) { _audioMap.GetMiss()?.Play(); return; }
-            if (attacker?.Inventory == null) return;
-            var weapon = attacker.Inventory.GetEquippedWeapon();
-            if (weapon.IsEmpty) return;
-            _audioMap.GetImpact(weapon.weaponType, crit)?.Play();
         }
 
         private static SpriteRenderer GetSprite(TestUnit unit) =>

@@ -1,77 +1,216 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace ProjectAstra.Core.Audio
 {
-    // The whole game's audio playback. One singleton, one AudioListener, one
-    // pool of AudioSources that any system rents from. Call SoundSO.Play() (or
-    // AudioManager.Instance.Play(sound)) from anywhere — gameplay, UI, dialogue.
-    [RequireComponent(typeof(AudioListener))]
     public class AudioManager : MonoBehaviour
     {
         public static AudioManager Instance { get; private set; }
 
-        [Tooltip("How many sounds can play at the same time. Higher = more concurrent SFX but more memory.")]
-        [SerializeField] private int _poolSize = 10;
+        [SerializeField] private AudioMixer _mixer;
+        [SerializeField] private int _initialSfxSources = 8;
+        [SerializeField] private float _defaultMusicFade = 1f;
 
-        private AudioSource[] _pool;
-        private SoundSO[] _currentSoundPerSource;
+        private readonly List<AudioSource> _sfxPool = new();
+        private readonly Dictionary<AudioBus, AudioMixerGroup> _groups = new();
+        private AudioSource[] _musicSources;
+        private AudioSource _ambientSource;
+        private int _activeMusicIndex;
+        private Coroutine _musicFade;
 
         private void Awake()
         {
-            if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            BuildPool();
+            if (!EnsureSingleInstance()) return;
+            BuildAudioSources();
+            RestoreSavedVolumes();
         }
 
-        private void OnDestroy()
-        {
-            if (Instance == this) Instance = null;
-        }
+        // --- Public API -------------------------------------------------
 
         public void Play(SoundSO sound)
         {
-            if (sound == null) return;
-            var clip = sound.PickClip();
-            if (clip == null) return;
-
-            if (sound.SingleInstance) StopAnyPriorPlaysOf(sound);
-
-            int slot = FindFreeSlotOrSteal();
-            var src = _pool[slot];
-            src.clip = clip;
-            src.volume = sound.PickVolume();
-            src.pitch  = sound.PickPitch();
-            src.outputAudioMixerGroup = sound.MixerGroup;
-            src.Play();
-            _currentSoundPerSource[slot] = sound;
+            if (!IsPlayable(sound)) return;
+            var source = ReserveSfxSource();
+            ConfigureOneShot(source, sound);
+            source.Play();
         }
 
-        private void BuildPool()
+        public void PlayMusic(SoundSO music) => PlayMusic(music, _defaultMusicFade);
+
+        public void PlayMusic(SoundSO music, float fadeSeconds)
         {
-            _pool = new AudioSource[_poolSize];
-            _currentSoundPerSource = new SoundSO[_poolSize];
-            for (int i = 0; i < _poolSize; i++)
+            if (!IsPlayable(music)) return;
+            RestartMusicFade(CrossfadeRoutine(music, fadeSeconds));
+        }
+
+        public void StopMusic(float fadeSeconds)
+        {
+            RestartMusicFade(FadeOutRoutine(_musicSources[_activeMusicIndex], fadeSeconds));
+        }
+
+        public void PlayAmbient(SoundSO ambient)
+        {
+            if (!IsPlayable(ambient)) return;
+            _ambientSource.clip = ambient.PickClip();
+            _ambientSource.volume = ambient.Volume;
+            _ambientSource.outputAudioMixerGroup = GroupFor(AudioBus.Ambient);
+            _ambientSource.Play();
+        }
+
+        public void StopAmbient() => _ambientSource.Stop();
+
+        public void SetVolume(AudioBus bus, float linear)
+        {
+            float clamped = Mathf.Clamp01(linear);
+            if (_mixer != null) _mixer.SetFloat(ParamFor(bus), LinearToDecibels(clamped));
+            PlayerPrefs.SetFloat(PrefKey(bus), clamped);
+            PlayerPrefs.Save();
+        }
+
+        public float GetVolume(AudioBus bus) => PlayerPrefs.GetFloat(PrefKey(bus), 1f);
+
+        // --- Setup ------------------------------------------------------
+
+        private bool EnsureSingleInstance()
+        {
+            if (Instance != null && Instance != this)
             {
-                var src = gameObject.AddComponent<AudioSource>();
-                src.playOnAwake = false;
-                src.loop = false;
-                src.spatialBlend = 0f;
-                _pool[i] = src;
+                Destroy(gameObject);
+                return false;
+            }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            return true;
+        }
+
+        private void BuildAudioSources()
+        {
+            CacheMixerGroups();
+            _musicSources = new[] { CreateSource("Music A", AudioBus.Music), CreateSource("Music B", AudioBus.Music) };
+            _ambientSource = CreateSource("Ambient", AudioBus.Ambient);
+            _ambientSource.loop = true;
+            for (int i = 0; i < _initialSfxSources; i++)
+                _sfxPool.Add(CreateSource($"SFX {i}", AudioBus.Sfx));
+        }
+
+        private void CacheMixerGroups()
+        {
+            if (_mixer == null) return;
+            foreach (AudioBus bus in Enum.GetValues(typeof(AudioBus)))
+            {
+                var matches = _mixer.FindMatchingGroups(bus.ToString());
+                if (matches.Length > 0) _groups[bus] = matches[0];
             }
         }
 
-        private int FindFreeSlotOrSteal()
+        private AudioSource CreateSource(string label, AudioBus bus)
         {
-            for (int i = 0; i < _pool.Length; i++)
-                if (!_pool[i].isPlaying) return i;
-            return 0;  // Pool exhausted — overwrite slot 0 (rare; tune _poolSize if it happens).
+            var host = new GameObject(label);
+            host.transform.SetParent(transform);
+            var source = host.AddComponent<AudioSource>();
+            source.playOnAwake = false;
+            source.outputAudioMixerGroup = GroupFor(bus);
+            return source;
         }
 
-        private void StopAnyPriorPlaysOf(SoundSO sound)
+        private void RestoreSavedVolumes()
         {
-            for (int i = 0; i < _pool.Length; i++)
-                if (_currentSoundPerSource[i] == sound && _pool[i].isPlaying) _pool[i].Stop();
+            foreach (AudioBus bus in Enum.GetValues(typeof(AudioBus)))
+                SetVolume(bus, GetVolume(bus));
         }
+
+        // --- Playback helpers ------------------------------------------
+
+        private bool IsPlayable(SoundSO sound)
+        {
+            if (sound != null && sound.HasClip) return true;
+            if (sound != null) Debug.LogWarning($"[AudioManager] '{sound.name}' has no clip assigned.");
+            return false;
+        }
+
+        private void ConfigureOneShot(AudioSource source, SoundSO sound)
+        {
+            source.clip = sound.PickClip();
+            source.volume = sound.Volume;
+            source.pitch = sound.PickPitch();
+            source.loop = false;
+            source.outputAudioMixerGroup = GroupFor(sound.Bus);
+        }
+
+        private AudioSource ReserveSfxSource()
+        {
+            foreach (var source in _sfxPool)
+                if (!source.isPlaying) return source;
+
+            var grown = CreateSource($"SFX {_sfxPool.Count}", AudioBus.Sfx);
+            _sfxPool.Add(grown);
+            return grown;
+        }
+
+        private AudioMixerGroup GroupFor(AudioBus bus) => _groups.TryGetValue(bus, out var group) ? group : null;
+
+        // --- Music fading ----------------------------------------------
+
+        private void RestartMusicFade(IEnumerator routine)
+        {
+            if (_musicFade != null) StopCoroutine(_musicFade);
+            _musicFade = StartCoroutine(routine);
+        }
+
+        private IEnumerator CrossfadeRoutine(SoundSO music, float fadeSeconds)
+        {
+            var outgoing = _musicSources[_activeMusicIndex];
+            _activeMusicIndex = 1 - _activeMusicIndex;
+            var incoming = _musicSources[_activeMusicIndex];
+
+            StartLoopingTrack(incoming, music);
+            yield return Crossfade(outgoing, incoming, music.Volume, fadeSeconds);
+            outgoing.Stop();
+        }
+
+        private void StartLoopingTrack(AudioSource source, SoundSO music)
+        {
+            source.clip = music.PickClip();
+            source.pitch = 1f;
+            source.loop = true;
+            source.volume = 0f;
+            source.outputAudioMixerGroup = GroupFor(AudioBus.Music);
+            source.Play();
+        }
+
+        private IEnumerator Crossfade(AudioSource outgoing, AudioSource incoming, float targetVolume, float seconds)
+        {
+            float fromVolume = outgoing.volume;
+            for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+            {
+                float k = t / seconds;
+                outgoing.volume = Mathf.Lerp(fromVolume, 0f, k);
+                incoming.volume = Mathf.Lerp(0f, targetVolume, k);
+                yield return null;
+            }
+            incoming.volume = targetVolume;
+        }
+
+        private IEnumerator FadeOutRoutine(AudioSource source, float seconds)
+        {
+            float fromVolume = source.volume;
+            for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+            {
+                source.volume = Mathf.Lerp(fromVolume, 0f, t / seconds);
+                yield return null;
+            }
+            source.Stop();
+        }
+
+        // --- Volume conversion -----------------------------------------
+
+        private static string ParamFor(AudioBus bus) => $"{bus}Volume";
+
+        private static string PrefKey(AudioBus bus) => $"audio.volume.{bus}";
+
+        private static float LinearToDecibels(float linear) => linear <= 0.0001f ? -80f : Mathf.Log10(linear) * 20f;
     }
 }

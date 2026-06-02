@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.State;
@@ -25,9 +24,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
         public static CombatPlaybackContext PendingContext;
 
         [SerializeField] private CombatSceneRefs _refs;
-
-        [Header("Audio")]
-        [SerializeField] private WeaponAudioMap _audioMap;
 
         [Header("Terrain background")]
         [SerializeField] private TerrainBackgroundDatabase _terrainDb;
@@ -115,12 +111,10 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
             int newHp = Mathf.Max(0, CurrentHP(receiverUnit) - (step.Hit.Hit ? step.Hit.Damage : 0));
 
-            PlayAttackBark(attackerUnit);
             if (attackerView != null)
                 yield return attackerView.PlayWindup(CombatTiming.PhaseDuration(CombatTiming.Phase.Windup));
 
             CombatResultApplicator.ApplyHitDamage(receiverUnit, newHp);
-            PlayHitSfx(attackerUnit, step.Hit.Hit, step.Hit.Crit);
 
             float strikeDur  = CombatTiming.PhaseDuration(CombatTiming.Phase.Strike);
             float resolveDur = CombatTiming.PhaseDuration(CombatTiming.Phase.Resolve);
@@ -167,12 +161,10 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             float shortWindup = _braveShortWindup * SpeedScale();
 
             // --- Hit 1 ---
-            PlayAttackBark(attackerUnit);
             if (attackerView != null)
                 yield return attackerView.PlayWindup(CombatTiming.PhaseDuration(CombatTiming.Phase.Windup));
 
             CombatResultApplicator.ApplyHitDamage(receiverUnit, hpAfterHit1);
-            PlayHitSfx(attackerUnit, step.Hit1.Hit, step.Hit1.Crit);
 
             if (attackerView != null) StartCoroutine(attackerView.PlayStrike(strikeDur));
             // Defender's recoil tween is sized to span BOTH strikes; the controller
@@ -205,7 +197,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
             // --- Hit 2 ---
             CombatResultApplicator.ApplyHitDamage(receiverUnit, hpAfterHit2);
-            PlayHitSfx(attackerUnit, step.Hit2.Hit, step.Hit2.Crit);
 
             if (attackerView != null) StartCoroutine(attackerView.PlayStrike(strikeDur));
             if (step.Hit2.Crit) StartCoroutine(CritFlash(step.Hit2CritContext));
@@ -228,7 +219,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
         private IEnumerator RunDeath(CombatPlaybackContext ctx, TestUnit victim, TestUnit killer, CombatFighterView victimView, CritContext context)
         {
             var args = UnitDeathHook.PrepareDeath(victim, killer);
-            PlayDeathBark(victim);
 
             if (context == CritContext.Tragic)
                 yield return CombatTiming.WaitSeconds(_tragicPreDeathHold);
@@ -297,31 +287,6 @@ namespace ProjectAstra.Core.UI.CombatAnimation
                 case CombatAnimationSpeed.Skip: return 0f;
                 default:                        return 1f;
             }
-        }
-
-        // Voice barks fire only in Normal mode — the cadence in Fast and
-        // Skip is too tight to hear them cleanly. The gate is checked here
-        // so AudioManager stays generic.
-        private static void PlayAttackBark(TestUnit attacker)
-        {
-            if (!CombatTiming.ShouldPlayVoice()) return;
-            attacker?.UnitDefinition?.AttackBark?.Play();
-        }
-
-        private static void PlayDeathBark(TestUnit victim)
-        {
-            if (!CombatTiming.ShouldPlayVoice()) return;
-            victim?.UnitDefinition?.DeathBark?.Play();
-        }
-
-        private void PlayHitSfx(TestUnit attacker, bool hit, bool crit)
-        {
-            if (_audioMap == null) return;
-            if (!hit) { _audioMap.GetMiss()?.Play(); return; }
-            if (attacker?.Inventory == null) return;
-            var weapon = attacker.Inventory.GetEquippedWeapon();
-            if (weapon.IsEmpty) return;
-            _audioMap.GetImpact(weapon.weaponType, crit)?.Play();
         }
 
         private static int CurrentHP(TestUnit unit) =>
