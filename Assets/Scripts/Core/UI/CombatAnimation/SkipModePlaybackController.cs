@@ -107,16 +107,12 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         private void PlayHitSfx(TestUnit attacker, bool hit, bool crit)
         {
-            if (AudioService.Instance == null) return;
-            if (!hit)
-            {
-                if (_audioMap != null) AudioService.Instance.PlaySfx(_audioMap.GetMiss());
-                return;
-            }
-            if (_audioMap == null || attacker?.Inventory == null) return;
+            if (_audioMap == null) return;
+            if (!hit) { _audioMap.GetMiss()?.Play(); return; }
+            if (attacker?.Inventory == null) return;
             var weapon = attacker.Inventory.GetEquippedWeapon();
             if (weapon.IsEmpty) return;
-            AudioService.Instance.PlaySfx(_audioMap.GetImpact(weapon.weaponType, crit));
+            _audioMap.GetImpact(weapon.weaponType, crit)?.Play();
         }
 
         private static SpriteRenderer GetSprite(TestUnit unit) =>

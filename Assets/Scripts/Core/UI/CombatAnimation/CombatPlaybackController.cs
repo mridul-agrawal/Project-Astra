@@ -299,32 +299,29 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             }
         }
 
+        // Voice barks fire only in Normal mode — the cadence in Fast and
+        // Skip is too tight to hear them cleanly. The gate is checked here
+        // so AudioManager stays generic.
         private static void PlayAttackBark(TestUnit attacker)
         {
-            var def = attacker != null ? attacker.UnitDefinition : null;
-            if (def == null || AudioService.Instance == null) return;
-            AudioService.Instance.PlayVoiceBark(def.PickAttackBark());
+            if (!CombatTiming.ShouldPlayVoice()) return;
+            attacker?.UnitDefinition?.AttackBark?.Play();
         }
 
         private static void PlayDeathBark(TestUnit victim)
         {
-            var def = victim != null ? victim.UnitDefinition : null;
-            if (def == null || AudioService.Instance == null) return;
-            AudioService.Instance.PlayVoiceBark(def.DeathBark);
+            if (!CombatTiming.ShouldPlayVoice()) return;
+            victim?.UnitDefinition?.DeathBark?.Play();
         }
 
         private void PlayHitSfx(TestUnit attacker, bool hit, bool crit)
         {
-            if (AudioService.Instance == null) return;
-            if (!hit)
-            {
-                if (_audioMap != null) AudioService.Instance.PlaySfx(_audioMap.GetMiss());
-                return;
-            }
-            if (_audioMap == null || attacker?.Inventory == null) return;
+            if (_audioMap == null) return;
+            if (!hit) { _audioMap.GetMiss()?.Play(); return; }
+            if (attacker?.Inventory == null) return;
             var weapon = attacker.Inventory.GetEquippedWeapon();
             if (weapon.IsEmpty) return;
-            AudioService.Instance.PlaySfx(_audioMap.GetImpact(weapon.weaponType, crit));
+            _audioMap.GetImpact(weapon.weaponType, crit)?.Play();
         }
 
         private static int CurrentHP(TestUnit unit) =>

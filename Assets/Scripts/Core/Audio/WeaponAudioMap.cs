@@ -4,9 +4,9 @@ using ProjectAstra.Core.Combat;
 
 namespace ProjectAstra.Core.Audio
 {
-    // Maps WeaponType to its impact and crit-impact clips. Unfilled entries fall
-    // back to _defaultImpact / _defaultCritImpact so a new weapon type never
-    // crashes — it just plays the generic thwack until art swaps in.
+    // Picks the right sound asset for an attacker's weapon. Each weapon type
+    // has its own impact and crit-impact sounds; unfilled entries fall through
+    // to the defaults so a new weapon type still plays something.
     [CreateAssetMenu(menuName = "Project Astra/Audio/Weapon Audio Map", fileName = "WeaponAudioMap")]
     public class WeaponAudioMap : ScriptableObject
     {
@@ -14,19 +14,19 @@ namespace ProjectAstra.Core.Audio
         public struct Entry
         {
             public WeaponType weaponType;
-            public AudioClip impact;
-            public AudioClip critImpact;
+            public SoundSO impact;
+            public SoundSO critImpact;
         }
 
         [Header("Fallbacks (used when a per-type entry is unset)")]
-        [SerializeField] private AudioClip _defaultImpact;
-        [SerializeField] private AudioClip _defaultCritImpact;
-        [SerializeField] private AudioClip _missWhoosh;
+        [SerializeField] private SoundSO _defaultImpact;
+        [SerializeField] private SoundSO _defaultCritImpact;
+        [SerializeField] private SoundSO _missWhoosh;
 
         [Header("Per-weapon overrides")]
         [SerializeField] private Entry[] _entries;
 
-        public AudioClip GetImpact(WeaponType type, bool crit)
+        public SoundSO GetImpact(WeaponType type, bool crit)
         {
             var entry = FindEntry(type);
             if (crit)
@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.Audio
             return _defaultImpact;
         }
 
-        public AudioClip GetMiss() => _missWhoosh;
+        public SoundSO GetMiss() => _missWhoosh;
 
         private Entry FindEntry(WeaponType type)
         {

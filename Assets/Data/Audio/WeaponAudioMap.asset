@@ -12,31 +12,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 761e216202396b54bb5c89dd053cff4e, type: 3}
   m_Name: WeaponAudioMap
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.WeaponAudioMap
-  _defaultImpact: {fileID: 8300000, guid: cb30e3be2501c30489df63f738d304e8, type: 3}
-  _defaultCritImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
-  _missWhoosh: {fileID: 8300000, guid: 0ba9579b60917124f945ef40eb9986b7, type: 3}
+  _defaultImpact: {fileID: 11400000, guid: 36c06c5367fe27c4a92220fc8b115780, type: 2}
+  _defaultCritImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
+  _missWhoosh: {fileID: 11400000, guid: 48d254e61f226ae4d9a6a74c79a5b05e, type: 2}
   _entries:
   - weaponType: 0
-    impact: {fileID: 8300000, guid: cb30e3be2501c30489df63f738d304e8, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: 36c06c5367fe27c4a92220fc8b115780, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 1
-    impact: {fileID: 8300000, guid: 0576ab8a7fec1cc4e82634c915bf025b, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: af0a10057820649468a2cf315646284a, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 2
-    impact: {fileID: 8300000, guid: 4731e70fa3cb1d045b3ce04d6215645f, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: eed1413f4bdaa6a49a11e3916c2c9844, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 3
-    impact: {fileID: 8300000, guid: 187ccd370cd7c9b4bb9c209e21e39116, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: 6e1854fcb3c97664c98c768bd0962800, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 4
-    impact: {fileID: 8300000, guid: 06ff455f463fafd4aaf73b175fe9873f, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: ad38899dbba5f2d4db262dd06a48cf6c, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 5
-    impact: {fileID: 8300000, guid: 06ff455f463fafd4aaf73b175fe9873f, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: ad38899dbba5f2d4db262dd06a48cf6c, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 6
-    impact: {fileID: 8300000, guid: 06ff455f463fafd4aaf73b175fe9873f, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: ad38899dbba5f2d4db262dd06a48cf6c, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
   - weaponType: 7
-    impact: {fileID: 8300000, guid: bb5056ccf7ee29b4280765d182e232f5, type: 3}
-    critImpact: {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+    impact: {fileID: 11400000, guid: 76446864e216e304ba96f8f09cc1388d, type: 2}
+    critImpact: {fileID: 11400000, guid: 6fde81e660bc3d545ac1415e9e9cf56d, type: 2}
