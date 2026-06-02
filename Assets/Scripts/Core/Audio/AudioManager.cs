@@ -11,6 +11,7 @@ namespace ProjectAstra.Core.Audio
         public static AudioManager Instance { get; private set; }
 
         [SerializeField] private AudioMixer _mixer;
+        [SerializeField] private AudioLibrary _library;
         [SerializeField] private int _initialSfxSources = 8;
         [SerializeField] private float _defaultMusicFade = 1f;
 
@@ -28,36 +29,19 @@ namespace ProjectAstra.Core.Audio
             RestoreSavedVolumes();
         }
 
-        // --- Public API -------------------------------------------------
+        // --- Public API (play by id) -----------------------------------
 
-        public void Play(SoundSO sound)
-        {
-            if (!IsPlayable(sound)) return;
-            var source = ReserveSfxSource();
-            ConfigureOneShot(source, sound);
-            source.Play();
-        }
+        public void Play(SoundId id) => PlaySound(Resolve(id));
 
-        public void PlayMusic(SoundSO music) => PlayMusic(music, _defaultMusicFade);
+        public void PlayMusic(SoundId id) => PlayMusic(id, _defaultMusicFade);
 
-        public void PlayMusic(SoundSO music, float fadeSeconds)
-        {
-            if (!IsPlayable(music)) return;
-            RestartMusicFade(CrossfadeRoutine(music, fadeSeconds));
-        }
+        public void PlayMusic(SoundId id, float fadeSeconds) => PlayTrack(Resolve(id), fadeSeconds);
+
+        public void PlayAmbient(SoundId id) => PlayLoop(Resolve(id));
 
         public void StopMusic(float fadeSeconds)
         {
             RestartMusicFade(FadeOutRoutine(_musicSources[_activeMusicIndex], fadeSeconds));
-        }
-
-        public void PlayAmbient(SoundSO ambient)
-        {
-            if (!IsPlayable(ambient)) return;
-            _ambientSource.clip = ambient.PickClip();
-            _ambientSource.volume = ambient.Volume;
-            _ambientSource.outputAudioMixerGroup = GroupFor(AudioBus.Ambient);
-            _ambientSource.Play();
         }
 
         public void StopAmbient() => _ambientSource.Stop();
@@ -71,6 +55,38 @@ namespace ProjectAstra.Core.Audio
         }
 
         public float GetVolume(AudioBus bus) => PlayerPrefs.GetFloat(PrefKey(bus), 1f);
+
+        // --- Resolve + playback ----------------------------------------
+
+        private SoundSO Resolve(SoundId id)
+        {
+            var sound = _library != null ? _library.Resolve(id) : null;
+            if (sound == null) Debug.LogWarning($"[AudioManager] No sound mapped for id '{id}'.");
+            return sound;
+        }
+
+        private void PlaySound(SoundSO sound)
+        {
+            if (!IsPlayable(sound)) return;
+            var source = ReserveSfxSource();
+            ConfigureOneShot(source, sound);
+            source.Play();
+        }
+
+        private void PlayTrack(SoundSO music, float fadeSeconds)
+        {
+            if (!IsPlayable(music)) return;
+            RestartMusicFade(CrossfadeRoutine(music, fadeSeconds));
+        }
+
+        private void PlayLoop(SoundSO ambient)
+        {
+            if (!IsPlayable(ambient)) return;
+            _ambientSource.clip = ambient.PickClip();
+            _ambientSource.volume = ambient.Volume;
+            _ambientSource.outputAudioMixerGroup = GroupFor(AudioBus.Ambient);
+            _ambientSource.Play();
+        }
 
         // --- Setup ------------------------------------------------------
 
