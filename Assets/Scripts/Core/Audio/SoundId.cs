@@ -1,6 +1,6 @@
 namespace ProjectAstra.Core.Audio
 {
-    // Append new ids at the end of a group. Reordering shifts saved references.
+    // Unity stores these as integers in the AudioLibrary asset. Don't reorder — add new ids at the end.
     public enum SoundId
     {
         None = 0,

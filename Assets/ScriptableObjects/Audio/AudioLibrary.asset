@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d4eaa04f78a6474398f406f47318391, type: 3}
   m_Name: AudioLibrary
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.AudioLibrary
-  _entries:
+  soundNodes:
   - id: 1
     sound: {fileID: 11400000, guid: 8b0383cc1d238174f8f4a53377a533aa, type: 2}

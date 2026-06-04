@@ -726,10 +726,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bac395b21ce39844f9219f0d46f9009c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.AudioManager
-  _mixer: {fileID: 24100000, guid: 2ccccae3c9949b34eb7bcb3476da5777, type: 2}
-  _library: {fileID: 11400000, guid: 534e1974791246f4bb237e95ec6b82ef, type: 2}
-  _initialSfxSources: 8
-  _defaultMusicFade: 1
+  mixer: {fileID: 24100000, guid: 2ccccae3c9949b34eb7bcb3476da5777, type: 2}
+  library: {fileID: 11400000, guid: 534e1974791246f4bb237e95ec6b82ef, type: 2}
+  initialSfxSources: 8
+  defaultMusicFade: 1
 --- !u!4 &1732601983
 Transform:
   m_ObjectHideFlags: 0
