@@ -64,7 +64,8 @@ namespace ProjectAstra.Core.Editor
             movieSettings.OutputFormat = MovieRecorderSettings.VideoRecorderOutputFormat.WebM;
             movieSettings.VideoBitRateMode = VideoBitrateMode.High;
             movieSettings.ImageInputSettings = new GameViewInputSettings();
-            movieSettings.AudioInputSettings.PreserveAudio = true;
+            // Video only. Capturing audio mutes editor playback while recording, so keep this off.
+            movieSettings.AudioInputSettings.PreserveAudio = false;
             string timestamp = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
             movieSettings.OutputFile = Path.Combine(outputFolder, $"devlog_{timestamp}");
 

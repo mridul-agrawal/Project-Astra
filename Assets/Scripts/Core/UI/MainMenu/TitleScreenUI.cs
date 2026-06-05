@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
@@ -11,6 +12,10 @@ namespace ProjectAstra.Core.UI.MainMenu
 
         private void OnDisable() => InputManager.Instance.OnConfirm -= PlayerPressedConfirm;
 
-        private void PlayerPressedConfirm() => GameStateManager.Instance.RequestTransition(GameState.MainMenu, "TitleScreenUI");
+        private void PlayerPressedConfirm()
+        {
+            AudioManager.Instance.Play(SoundId.UiConfirm);
+            GameStateManager.Instance.RequestTransition(GameState.MainMenu, "TitleScreenUI");
+        }
     }
 }
