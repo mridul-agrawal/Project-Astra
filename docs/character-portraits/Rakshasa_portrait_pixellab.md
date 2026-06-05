@@ -21,7 +21,7 @@ Portrait bust, head and shoulders, of a fierce demon-warrior — ember coppery-r
 glowing red eyes, protruding tusks and sharp fangs, heavy ridged brow, wild matted dark
 hair and beard, vermilion and white war-paint streaked across the face, crude gold armlets
 and bone-and-bead trophy necklaces, crimson and dark-leather wrap, cold menacing glare,
-facing slightly to one side, warm ember rim light, dark background.
+facing slightly to one side, warm ember rim light.
 
 ---
 
