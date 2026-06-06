@@ -32,10 +32,17 @@ namespace ProjectAstra.Core.Scenes
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
+            EnsureScreenFader();
 
             var eventSystem = FindFirstObjectByType<EventSystem>();
             if (eventSystem != null)
                 DontDestroyOnLoad(eventSystem.gameObject);
+        }
+
+        private void EnsureScreenFader()
+        {
+            if (ScreenFader.Instance == null)
+                new GameObject("ScreenFader").AddComponent<ScreenFader>();
         }
 
         private void Start()
@@ -63,7 +70,11 @@ namespace ProjectAstra.Core.Scenes
             if (sceneName == _currentBaseScene) return;
 
             _currentBaseScene = sceneName;
-            SceneManager.LoadScene(sceneName);
+
+            if (ScreenFader.Instance != null)
+                ScreenFader.Instance.RunTransition(() => SceneManager.LoadScene(sceneName));
+            else
+                SceneManager.LoadScene(sceneName);
         }
     }
 }

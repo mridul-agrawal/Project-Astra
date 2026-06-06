@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.InputSystem;
@@ -13,8 +12,7 @@ namespace ProjectAstra.Core.UI.Splash
     public class SplashScreenController : MonoBehaviour
     {
         [SerializeField] private VideoPlayer _videoPlayer;
-        [SerializeField] private CanvasGroup _fadeGroup;        // full-screen black, starts transparent
-        [SerializeField] private float _fadeDuration = 0.35f;
+        [SerializeField] private CanvasGroup _fadeGroup;        // full-screen black cover, opaque until the video renders
 
         private bool _isExiting;
         private bool _playbackBegan;
@@ -106,27 +104,7 @@ namespace ProjectAstra.Core.UI.Splash
             _isExiting = true;
 
             if (_videoPlayer != null) _videoPlayer.loopPointReached -= OnVideoFinished;
-            StartCoroutine(FadeThenAdvance());
-        }
-
-        private IEnumerator FadeThenAdvance()
-        {
-            yield return FadeToBlack();
-            AdvanceToTitle();
-        }
-
-        private IEnumerator FadeToBlack()
-        {
-            if (_fadeGroup == null) yield break;
-
-            float elapsed = 0f;
-            while (elapsed < _fadeDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                _fadeGroup.alpha = Mathf.Clamp01(elapsed / _fadeDuration);
-                yield return null;
-            }
-            _fadeGroup.alpha = 1f;
+            AdvanceToTitle();   // ScreenFader fades the swap to the Title scene
         }
 
         // The state machine drives the actual scene swap. When the scene is played directly in
