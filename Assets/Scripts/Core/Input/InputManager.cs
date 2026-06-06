@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using ProjectAstra.Core.State;
@@ -48,6 +49,12 @@ namespace ProjectAstra.Core.Input
         private GameState _currentState;
         private DelayedAutoShift _das;
 
+        // Removers for every action callback we bind, so we can detach them on destroy.
+        // Without this, the InputActionAsset (a persistent project asset) keeps our
+        // callbacks alive across editor play sessions when Domain Reload is disabled,
+        // firing stale handlers into already-destroyed objects.
+        private readonly List<Action> _actionUnbinders = new();
+
         private bool _confirmPendingThisFrame;
         private bool _cancelPendingThisFrame;
 
@@ -84,6 +91,15 @@ namespace ProjectAstra.Core.Input
                 _stateChangedChannel.Unregister(OnStateChanged);
 
             InputSystem.onActionChange -= OnInputActionChange;
+        }
+
+        // The action callbacks live on the InputActionAsset, which outlives this
+        // component (and survives play-session restarts when Domain Reload is off).
+        // Detach them here so a destroyed InputManager can't keep handling input.
+        private void OnDestroy()
+        {
+            UnbindActions();
+            _gameplayMap?.Disable();
         }
 
         private void Update()
@@ -202,14 +218,28 @@ namespace ProjectAstra.Core.Input
         private void Bind(string actionName, Action<InputAction.CallbackContext> callback)
         {
             var action = _gameplayMap.FindAction(actionName);
-            if (action != null) action.performed += callback;
-            else Debug.LogWarning($"[InputManager] Action '{actionName}' not found in Gameplay map");
+            if (action == null)
+            {
+                Debug.LogWarning($"[InputManager] Action '{actionName}' not found in Gameplay map");
+                return;
+            }
+            action.performed += callback;
+            _actionUnbinders.Add(() => action.performed -= callback);
         }
 
         private void BindCancel(string actionName, Action<InputAction.CallbackContext> callback)
         {
             var action = _gameplayMap.FindAction(actionName);
-            if (action != null) action.canceled += callback;
+            if (action == null) return;
+            action.canceled += callback;
+            _actionUnbinders.Add(() => action.canceled -= callback);
+        }
+
+        private void UnbindActions()
+        {
+            foreach (var unbind in _actionUnbinders)
+                unbind();
+            _actionUnbinders.Clear();
         }
 
         // Whether an action is currently being held down. Used by callers that
