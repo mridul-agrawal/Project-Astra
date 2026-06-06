@@ -19,6 +19,7 @@ namespace ProjectAstra.Core.Scenes
         // set is a no-op for SceneLoader (overlays, sub-states, etc.).
         private static readonly HashSet<GameState> SceneStates = new()
         {
+            GameState.Splash,
             GameState.TitleScreen,
             GameState.MainMenu,
             GameState.Cutscene,

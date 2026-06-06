@@ -49,6 +49,8 @@ namespace ProjectAstra.Core.State
         {
             return new[]
             {
+                new TransitionEntry(GameState.Splash, GameState.TitleScreen),
+
                 new TransitionEntry(GameState.TitleScreen, GameState.MainMenu),
 
                 new TransitionEntry(GameState.MainMenu, GameState.Cutscene),

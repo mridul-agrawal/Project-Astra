@@ -17,6 +17,8 @@ namespace ProjectAstra.Core.State
         GameOver,
         SaveMenu,
         SettingsMenu,
-        LevelUpScreen
+        LevelUpScreen,
+        // Appended (not inserted) so existing serialized GameState ints keep their values.
+        Splash
     }
 }
