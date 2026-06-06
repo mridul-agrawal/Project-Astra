@@ -1,0 +1,350 @@
+================================================================================
+PROJECT ASTRA — POLISHING TODO (Programmer-Facing)
+Branch: polishing
+Generated: 2026-06-06
+================================================================================
+
+GOAL
+  Take the game from "raw prototype" to "jaw-dropping". This list is the
+  programmer's work queue. It deliberately covers ONLY things we can change
+  ourselves right now — no items that are blocked on an artist.
+
+HOW THIS FILE IS ORGANIZED
+  PART A — NON-ART WORK (do this first, top to bottom). Tiered by impact.
+  PART B — ART-ADJACENT WORK WE CAN DO OURSELVES (do after Part A is DONE).
+           Anything needing a real artist is listed at the very end under
+           "DEFERRED — NEEDS AN ARTIST" so we don't forget it, but we will
+           NOT touch it now.
+
+CONVENTIONS
+  [ ] = not started      [~] = needs in-editor verification before acting
+  (file.cs:NN) = concrete reference found during the codebase sweep.
+  "VERIFY" items: a sweep flagged these but they must be confirmed live in
+  the editor before we "fix" them — do not assume the finding is correct.
+
+================================================================================
+PART A — NON-ART WORK
+================================================================================
+
+--------------------------------------------------------------------------------
+TIER 0 — CORRECTNESS / DEAD ENDS  (the game does not fully loop yet)
+--------------------------------------------------------------------------------
+These are not "polish", they are "the game has no ending". Do these first; a
+polished prototype that dead-ends still feels broken.
+
+[ ] A0.1  Wire battle result back into the campaign.
+          - GameFlow only has a 2-step campaign array: PlayCutscene(Opening) +
+            LoadBattle(Map1) (Flow/GameFlow.cs ~lines 21-25).
+          - A win or loss never feeds back. NotifyBattleFinished() just advances
+            to "campaign complete" log (GameFlow.cs ~line 67).
+          - TODO: have BattleVictoryWatcher / LordDeathWatcher call into GameFlow
+            with a result (Win / Lose / Retreat).
+
+[ ] A0.2  Wire BattleMap -> ChapterClear on victory.
+          - Transition table allows it (State/GameStateTransitionTable) but
+            nothing triggers it. Connect the victory result to the transition.
+
+[ ] A0.3  Wire defeat -> GameOver.
+          - LordDeathWatcher exists; route a loss/lord-death into the GameOver
+            state instead of dead-ending on the map.
+
+[ ] A0.4  Make ChapterClear actually go somewhere (next chapter or MainMenu).
+          - Right now it's a terminal screen with no exit wired.
+
+[ ] A0.5  Extend the campaign array with at least the real Map-1 -> result ->
+          (next or end) loop so the full TITLE -> play -> win/lose -> result
+          path can be walked end to end without the console saying "campaign
+          complete" prematurely.
+
+[ ] A0.6  Add a PlayMode smoke test that walks BootScene -> TitleScreen ->
+          ... -> BattleMap and asserts no illegal-transition errors. There are
+          ~30 EditMode tests but zero PlayMode tests; the flow above is exactly
+          the thing EditMode can't catch.
+
+--------------------------------------------------------------------------------
+TIER 1 — COMBAT CORRECTNESS  (player is shown wrong numbers)
+--------------------------------------------------------------------------------
+[~] A1.1  VERIFY weapon-triangle in the Combat FORECAST vs runtime.
+          - Sweep flagged the forecast core hardcoding triangle bonus = 0
+            (Combat/CombatForecast.cs ~lines 38-39) while the runtime applies
+            it — meaning the player could be shown "50% hit" and then fight at
+            "65%".
+          - BUT CombatForecastUI.cs (~lines 180-193) DOES compute a triangle
+            modifier (+/-15 hit, +/-1 dmg). So there may be two code paths and
+            only one is wrong, OR they agree. ACTION: open both, confirm which
+            number the panel actually displays, and make forecast == runtime.
+          - Until confirmed, treat as a possible player-facing lie, not a
+            cosmetic nit.
+
+[ ] A1.2  Extract combat magic numbers into named consts / a tuning SO:
+          - "unlikely death" threshold trueHitRoll < 30 (Combat/CombatRound.cs
+            ~line 159).
+          - Fortify heal = staff.might/2 + mag (AoE) vs staff.might + mag
+            (single) (Inventory/StaffEffects.cs ~line 82).
+          - Weapon-effectiveness multiplier might * 3 (CombatForecastUI ~line
+            201). These should be one place, not scattered literals.
+
+[ ] A1.3  Replace string-typed combatant comparisons with an enum/bool:
+          - h.Attacker == "Attacker" appears repeatedly in
+            Combat/Playback/BraveFlowComposer.cs (~line 50). Stringly-typed and
+            fragile.
+
+[ ] A1.4  Player feedback when an action silently fails:
+          - "unarmed" attack logs a warning but gives the player nothing
+            (Cursor/CombatExecutor.cs ~lines 57-62). Add a UI denial cue
+            (sound + small shake/flash) so a no-op isn't invisible.
+
+--------------------------------------------------------------------------------
+TIER 2 — AUDIO INTEGRATION  (highest feel-per-hour; the system exists, it's
+                             just not plugged in)
+--------------------------------------------------------------------------------
+The AudioManager is built and solid (crossfade music, SFX pool, mixer buses,
+PlayerPrefs volume). The problem: ONLY TitleScreen calls it
+(UI/MainMenu/TitleScreenUI.cs ~line 17). SoundIds UiCancel, UiMove, HitPhysical,
+HitCrit, Miss, MusicMap, MusicBattle, AmbientWind are DEFINED but never fired.
+
+[ ] A2.1  Wire UiConfirm to every menu button onClick (MainMenu, PreBattlePrep,
+          ChapterClear, GameOver, action menus). Currently silent everywhere
+          except the title.
+[ ] A2.2  Wire UiCancel to every cancel/back input path.
+[ ] A2.3  Wire UiMove to cursor/menu navigation (grid cursor move + menu up/down).
+[ ] A2.4  Fire combat SFX from CombatPlaybackController phase transitions:
+          HitPhysical on strike-land, HitCrit on crit flash, Miss on dodge.
+          Combat is currently 100% silent.
+[ ] A2.5  Fire a death SFX from UnitDeathHook / the death animation.
+[ ] A2.6  Auto-play battle music when BattleMap loads (e.g. from the HUD
+          controller's OnEnable) and menu music on menu scenes. Music IDs exist
+          but nothing starts them.
+[ ] A2.7  Phase-banner fanfare: play a stinger when PhaseBannerUI shows
+          PLAYER/ENEMY/ALLIED phase.
+[ ] A2.8  Heal / weapon-break / level-up audio cues (define new SoundIds if
+          needed; the catalog pattern is SoundId enum -> AudioLibrary -> SoundSO).
+[ ] A2.9  (optional) Ease the music crossfade volume instead of linear lerp.
+
+--------------------------------------------------------------------------------
+TIER 3 — GAME FEEL / JUICE  (motion, easing, impact — all programmer-side)
+--------------------------------------------------------------------------------
+Right now almost every motion in the game is an instant snap or a LINEAR lerp.
+Adding easing + a few impact effects is the single biggest "looks pro" lever.
+
+Foundational:
+[ ] A3.1  Add a tiny easing utility (EaseOutCubic, EaseInOutQuad, EaseOutBack)
+          and a reusable screen-shake + hit-stop helper. Everything below uses
+          these, so build them once.
+
+Cursor / map:
+[ ] A3.2  Tween the grid cursor between tiles instead of snapping
+          (Cursor/GridCursor.cs SnapToGridPosition ~line 436). ~0.08-0.12s.
+[ ] A3.3  Fade movement-range / attack-range highlights in and out instead of
+          popping (currently instant on/off).
+[ ] A3.4  Animate the path arrow during planning, not only after the move.
+[ ] A3.5  "Can't move/attack here" denial feedback (pairs with A1.4).
+
+Battle-map HUD:
+[ ] A3.6  Ease the map HP-bar drain (UI/BattleMap/MapHpBar.cs ~line 72 is a
+          linear lerp).
+[ ] A3.7  Scale-pop the damage floats (UI/BattleMap/MapDamageFloat.cs) — spawn
+          at ~1.2x then settle to 1.0x; they currently just rise + fade.
+[ ] A3.8  Color the hit flash by context (HitFlashEffect.cs is flat white) —
+          white normal, gold/red crit.
+[ ] A3.9  Slide the tile-info panel when it swaps sides instead of teleporting.
+
+Combat animation overlay:
+[ ] A3.10 Replace ALL linear lerps in CombatFighterView / CombatPlaybackController
+          with eased motion (windup, strike, recoil, dodge, death drop).
+[ ] A3.11 Add hit-stop: a 1-3 frame freeze at strike-land before the recoil.
+[ ] A3.12 Screen shake on crit (and a bigger one on lethal crit). Tie into the
+          existing Righteous/Tragic crit context so Tragic feels different.
+[ ] A3.13 Make brave/double attacks read as fused, not two identical lunges
+          (e.g. a second-hit flash or speed-up).
+[ ] A3.14 Pull the hardcoded motion distances (lunge 80, pull-back 12, recoil
+          40, dodge 70, etc. in CombatFighterView) into serialized fields so
+          they're tunable without recompiling.
+
+Screens / menus / overlays:
+[ ] A3.15 CanvasGroup fade for screen/state transitions (menus currently
+          SetActive snap in/out). ~0.2-0.3s in/out. Add a scene-load fade too.
+[ ] A3.16 Button selection should tween color + slight scale/glow instead of an
+          instant tint swap (every menu UI does an instant Color set).
+[ ] A3.17 Ease the EXP count-up (UI/Overlays/ExpGainOverlayUI) — currently a
+          linear lerp; the fade already uses SmoothStep, the counter should too.
+[ ] A3.18 Level-up stat-gain pulse/glow on the rows that actually increased
+          (UI/.../LevelUpScreenUI).
+[ ] A3.19 Forecast panel fade on appear/hide + highlight the weapon-triangle
+          winner side (CombatForecastUI).
+[ ] A3.20 Slide menus (unit action menu, inventory) in/out instead of instant
+          build/teardown.
+
+--------------------------------------------------------------------------------
+TIER 4 — ARCHITECTURE / PERFORMANCE HYGIENE
+--------------------------------------------------------------------------------
+[ ] A4.1  Kill the FindObjectsByType<TestUnit>() spam. It's called per-action /
+          per-frame in many places (UnitSelectionFlow ~265, GridCursor ~481,
+          ActionMenuFlow ~140/~299, StaffExecutor ~53, TargetingFlow ~64/~204,
+          plus HUD FindUnitAt on every cursor move). Build ONE unit registry
+          updated on spawn/death and read from it everywhere.
+
+[ ] A4.2  Wire real tile occupancy. GetOccupantType currently always returns
+          None (Cursor flow ~line 141-142), so pathfinding doesn't know where
+          units are. Masked today only because movement is sequential. Feed the
+          registry from A4.1 into the pathfinder.
+
+[ ] A4.3  Collapse the dual HP source. Combat reads both UnitInstance.CurrentHP
+          AND TestUnit.currentHP as a fallback. Pick UnitInstance as the single
+          source of truth and remove the legacy field.
+
+[ ] A4.4  Rename TestUnit -> something real (it IS the battle unit, not a test
+          double). Confusing prototype naming. Coordinate the serialized-field
+          rename with an asset re-wire (no FormerlySerializedAs per repo style).
+
+[ ] A4.5  Gate verbose Debug.Log behind a conditional. ~85 logs total; many are
+          per-hit combat traces (CombatExecutor ~149-165, StaffExecutor ~40/60).
+          Keep the prefixed error/warning logs; wrap the chatty per-event ones
+          in #if UNITY_EDITOR or a static Verbose flag so release is quiet and
+          the console is usable while debugging.
+
+[ ] A4.6  Reduce Resources.Load / Find-by-name fragility:
+          - DialogueService.cs ~line 59 Resources.Load<GameObject> hardcoded path
+          - UI/Overlays/OverlayManager.cs ~line 43 Resources.Load per-state path
+          - Editor/GenerateStateScenes.cs ~line 466 GameObject.Find (editor-only)
+          Prefer serialized prefab refs (or document the Resources contract so a
+          rename can't silently break loading).
+
+[ ] A4.7  Don't let bad data fail silently:
+          - UnitSpawner skips a unit if its definition is missing (logs, then
+            drops it) — at least surface it loudly / placeholder it.
+          - MapRenderer only warns on missing tilemap layers / ground holes.
+          - CombatPlaybackDispatcher falls back to instant playback on a missing
+            controller with just a warning (~line 60/75) — the player sees combat
+            run at the wrong speed with no explanation.
+
+[ ] A4.8  sortingLayerName "Units" is a hardcoded string (UnitSpawner ~line 74).
+          Move sorting-layer names to one constants map so a layer rename can't
+          silently break spawning.
+
+--------------------------------------------------------------------------------
+TIER 5 — STATE / FLOW ROBUSTNESS
+--------------------------------------------------------------------------------
+The top-level GameStateManager is genuinely good (one-transition-per-frame,
+validated transition table, loud illegal-transition logging). The CURSOR-level
+mode machine is the weak spot.
+
+[ ] A5.1  Add precondition guards to CursorMode transitions. Today you can call
+          SetMode(Targeting) with no unit selected, etc. — the targeting/path
+          service then runs on null. Add a validate-or-reject like the top-level
+          state machine already does.
+[ ] A5.2  Harden the InputManager frame-flag handling (_confirmPendingThisFrame /
+          _cancelPendingThisFrame cleared in LateUpdate ~line 77-78) against a
+          mid-frame state change dropping or double-firing input.
+[ ] A5.3  Guard against a game-state change (e.g. a dialogue event) firing while
+          the cursor is mid-move/mid-selection so the map can't be left in an
+          UnitSelected mode while input is globally locked.
+
+--------------------------------------------------------------------------------
+TIER 6 — DATA TUNING  (no artist required; this is balance/number work)
+--------------------------------------------------------------------------------
+[ ] A6.1  Differentiate character base stats. Arjun, Karna, Priya, Vidya all
+          share IDENTICAL base stats and growths right now (only Aranya was
+          touched). Give each a role-appropriate stat line + growths.
+[ ] A6.2  Fill in personality / affinity fields (default 0 on the stubbed
+          characters).
+[ ] A6.3  Flesh out the weapon/item/consumable roster. Many of the ~67 SOs are
+          stub/default. Define real weapon tiers, staves, consumables with
+          tuned might/hit/crit/weight/uses.
+[ ] A6.4  Validate LastWordsLines arrays are the documented 2-4 lines (no empty,
+          no 10-line) — add a small validation in the SO or an editor check.
+[ ] A6.5  Class _mapSpriteId / _combatAnimationSetId are empty strings on all 25
+          classes — at minimum decide the ID scheme now even if art comes later
+          (so the data side is ready).
+
+--------------------------------------------------------------------------------
+TIER 7 — CODE STRUCTURE  (do alongside, not blocking; keeps future polish sane)
+--------------------------------------------------------------------------------
+[ ] A7.1  Break up GridCursor.cs (~542 lines doing ~8 jobs: movement, mode
+          state, selection, action menu, targeting, combat exec, staff/heal,
+          canto, trade/convoy). There's an explicit TODO(refactor) at the top.
+          Extract per-flow controllers; main body should read like a newspaper.
+[ ] A7.2  Clean the TODO stubs so they don't rot: RC-04 recruit crit context
+          (CritContextClassifier ~line 19), USE-01 rescue heal hook
+          (StaffEffects ~line 147), UM-02 deployment guards (TestUnit ~line 20).
+          Either implement, or convert to a tracked ticket + remove dead branch.
+[ ] A7.3  Write the missing dev docs (plain text / system fonts, NOT themed):
+          COMBAT_SYSTEM (formulas), STATE_MACHINE (transition table contract),
+          PROGRESSION (commitment/death registry rules). The UI pipeline is
+          already well documented; the gameplay internals are not.
+
+--------------------------------------------------------------------------------
+TIER 8 — TESTING
+--------------------------------------------------------------------------------
+[ ] A8.1  Add PlayMode smoke tests for scene loading + the full flow loop (see
+          A0.6). EditMode coverage is decent; the integration seam is untested.
+[ ] A8.2  Add a regression test pinning forecast numbers == runtime numbers once
+          A1.1 is resolved, so the "shown vs actual" bug can't come back.
+[ ] A8.3  Add a test that every SoundId referenced in code maps to a real entry
+          in AudioLibrary (catches half-wired audio from Tier 2).
+
+================================================================================
+PART B — ART-ADJACENT WORK WE CAN DO OURSELVES (AFTER Part A IS DONE)
+================================================================================
+These touch the look of the game but DO NOT need an artist. They're palette,
+layout, and "make the hardcoded values into tunable, consistent" work.
+
+[ ] B1  Centralize the color palette. Right now colors are hardcoded as literal
+        Color32s in many files (HP green/yellow/red thresholds in
+        BattleMapHUDController and UnitInfoPanelUI; phase accents in
+        PhaseBannerUI; toast orange in ToastNotificationUI; menu normal/selected
+        tints duplicated in every menu UI; dialogue dim tint 0.45; inventory
+        parchment palette; action-menu ember palette). Pull them into ONE
+        palette asset/constants file so the game reads as a single art direction
+        instead of 12 slightly-different greys.
+
+[ ] B2  Make hardcoded UI layout constants serialized/tunable (action menu:
+        OptionHeight 52, PanelWidth 340, TextLeftOffset 48, Trishul 20; damage
+        float canvas scale 0.025, rise 0.65, hold 0.18; banner/toast slide
+        distances). Lets us re-juice spacing/timing without recompiles.
+
+[ ] B3  Replace magic resolution assumptions with the canvas reference
+        (1920x1080 per UI_WORKFLOW). Some panels assume Screen.width math and a
+        20-wide map fallback. Make them reference-resolution clean.
+
+[ ] B4  Procedural/no-artist visual upgrades we can author ourselves:
+        - particle bursts on hit / heal / level-up (Unity particle system, our
+          own simple shapes — not bespoke art).
+        - subtle idle bob on map unit sprites (sine y-offset) and a damage tint
+          flash on hit.
+        - vignette / dim transitions, screen-flash on big moments.
+        These use shaders/particles/code, no drawn assets.
+
+[ ] B5  Audit the "placeholder pending pixel-art polish" UI (e.g. Combat
+        Forecast visuals are explicitly placeholder). For each, do the
+        programmer-side prep — correct layout, live TMP text, palette hookup —
+        so the moment real art exists it drops straight in.
+
+================================================================================
+DEFERRED — NEEDS AN ARTIST (DO NOT START NOW; listed so we don't forget)
+================================================================================
+  - Character portraits + map sprites for Arjun, Karna, Priya, Vidya (only
+    Aranya has them). Wounded/critical/deceased portrait variants.
+  - Per-class combat animation sets / map sprites (the _combatAnimationSetId /
+    _mapSpriteId data slots are ready for them).
+  - Real sprite-sheet combat animations (current overlay is translation-only
+    placeholder motion — programmer juice in A3 improves it, but real frames
+    need an artist).
+  - Final tileset art (PlaceholderTileset is in use).
+  - Title-screen / menu key art finalization.
+  - Music + final SFX assets (the wiring in Tier 2 is ours; the actual high-
+    quality audio assets are a content task).
+  - Voice lines (out of scope).
+
+================================================================================
+SUGGESTED ORDER OF ATTACK
+================================================================================
+  1. Tier 0  — make the game actually loop (win/lose -> result -> next/end).
+  2. Tier 1  — fix the forecast-vs-runtime lie; stop showing wrong numbers.
+  3. Tier 2  — wire audio (huge feel jump, low effort, system already exists).
+  4. Tier 3  — easing + impact (the "drop their jaw" motion pass).
+  5. Tier 4/5 — hygiene + state guards (stops the above from regressing).
+  6. Tier 6  — data tuning.
+  7. Tier 7/8 — structure + tests to lock it all in.
+  8. PART B  — the art-adjacent, no-artist-needed visual unification.
+================================================================================
