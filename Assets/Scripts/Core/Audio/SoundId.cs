@@ -21,5 +21,9 @@ namespace ProjectAstra.Core.Audio
 
         // Ambient
         AmbientWind,
+
+        // Cinematic / creatures
+        RakshasaRoar,
+        VillagerScream,
     }
 }

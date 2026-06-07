@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
@@ -70,6 +71,8 @@ namespace ProjectAstra.Core.Battle.Prologue
         private const float LetterboxBarHeight = 110f;     // per 1080-tall reference
         private const float LetterboxFadeSeconds = 0.4f;
 
+        private static readonly Color DangerRed = new(0.95f, 0.27f, 0.22f, 1f);
+
         public IEnumerator Play()
         {
             if (!IsMap1Loaded()) yield break;
@@ -99,13 +102,20 @@ namespace ProjectAstra.Core.Battle.Prologue
             var flees = PoseVillagersForFlight(villagers);
             var victim = SpawnVictimToken(VictimTile, villagerSprite);
 
-            yield return Hold(0.7f);
+            // Telegraph the target — a pulsing "!" over the doomed villager — under the raid's roar.
+            GameObject victimAlert = victim != null ? SpawnMarker(ToWorld(VictimTile), "!", DangerRed, 56f) : null;
+            Coroutine alertPulse = victimAlert != null ? StartCoroutine(PulseTransform(victimAlert.transform)) : null;
+            AudioManager.Instance?.Play(SoundId.RakshasaRoar);
+
+            yield return Hold(0.9f);
 
             // The raid: the raider strikes down the trapped villager at the bridge's north foot.
             if (raider != null) yield return LungeAt(raider, VictimTile);
+            if (alertPulse != null) StopCoroutine(alertPulse);
+            if (victimAlert != null) Destroy(victimAlert);
             if (camera != null) StartCoroutine(camera.Shake(0.18f, 0.28f));
-            AudioManager.Instance?.Play(SoundId.HitCrit);   // the killing blow
-            // TODO(audio): add a villager scream here once a scream clip exists.
+            AudioManager.Instance?.Play(SoundId.HitCrit);         // the killing blow
+            AudioManager.Instance?.Play(SoundId.VillagerScream);  // a life cut short
             yield return PlayDeath(victim);
             yield return Hold(0.6f);
 
@@ -197,23 +207,27 @@ namespace ProjectAstra.Core.Battle.Prologue
             while (running > 0) yield return null;
         }
 
+        // One continuous glide along the whole path with a single ease-in/out — easing each tile
+        // separately would decelerate the unit to a near-stop at every corner.
         private static IEnumerator WalkUnit(TestUnit unit, Vector2Int[] path, float tilesPerSecond)
         {
-            float secondsPerTile = 1f / tilesPerSecond;
-            for (int i = 1; i < path.Length; i++)
+            int segments = path.Length - 1;
+            if (segments < 1) yield break;
+
+            float totalDuration = segments / tilesPerSecond;
+            float elapsed = 0f;
+            while (elapsed < totalDuration)
             {
-                Vector3 from = ToWorld(path[i - 1]);
-                Vector3 to = ToWorld(path[i]);
-                float elapsed = 0f;
-                while (elapsed < secondsPerTile)
-                {
-                    elapsed += Time.deltaTime;
-                    unit.transform.position = Vector3.Lerp(from, to, Mathf.SmoothStep(0f, 1f, elapsed / secondsPerTile));
-                    yield return null;
-                }
-                unit.gridPosition = path[i];
-                unit.SnapToGridPosition();
+                elapsed += Time.deltaTime;
+                float progress = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / totalDuration));
+                float along = progress * segments;                        // tiles travelled along the path
+                int seg = Mathf.Min((int)along, segments - 1);
+                unit.transform.position = Vector3.Lerp(ToWorld(path[seg]), ToWorld(path[seg + 1]), along - seg);
+                unit.gridPosition = path[Mathf.Clamp(Mathf.RoundToInt(along), 0, segments)];
+                yield return null;
             }
+            unit.gridPosition = path[segments];
+            unit.SnapToGridPosition();
         }
 
         private static IEnumerator LungeAt(TestUnit attacker, Vector2Int targetTile)
@@ -229,7 +243,10 @@ namespace ProjectAstra.Core.Battle.Prologue
             if (victim == null) yield break;
             var sprite = victim.GetComponent<SpriteRenderer>();
 
-            yield return HitFlashEffect.Flash(sprite, 0.08f, Color.white);
+            GameObject mark = SpawnMarker(victim.transform.position, "X", DangerRed, 56f);
+            if (mark != null) StartCoroutine(RiseAndFade(mark, 0.7f, 0.5f));
+
+            yield return HitFlashEffect.Flash(sprite, 0.1f, DangerRed);   // a red death flash
             StartCoroutine(SlideDown(victim.transform, 0.3f, 0.45f));
             yield return SpriteFader.FadeOut(sprite, 0.45f);
             Destroy(victim);
@@ -319,6 +336,75 @@ namespace ProjectAstra.Core.Battle.Prologue
         private static void SetBarHeight(RectTransform bar, float height)
         {
             if (bar != null) bar.sizeDelta = new Vector2(bar.sizeDelta.x, height);
+        }
+
+        // --- legibility markers ("!" danger / "✕" death) ---
+        // World-space TMP symbols on the camera-rendered UIOverlay layer, so a first-time viewer
+        // can read "this villager is the target" and "they were killed" without art or text.
+
+        private static GameObject SpawnMarker(Vector3 worldPos, string text, Color color, float fontSize)
+        {
+            var go = new GameObject("CinematicMarker");
+            go.transform.position = worldPos + new Vector3(0f, 0.5f, 0f);  // above the villager's head
+
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+            canvas.sortingLayerName = "UIOverlay";
+            canvas.sortingOrder = 200;
+            var rect = canvas.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(110f, 110f);
+            rect.localScale = Vector3.one * 0.018f;
+
+            go.AddComponent<CanvasGroup>();
+
+            var textGo = new GameObject("Text", typeof(RectTransform));
+            textGo.transform.SetParent(go.transform, false);
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = text;
+            tmp.fontSize = fontSize;
+            tmp.fontStyle = FontStyles.Bold;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.color = color;
+            tmp.outlineColor = Color.black;
+            tmp.outlineWidth = 0.25f;
+            tmp.raycastTarget = false;
+
+            var textRect = textGo.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+            return go;
+        }
+
+        private static IEnumerator PulseTransform(Transform t)
+        {
+            Vector3 baseScale = t.localScale;
+            float time = 0f;
+            while (t != null)
+            {
+                time += Time.deltaTime;
+                t.localScale = baseScale * (1f + 0.2f * Mathf.Sin(time * 9f));
+                yield return null;
+            }
+        }
+
+        private static IEnumerator RiseAndFade(GameObject marker, float duration, float rise)
+        {
+            var group = marker.GetComponent<CanvasGroup>();
+            Vector3 start = marker.transform.position;
+            Vector3 end = start + Vector3.up * rise;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                if (marker == null) yield break;
+                elapsed += Time.deltaTime;
+                float p = Mathf.Clamp01(elapsed / duration);
+                marker.transform.position = Vector3.Lerp(start, end, p);
+                if (group != null) group.alpha = 1f - p;
+                yield return null;
+            }
+            if (marker != null) Destroy(marker);
         }
 
         // --- placement / lookup ---
