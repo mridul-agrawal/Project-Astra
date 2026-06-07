@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -28,6 +29,19 @@ namespace ProjectAstra.Core.Camera
         private int _viewportTilesH;
         private bool _viewportInitialized;
 
+        // While a scripted pan drives the transform directly (e.g. a cinematic), LateUpdate must
+        // not stomp it back to the grid-aligned cursor-follow position.
+        private bool _externalControl;
+
+        private UnityEngine.Camera _cam;
+        private PixelPerfectCamera _ppc;
+
+        private void Awake()
+        {
+            _cam = GetComponent<UnityEngine.Camera>();
+            _ppc = GetComponent<PixelPerfectCamera>();
+        }
+
         public Vector2 WorldTopLeft => _cameraGridPos;
         public int ViewportTilesW => _viewportTilesW;
         public int ViewportTilesH => _viewportTilesH;
@@ -52,7 +66,84 @@ namespace ProjectAstra.Core.Camera
         private void LateUpdate()
         {
             if (!_viewportInitialized) InitializeViewport();
+            if (_externalControl) return;
             ApplyCameraPosition();
+        }
+
+        // Lets a cinematic frame the map before the first LateUpdate runs, without the usual
+        // "center on the cursor" that InitializeViewport does.
+        public void EnsureViewportReady()
+        {
+            if (_viewportInitialized) return;
+            RecalculateViewport();
+            _viewportInitialized = true;
+        }
+
+        // --- Cinematic control (scripted sequences like Beat 0) ---
+        // The PixelPerfectCamera is turned off for the duration so we can zoom/pan smoothly;
+        // LateUpdate leaves the transform alone (_externalControl). EndCinematic restores
+        // pixel-perfect gameplay framing.
+
+        public void BeginCinematic()
+        {
+            EnsureViewportReady();
+            _externalControl = true;
+            if (_ppc != null) _ppc.enabled = false;
+        }
+
+        // Snap the cinematic framing instantly — used to set the opening shot.
+        public void SnapCinematicFrame(Vector2Int centerTile, float orthographicSize)
+        {
+            transform.position = WorldCenterOf(centerTile);
+            if (_cam != null) _cam.orthographicSize = orthographicSize;
+        }
+
+        // Lerp framing (position + zoom) to a new shot over duration.
+        public IEnumerator CinematicFrameTo(Vector2Int centerTile, float orthographicSize, float duration)
+        {
+            Vector3 startPos = transform.position;
+            Vector3 endPos = WorldCenterOf(centerTile);
+            float startOrtho = _cam != null ? _cam.orthographicSize : orthographicSize;
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                transform.position = Vector3.Lerp(startPos, endPos, t);
+                if (_cam != null) _cam.orthographicSize = Mathf.Lerp(startOrtho, orthographicSize, t);
+                yield return null;
+            }
+            transform.position = endPos;
+            if (_cam != null) _cam.orthographicSize = orthographicSize;
+        }
+
+        // Hand control back to gameplay: pixel-perfect on, cursor-follow resumes framed here.
+        public void EndCinematic(Vector2Int restoreCenterTile)
+        {
+            if (_ppc != null) _ppc.enabled = true;   // restores the pixel-perfect ortho size
+            _cameraGridPos = ClampedGridPosFor(restoreCenterTile);
+            _externalControl = false;
+        }
+
+        private Vector3 WorldCenterOf(Vector2Int tile) =>
+            new(tile.x + 0.5f, tile.y + 0.5f, transform.position.z);
+
+        // A quick decaying camera shake around the current position. Only meaningful under
+        // cinematic control (otherwise LateUpdate immediately resets the transform).
+        public IEnumerator Shake(float magnitude, float duration)
+        {
+            Vector3 basePos = transform.position;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float damper = 1f - Mathf.Clamp01(elapsed / duration);
+                Vector2 offset = UnityEngine.Random.insideUnitCircle * (magnitude * damper);
+                transform.position = new Vector3(basePos.x + offset.x, basePos.y + offset.y, basePos.z);
+                yield return null;
+            }
+            transform.position = basePos;
         }
 
         public void RecalculateViewport()
@@ -63,12 +154,21 @@ namespace ProjectAstra.Core.Camera
 
         public void CenterOnTile(Vector2Int tile)
         {
-            _cameraGridPos = new Vector2Int(
-                tile.x - _viewportTilesW / 2,
-                tile.y - _viewportTilesH / 2);
-
-            ClampToMapBounds();
+            _cameraGridPos = ClampedGridPosFor(tile);
             ApplyCameraPosition();
+        }
+
+        // Viewport top-left that centers on a tile, clamped to the map.
+        private Vector2Int ClampedGridPosFor(Vector2Int tile)
+        {
+            var pos = new Vector2Int(tile.x - _viewportTilesW / 2, tile.y - _viewportTilesH / 2);
+            MapData map = _mapRenderer != null ? _mapRenderer.CurrentMap : null;
+            if (map != null)
+            {
+                pos.x = Mathf.Clamp(pos.x, 0, Mathf.Max(0, map.Width - _viewportTilesW));
+                pos.y = Mathf.Clamp(pos.y, 0, Mathf.Max(0, map.Height - _viewportTilesH));
+            }
+            return pos;
         }
 
         // Init runs on the first LateUpdate because PixelPerfectCamera writes its viewport

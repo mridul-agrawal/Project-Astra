@@ -76,7 +76,28 @@ namespace ProjectAstra.Core.Turn
             _phaseManager.SetHasAllies(_hasAllies || _unitRegistry.HasUnitsOfFaction(Faction.Allied));
             _phaseManager.Reset();
             RegisterSceneUnits();
+
+            var prologue = FindPrologue();
+            if (prologue != null)
+                StartCoroutine(RunPrologueThenBeginPhase(prologue));
+            else
+                BeginPhase();
+        }
+
+        // A battle may stage a scripted opening (e.g. Map 1's raid) before handing control over.
+        // We hold off BeginPhase — and therefore the player's first turn — until it completes.
+        private IEnumerator RunPrologueThenBeginPhase(IBattlePrologue prologue)
+        {
+            yield return StartCoroutine(prologue.Play());
             BeginPhase();
+        }
+
+        private static IBattlePrologue FindPrologue()
+        {
+            foreach (var behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
+                if (behaviour is IBattlePrologue prologue)
+                    return prologue;
+            return null;
         }
 
         public void EndCurrentPhase()

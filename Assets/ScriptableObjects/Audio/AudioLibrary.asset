@@ -15,3 +15,5 @@ MonoBehaviour:
   soundNodes:
   - id: 1
     sound: {fileID: 11400000, guid: 8b0383cc1d238174f8f4a53377a533aa, type: 2}
+  - id: 5
+    sound: {fileID: 11400000, guid: 2ae007f9983616640a1450b11b42b367, type: 2}
