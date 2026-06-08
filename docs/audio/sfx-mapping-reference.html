@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Astra — SFX Mapping Reference</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fffdf8; --fg:#2c2b28; --muted:#6c6a63;
+    --rule:#e5e1d6; --rule-strong:#d6d1c4;
+    --accent:#9a6b3f; --link:#8a5a2b;
+    --code-bg:#efece3; --code-fg:#5a4a36;
+    --quote-bg:#f1efe6;
+    --wired-bg:#e3f0e1; --wired-fg:#2f6b34;
+    --new-bg:#e3ecf5; --new-fg:#2f5a8a;
+    --warn-bg:#faecd6; --warn-fg:#8a5a14;
+    --row-alt:#faf8f2; --th-bg:#efece3;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1e1e1c; --panel:#26251f; --fg:#e6e3da; --muted:#a4a094;
+      --rule:#3a382f; --rule-strong:#4a473b;
+      --accent:#d2a679; --link:#d8ab74;
+      --code-bg:#2f2d25; --code-fg:#d8cdb6;
+      --quote-bg:#2a2820;
+      --wired-bg:#23362a; --wired-fg:#86c98c;
+      --new-bg:#1f2f3f; --new-fg:#8db8e0;
+      --warn-bg:#3a2f1c; --warn-fg:#e3b463;
+      --row-alt:#2a281f; --th-bg:#2f2d25;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16.5px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:2.2rem 1.5rem 5rem; display:grid; grid-template-columns:230px minmax(0,1fr); gap:2.4rem;}
+  nav.toc{position:sticky; top:1.2rem; align-self:start; font-size:.86rem; line-height:1.5; max-height:calc(100vh - 2.4rem); overflow:auto;}
+  nav.toc h4{margin:0 0 .5rem; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);}
+  nav.toc a{display:block; padding:.18rem 0; color:var(--muted); text-decoration:none; border-left:2px solid transparent; padding-left:.6rem;}
+  nav.toc a:hover{color:var(--link); border-left-color:var(--accent);}
+  main{min-width:0}
+  header.doc{border-bottom:1px solid var(--rule-strong); padding-bottom:1.2rem; margin-bottom:1.6rem;}
+  header.doc h1{font-size:1.7rem; margin:0 0 .35rem; letter-spacing:-.01em;}
+  header.doc .sub{color:var(--muted); font-size:.95rem; margin:0;}
+  h2{font-size:1.32rem; margin:2.6rem 0 .8rem; padding-top:1.1rem; border-top:1px solid var(--rule); scroll-margin-top:1rem; letter-spacing:-.01em;}
+  h3{font-size:1.06rem; margin:1.6rem 0 .5rem; color:var(--accent);}
+  p{margin:.6rem 0}
+  a{color:var(--link)}
+  ul,ol{padding-left:1.3rem} li{margin:.3rem 0}
+  code{background:var(--code-bg); color:var(--code-fg); font-family:"SFMono-Regular",Consolas,"Roboto Mono",monospace; font-size:.86em; padding:.08em .38em; border-radius:4px; white-space:nowrap;}
+  pre{background:var(--code-bg); color:var(--code-fg); padding:1rem 1.1rem; border-radius:8px; overflow:auto; font-size:.85rem; line-height:1.5; border:1px solid var(--rule);}
+  pre code{background:none; padding:0; white-space:pre;}
+  blockquote{margin:1.1rem 0; padding:.8rem 1.1rem; background:var(--quote-bg); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; color:var(--fg);}
+  blockquote p{margin:.3rem 0}
+  .tablewrap{overflow-x:auto; margin:1rem 0; border:1px solid var(--rule); border-radius:8px;}
+  table{border-collapse:collapse; width:100%; font-size:.9rem; background:var(--panel);}
+  thead th{position:sticky; top:0; background:var(--th-bg); text-align:left; font-weight:600; padding:.6rem .7rem; border-bottom:2px solid var(--rule-strong); white-space:nowrap;}
+  tbody td{padding:.55rem .7rem; border-bottom:1px solid var(--rule); vertical-align:top;}
+  tbody tr:nth-child(even){background:var(--row-alt);}
+  tbody tr:last-child td{border-bottom:none;}
+  td code{white-space:normal;}
+  .b{display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.02em; padding:.06rem .42rem; border-radius:20px; vertical-align:middle; white-space:nowrap;}
+  .b.wired{background:var(--wired-bg); color:var(--wired-fg);}
+  .b.new{background:var(--new-bg); color:var(--new-fg);}
+  .b.warn{background:var(--warn-bg); color:var(--warn-fg);}
+  .star{color:var(--accent); font-weight:700;}
+  .legend{display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; font-size:.85rem; color:var(--muted); margin:.4rem 0 0;}
+  .legend span{display:inline-flex; align-items:center; gap:.4rem;}
+  hr{border:none; border-top:1px solid var(--rule); margin:2rem 0;}
+  @media (max-width:880px){
+    .wrap{grid-template-columns:1fr; gap:1rem; padding:1.4rem 1.1rem 4rem;}
+    nav.toc{position:static; max-height:none; border-bottom:1px solid var(--rule); padding-bottom:1rem; margin-bottom:.5rem;}
+    nav.toc a{display:inline-block; margin-right:.6rem; border-left:none; padding-left:0;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc">
+  <h4>Contents</h4>
+  <a href="#sec0">0 · Decisions first</a>
+  <a href="#sec1">1 · How wiring works</a>
+  <a href="#sec2">2 · Aesthetic split</a>
+  <a href="#sec3">3 · Master mapping</a>
+  <a href="#A">A · UI / menus</a>
+  <a href="#B">B · Cursor &amp; grid</a>
+  <a href="#C">C · Combat</a>
+  <a href="#D">D · Units / items</a>
+  <a href="#E">E · Turn / phase</a>
+  <a href="#F">F · Dialogue</a>
+  <a href="#G">G · Scene / music</a>
+  <a href="#H">H · Beat 0 upgrade</a>
+  <a href="#sec4">4 · New SoundIds</a>
+  <a href="#sec5">5 · Priority</a>
+  <a href="#sec6">6 · How to proceed</a>
+</nav>
+
+<main>
+<header class="doc">
+  <h1>Project Astra — SFX Mapping Reference</h1>
+  <p class="sub">Turning the raw library in <code>Assets/External Assets/SFX ASSETS/</code> into wired game sounds. For every place a sound could play: the recommended pack + candidate clips, so you can <strong>audition and decide</strong>. Nothing here is wired yet — this is the menu to order from.</p>
+  <div class="legend">
+    <span><span class="b wired">WIRED</span> already done</span>
+    <span><span class="b new">+SoundId</span> needs a new id</span>
+    <span><span class="b warn">⚠</span> gap / caution</span>
+    <span><span class="star">★</span> top pick</span>
+  </div>
+</header>
+
+<blockquote><p><strong>Why this is a reference, not finished wiring:</strong> I can't hear the clips, and almost every sound has 5–10 variations you'll want to pick by ear. So each slot is narrowed to a pack + a short candidate list; you audition, name the winners, and I wire them.</p></blockquote>
+
+<h2 id="sec0">0 · Decisions to make first</h2>
+<p>A few upfront choices shape everything below.</p>
+
+<p><strong>1. Pick ONE primary UI palette</strong> (for consistency — don't mix click styles across menus).</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Palette</th><th>Vibe</th><th>Fits our UI direction?</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td><strong>CelerisLab Complete UI</strong> <span class="star">★</span></td><td>Modern, clean, 48kHz/24-bit, context-labelled (100+ actions)</td><td><strong>Best fit</strong> — our UI is Modern HD</td><td>Premium, most complete; open/close/confirm/error/buy/level-up/buff already named</td></tr>
+<tr><td>UI Soundpack → <em>Modern / Minimalist</em></td><td>Clean, neutral</td><td>Good fit</td><td>Free-ish; <strong>needs attribution</strong> (CC-BY, Nathan Gibson)</td></tr>
+<tr><td>JDSherbert <em>Ultimate UI</em></td><td>Polished sci-fi</td><td>OK</td><td>Free</td></tr>
+<tr><td>JDSherbert <em>Pixel UI</em></td><td>Chiptune (Saw/Sine/Square)</td><td>Off — our UI is HD, not pixel</td><td>Save for a retro option</td></tr>
+</tbody>
+</table></div>
+<p>Our locked UI direction is <strong>Modern HD</strong> (pixel only for on-map sprites + combat animations), so <strong>CelerisLab is the natural primary UI palette</strong>, with UI Soundpack <em>Modern</em> as a free fallback.</p>
+
+<p><strong>2. Unit voice barks — yes/no?</strong> The <strong>Super Dialogue Pack</strong> (5 actors × 10 categories incl. <em>Damage/Death/Grunting/Shouting</em>) can give Fire-Emblem-style vocal feedback on select/attack/hurt/die. Big personality boost, but it's a stylistic call (assign voices per character). Decide if you want this layer.</p>
+
+<p><strong>3. Music is an audition-by-vibe task,</strong> not a 1:1 map. None of the packs are explicitly Indian-instrument; treat <strong>Helton Yan Tranquility</strong> (calm/menu) and <strong>JDSherbert Ambiences</strong> (10 location loops) as <em>placeholders</em> until you source on-theme tracks (or generate them — see <code>docs/research/ai-sfx-tools.md</code>).</p>
+
+<h2 id="sec1">1 · How wiring works (so the tables make sense)</h2>
+<ul>
+<li><strong>The system is ready.</strong> <code>AudioManager.Instance.Play(SoundId.X)</code> (one-shot), <code>.PlayMusic(id, fade)</code>, <code>.PlayAmbient(id)</code>. Each <code>SoundId</code> → a <code>SoundSO</code> (clip list + bus + volume + pitch range) → wired in <code>AudioLibrary.asset</code>. Today only <strong>UiConfirm, HitCrit, RakshasaRoar, VillagerScream</strong> are wired.</li>
+<li><strong>One SoundSO can hold ALL variations of a sound.</strong> Drop all 6 sword-slash clips into one <code>SoundSO</code>; it picks one at random per play. Add a small <strong>pitch range</strong> (e.g. 0.95–1.05) and repeated sounds (footsteps, cursor, hits) stop feeling robotic. <strong>Use this everywhere</strong> — the single biggest "feel" win.</li>
+<li><strong>Format:</strong> packs duplicate every sound across Mono/Stereo × wav/mp3/ogg × HD/SD. <strong>Use <code>Stereo / wav (HD)</code></strong> and ignore the rest.</li>
+<li><strong>Gitignore:</strong> <code>External Assets/</code> is gitignored. To ship a sound I <strong>copy</strong> the chosen clip into <code>Assets/Audio/&lt;category&gt;/</code> (tracked), then point the SoundSO there. The big packs stay un-committed.</li>
+<li><strong>Licensing flags</strong> (verify before launch): UI Soundpack = <strong>CC-BY, credit Nathan Gibson</strong>; Super Dialogue = <strong>credit the voice actors</strong>; JDSherbert FREE + CelerisLab + Helton Yan + Shapeforms = commercial-OK (Shapeforms previews are free samplers of paid libraries). Most "FREE" Asset-Store packs allow commercial use <em>inside a game</em> — just don't redistribute the raw files.</li>
+</ul>
+
+<h2 id="sec2">2 · The aesthetic split</h2>
+<p>Mirror the established look: <strong>Modern HD UI, pixel combat/on-map.</strong></p>
+<div class="tablewrap"><table>
+<thead><tr><th>Layer</th><th>Source packs</th></tr></thead>
+<tbody>
+<tr><td><strong>UI / menus (HD)</strong></td><td>CelerisLab Complete UI (primary) · UI Soundpack <em>Modern/Minimalist</em> · JDSherbert Ultimate UI</td></tr>
+<tr><td><strong>Combat &amp; on-map (stylized/pixel)</strong></td><td>Helton Yan Pixel Combat (2,100 designed impacts/magic/whoosh) · Shapeforms <em>Hack &amp; Slash</em> / <em>Hit &amp; Punch</em> (organic slashes &amp; flesh hits)</td></tr>
+<tr><td><strong>Human voice</strong></td><td>Super Dialogue Pack (barks, screams, death cries)</td></tr>
+<tr><td><strong>Footsteps</strong></td><td>JDSherbert Footstep Foley (16 surfaces) — incl. Grass/Sand/Stone/Water for our map terrains</td></tr>
+<tr><td><strong>Music / ambience</strong></td><td>Helton Yan Tranquility 1 &amp; 2 (menu/cinematic) · JDSherbert Ambiences (location loops)</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="sec3">3 · Master mapping (by system)</h2>
+<p>Candidates are <em>starting points to audition in-folder</em>.</p>
+
+<h3 id="A">A · UI / Menus &nbsp;→ palette = CelerisLab (HD)</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>Proposed SoundId</th><th>Candidate clips</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Confirm / select (all menus)</td><td><code>UiConfirm</code> <span class="b wired">WIRED</span></td><td>CelerisLab <code>basic…/button click</code> or <code>standard_button_click_in</code></td><td>Re-point existing UiConfirm to the chosen HD click</td></tr>
+<tr><td>Cancel / back</td><td><code>UiCancel</code> <span class="b new">+</span></td><td>CelerisLab <code>button click_out</code>, or <code>dropdown</code> close</td><td></td></tr>
+<tr><td>Navigate / cursor move in menus</td><td><code>UiMove</code> <span class="b new">+</span></td><td>CelerisLab soft button hover; UI Soundpack <code>Minimalist</code> tick</td><td>Keep it <em>quiet</em> — fires a lot</td></tr>
+<tr><td>Invalid / denied</td><td><code>UiError</code> <span class="b new">+</span></td><td>CelerisLab <code>negative…/access_denied</code>, <code>action_failed</code></td><td></td></tr>
+<tr><td>Panel / menu <strong>open</strong></td><td><code>UiOpen</code> <span class="b new">+</span></td><td>CelerisLab <code>inventory_open</code>, <code>dramatic_button</code></td><td>Forecast, action menu, info panel, pause</td></tr>
+<tr><td>Panel / menu <strong>close</strong></td><td><code>UiClose</code> <span class="b new">+</span></td><td>CelerisLab <code>inventory_close</code></td><td></td></tr>
+<tr><td>Tab / category switch</td><td><code>UiTab</code> <span class="b new">+</span></td><td>CelerisLab <code>shop_category_select</code>; JDSherbert <em>SciFi UI</em> <code>Swipe</code></td><td>Convoy tabs, info-panel pages</td></tr>
+<tr><td>Hover (mouse) / slider tick</td><td><code>UiHover</code> <span class="b new">+</span></td><td>CelerisLab button <code>hover</code>; UI Soundpack <code>Minimalist</code></td><td>Optional polish</td></tr>
+<tr><td>Settings dropdown change</td><td>reuse <code>UiConfirm</code></td><td>—</td><td>SettingsMenuOverlayUI <code>OnSpeedChanged</code></td></tr>
+</tbody>
+</table></div>
+<p style="font-size:.88rem;color:var(--muted)">Hooks: TitleScreenUI (wired), MainMenuUI, GameOverUI, ChapterClearUI, BattleMapPausedOverlayUI, SettingsMenuOverlayUI, ConfirmDialogUI, UnitActionMenuUI, CombatForecastUI, InventoryMenuUI, TradeScreenUI, ConvoyUI, UnitInfoPanel.</p>
+
+<h3 id="B">B · Cursor &amp; grid (on-map)</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Cursor move (free)</td><td>reuse <code>UiMove</code> <span class="b new">+</span></td><td>A <em>very</em> soft tick — UI Soundpack <code>Minimalist</code>, or Helton Yan <code>UIMisc</code></td><td>Fires constantly w/ DAS — keep subtle + pitch-vary</td></tr>
+<tr><td>Cursor blocked / invalid tile</td><td><code>UiError</code> <span class="b new">+</span></td><td>CelerisLab <code>access_denied</code></td><td>GridCursor:198</td></tr>
+<tr><td>Unit selected</td><td><code>UnitSelect</code> <span class="b new">+</span></td><td>CelerisLab <code>standard_button click</code>; or Super Dialogue <em>Greeting</em> bark (if voices)</td><td>GridCursor:219</td></tr>
+<tr><td>Unit deselected / cancel</td><td><code>UiCancel</code> <span class="b new">+</span></td><td>—</td><td>GridCursor:250</td></tr>
+<tr><td>Move committed</td><td><code>MoveCommit</code> <span class="b new">+</span></td><td>Helton Yan <code>WHSH_MOVEMENT-Simple Whoosh</code></td><td>GridCursor:224</td></tr>
+<tr><td>Footstep per tile</td><td><code>Footstep*</code> <span class="b new">+</span></td><td>JDSherbert Footstep Foley — <strong>Grass/Sand/Stone/Water</strong> by terrain</td><td>UnitMover:56 <code>onTileEntered</code>. Could be one generic step to start</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="C">C · Combat (pixel animation)</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Attack initiate / swing</td><td><code>AttackSwing</code> <span class="b new">+</span></td><td>Shapeforms <code>Blade Swing Noise Slice</code>, <code>Dagger Slash</code>; Helton Yan <code>SWSH_*</code></td><td></td></tr>
+<tr><td><strong>Hit (physical)</strong></td><td><code>HitPhysical</code> <span class="b new">+</span> <em>(enum exists, unwired)</em></td><td>Shapeforms <code>HIT_SLAP</code>, <code>PUNCH_*HEAVY</code>; Helton Yan <code>FGHTImpt_HIT-Strong Smack</code></td><td><strong>High priority — combat has no hit sound today</strong></td></tr>
+<tr><td><strong>Crit</strong></td><td><code>HitCrit</code> <em>(wired only in prologue)</em></td><td>Helton Yan <code>FGHTImpt_MELEE-Kick Critical</code>; Shapeforms <code>Gore Splat Stab</code></td><td>Wire it into real combat too</td></tr>
+<tr><td><strong>Miss / dodge</strong></td><td><code>Miss</code> <span class="b new">+</span> <em>(enum exists, unwired)</em></td><td>Shapeforms <code>WHOOSH_ARM_SWING</code>, <code>Whoosh Short Light</code>; Helton Yan <code>WHSH_*</code></td><td></td></tr>
+<tr><td>Magic / skill cast</td><td><code>MagicCast</code> <span class="b new">+</span></td><td>Helton Yan <code>MAGSpel_CAST-*</code> (85 options), <code>DSGNTonl_SKILL IMPACT-*</code></td><td>For mage units</td></tr>
+<tr><td>Unit death (in combat)</td><td><code>UnitDeath</code> <span class="b new">+</span></td><td>Super Dialogue <em>Death</em> (<code>death_*</code>); + Helton Yan impact thud</td><td>The fall/defeat beat in CombatPlaybackController</td></tr>
+<tr><td>Combat start transition</td><td><code>CombatStart</code> <span class="b new">+</span></td><td>Helton Yan percussive <code>DSGNImpt_*</code> sting</td><td>Optional — into the combat animation</td></tr>
+</tbody>
+</table></div>
+<p style="font-size:.88rem;color:var(--muted)">Hooks: CombatExecutor, CombatPlaybackController, CombatPlaybackDispatcher, CombatForecastUI confirm.</p>
+
+<h3 id="D">D · Units · progression · items</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>EXP gain — counter ticks</td><td><code>ExpTick</code> <span class="b new">+</span></td><td>UI Soundpack <code>Minimalist</code>; CelerisLab <code>currency_gained</code></td><td>ExpGainOverlayUI:70 (per increment, subtle)</td></tr>
+<tr><td><strong>Level up</strong></td><td><code>LevelUp</code> <span class="b new">+</span></td><td>CelerisLab <code>positive…/level_up</code> (7 takes) or <code>upgrade_applied</code>; Helton Yan <code>MAGAngl_BUFF-Buff Pickup</code></td><td>LevelUpScreenUI</td></tr>
+<tr><td>Stat-up row reveal</td><td><code>StatPip</code> <span class="b new">+</span></td><td>UI Soundpack <code>Minimalist</code> blip</td><td>Optional per-row tick</td></tr>
+<tr><td>Heal (staff / healing tile)</td><td><code>Heal</code> <span class="b new">+</span></td><td>Helton Yan <code>MAGAngl_BUFF-Simple Heal</code>, <code>Healing Gusts</code></td><td>HealingTileSystem, staff combat</td></tr>
+<tr><td>Buff / debuff applied</td><td><code>BuffApplied</code>/<code>DebuffApplied</code> <span class="b new">+</span></td><td>CelerisLab <code>buff_applied</code> / <code>debuff_applied_deep</code></td><td></td></tr>
+<tr><td>Item equip / use / discard</td><td><code>ItemEquip</code> etc. <span class="b new">+</span></td><td>CelerisLab <code>item_equip</code> / <code>item_pick_up</code> / <code>item_drop</code></td><td>Inventory submenu</td></tr>
+<tr><td>Item / trade / convoy transfer</td><td><code>ItemMove</code> <span class="b new">+</span></td><td>CelerisLab <code>item_drag</code> / <code>item_stack</code></td><td>Trade + Convoy give/take</td></tr>
+<tr><td>Gold / reward gained</td><td><code>GoldGain</code> <span class="b new">+</span></td><td>Shapeforms <code>Coin Flung</code>, <code>Coin Dropped</code>; Helton Yan <code>DSGNTonl_USABLE-Coin Toss</code></td><td></td></tr>
+</tbody>
+</table></div>
+
+<h3 id="E">E · Turn / phase</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Player phase banner</td><td><code>PhasePlayer</code> <span class="b new">+</span></td><td>Helton Yan bright <code>DSGNTonl_*</code> / Tranquility <code>Achievement</code>; CelerisLab <code>objective_reached</code></td><td>PhaseBannerUI:72</td></tr>
+<tr><td>Enemy phase banner</td><td><code>PhaseEnemy</code> <span class="b new">+</span></td><td>Helton Yan minor/tense sting; Tranquility Pt2 <code>Deep Lurker</code></td><td></td></tr>
+<tr><td>Allied phase banner</td><td><code>PhaseAllied</code> <span class="b new">+</span></td><td>A third, neutral cue</td><td></td></tr>
+<tr><td>Turn counter advance</td><td>reuse phase cues</td><td>—</td><td></td></tr>
+<tr><td><strong>Victory</strong></td><td><code>MusicVictory</code> / <code>Fanfare</code> <span class="b new">+</span></td><td>CelerisLab <code>mission_success</code>; Helton Yan Tranquility <code>MUSCMisc_Major-Achievement</code></td><td>ChapterClearUI</td></tr>
+<tr><td><strong>Defeat / game over</strong></td><td><code>MusicGameOver</code> <span class="b new">+</span></td><td>Helton Yan Tranquility <em>Minor</em> drone; Shapeforms somber ambience</td><td>GameOverUI, LordDeathWatcher</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="F">F · Dialogue</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Typewriter char blip</td><td><code>DialogueBlip</code> <span class="b new">+</span></td><td>UI Soundpack <code>Minimalist</code>/<code>Wood Block</code> soft tick; <strong>or</strong> Super Dialogue <em>Grunting</em> (per-char voice, FE/Undertale style)</td><td>DialogueView:37 — fires per character, must be tiny + pitch-varied</td></tr>
+<tr><td>Line advance (Confirm)</td><td>reuse <code>UiConfirm</code></td><td>—</td><td>DialogueSequencePlayer:62</td></tr>
+<tr><td>Nameplate appears</td><td><code>NameplatePop</code> <span class="b new">+</span></td><td>CelerisLab subtle <code>notification</code></td><td>Optional</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="G">G · Scene · music · ambience</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Moment</th><th>SoundId</th><th>Candidates</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Title music (loop)</td><td><code>MusicTitle</code> <span class="b new">+</span></td><td>Helton Yan Tranquility <code>MUSCMisc_Major-*</code>; JDSherbert Ambiences <code>Cosmic Star</code></td><td>TitleScreenUI</td></tr>
+<tr><td><strong>Map / exploration music</strong></td><td><code>MusicMap</code> <em>(enum exists, unwired)</em></td><td>JDSherbert Ambiences <code>Tiger Temple Trial</code> / <code>Dark Dark Woods</code></td><td>Wire on BattleMap entry</td></tr>
+<tr><td><strong>Battle music</strong></td><td><code>MusicBattle</code> <em>(enum exists, unwired)</em></td><td>JDSherbert Ambiences (intense loop); Helton Yan Tranquility Pt2 drone layered</td><td>Wire on combat/phase</td></tr>
+<tr><td><strong>Ambient wind / map bed</strong></td><td><code>AmbientWind</code> <em>(enum exists, unwired)</em></td><td>Shapeforms <code>AMBIENCE_*_LOOP</code>; JDSherbert Ambiences</td><td><code>PlayAmbient</code> on map load</td></tr>
+<tr><td>Scene fade transition</td><td><code>TransitionWhoosh</code> <span class="b new">+</span></td><td>Helton Yan <code>WHSH_*</code>; Shapeforms <code>Fly By</code> whoosh</td><td>ScreenFader:43/55</td></tr>
+<tr><td>Splash logo sting</td><td><code>SplashSting</code> <span class="b new">+</span></td><td>Helton Yan Tranquility <code>Breathy Startup</code>; CelerisLab <code>achievement_unlocked</code></td><td>SplashScreenController:53</td></tr>
+</tbody>
+</table></div>
+
+<h3 id="H">H · Prologue / Beat 0 — upgrade the 3 placeholders</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Beat 0 slot</th><th>Current</th><th>Real candidate</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Kill impact <code>HitCrit</code></td><td>LanceImpact (placeholder)</td><td>Shapeforms <code>Gore Splat Stab Poke</code> / <code>PUNCH_SQUELCH_HEAVY</code>; Helton Yan <code>FGHTImpt_MELEE-Crunch</code>, <code>DSGNMisc_HIT-Gore Pierce</code></td><td>A wet, brutal stab</td></tr>
+<tr><td>Villager scream <code>VillagerScream</code></td><td>MissWhoosh (placeholder)</td><td><strong>Super Dialogue</strong> <code>shouting_*</code> or <code>death_*</code> — <strong>Karen/Meghan (female)</strong></td><td>Real human voice — pick a take by ear</td></tr>
+<tr><td>Rakshasa roar <code>RakshasaRoar</code></td><td>LanceImpact (placeholder)</td><td><span class="b warn">⚠</span> <strong>weakest</strong> — no good organic monster roar in these packs. Closest: Shapeforms <code>CREAMnstr_Beast Vocalisation</code>, Helton Yan <code>MAGSpel_CAST-Critter Transformation</code> / deep <code>DSGNImpt_EXPLOSION-Bass Hit</code></td><td><strong>Likely the one to AI-generate</strong> (ElevenLabs/Firefly — see <code>docs/research/ai-sfx-tools.md</code>) or grab a monster-roar pack</td></tr>
+</tbody>
+</table></div>
+
+<h2 id="sec4">4 · Proposed <code>SoundId</code> additions (consolidated)</h2>
+<p>Current enum has 12. To cover the surface, append (don't reorder):</p>
+<pre><code>// UI
+UiOpen, UiClose, UiError, UiTab, UiHover
+// Grid / units
+UnitSelect, MoveCommit, Footstep
+// Combat (HitPhysical/HitCrit/Miss already exist — wire them)
+AttackSwing, MagicCast, UnitDeath, Heal
+// Progression / items
+ExpTick, LevelUp, BuffApplied, DebuffApplied, ItemEquip, ItemMove, GoldGain
+// Turn / phase
+PhasePlayer, PhaseEnemy, PhaseAllied, Fanfare
+// Dialogue
+DialogueBlip
+// Scene / music
+MusicTitle, MusicVictory, MusicGameOver, TransitionWhoosh, SplashSting</code></pre>
+<p>(<code>UiMove</code>, <code>UiCancel</code>, <code>MusicMap</code>, <code>MusicBattle</code>, <code>AmbientWind</code> already exist — they just need wiring + call sites.)</p>
+
+<h2 id="sec5">5 · Suggested priority</h2>
+<p>So we don't wire all ~95 at once:</p>
+<ul>
+<li><strong>P1 — core game feel (biggest bang):</strong> <code>UiConfirm</code>/<code>UiCancel</code>/<code>UiMove</code> across all menus · <code>UnitSelect</code> · <code>MoveCommit</code>/<code>Footstep</code> · <strong>combat <code>HitPhysical</code>/<code>HitCrit</code>/<code>Miss</code></strong> · <code>MusicBattle</code>/<code>MusicMap</code> on the map · upgrade Beat 0's 3 sounds.</li>
+<li><strong>P2 — feedback &amp; moments:</strong> <code>UnitDeath</code> · <code>LevelUp</code> + <code>ExpTick</code> · phase banners + <code>Fanfare</code>/<code>MusicGameOver</code> · <code>AmbientWind</code>.</li>
+<li><strong>P3 — depth &amp; polish:</strong> item/trade/convoy/inventory sounds · <code>DialogueBlip</code> · hovers/toasts/transitions · settings/slider ticks.</li>
+</ul>
+
+<h2 id="sec6">6 · How I'd like to proceed</h2>
+<p>You audition and pick winners; I wire. The fastest loop:</p>
+<ol>
+<li>You go through a P1 slot (say "UI confirm/cancel/move") in your audio editor, pick the file(s) — or just tell me <em>"CelerisLab standard_button, takes 1 &amp; 3"</em>.</li>
+<li>I copy them into <code>Assets/Audio/…</code>, build the SoundSO (with all your chosen variations + a pitch range), wire the SoundId, and add the call site.</li>
+<li>Repeat down the priority list.</li>
+</ol>
+<p>For anything where you want options first, point me at the slot and I'll pull the exact candidate filenames from the pack so you can A/B them.</p>
+<blockquote><p>Reminder on verification: I can wire and confirm sounds <em>fire</em> structurally, but I can't judge how they <em>sound</em> — that ear is yours.</p></blockquote>
+
+</main>
+</div>
+</body>
+</html>
