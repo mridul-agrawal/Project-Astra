@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -76,12 +77,21 @@ namespace ProjectAstra.Core.UI.Overlays
             }
 
             float t = 0f;
+            float tickTimer = 0f;
+            int lastShown = from;
             while (t < _countSeconds)
             {
                 t += Time.deltaTime;
+                tickTimer += Time.deltaTime;
                 float p = Mathf.Clamp01(t / _countSeconds);
                 int shown = Mathf.RoundToInt(Mathf.Lerp(from, to, p));
                 SetCounter(shown % UnitInstance.ExpPerLevel);
+                if (shown != lastShown && tickTimer >= 0.05f)
+                {
+                    AudioManager.Instance?.Play(SoundId.ExpTick);
+                    tickTimer = 0f;
+                }
+                lastShown = shown;
                 yield return null;
             }
             SetCounter(to % UnitInstance.ExpPerLevel);

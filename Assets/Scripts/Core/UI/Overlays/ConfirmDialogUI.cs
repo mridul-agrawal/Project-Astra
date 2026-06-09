@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -42,6 +43,8 @@ namespace ProjectAstra.Core.UI.Overlays
                 InputManager.Instance.OnConfirm += Confirm;
                 InputManager.Instance.OnCancel += Cancel;
             }
+
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         public void Hide()
@@ -71,10 +74,12 @@ namespace ProjectAstra.Core.UI.Overlays
             if (dir.y == 0 && dir.x == 0) return;
             _selectedIndex = _selectedIndex == 0 ? 1 : 0;
             UpdateSelection();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void Confirm()
         {
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
             int index = _selectedIndex;
             var yes = _onYes;
             var no = _onNo;
@@ -85,6 +90,7 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void Cancel()
         {
+            AudioManager.Instance?.Play(SoundId.UiCancel);
             var no = _onNo;
             Hide();
             no?.Invoke();

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Stats;
@@ -137,6 +138,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
             HasInputFocus = true;
             SubscribeInput();
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         void DiscoverProviders()
@@ -158,6 +160,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         public void Hide()
         {
+            bool wasOpen = HasInputFocus;
             HasInputFocus = false;
             UnsubscribeInput();
 
@@ -165,6 +168,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             if (_dimOverlay != null) _dimOverlay.SetActive(false);
 
             _unit = null;
+            if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         void SubscribeInput()
@@ -204,6 +208,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             var slot = _unit.Inventory?.GetSlot(slotIdx) ?? InventoryItem.None;
             if (slot.kind == ItemKind.None) return;
             UnsubscribeInput();
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
             _itemDetail.Show(slot, () => { SubscribeInput(); });
         }
 
@@ -213,6 +218,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             if (_visibleBondData.Count == 0) return;
             int row = Mathf.Clamp(_selectedBondRow, 0, _visibleBondData.Count - 1);
             UnsubscribeInput();
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
             _supportDetail.Show(_unit.UnitInstance, _visibleBondData[row], _supportBonusProvider, () => { SubscribeInput(); });
         }
 
@@ -235,6 +241,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             int n = _visibleItemNameTMPs.Count;
             _selectedItemRow = (_selectedItemRow + delta + n) % n;
             UpdateItemHighlight();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         void MoveBondSelection(int delta)
@@ -243,6 +250,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             int n = _visibleBondNameTMPs.Count;
             _selectedBondRow = (_selectedBondRow + delta + n) % n;
             UpdateBondHighlight();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         void UpdateItemHighlight()
@@ -278,12 +286,14 @@ namespace ProjectAstra.Core.UI.UnitInfo
         {
             int next = _currentPage >= _maxPage ? 0 : _currentPage + 1;
             SetActivePage(next);
+            AudioManager.Instance?.Play(SoundId.UiTab);
         }
 
         void PrevPage()
         {
             int prev = _currentPage <= 0 ? _maxPage : _currentPage - 1;
             SetActivePage(prev);
+            AudioManager.Instance?.Play(SoundId.UiTab);
         }
 
         void HandleCancel() => Hide();

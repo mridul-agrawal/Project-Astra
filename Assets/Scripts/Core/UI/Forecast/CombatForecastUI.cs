@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
@@ -34,8 +35,10 @@ namespace ProjectAstra.Core.UI.Forecast
 
         public void Hide()
         {
+            bool wasVisible = IsVisible;
             if (_popupInstance != null) _popupInstance.SetActive(false);
             IsVisible = false;
+            if (wasVisible) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         // Heal preview — left = healer (heal amount in the Atk slot), right = target.
@@ -220,8 +223,10 @@ namespace ProjectAstra.Core.UI.Forecast
                 return false;
             }
 
+            bool wasActive = _popupInstance.activeSelf;
             _popupInstance.SetActive(true);
             _popupInstance.transform.SetAsLastSibling();
+            if (!wasActive) AudioManager.Instance?.Play(SoundId.UiPanelOpen);
             return true;
         }
     }

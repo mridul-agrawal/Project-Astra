@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.UI.Dialogue
@@ -28,6 +29,8 @@ namespace ProjectAstra.Core.UI.Dialogue
         [SerializeField] private TMP_Text _bodyText;
         [SerializeField] private GameObject _continueHint;
 
+        private int _lastVisibleCount;
+
         public void Show(DialogueTriggeringContext context)
         {
             ResetPortraits();
@@ -41,10 +44,22 @@ namespace ProjectAstra.Core.UI.Dialogue
             ApplyName(line.SpeakerName, line.Position);
             _bodyText.text = line.Text ?? string.Empty;
             _bodyText.maxVisibleCharacters = 0;
+            _lastVisibleCount = 0;
             SetContinueHintVisible(false);
         }
 
-        public void SetVisibleCharacters(int count) => _bodyText.maxVisibleCharacters = count;
+        public void SetVisibleCharacters(int count)
+        {
+            // One soft blip per newly typed character — skip whitespace and reveal-all jumps.
+            if (count == _lastVisibleCount + 1 && _bodyText.text != null
+                && count >= 1 && count <= _bodyText.text.Length
+                && !char.IsWhiteSpace(_bodyText.text[count - 1]))
+            {
+                AudioManager.Instance?.Play(SoundId.DialogueBlip);
+            }
+            _lastVisibleCount = count;
+            _bodyText.maxVisibleCharacters = count;
+        }
 
         public void SetContinueHintVisible(bool visible)
         {

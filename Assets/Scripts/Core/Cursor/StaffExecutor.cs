@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
@@ -37,7 +38,10 @@ namespace ProjectAstra.Core.Cursor
             ItemBreakToaster.WithBreakAnnouncements(healer, _toastUI, () =>
             {
                 if (healer.Inventory.TryUseStaff(target, out int healed, out string fail))
+                {
+                    AudioManager.Instance?.Play(SoundId.Heal);
                     Debug.Log($"[Staff] {healer.name} healed {target.name} for {healed} HP.");
+                }
                 else
                     Debug.LogWarning($"[Staff] Heal failed: {fail}");
             });
@@ -56,6 +60,7 @@ namespace ProjectAstra.Core.Cursor
             {
                 if (healer.Inventory.TryUseFortify(allUnits, out var healed, out string fail))
                 {
+                    AudioManager.Instance?.Play(SoundId.Heal);
                     foreach (var (unit, amount) in healed)
                         Debug.Log($"[Staff] {healer.name} healed {unit.name} for {amount} HP (Fortify).");
                 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RakshasaRoar
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.SoundSO
   clips:
-  - {fileID: 8300000, guid: 0576ab8a7fec1cc4e82634c915bf025b, type: 3}
+  - {fileID: 8300000, guid: 02a6c0c89a4a1a149931de589feebe76, type: 3}
   bus: 2
   volume: 0.95
   pitchRange: {x: 1, y: 1}

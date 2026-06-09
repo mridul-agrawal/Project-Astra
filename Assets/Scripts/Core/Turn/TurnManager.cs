@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Units;
 
@@ -76,6 +77,9 @@ namespace ProjectAstra.Core.Turn
             _phaseManager.SetHasAllies(_hasAllies || _unitRegistry.HasUnitsOfFaction(Faction.Allied));
             _phaseManager.Reset();
             RegisterSceneUnits();
+
+            AudioManager.Instance?.PlayMusic(SoundId.MusicMap);
+            AudioManager.Instance?.PlayAmbient(SoundId.AmbientWind);
 
             var prologue = FindPrologue();
             if (prologue != null)

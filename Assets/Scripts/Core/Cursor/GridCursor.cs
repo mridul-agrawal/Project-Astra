@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.UI.CombatAnimation;
@@ -204,6 +205,7 @@ namespace ProjectAstra.Core.Cursor
             _gridPosition = targetGridPosition;
             SnapToGridPosition();
             OnCursorMoved?.Invoke(_gridPosition);
+            AudioManager.Instance?.Play(SoundId.CursorMove);
 
             if (_currentMode == CursorMode.UnitSelected)
                 _unitSelectionFlow.UpdatePathArrow(_gridPosition);
@@ -218,9 +220,13 @@ namespace ProjectAstra.Core.Cursor
                 case CursorMode.Free:
                     _unitSelectionFlow.TrySelectUnit(_gridPosition);
                     if (_currentMode == CursorMode.UnitSelected)
+                    {
+                        AudioManager.Instance?.Play(SoundId.ConfirmUnitSelect);
                         _battleDialogueChannel?.Raise(BattleDialogueEventType.UnitSelected);
+                    }
                     break;
                 case CursorMode.UnitSelected:
+                    AudioManager.Instance?.Play(SoundId.ConfirmMove);
                     _unitSelectionFlow.TryCommitMovement(_gridPosition);
                     _battleDialogueChannel?.Raise(BattleDialogueEventType.MoveConfirmed);
                     break;
@@ -232,6 +238,7 @@ namespace ProjectAstra.Core.Cursor
                     else
                     {
                         if (target != null) _battleDialogueChannel?.Raise(BattleDialogueEventType.PreCombat);
+                        AudioManager.Instance?.Play(SoundId.ConfirmEngage);
                         ApplyPerCombatSpeedOverrideIfHeld();
                         _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
                     }
@@ -246,10 +253,12 @@ namespace ProjectAstra.Core.Cursor
             switch (_currentMode)
             {
                 case CursorMode.UnitSelected:
+                    AudioManager.Instance?.Play(SoundId.CancelGrid);
                     if (_cantoFlow.IsCantoMode) { _unitSelectionFlow.FinishCantoFromCancel(); break; }
                     _unitSelectionFlow.DeselectUnit();
                     break;
                 case CursorMode.Targeting:
+                    AudioManager.Instance?.Play(SoundId.CancelGrid);
                     CancelTargeting();
                     break;
             }

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
@@ -30,6 +31,7 @@ namespace ProjectAstra.Core.UI.Overlays
             AddListenerToGameplayInputs();
             _returnButton.image.color = Selected;
             PopulateSpeedDropdown();
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         private void AddListenersToMouseClicks()
@@ -87,6 +89,10 @@ namespace ProjectAstra.Core.UI.Overlays
             settings.Persisted = (CombatAnimationSpeed)index;
         }
 
-        private void Return() => GameStateManager.Instance.ReturnFromContextMenu(nameof(SettingsMenuOverlayUI));
+        private void Return()
+        {
+            AudioManager.Instance?.Play(SoundId.UiCancel);
+            GameStateManager.Instance.ReturnFromContextMenu(nameof(SettingsMenuOverlayUI));
+        }
     }
 }

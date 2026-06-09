@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
@@ -96,7 +97,11 @@ namespace ProjectAstra.Core.UI.Progression
             else if (dir.y < 0) SelectButtonByIndex(_selectedIndex >= _buttons.Length - 1 ? 0 : _selectedIndex + 1);
         }
 
-        private void ConfirmSelection() => _buttons[_selectedIndex].onClick.Invoke();
+        private void ConfirmSelection()
+        {
+            AudioManager.Instance?.Play(SoundId.ConfirmStartBattle);
+            _buttons[_selectedIndex].onClick.Invoke();
+        }
 
         private void InitializeButtonColors()
         {

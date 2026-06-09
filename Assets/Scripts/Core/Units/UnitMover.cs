@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 
 namespace ProjectAstra.Core.Units
 {
@@ -54,6 +55,7 @@ namespace ProjectAstra.Core.Units
                 unit.gridPosition = path[i];
                 unit.SnapToGridPosition();
                 onTileEntered?.Invoke(path[i]);
+                AudioManager.Instance?.Play(SoundId.Footstep);
             }
 
             IsMoving = false;

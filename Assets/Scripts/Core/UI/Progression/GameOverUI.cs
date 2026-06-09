@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
@@ -26,6 +27,7 @@ namespace ProjectAstra.Core.UI.Progression
             WireInput();
             InitializeButtonColors();
             SelectButtonByIndex(0);
+            AudioManager.Instance?.PlayMusic(SoundId.MusicGameOver);
         }
 
         private void OnDisable()
@@ -100,11 +102,14 @@ namespace ProjectAstra.Core.UI.Progression
             if (IsNotActiveState) return;
             if (dir.y > 0)      SelectButtonByIndex(_selectedIndex <= 0 ? _buttons.Length - 1 : _selectedIndex - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selectedIndex >= _buttons.Length - 1 ? 0 : _selectedIndex + 1);
+            else return;
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void ConfirmSelection()
         {
             if (IsNotActiveState) return;
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
             _buttons[_selectedIndex].onClick.Invoke();
         }
 

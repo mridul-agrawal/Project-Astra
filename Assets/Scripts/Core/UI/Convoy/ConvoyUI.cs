@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.UI.Overlays;
@@ -77,6 +78,8 @@ namespace ProjectAstra.Core.UI.Convoy
                 InputManager.Instance.OnConfirm += Confirm;
                 InputManager.Instance.OnCancel += Cancel;
             }
+
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         public void Hide()
@@ -90,7 +93,9 @@ namespace ProjectAstra.Core.UI.Convoy
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
+            bool wasOpen = _popupInstance != null && _popupInstance.activeSelf;
             if (_popupInstance != null) _popupInstance.SetActive(false);
+            if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         private void OnDestroy()
@@ -128,12 +133,13 @@ namespace ProjectAstra.Core.UI.Convoy
 
             if (_zone == Zone.Submenu)
             {
-                if (dir.x < 0) { _mode = Mode.Give; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); }
-                else if (dir.x > 0) { _mode = Mode.Take; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); }
+                if (dir.x < 0) { _mode = Mode.Give; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
+                else if (dir.x > 0) { _mode = Mode.Take; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
                 else if (dir.y < 0)
                 {
                     _zone = _mode == Mode.Give ? Zone.UnitInv : Zone.ConvoyList;
                     RefreshFocus();
+                    AudioManager.Instance?.Play(SoundId.UiMove);
                 }
                 return;
             }
@@ -150,6 +156,7 @@ namespace ProjectAstra.Core.UI.Convoy
                     _unitCursor = Mathf.Min(UnitInventory.Capacity - 1, _unitCursor + 1);
                 }
                 RefreshUnitInv();
+                AudioManager.Instance?.Play(SoundId.UiMove);
                 return;
             }
 
@@ -163,6 +170,7 @@ namespace ProjectAstra.Core.UI.Convoy
                 RebuildFiltered();
                 RefreshTabs();
                 RefreshConvoy();
+                AudioManager.Instance?.Play(SoundId.UiTab);
                 return;
             }
             if (dir.y == 0) return;
@@ -190,6 +198,7 @@ namespace ProjectAstra.Core.UI.Convoy
 
             _convoyCursor = absIndex - _convoyScrollOffset;
             RefreshConvoy();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void Confirm()
@@ -223,10 +232,11 @@ namespace ProjectAstra.Core.UI.Convoy
             var inv = _unit.Inventory;
             var item = inv.GetSlot(_unitCursor);
             if (item.IsEmpty) return;
-            if (_convoy.IsFull) { _toastUI?.Show("Convoy full"); return; }
+            if (_convoy.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); _toastUI?.Show("Convoy full"); return; }
 
             inv.DiscardSlot(_unitCursor);
             _convoy.TryDeposit(item);
+            AudioManager.Instance?.Play(SoundId.ItemMove);
 
             RebuildFiltered();
             RefreshAll();
@@ -242,10 +252,11 @@ namespace ProjectAstra.Core.UI.Convoy
             if (item.IsEmpty) return;
 
             var inv = _unit.Inventory;
-            if (inv.IsFull) { _toastUI?.Show("Inventory full"); return; }
+            if (inv.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); _toastUI?.Show("Inventory full"); return; }
 
             if (!_convoy.TryWithdraw(absIndex, out var withdrawn)) return;
             inv.TryAddItem(withdrawn, out _);
+            AudioManager.Instance?.Play(SoundId.ItemMove);
 
             RebuildFiltered();
             int newCount = _filtered.Count;

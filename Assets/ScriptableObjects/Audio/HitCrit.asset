@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HitCrit
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.SoundSO
   clips:
-  - {fileID: 8300000, guid: 143f5f589fdbc7e45905b5857b26be9d, type: 3}
+  - {fileID: 8300000, guid: 6dc67e1504a7de0409e018e6143a0971, type: 3}
   bus: 2
   volume: 0.9
   pitchRange: {x: 1, y: 1}

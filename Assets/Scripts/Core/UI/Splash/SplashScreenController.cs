@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Video;
 using UnityEngine.InputSystem;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Splash
@@ -51,6 +52,7 @@ namespace ProjectAstra.Core.UI.Splash
             _videoPlayer.isLooping = false;
             _videoPlayer.loopPointReached += OnVideoFinished;
             _videoPlayer.Play();
+            AudioManager.Instance?.Play(SoundId.SplashSting);
         }
 
         private void Update()

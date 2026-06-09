@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
@@ -48,6 +49,7 @@ namespace ProjectAstra.Core.UI.Progression
         public IEnumerator Play(TestUnit unit, StatArray preStats, StatArray gains, int preLevel, Sprite portrait)
         {
             if (_overlayRoot != null) _overlayRoot.SetActive(true);
+            AudioManager.Instance?.Play(SoundId.LevelUp);
 
             if (_unitNameText != null)
                 _unitNameText.text = unit != null ? unit.name : "";
@@ -146,7 +148,11 @@ namespace ProjectAstra.Core.UI.Progression
             }
         }
 
-        private void Confirm() => _confirmReceived = true;
+        private void Confirm()
+        {
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
+            _confirmReceived = true;
+        }
 
         private void BindConfirm()
         {

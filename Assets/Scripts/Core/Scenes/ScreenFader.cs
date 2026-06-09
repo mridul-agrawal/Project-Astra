@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 
 namespace ProjectAstra.Core.Scenes
 {
@@ -43,6 +44,7 @@ namespace ProjectAstra.Core.Scenes
         private IEnumerator Transition(Action onBlack)
         {
             _group.blocksRaycasts = true;
+            AudioManager.Instance?.Play(SoundId.TransitionWhoosh);
             yield return Fade(1f);
 
             onBlack?.Invoke();

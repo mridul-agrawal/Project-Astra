@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: UiConfirm
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Audio.SoundSO
   clips:
-  - {fileID: 8300000, guid: c5c0c788b19342d4db05dd31454f2894, type: 3}
+  - {fileID: 8300000, guid: cc3c27cca39208648bf1902ae1eb0306, type: 3}
   bus: 3
   volume: 1
   pitchRange: {x: 1, y: 1}

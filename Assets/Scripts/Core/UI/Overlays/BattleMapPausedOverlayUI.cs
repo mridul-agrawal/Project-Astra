@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
@@ -31,6 +32,7 @@ namespace ProjectAstra.Core.UI.Overlays
             AddListeners();
             InitializeButtonColors();
             SelectButtonByIndex(0);
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         private void OnDisable()
@@ -97,15 +99,19 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
+            else return;
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void ConfirmSelection()
         {
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
             _buttons[_selected].onClick.Invoke();
         }
 
         private void HandleCancel()
         {
+            AudioManager.Instance?.Play(SoundId.UiCancel);
             Resume();
         }
 

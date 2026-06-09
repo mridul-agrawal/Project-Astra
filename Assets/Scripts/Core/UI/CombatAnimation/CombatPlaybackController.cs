@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.State;
@@ -78,6 +79,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             }
 
             ApplyTerrainBackground(ctx.DefenderTerrain);
+            AudioManager.Instance?.PlayMusic(SoundId.MusicBattle);
 
             if (_refs.LeftFighter  != null) _refs.LeftFighter.Show(ctx.Attacker, facingRight: true);
             if (_refs.RightFighter != null) _refs.RightFighter.Show(ctx.Defender, facingRight: false);
@@ -121,6 +123,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             float followDur  = CombatTiming.PhaseDuration(CombatTiming.Phase.FollowThrough);
 
             if (attackerView != null) StartCoroutine(attackerView.PlayStrike(strikeDur));
+            AudioManager.Instance?.Play(SwingSoundFor(attackerUnit));
             if (defenderView != null)
             {
                 if (step.Hit.Hit) StartCoroutine(defenderView.PlayHitReact(step.Hit.Damage, step.Hit.Crit, strikeDur + followDur));
@@ -129,6 +132,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             if (step.Hit.Crit) StartCoroutine(CritFlash(step.CritContext));
 
             yield return CombatTiming.WaitPhase(CombatTiming.Phase.Strike);
+            AudioManager.Instance?.Play(step.Hit.Hit ? (step.Hit.Crit ? SoundId.HitCrit : SoundId.HitPhysical) : SoundId.Miss);
 
             if (step.Hit.Hit && defenderView != null)
                 defenderView.DrainTo(newHp, resolveDur + followDur);
@@ -167,6 +171,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             CombatResultApplicator.ApplyHitDamage(receiverUnit, hpAfterHit1);
 
             if (attackerView != null) StartCoroutine(attackerView.PlayStrike(strikeDur));
+            AudioManager.Instance?.Play(SwingSoundFor(attackerUnit));
             // Defender's recoil tween is sized to span BOTH strikes; the controller
             // does not reset it between hits — that's the brave-fusion visual.
             if (defenderView != null)
@@ -178,6 +183,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             if (step.Hit1.Crit) StartCoroutine(CritFlash(step.Hit1CritContext));
 
             yield return CombatTiming.WaitPhase(CombatTiming.Phase.Strike);
+            AudioManager.Instance?.Play(step.Hit1.Hit ? (step.Hit1.Crit ? SoundId.HitCrit : SoundId.HitPhysical) : SoundId.Miss);
 
             // Single continuous HP drain across both hits (down to hit-2 result).
             if ((step.Hit1.Hit || step.Hit2.Hit) && defenderView != null)
@@ -199,9 +205,11 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             CombatResultApplicator.ApplyHitDamage(receiverUnit, hpAfterHit2);
 
             if (attackerView != null) StartCoroutine(attackerView.PlayStrike(strikeDur));
+            AudioManager.Instance?.Play(SwingSoundFor(attackerUnit));
             if (step.Hit2.Crit) StartCoroutine(CritFlash(step.Hit2CritContext));
 
             yield return CombatTiming.WaitPhase(CombatTiming.Phase.Strike);
+            AudioManager.Instance?.Play(step.Hit2.Hit ? (step.Hit2.Crit ? SoundId.HitCrit : SoundId.HitPhysical) : SoundId.Miss);
             yield return CombatTiming.WaitPhase(CombatTiming.Phase.Resolve);
 
             if (attackerView != null)
@@ -218,6 +226,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         private IEnumerator RunDeath(CombatPlaybackContext ctx, TestUnit victim, TestUnit killer, CombatFighterView victimView, CritContext context)
         {
+            AudioManager.Instance?.Play(SoundId.UnitDeath);
             var args = UnitDeathHook.PrepareDeath(victim, killer);
 
             if (context == CritContext.Tragic)
@@ -240,6 +249,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
         private void FinalizeAndReturn(CombatPlaybackContext ctx)
         {
             CombatResultApplicator.Finalize(ctx);
+            AudioManager.Instance?.PlayMusic(SoundId.MusicMap);   // restore map theme after the battle overlay
             ctx?.OnComplete?.Invoke();
             ReturnToBattle();
         }
@@ -291,5 +301,13 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         private static int CurrentHP(TestUnit unit) =>
             unit?.UnitInstance != null ? unit.UnitInstance.CurrentHP : unit != null ? unit.currentHP : 0;
+
+        // Magic weapons get a cast whoosh; everything else a physical swing.
+        private static SoundId SwingSoundFor(TestUnit striker)
+        {
+            var w = striker != null ? striker.equippedWeapon : default;
+            return !w.IsEmpty && w.damageType == DamageType.Magical
+                ? SoundId.MagicCast : SoundId.AttackSwing;
+        }
     }
 }

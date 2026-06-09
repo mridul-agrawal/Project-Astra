@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
@@ -101,9 +102,15 @@ namespace ProjectAstra.Core.UI.MainMenu
         {
             if (dir.y > 0)      SelectButtonByIndex(_selectedIndex <= 0 ? _buttons.Length - 1 : _selectedIndex - 1);
             else if (dir.y < 0) SelectButtonByIndex(_selectedIndex >= _buttons.Length - 1 ? 0 : _selectedIndex + 1);
+            else return;
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
-        private void ConfirmSelection() => _buttons[_selectedIndex].onClick.Invoke();
+        private void ConfirmSelection()
+        {
+            AudioManager.Instance?.Play(SoundId.UiConfirm);
+            _buttons[_selectedIndex].onClick.Invoke();
+        }
 
         private void InitializeButtonColors()
         {

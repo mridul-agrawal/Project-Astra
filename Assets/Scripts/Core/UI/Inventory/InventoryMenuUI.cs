@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Input;
@@ -73,6 +74,8 @@ namespace ProjectAstra.Core.UI.Inventory
                 InputManager.Instance.OnConfirm += Confirm;
                 InputManager.Instance.OnCancel += Cancel;
             }
+
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         public void Hide()
@@ -86,7 +89,9 @@ namespace ProjectAstra.Core.UI.Inventory
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
+            bool wasOpen = _popupInstance != null && _popupInstance.activeSelf;
             if (_popupInstance != null) _popupInstance.SetActive(false);
+            if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         private void OnDestroy()
@@ -131,6 +136,7 @@ namespace ProjectAstra.Core.UI.Inventory
                 return;
 
             UpdateSelection();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void Confirm()
@@ -138,6 +144,7 @@ namespace ProjectAstra.Core.UI.Inventory
             if (_slotSubMenuOpen) return;
             var slot = _inventory.GetSlot(_selectedIndex);
             if (slot.IsEmpty) return;
+            AudioManager.Instance?.Play(SoundId.ConfirmItem);
             OpenSlotSubMenu(_selectedIndex, slot);
         }
 
@@ -175,6 +182,7 @@ namespace ProjectAstra.Core.UI.Inventory
                     handlers.Add(() =>
                     {
                         _inventory.EquipFromSlot(slotIndex);
+                        AudioManager.Instance?.Play(SoundId.ItemEquip);
                         ReturnToMainMenu();
                     });
                 }
@@ -192,6 +200,7 @@ namespace ProjectAstra.Core.UI.Inventory
 
                     if (_inventory.TryUseConsumable(slotIndex, out _))
                     {
+                        AudioManager.Instance?.Play(SoundId.Heal);
                         var used = _onConsumableUsed;
                         Hide();
                         used?.Invoke();
@@ -245,6 +254,7 @@ namespace ProjectAstra.Core.UI.Inventory
                 {
                     if (_inventory.TryUseConsumable(slotIndex, out string failReason))
                     {
+                        AudioManager.Instance?.Play(SoundId.BuffApplied);
                         var used = _onConsumableUsed;
                         Hide();
                         used?.Invoke();

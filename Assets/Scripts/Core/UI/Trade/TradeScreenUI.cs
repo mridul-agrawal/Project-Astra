@@ -3,6 +3,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.UI.Overlays;
@@ -85,10 +86,12 @@ namespace ProjectAstra.Core.UI.Trade
 
             HasInputFocus = true;
             SubscribeInput();
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         public void Hide()
         {
+            bool wasOpen = HasInputFocus;
             HasInputFocus = false;
             UnsubscribeInput();
 
@@ -96,6 +99,7 @@ namespace ProjectAstra.Core.UI.Trade
             if (_dimOverlay != null) _dimOverlay.SetActive(false);
 
             _session = null;
+            if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         void OnDestroy()
@@ -254,6 +258,7 @@ namespace ProjectAstra.Core.UI.Trade
                 return;
 
             UpdateVisuals();
+            AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         void Confirm()
@@ -263,6 +268,7 @@ namespace ProjectAstra.Core.UI.Trade
                 var item = GetSlotAtCursor();
                 if (item.IsEmpty) return;
 
+                AudioManager.Instance?.Play(SoundId.ConfirmItem);
                 _phase = Phase.ItemSelected;
                 _selectedColumn = _activeColumn;
                 _selectedRow = _cursorRow;
@@ -279,6 +285,7 @@ namespace ProjectAstra.Core.UI.Trade
             }
 
             bool success = ExecuteTradeOperation();
+            AudioManager.Instance?.Play(SoundId.ItemMove);
             Deselect();
             if (success) RefreshAllRows();
             UpdateVisuals();

@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -71,8 +72,21 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)
         {
+            PlayPhaseCue(phase);
             StopAllCoroutines();
             StartCoroutine(ShowBanner(phase, turnNumber));
+        }
+
+        private static void PlayPhaseCue(BattlePhase phase)
+        {
+            var id = phase switch
+            {
+                BattlePhase.PlayerPhase => SoundId.PhasePlayer,
+                BattlePhase.EnemyPhase  => SoundId.PhaseEnemy,
+                BattlePhase.AlliedPhase => SoundId.PhaseAllied,
+                _                       => SoundId.PhasePlayer,
+            };
+            AudioManager.Instance?.Play(id);
         }
 
         private IEnumerator ShowBanner(BattlePhase phase, int turnNumber)

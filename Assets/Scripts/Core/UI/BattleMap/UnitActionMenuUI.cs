@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.UI.Inventory;
@@ -95,6 +96,8 @@ namespace ProjectAstra.Core.UI.BattleMap
                 InputManager.Instance.OnConfirm += Confirm;
                 InputManager.Instance.OnCancel += Cancel;
             }
+
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
         public void Hide()
@@ -134,12 +137,14 @@ namespace ProjectAstra.Core.UI.BattleMap
             {
                 _selectedIndex = next;
                 UpdateSelection();
+                AudioManager.Instance?.Play(SoundId.UiMove);
             }
         }
 
         private void Confirm()
         {
-            if (IsDisabled(_selectedIndex)) return;
+            if (IsDisabled(_selectedIndex)) { AudioManager.Instance?.Play(SoundId.UiInvalid); return; }
+            AudioManager.Instance?.Play(SoundId.ConfirmAction);
             int index = _selectedIndex;
             var callback = _onSelect;
             Hide();
@@ -148,6 +153,7 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void Cancel()
         {
+            AudioManager.Instance?.Play(SoundId.CancelGrid);
             var callback = _onCancel;
             Hide();
             callback?.Invoke();
