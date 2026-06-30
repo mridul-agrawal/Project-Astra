@@ -1,5 +1,6 @@
 using UnityEngine;
 using ProjectAstra.Core.Stats;
+using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Units
 {
@@ -55,6 +56,10 @@ namespace ProjectAstra.Core.Units
         [Tooltip("2–4 authored lines played as a dialogue sequence when this unit dies. Only consulted when IsLord is true.")]
         [SerializeField, TextArea(1, 3)] private string[] _lastWordsLines;
 
+        [Header("Dialogue")]
+        [Tooltip("Optional. Which dialogue speaker voices this unit (portrait + name) for runtime lines such as the Lord's last words. Leave empty for nameless narration.")]
+        [SerializeField] private DialogueSpeaker _speaker;
+
         public string UnitName => _unitName;
         public string UnitId => _unitId;
         public ClassDefinition DefaultClass => _defaultClass;
@@ -74,5 +79,6 @@ namespace ProjectAstra.Core.Units
         public string OneLineIdentity => _oneLineIdentity;
         public bool IsLord => _isLord;
         public string[] LastWordsLines => _lastWordsLines;
+        public DialogueSpeaker Speaker => _speaker;
     }
 }

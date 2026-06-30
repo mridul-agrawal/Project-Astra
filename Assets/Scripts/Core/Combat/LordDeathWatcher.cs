@@ -1,7 +1,7 @@
 using System.Collections;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
-using ProjectAstra.Core.UI.Cutscene;
 using ProjectAstra.Core.Units;
 using UnityEngine;
 
@@ -22,7 +22,6 @@ namespace ProjectAstra.Core.Combat
     public class LordDeathWatcher : MonoBehaviour
     {
         [SerializeField] private UnitDeathEventChannel _deathChannel;
-        [SerializeField] private DialogueSequencePlayer _dialoguePlayer;
 
         [Tooltip("How long the Lord's sprite fades out before the last-words dialogue begins.")]
         [SerializeField] private float _fadeDurationSeconds = 1.0f;
@@ -58,12 +57,13 @@ namespace ProjectAstra.Core.Combat
             yield return FadeVictim(victim);
             if (victim != null) victim.gameObject.SetActive(false);
 
-            var lines = ResolveLastWords(victim);
+            var script = DialogueScript.CreateRuntime("LORD_LASTWORDS",
+                victim?.UnitDefinition?.Speaker?.SpeakerId, ResolveLastWords(victim));
 
             GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(LordDeathWatcher));
 
-            if (_dialoguePlayer != null)
-                yield return _dialoguePlayer.Play(lines);
+            if (DialogueService.Instance != null)
+                yield return DialogueService.Instance.PlayRoutine(script, DialogueTriggeringContext.Cutscene);
 
             GameStateManager.Instance?.RequestTransition(GameState.GameOver, nameof(LordDeathWatcher));
         }

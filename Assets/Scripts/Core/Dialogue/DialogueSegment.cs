@@ -27,7 +27,7 @@ namespace ProjectAstra.Core.Dialogue
         public float AutoAdvanceDelay => _autoAdvanceDelay;
         public IReadOnlyList<DialogueLine> Lines => _lines;
 
-        internal static DialogueSegment CreateForTest(Sprite background, float textSpeed,
+        internal static DialogueSegment Create(Sprite background, float textSpeed,
             float autoAdvanceDelay, params DialogueLine[] lines)
         {
             return new DialogueSegment

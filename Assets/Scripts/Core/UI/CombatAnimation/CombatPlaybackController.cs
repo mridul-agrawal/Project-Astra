@@ -87,8 +87,16 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             yield return CombatTiming.WaitSeconds(_openingHoldSeconds);
 
             bool combatEnded = false;
+            int stepIndex = 0;
             foreach (var step in ctx.Plan.Steps)
             {
+                if (ctx.PreStepHook != null)
+                {
+                    var hook = ctx.PreStepHook(ctx, stepIndex);
+                    if (hook != null) yield return hook;
+                }
+                stepIndex++;
+
                 if (step is BraveHitStep brave)
                     yield return PlayBraveHit(ctx, brave, ended => combatEnded = ended);
                 else if (step is SingleHitStep single)

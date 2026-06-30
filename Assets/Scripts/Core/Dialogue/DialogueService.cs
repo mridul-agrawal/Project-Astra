@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Input;
@@ -15,6 +16,8 @@ namespace ProjectAstra.Core.Dialogue
         public static DialogueService Instance { get; private set; }
 
         private const string ViewResourcePath = "UI/DialogueView";
+        // A frame hitch shouldn't fast-forward the crawl in one jump; cap the step.
+        private const float MaxFrameStep = 1f / 30f;
 
         [SerializeField] private DialogueSpeakerRegistry _speakerRegistry;
         [SerializeField] private DialogueSettings _settings;
@@ -41,6 +44,21 @@ namespace ProjectAstra.Core.Dialogue
             if (_runner == null) StartNext();
         }
 
+        // Coroutine form for scripted cinematics: yield return this to block until the
+        // script finishes or is skipped. Pass Cutscene context so the service leaves the
+        // game state to the caller.
+        public IEnumerator PlayRoutine(DialogueScript script, DialogueTriggeringContext context)
+        {
+            if (script == null) yield break;
+            bool done = false;
+            Play(script, context, () => done = true);
+            while (!done) yield return null;
+        }
+
+        // Force-stops the running script from code, so a cinematic that's cut short can
+        // end its dialogue too (the input-driven skip path lives in OnSkip).
+        public void Skip() => _runner?.Skip();
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -51,7 +69,8 @@ namespace ProjectAstra.Core.Dialogue
 
         private void Update()
         {
-            if (_runner != null && _runner.IsRunning) _runner.Tick(Time.unscaledDeltaTime);
+            if (_runner != null && _runner.IsRunning)
+                _runner.Tick(Mathf.Min(Time.unscaledDeltaTime, MaxFrameStep));
         }
 
         private void InstantiateView()

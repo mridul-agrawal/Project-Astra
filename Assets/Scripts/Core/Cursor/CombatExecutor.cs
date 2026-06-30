@@ -72,6 +72,7 @@ namespace ProjectAstra.Core.Cursor
                 DeathChannel = _deathChannel,
                 ToastUI = _toastUI,
                 OnComplete = onComplete,
+                PreStepHook = CombatScriptOverride.PreStepHook,
                 DefenderTerrain = _mapRenderer != null
                     ? _mapRenderer.GetTerrainType(defender.gridPosition.x, defender.gridPosition.y)
                     : default,
@@ -86,6 +87,7 @@ namespace ProjectAstra.Core.Cursor
                 // Safety net: no dispatcher wired (test seam / misconfigured
                 // scene). Apply terminal result instantly, fire callback.
                 CombatResultApplicator.Finalize(ctx);
+                CombatPlaybackDispatcher.RaiseInstantDeaths(ctx);
                 onComplete?.Invoke();
             }
         }
@@ -107,7 +109,8 @@ namespace ProjectAstra.Core.Cursor
             var defClass = defender.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
 
             return CombatRound.Resolve(atkData, defData, defTerrainDef, defTerrainAvo,
-                atkTerrainDef, atkTerrainAvo, new UnityRng(), atkClass, defClass);
+                atkTerrainDef, atkTerrainAvo, CombatScriptOverride.Rng ?? new UnityRng(),
+                atkClass, defClass);
         }
 
         private static CombatantData BuildCombatantData(TestUnit unit, int distance)

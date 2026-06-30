@@ -15,7 +15,7 @@ MonoBehaviour:
   _unitName: Rakshasa Chief
   _unitId: rakshasa_miniboss
   _defaultClass: {fileID: 11400000, guid: 9d0103cce8d303e42ad4fac689a27e5f, type: 2}
-  _defaultLoadout: {fileID: 11400000, guid: 9565e9b3ec45dd648aa642486105accd, type: 2}
+  _defaultLoadout: {fileID: 11400000, guid: 5c8c43a70d8440f29a1a5dc5b9d08e5c, type: 2}
   _baseStats:
     _values: 160000000700000000000000050000000600000006000000010000000900000004000000
   _baseLevel: 1

@@ -97,15 +97,16 @@ namespace ProjectAstra.Core.Dialogue
         private void AdvanceCrawl(float deltaTime)
         {
             _revealed += _charsPerSecond * deltaTime;
-            int shown = Mathf.Min((int)_revealed, _text.Length);
-            // Only touch the view when the visible count actually changes — writing
-            // maxVisibleCharacters every frame forces a TMP mesh rebuild and tanks FPS.
-            if (shown != _lastShown)
+            int target = Mathf.Min((int)_revealed, _text.Length);
+
+            // Reveal one letter at a time so the cadence is even and each letter blips.
+            while (_lastShown < target)
             {
-                _lastShown = shown;
-                _view.SetVisibleCharacters(shown);
+                _lastShown++;
+                _view.SetVisibleCharacters(_lastShown);
             }
-            if (shown >= _text.Length) CompleteCrawl();
+
+            if (_lastShown >= _text.Length) CompleteCrawl();
         }
 
         private void CompleteCrawl()

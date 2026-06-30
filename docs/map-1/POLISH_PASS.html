@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Map 1 — Polish Pass TODO</title>
+<style>
+  :root{
+    --ink:#1d2127; --muted:#5d6470; --line:#e2e5ea; --bg:#fbfcfd;
+    --accent:#2f6f9f; --done:#9aa3b0;
+    --p1:#c0392b; --p1bg:#fbeae8;
+    --p2:#9a6b12; --p2bg:#fbf3df;
+    --p3:#3d7a4e; --p3bg:#e9f5ec;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:920px; margin:0 auto; padding:36px 28px 100px}
+  h1{font-size:25px; margin:0 0 4px}
+  .sub{color:var(--muted); margin:0 0 20px; font-size:14px}
+  h2{font-size:17px; margin:34px 0 4px; padding-top:14px; border-top:1px solid var(--line)}
+  .sectip{color:var(--muted); font-size:13px; margin:0 0 12px}
+  ul{list-style:none; margin:0; padding:0}
+  li{display:flex; gap:10px; align-items:flex-start; padding:8px 10px; border-radius:8px}
+  li:hover{background:#f1f4f7}
+  input[type=checkbox]{margin-top:4px; width:16px; height:16px; flex:0 0 auto; cursor:pointer}
+  .body{flex:1}
+  .name{font-weight:600}
+  .desc{color:var(--muted); font-size:14px}
+  label.body{cursor:pointer}
+  li.done .name, li.done .desc{color:var(--done); text-decoration:line-through}
+  .tag{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.4px;
+    text-transform:uppercase; padding:1px 7px; border-radius:20px; margin-left:8px; vertical-align:1px}
+  .t1{color:var(--p1); background:var(--p1bg)} .t2{color:var(--p2); background:var(--p2bg)} .t3{color:var(--p3); background:var(--p3bg)}
+  .legend{display:flex; gap:16px; flex-wrap:wrap; font-size:13px; color:var(--muted);
+    background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:8px}
+  .legend b{color:var(--ink)}
+  .star{color:#d8a200; margin-left:6px}
+  .topbox{background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin:18px 0 6px}
+  .topbox h3{margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted)}
+  .topbox ol{margin:0; padding-left:20px} .topbox li{display:list-item; padding:2px 0}
+  .topbox li:hover{background:none}
+  .meta{color:var(--muted); font-size:12.5px; margin-top:40px; border-top:1px solid var(--line); padding-top:14px}
+  .progress{font-size:13px; color:var(--muted); font-weight:600}
+  code{background:#eef1f4; padding:1px 5px; border-radius:4px; font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Map 1 — Polish Pass</h1>
+  <p class="sub">Every non-art item to take Map 1 from working prototype to professional production quality, ordered by the player's first-time journey: splash → title → opening → raid → four turns → victory → ending. Scope excludes drawn art (portraits, sprites, tilesets, combat-anim frames); everything here is code, sequencing, timing, camera, wiring, and feel. <span class="progress" id="progress"></span></p>
+
+  <div class="legend">
+    <span><b>Tags</b></span>
+    <span><span class="tag t1">P1</span> highest leverage</span>
+    <span><span class="tag t2">P2</span> strong impact</span>
+    <span><span class="tag t3">P3</span> finishing touch</span>
+    <span>★ = top-5 if starting cold</span>
+  </div>
+
+  <div class="topbox">
+    <h3>Highest leverage if starting cold</h3>
+    <ol>
+      <li>Combat-entry transition (the FE signature moment) — §E</li>
+      <li>The 2-HP / Gandiva crit drama — §E</li>
+      <li>On-map victory breath before the UI cascade — §H</li>
+      <li>Persistent objective HUD (Defend → Pursue) — §G</li>
+      <li>Baseline cursor / highlight tactile pass — §D</li>
+    </ol>
+  </div>
+
+  <div id="list"></div>
+
+  <p class="meta">
+    Generated 2026-06-13 · working tracker for the Map-1 polish pass (Beats 0–4 + full win loop are built &amp; verified; this is the quality pass on top).
+    Checkboxes persist locally in this browser. Companion to the build doc <code>docs/map-1/layout_v2.html</code> and the broader programmer queue <code>docs/POLISHING_TODO.txt</code>.
+  </p>
+
+</div>
+
+<script>
+const SECTIONS = [
+  { id:"A", title:"A. The front door — Splash → Title → Menu",
+    tip:"The first 30 seconds set the promise of the whole game.",
+    items:[
+      ["Splash skip","The splash video has no skip — the Confirm context slot is wired but nothing listens. First thing an impatient playtester reaches for.","t2"],
+      ["Title screen presence","Give the relic-bow-on-altar title its own ambient bed + a confirm thrum, and don't hard-cut Confirm→Menu. First promise of the mythic tone; currently silent/instant.","t3"],
+      ["Menu selection feel","Every menu (Title, Main, ChapterClear, GameOver) does an instant tint swap on select. Tween tint + slight scale/glow so navigation feels alive, not a debug list.","t3"],
+      ["New Game hand-off","Verify Menu→Cutscene fades cleanly and the opening doesn't start before black clears.","t3"],
+    ]},
+  { id:"B", title:"B. Opening cutscene (OPENING_CH01)",
+    tip:"Sets the stakes of Suvarnapur before a single tile is touched.",
+    items:[
+      ["Score the opening","No music bed under the narration — the prologue's emotional setup starts cold.","t2"],
+      ["Text pacing + holds","Audit per-line speed; add deliberate silences on heavy narrator beats. FE earns weight with pauses; ours auto-runs.","t3"],
+      ["Cutscene→Battle transition","The drop from full-screen narration into the live map should feel intentional (slow fade/settle), not a scene pop.","t3"],
+    ]},
+  { id:"C", title:"C. Beat 0 — the raid prologue",
+    tip:"The 'show, don't tell' that makes the player care about the bridge.",
+    items:[
+      ["Replace placeholder kill audio","RakshasaRoar / VillagerScream / HitCrit are stand-ins (lance/miss/crit-impact wavs). The most important show-don't-tell moment rides on wrong sounds.","t1"],
+      ["Raid tension music","Explicit TODO(audio) for a sting under the raid; the cinematic currently opens in silence-but-for-sfx.","t2"],
+      ["Villager panic before the flee","Deferred in the build. A half-second of recoil/scatter before they bolt sells the terror; they currently just start gliding.","t3"],
+      ["Arrival-line landing","“Not one more. They take no one else.” needs a held beat + camera settle on Aranya before the letterbox lifts; it currently advances straight into Turn 1.","t2"],
+      ["Skip parity","M-to-skip exists but there's no gamepad SkipDialogue binding, and skip-mid-line timing can clip the T1 nudge. Make skip uniform and safe everywhere.","t3"],
+    ]},
+  { id:"D", title:"D. Core tactile feel (every turn)",
+    tip:"This colors all four turns — the baseline 'this feels professional' layer.",
+    items:[
+      ["Cursor tween","The grid cursor snaps tile-to-tile. A 0.08–0.12s ease is the single biggest feel lever for a tactical map.","t1","star"],
+      ["Range / highlight fade","Movement- and attack-range overlays pop on/off instantly. Fade them.","t2"],
+      ["Path-arrow draw","The blue planning arrow appears whole; animate it extending toward the cursor.","t3"],
+      ["Unit walk cadence","Confirm UnitMover eases its travel (accelerate/settle) rather than constant-velocity sliding.","t3"],
+      ["Selection affordance","When Aranya is picked up, give her a subtle lift/pulse so 'selected' reads without relying on the cursor sprite.","t3"],
+    ]},
+  { id:"E", title:"E. The combat experience (the FE signature)",
+    tip:"Where a tactical RPG lives or dies on feel.",
+    items:[
+      ["Combat-entry transition","Initiating an attack fades through black into the overlay scene. THE Fire Emblem moment — it deserves a signature wipe/flash/swell, not a plain fade.","t1","star"],
+      ["Combat overlay juice","Fighter motion is linear-lerp translation (windup/strike/recoil/dodge/death all un-eased). Ease everything + add anticipation.","t1"],
+      ["Hit-stop","A 1–3 frame freeze at strike-land before recoil. Nothing sells impact more cheaply.","t2"],
+      ["The dodge must read as a dodge","T2's whiff is the evasion tutorial; it currently plays a generic miss-react. Give the raider's counter a clear sidestep/whiff so the lesson is unmistakable.","t1"],
+      ["The crit must invoke Gandiva","Aranya is an Arjuna-figure wielding a relic bow. The T4 ×3 crit should carry mythic weight — hitstop + flash classify 'Righteous' already; lean into the divine-bow identity (held beat, the relic flaring) so it lands as legend, not just a big number.","t1","star"],
+      ["2-HP moment drama","When the counter drops her to 2, the HP bar should drain with weight, sit trembling at the red sliver, and the low-HP caption should land in a held moment (consider brief slow-mo) before her crit. The caption hook is in; the drama isn't.","t1","star"],
+      ["Return-to-map clarity","Confirm the exit from the overlay reads the new state cleanly (dead unit gone, HP settled) without a jarring snap.","t3"],
+    ]},
+  { id:"F", title:"F. Beat staging & camera",
+    tip:"The scripted moments that frame each turn.",
+    items:[
+      ["Animate the telegraph","The red intent path is static. Make it flow toward the threatened villager so the threat reads as motion, not decoration.","t2"],
+      ["Cinematic-language consistency","Beat 0 uses letterbox bars; the EP3 boss reveal and the victory moment don't. Unify the cinematic vocabulary across all three scripted beats.","t2"],
+      ["Enemy-phase repetition guard","If the player dawdles, the raider's feint-lunge replays identically every enemy phase. Vary it or settle into a quieter 'holding' idle after the first.","t3"],
+      ["Phase-music escalation","Tone doesn't shift from Defend to Pursue. Crossing the bridge to hunt the champion should feel like the music turns with her.","t2"],
+      ["Phase banner weight","Verify the Player/Enemy phase banner has real heft (slide + hold + stinger) befitting a guaranteed first impression.","t3"],
+    ]},
+  { id:"G", title:"G. HUD & information",
+    tip:"The player should always know the goal, the clock, and the verbs.",
+    items:[
+      ["Persistent objective readout","The OBJECTIVE CHANGED banner flashes once and is gone. FE always shows the current objective — add a persistent 'Protect Suvarnapur' → 'Defeat the Champion' HUD element.","t1"],
+      ["Turn counter / phase indicator","Confirm a persistent, readable turn + phase display; the map is balanced around ~4 turns and the player should feel that clock.","t2"],
+      ["Trim the action menu for Map 1","First-timers get Attack/Item/Supply/Wait. Supply (convoy) and Item are noise on the tutorial map — FE ch1 is essentially Attack/Wait. Contextually hide the irrelevant options.","t2"],
+      ["Controls discoverability","Secondary actions (unit info, etc.) are undiscoverable. A subtle contextual hint (the nudge dialogues are a good vehicle) so the player learns the verbs.","t3"],
+    ]},
+  { id:"H", title:"H. The victory sequence (the cascade)",
+    tip:"Five screens fire back-to-back; this is the emotional summit and currently the most rushed.",
+    items:[
+      ["On-map victory breath FIRST","Boss-death cascades immediately into EXP→level-up→ledger→clear→ending. Add the held moment: camera on Aranya at 2 HP, the village safe behind her, one line — THEN the UI. The summit is currently skipped past.","t1","star"],
+      ["Make the level-up FEEL great","It's a deterministic 'great first level' (HP/Str/Skl/Spd) — a designed dopamine beat. The gained rows should pop/glow/ease-count, not tick linearly.","t2"],
+      ["EXP count-up easing","The counter is a linear lerp; ease it (the fade already uses SmoothStep, the number should too).","t3"],
+      ["War Ledger payoff for Map 1","The defend objective's whole point is 'all three villagers lived.' Make the Ledger land that ('no lives lost') — or skip it to Chapter Clear if it reads clinical for a tutorial. Confirm the ProtectSuvarnapur commitment resolves and is reflected.","t2"],
+      ["Cascade pacing","Five screens back-to-back is a lot. Audit the rhythm so victory feels like a crescendo, not a menu gauntlet.","t2"],
+      ["Ending landing","'To be continued' needs music + a hold to land the hook before returning to title; it can currently blow past.","t3"],
+      ["Save prompt relevance","ChapterClear offers a Save button — decide whether save is meaningful in the prototype or should be hidden so it's not a dead affordance.","t3"],
+    ]},
+  { id:"I", title:"I. Specific under-scored moments",
+    tip:"Not 'add audio' — these exact beats are notably silent or share a generic cue.",
+    items:[
+      ["Boss reveal sting (EP3)","No musical sting under the boss taunt.","t3"],
+      ["Objective-change motif","The objective-change banner has no accompanying cue.","t3"],
+      ["Distinct dodge & crit cues","The dodge whiff and the crit each want a signature cue, not the shared generic hit/miss.","t2"],
+      ["Cursor/menu cue coverage","Move/confirm cues are wired in places — verify they're consistent across every surface on the Map-1 path (some menus are still silent).","t3"],
+    ]},
+  { id:"J", title:"J. Robustness — no jank a playtester can hit",
+    tip:"The guaranteed first impression can't stutter.",
+    items:[
+      ["DialogueService transition-frame edge","If a Play lands on a state-transition frame the BattleMap state-lock can be missed (dialogue shows, input gating briefly off). Harden it.","t2"],
+      ["Off-script-but-safe play","Verify dawdling, attacking from odd tiles on T2+, or ending turn without attacking never strands a beat or breaks the telegraph/feint loop.","t2"],
+      ["Victory-during-overlay sequencing","The watcher now waits for state==BattleMap && EXP idle — smoke-test it holds under fast input and skip-spamming.","t2"],
+      ["Lose-path sanity","Aranya can't die by design, but confirm no reachable dead-end and that the LordDeathWatcher mid-overlay issue (flagged, unreachable on Map 1) won't surprise us.","t3"],
+    ]},
+  { id:"K", title:"K. Cohesion & consistency",
+    tip:"One authored piece, not stitched modules.",
+    items:[
+      ["Procedural UI must match the aesthetic","The objective banner, low-HP caption, and skip hint use default TMP, not the project's HD/SDF font direction. Re-skin to the established UI language so they don't look bolted-on.","t2"],
+      ["Centralize the reds (and palette)","Telegraph-red, danger-red, enemy-phase-red, crit-red are separate literals. One palette so the map reads as a single art direction.","t3"],
+      ["Marker font","The '!' / 'X' world markers are ASCII-in-default-font out of necessity; swap once the SDF atlas covers them.","t3"],
+      ["Tonal through-line","One pass watching splash→title→opening→raid→battle→victory→ending purely for cohesion: does it feel like one authored piece?","t2"],
+    ]},
+];
+
+const TAGLABEL = {t1:"P1", t2:"P2", t3:"P3"};
+const root = document.getElementById("list");
+let total = 0;
+
+SECTIONS.forEach(sec => {
+  const h = document.createElement("h2"); h.textContent = sec.title; root.appendChild(h);
+  const tip = document.createElement("p"); tip.className = "sectip"; tip.textContent = sec.tip; root.appendChild(tip);
+  const ul = document.createElement("ul");
+  sec.items.forEach((it, i) => {
+    const [name, desc, tag, star] = it;
+    const key = sec.id + "-" + i;
+    total++;
+    const li = document.createElement("li"); li.dataset.key = key;
+    const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + key;
+    const label = document.createElement("label"); label.className = "body"; label.htmlFor = "cb-" + key;
+    const nm = document.createElement("span"); nm.className = "name"; nm.textContent = name;
+    if (star) { const s = document.createElement("span"); s.className = "star"; s.textContent = "★"; nm.appendChild(s); }
+    if (tag) { const t = document.createElement("span"); t.className = "tag " + tag; t.textContent = TAGLABEL[tag]; nm.appendChild(t); }
+    const d = document.createElement("span"); d.className = "desc"; d.textContent = " — " + desc;
+    label.appendChild(nm); label.appendChild(d);
+    li.appendChild(cb); li.appendChild(label); ul.appendChild(li);
+
+    cb.checked = localStorage.getItem("map1polish:" + key) === "1";
+    li.classList.toggle("done", cb.checked);
+    cb.addEventListener("change", () => {
+      localStorage.setItem("map1polish:" + key, cb.checked ? "1" : "0");
+      li.classList.toggle("done", cb.checked);
+      updateProgress();
+    });
+  });
+  root.appendChild(ul);
+});
+
+function updateProgress(){
+  let done = 0;
+  document.querySelectorAll("#list input[type=checkbox]").forEach(c => { if (c.checked) done++; });
+  document.getElementById("progress").textContent = done + " / " + total + " done";
+}
+updateProgress();
+</script>
+</body>
+</html>

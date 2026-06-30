@@ -33,6 +33,7 @@ namespace ProjectAstra.Core.Cursor
         private Vector2Int _committedDestination;
         private HashSet<Vector2Int> _validMoveTiles;
         private Vector2Int? _memorizedPosition;
+        private Dictionary<Vector2Int, Pathfinder.OccupantType> _occupancySnapshot;
 
         // --- Read-only accessors (consumed by GridCursor + other flows + tests) ---
 
@@ -126,6 +127,7 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_pathfindingService == null || _selectedUnit == null) return;
 
+            _occupancySnapshot = BuildOccupancySnapshot();
             _currentReachability = _pathfindingService.ComputeReachability(
                 _selectedUnit.gridPosition, _selectedUnit.movementPoints,
                 _selectedUnit.movementType, GetOccupantType);
@@ -136,10 +138,28 @@ namespace ProjectAstra.Core.Cursor
             _cursor.SetMode(CursorMode.UnitSelected);
         }
 
-        // Hook for the unit-occupancy service. Pathfinder treats every tile
-        // as unoccupied until the unit-management system wires this up.
-        // TODO(refactor): swap for a real occupancy lookup when it lands.
-        private Pathfinder.OccupantType GetOccupantType(Vector2Int pos) => Pathfinder.OccupantType.None;
+        private Pathfinder.OccupantType GetOccupantType(Vector2Int pos) =>
+            _occupancySnapshot != null && _occupancySnapshot.TryGetValue(pos, out var occupant)
+                ? occupant
+                : Pathfinder.OccupantType.None;
+
+        // Snapshotted once per selection (movement is sequential, so positions can't
+        // change mid-selection) — Dijkstra queries per tile, a live scan would be O(tiles × units).
+        private Dictionary<Vector2Int, Pathfinder.OccupantType> BuildOccupancySnapshot()
+        {
+            var snapshot = new Dictionary<Vector2Int, Pathfinder.OccupantType>();
+            foreach (var unit in UnityEngine.Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+            {
+                if (unit == _selectedUnit) continue;
+                snapshot[unit.gridPosition] = FactionOf(unit) == Faction.Enemy
+                    ? Pathfinder.OccupantType.Enemy
+                    : Pathfinder.OccupantType.Ally;
+            }
+            return snapshot;
+        }
+
+        private static Faction FactionOf(TestUnit unit) =>
+            TurnManager.Instance?.UnitRegistry.GetFaction(unit) ?? unit.faction;
 
         public void RestoreMovementConstraintsAndOverlay()
         {

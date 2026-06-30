@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
+  m_Name: ENDING_CH01
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
+  _scriptId: ENDING_CH01
+  _segments:
+  - _background: {fileID: 0}
+    _textSpeed: -1
+    _autoAdvanceDelay: 0
+    _lines:
+    - _speakerId: NARRATOR
+      _expression: 0
+      _portraitPosition: 3
+      _portraitFacing: 0
+      _text: Dusk. The last of them slips back across the water. The bridge holds.
+    - _speakerId: CHILD
+      _expression: 6
+      _portraitPosition: 1
+      _portraitFacing: 0
+      _text: Are they coming back? When it's dark?
+    - _speakerId: PROTAGONIST
+      _expression: 0
+      _portraitPosition: 0
+      _portraitFacing: 1
+      _text: Not tonight. They don't move blind any better than we do.
+    - _speakerId: CHILD
+      _expression: 0
+      _portraitPosition: 1
+      _portraitFacing: 0
+      _text: You're bleeding. On your arm.
+    - _speakerId: PROTAGONIST
+      _expression: 0
+      _portraitPosition: 0
+      _portraitFacing: 1
+      _text: It'll keep. I've stitched worse, hunting.
+    - _speakerId: NARRATOR
+      _expression: 0
+      _portraitPosition: 3
+      _portraitFacing: 0
+      _text: The child looks back toward the houses. Aranya puts a hand on their shoulder
+        and turns them north.
+    - _speakerId: PROTAGONIST
+      _expression: 0
+      _portraitPosition: 0
+      _portraitFacing: 1
+      _text: That was too few of them. The rest went on ahead.
+    - _speakerId: PROTAGONIST
+      _expression: 5
+      _portraitPosition: 0
+      _portraitFacing: 1
+      _text: Gajen's still up the mountain. Holding it alone.
+  _nodes: []

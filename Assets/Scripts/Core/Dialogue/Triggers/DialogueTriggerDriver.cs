@@ -4,9 +4,9 @@ using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.Dialogue
 {
-    // Lives on the battle map. Listens for battle moments (turn start from the turn
-    // channel, selection/move/combat from the battle channel) and plays the matching
-    // tutorial dialogue through DialogueService. Pure glue: matching rules live in
+    // Lives on the battle map. Listens for battle moments (the phase banner finishing,
+    // from the turn channel; selection/move/combat from the battle channel) and plays the
+    // matching tutorial dialogue through DialogueService. Pure glue: matching rules live in
     // DialogueTriggerSet, display lives in DialogueService.
     public class DialogueTriggerDriver : MonoBehaviour
     {
@@ -20,17 +20,19 @@ namespace ProjectAstra.Core.Dialogue
 
         private void OnEnable()
         {
-            if (_turnChannel != null) _turnChannel.RegisterPhaseStarted(OnPhaseStarted);
+            if (_turnChannel != null) _turnChannel.RegisterPhaseBannerFinished(OnPhaseBannerFinished);
             if (_battleChannel != null) _battleChannel.Register(OnBattleEvent);
         }
 
         private void OnDisable()
         {
-            if (_turnChannel != null) _turnChannel.UnregisterPhaseStarted(OnPhaseStarted);
+            if (_turnChannel != null) _turnChannel.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
             if (_battleChannel != null) _battleChannel.Unregister(OnBattleEvent);
         }
 
-        private void OnPhaseStarted(BattlePhase phase, int turn)
+        // Fire the player-phase dialogue only after the phase banner has finished, so the
+        // banner and the dialogue don't appear on top of each other.
+        private void OnPhaseBannerFinished(BattlePhase phase, int turn)
         {
             if (phase == BattlePhase.PlayerPhase)
                 Fire(BattleDialogueEventType.PlayerPhaseStarted, turn);

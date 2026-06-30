@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
@@ -17,5 +18,6 @@ namespace ProjectAstra.Core.Combat.Playback
         public UnitDeathEventChannel DeathChannel;
         public ToastNotificationUI ToastUI;
         public Action OnComplete;
+        public Func<CombatPlaybackContext, int, IEnumerator> PreStepHook;  // Scripted-map seam; yielded before each plan step (Normal/Fast only).
     }
 }

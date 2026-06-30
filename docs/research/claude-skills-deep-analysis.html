@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep Analysis — Story Skills &amp; Claude Code Game Studios (for Project Astra)</title>
+<style>
+  :root{
+    --ink:#1c1c1e; --muted:#5b5b60; --line:#e1e1e4; --bg:#ffffff; --soft:#f6f6f7;
+    --accent:#274472; --good:#1f6b3b; --bad:#9a2a2a; --warn:#8a5a00;
+    --codebg:#f3f3f5;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink); background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.55;
+  }
+  .layout{display:flex; align-items:flex-start; max-width:1280px; margin:0 auto}
+  nav{
+    position:sticky; top:0; align-self:flex-start; width:290px; min-width:290px; height:100vh;
+    overflow-y:auto; padding:20px 16px 60px; border-right:1px solid var(--line); background:var(--soft);
+    font-size:13.5px;
+  }
+  nav h2{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:18px 0 6px}
+  nav a{display:block; color:var(--ink); text-decoration:none; padding:3px 8px; border-radius:5px; margin:1px 0}
+  nav a:hover{background:#e7e7ea}
+  nav a.sub{padding-left:20px; color:var(--muted); font-size:13px}
+  main{flex:1; min-width:0; padding:34px 44px 120px; max-width:940px}
+  h1{font-size:27px; line-height:1.25; margin:0 0 6px}
+  h2.sec{font-size:22px; margin:46px 0 4px; padding-top:10px; border-top:2px solid var(--line)}
+  h3{font-size:17.5px; margin:26px 0 6px}
+  h4{font-size:15px; margin:18px 0 4px; color:var(--accent)}
+  section{scroll-margin-top:16px}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0 8px 22px; padding:0}
+  li{margin:4px 0}
+  code{background:var(--codebg); padding:1px 5px; border-radius:4px; font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace; font-size:13px}
+  pre{background:var(--codebg); padding:12px 14px; border-radius:7px; overflow:auto; font-size:13px; line-height:1.45}
+  pre code{background:none; padding:0}
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:13.5px}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+  th{background:var(--soft); font-weight:600}
+  tbody tr:nth-child(even){background:#fafafa}
+  .lead{font-size:16.5px; color:var(--muted)}
+  .callout{border:1px solid var(--line); border-left:4px solid var(--accent); background:var(--soft); padding:12px 16px; border-radius:0 7px 7px 0; margin:14px 0}
+  .callout.good{border-left-color:var(--good)}
+  .callout.bad{border-left-color:var(--bad)}
+  .callout.warn{border-left-color:var(--warn)}
+  .tag{display:inline-block; font-size:11px; font-weight:600; padding:1px 7px; border-radius:20px; vertical-align:middle}
+  .tag.good{background:#e3f1e8; color:var(--good)}
+  .tag.bad{background:#f6e3e3; color:var(--bad)}
+  .tag.warn{background:#f6efdc; color:var(--warn)}
+  .tag.neutral{background:#e7e7ea; color:var(--muted)}
+  details{border:1px solid var(--line); border-radius:7px; margin:10px 0; padding:4px 12px; background:#fff}
+  summary{cursor:pointer; font-weight:600; padding:6px 0}
+  .meta{font-size:13px; color:var(--muted)}
+  .yes{color:var(--good); font-weight:600}
+  .no{color:var(--bad); font-weight:600}
+  .maybe{color:var(--warn); font-weight:600}
+  hr{border:none; border-top:1px solid var(--line); margin:24px 0}
+  .filepath{font-family:"SFMono-Regular",Consolas,monospace; font-size:12px; color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+  <h2>Top</h2>
+  <a href="#summary">Executive summary</a>
+  <a href="#correction">The core question, answered</a>
+  <h2>Claude Code Game Studios</h2>
+  <a href="#gs-overview">What it actually is</a>
+  <a href="#gs-architecture" class="sub">Architecture &amp; invocation</a>
+  <a href="#gs-lifecycle" class="sub">The 7-phase lifecycle</a>
+  <a href="#gs-agents" class="sub">All 49 agents</a>
+  <a href="#gs-skills" class="sub">All 73 skills</a>
+  <a href="#gs-creative" class="sub">Creative skills &amp; agents (deep)</a>
+  <a href="#gs-brownfield" class="sub">Existing-project evidence</a>
+  <a href="#gs-usage" class="sub">How to use / how NOT to</a>
+  <a href="#gs-astra-fit" class="sub">Fit to Project Astra</a>
+  <h2>Story Skills</h2>
+  <a href="#ss-overview">What it actually is</a>
+  <a href="#ss-skills" class="sub">The 7 skills</a>
+  <a href="#ss-schema" class="sub">Story-bible schema</a>
+  <a href="#ss-templates" class="sub">Character / world templates</a>
+  <a href="#ss-import" class="sub">Import path &amp; its limits</a>
+  <a href="#ss-usage" class="sub">How to use / how NOT to</a>
+  <a href="#ss-astra-fit" class="sub">Fit to Project Astra</a>
+  <h2>Synthesis</h2>
+  <a href="#compare">Head-to-head + your pipeline</a>
+  <a href="#recommendations">Recommendations</a>
+  <a href="#sources">Sources &amp; local paths</a>
+</nav>
+
+<main>
+
+<h1>Deep Analysis: <em>Story Skills</em> &amp; <em>Claude Code Game Studios</em></h1>
+<p class="lead">Evidence-grounded read of every skill, agent, rule, hook, and doc in both repos — and what each can and cannot do for Project Astra. Conclusions are mine; the decision is yours.</p>
+<p class="meta">Compiled 2026-06-21 from full local clones at <span class="filepath">_reference/Claude-Code-Game-Studios</span> and <span class="filepath">_reference/story-skills</span>. Where a claim rests on a file, the file is cited. "Not stated" means the file is silent — not that I assumed.</p>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+<h2 class="sec">Executive summary</h2>
+<ul>
+  <li><strong>Two different categories of tool.</strong> <em>Story Skills</em> is a focused 7-skill plugin for a <strong>prose-fiction narrative bible</strong> with a deterministic continuity engine. <em>Game Studios</em> is a whole <strong>process framework</strong> — 49 agents, 73 skills, 12 hooks, 11 rules, 41 templates — that imposes a studio org-chart and a 7-phase production pipeline on a Claude Code session.</li>
+  <li><strong>I was wrong earlier, and you were right to push.</strong> Game Studios is <span class="yes">not</span> "new-game-only." It has an explicit, first-class <strong>brownfield / existing-project path</strong> (<code>/start</code> → "Existing work" → <code>/project-stage-detect</code> → <code>/adopt</code> → <code>/reverse-document</code>). See <a href="#correction">the answer</a>.</li>
+  <li><strong>The real catch is structural, not conceptual.</strong> Game Studios assumes a generic <code>src/</code>+<code>assets/</code>+<code>design/</code>+<code>production/</code> layout. Its hooks and rules key off those paths and would <strong>silently no-op against Unity's <code>Assets/Scripts/</code></strong>. Its Unity <em>agents</em> are real; its on-disk <em>enforcement</em> is wired for a layout Astra doesn't use.</li>
+  <li><strong>Neither replaces your existing pipeline.</strong> Your <code>character-sheets/TEMPLATE.md</code> is <em>richer for a game</em> (FE stats, pancha-bhuta, dharma, visual brief, dialogue library) than anything in either repo. What these add is <em>process discipline</em> (Game Studios) and a <em>continuity engine + relationship/arc tracking</em> (Story Skills).</li>
+  <li><strong>Where this lands:</strong> don't adopt either wholesale. <em>Mine</em> Game Studios' creative prompts (<code>art-director</code>, <code>/art-bible</code>, <code>/brainstorm</code>, <code>narrative-director</code>, <code>world-builder</code>, <code>writer</code>); <em>optionally install</em> Story Skills as a parallel lore/continuity bible; and fold the best of both into your own pipeline. Detail in <a href="#recommendations">Recommendations</a>.</li>
+</ul>
+</section>
+
+<!-- ============ CORRECTION ============ -->
+<section id="correction">
+<h2 class="sec">The core question, answered: can Game Studios run on an existing project?</h2>
+<div class="callout good">
+<strong>Yes — it has a designed brownfield path. My earlier "only for new games" claim was incorrect.</strong> Verbatim evidence from the files:
+</div>
+<ul>
+  <li><span class="filepath">README.md:158-160</span> — <code>/start</code> "asks where you are (no idea, vague concept, clear design, <strong>existing work</strong>)…"</li>
+  <li><span class="filepath">.claude/skills/start/SKILL.md:39-44</span> — option <strong>"D) Existing work — I already have design docs, prototypes, code, or significant planning done. I want to organize or continue the work."</strong> Path D routes to <code>/project-stage-detect</code> → <code>/adopt</code>.</li>
+  <li><span class="filepath">.claude/skills/adopt/SKILL.md:3</span> — "<strong>Brownfield onboarding</strong> — audits existing project artifacts for template format compliance… Run this when joining an in-progress project." It <em>refuses fresh projects</em> ("This looks like a fresh project … <code>/adopt</code> is for projects with work to migrate") and <em>never overwrites</em> existing content (<span class="filepath">:443</span> "Never regenerate existing artifacts").</li>
+  <li><span class="filepath">/reverse-document</span> generates GDD/architecture docs <em>from</em> existing code; a full worked example lives at <span class="filepath">docs/examples/session-adopt-brownfield.md</span> ("building a game for 3 months before discovering this agent system").</li>
+</ul>
+<div class="callout warn">
+<strong>The catch the docs themselves reveal.</strong> "Existing project" here means <em>existing design/process artifacts</em> (GDDs, ADRs, stories — possibly in the wrong format) plus code that happens to sit at <code>src/</code>. It does <strong>not</strong> mean it understands Unity. Specifically:
+<ul>
+  <li>It assumes a generic engine-agnostic tree (<code>src/{gameplay,core,ai,ui}</code>, <code>assets/</code>, <code>design/gdd/</code>, <code>docs/architecture/</code>, <code>production/</code>) — not <code>Assets/Scripts/</code> + <code>Assets/ScriptableObjects/</code> + <code>.unity</code> scenes. (<span class="filepath">.claude/docs/directory-structure.md</span>)</li>
+  <li>Its 12 hooks and 11 path-scoped rules are keyed to those generic paths and <strong>silently no-op</strong> against a Unity tree — verified by reading every hook. No harm, but no enforcement either, until you rewrite the globs by hand.</li>
+  <li><code>/adopt</code> greps for <code>design/gdd/*</code>, <code>docs/architecture/adr-*</code>, <code>production/epics/**</code> — it has <strong>no Unity awareness</strong>; it won't read your scenes or <code>.asset</code> ScriptableObjects.</li>
+  <li>Dropping the template at your repo root would collide with your existing <code>docs/</code>, <code>design/</code>, and a competing <code>CLAUDE.md</code> (theirs is Godot-defaulted/unconfigured here).</li>
+</ul>
+</div>
+<p><strong>Net:</strong> attachable in principle, Unity agents present — but on a mature Unity repo its on-disk machinery is inert, so its value to Astra is its <em>agents, skills, templates, and process docs</em>, not its enforcement layer. (Source: dedicated usage-model read of <span class="filepath">README, CLAUDE.md, UPGRADING.md, all hooks, all rules, workflow-catalog.yaml, start/adopt/project-stage-detect SKILL.md</span>.)</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- GAME STUDIOS -->
+<!-- ============================================================ -->
+<section id="gs-overview">
+<h2 class="sec">Game Studios — what it actually is</h2>
+<p>A <strong>clone-the-template</strong> repo (MIT, <strong>v1.0.0, 2026-05-13</strong>, solo-maintained, ~22k★, Windows-tested) that turns one Claude Code session into a simulated studio. Its thesis (<span class="filepath">README.md:25-29</span>): a single chat has no structure — "no one stops you from hardcoding magic numbers, skipping design docs… no QA pass, no design review." It supplies that structure as 49 role-agents, 73 slash-command skills, validation hooks, and path-scoped rules.</p>
+<div class="callout">
+<strong>Collaborative, not autonomous</strong> (<span class="filepath">CLAUDE.md:35-36</span>, <span class="filepath">README.md:210</span>): every task follows <em>Question → Options → Decision → Draft → Approval</em>. "Agents MUST ask 'May I write this to [filepath]?' before using Write/Edit." Nothing is committed without your sign-off. It's a scaffold, not a button.
+</div>
+<p class="meta">Correction to my first-pass research: the <strong>73 skills are the real product</strong>, living in <code>.claude/skills/&lt;name&gt;/SKILL.md</code>. The folder named <em>"CCGS Skill Testing Framework"</em> is an <strong>optional, deletable QA test-harness</strong> (its files are titled <code># Skill Test Spec: /art-bible</code>) — <span class="filepath">CCGS…/README.md</span>: "This folder is self-contained and optional… <code>rm -rf "CCGS Skill Testing Framework"</code> — nothing in <code>.claude/</code> depends on it." That folder is what misled my earlier count.</p>
+</section>
+
+<section id="gs-architecture">
+<h3>Architecture &amp; how things are invoked</h3>
+<table>
+<thead><tr><th>Piece</th><th>Count</th><th>What it is</th><th>How it's triggered</th></tr></thead>
+<tbody>
+<tr><td>Agents</td><td>49</td><td>Role definitions (markdown + YAML frontmatter: <code>name, description, tools, model, maxTurns</code>)</td><td>Auto-delegation via the <code>description:</code> ("Use this agent for…"); <code>Task</code>-spawned by orchestrator agents/skills; director-gate verdict mode (<code>APPROVE/CONCERNS/REJECT</code>)</td></tr>
+<tr><td>Skills</td><td>73</td><td>Slash commands, one folder each, <code>user-invocable: true</code></td><td>Native Claude Code slash command — <code>/art-bible</code>, <code>/brainstorm</code>, <code>/design-system [name]</code>. <strong>No plugin marketplace</strong> — they exist because <code>.claude/</code> is present.</td></tr>
+<tr><td>Hooks</td><td>12</td><td>Bash scripts on session/commit/push/write events</td><td>Auto-fire; <strong>advisory + exit-early</strong>. Only hard block: invalid JSON under <code>assets/data/</code>. Push-branch blocking is commented out.</td></tr>
+<tr><td>Rules</td><td>11</td><td>Path-scoped markdown coding standards</td><td>Applied as guidance when editing matching paths (<code>src/gameplay/**</code>, <code>design/gdd/**</code>…). They do <strong>not</strong> block.</td></tr>
+<tr><td>Templates</td><td>41</td><td>Document skeletons (GDD, UX, ADR, sprint, HUD…)</td><td>Pulled by authoring skills</td></tr>
+</tbody>
+</table>
+<p><strong>Model tiers</strong> (<span class="filepath">.claude/docs/coordination-rules.md</span>): <code>opus</code> for the 3 directors + holistic-review skills (<code>/review-all-gdds</code>, <code>/architecture-review</code>, <code>/gate-check</code>); <code>haiku</code> for read-only status skills; <code>sonnet</code> for everything else. Delegation is strictly vertical (directors→leads→specialists), with conflicts escalating to <code>creative-director</code> (design) or <code>technical-director</code> (technical), and <code>producer</code> coordinating cross-department change.</p>
+</section>
+
+<section id="gs-lifecycle">
+<h3>The 7-phase lifecycle</h3>
+<p>From <span class="filepath">.claude/docs/workflow-catalog.yaml</span> + <span class="filepath">docs/WORKFLOW-GUIDE.md</span>:</p>
+<pre>concept → systems-design → technical-setup → pre-production → production → polish → release</pre>
+<p>Each phase has a <code>/gate-check</code>, but gates are <strong>advisory, never hard-blocking</strong> ("verdicts are ADVISORY… the user always decides whether to proceed"). The one exception is the vertical-slice gate, which auto-FAILs until a human has playtested. State is file-backed: <code>production/stage.txt</code> (current phase), <code>production/review-mode.txt</code> (<code>full</code>/<code>lean</code>/<code>solo</code> gate intensity), <code>production/session-state/active.md</code> (living checkpoint), and two registries (<code>design/registry/entities.yaml</code>, <code>docs/registry/architecture.yaml</code>) that skills grep to catch cross-document inconsistencies.</p>
+</section>
+
+<section id="gs-agents">
+<h3>All 49 agents</h3>
+<p>Three tiers. The <strong>creative/design/narrative/art</strong> agents — the ones relevant to character design — are detailed in <a href="#gs-creative">the next section</a>; here is the full roster with one-line purpose and the consistent "consultant vs implementer" boundary.</p>
+
+<h4>Tier 1 — Directors (Opus)</h4>
+<table>
+<thead><tr><th>Agent</th><th>Purpose</th><th>Note</th></tr></thead>
+<tbody>
+<tr><td>creative-director</td><td>Final authority on vision/tone/pillars; resolves cross-dept conflict</td><td>MDA, Self-Determination Theory, Flow, falsifiable pillars + anti-pillars</td></tr>
+<tr><td>technical-director</td><td>Engine architecture, tech choices, perf strategy, risk</td><td>Produces ADRs/budgets; gate verdicts (<code>TD-FEASIBILITY</code>)</td></tr>
+<tr><td>producer</td><td>Sprints, milestones, scope, cross-dept coordination</td><td>"Primary coordination agent"; can task any agent</td></tr>
+</tbody>
+</table>
+
+<h4>Tier 2 — Department leads (Sonnet)</h4>
+<table>
+<thead><tr><th>Agent</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>game-designer</td><td>Owns "how the game works" at the mechanics level; authors 8-section GDDs</td></tr>
+<tr><td>lead-programmer</td><td>Code architecture, standards, review, work assignment (does NOT implement directly)</td></tr>
+<tr><td>art-director</td><td>Visual identity — art bible, style guides, asset specs, UI visual direction (non-executing)</td></tr>
+<tr><td>audio-director</td><td>Sonic identity — music direction, sound philosophy, mix strategy</td></tr>
+<tr><td>narrative-director</td><td>Story architecture, world rules, character design, dialogue strategy</td></tr>
+<tr><td>qa-lead</td><td>Test strategy, triage, release gates</td></tr>
+<tr><td>release-manager</td><td>Release pipeline, certification, store submission, versioning</td></tr>
+<tr><td>localization-lead</td><td>i18n architecture, string management, translation pipeline</td></tr>
+</tbody>
+</table>
+
+<h4>Tier 3 — Specialists (Sonnet/Haiku)</h4>
+<table>
+<thead><tr><th>Group</th><th>Agents</th></tr></thead>
+<tbody>
+<tr><td>Design</td><td>systems-designer (formulas/curves), level-designer (layouts/encounters), economy-designer (loot/progression)</td></tr>
+<tr><td>Narrative &amp; art</td><td><strong>world-builder</strong> (lore/canon), <strong>writer</strong> (all player-facing text), <strong>technical-artist</strong> (shaders/VFX/pipeline), <strong>ux-designer</strong> (flows/IA/accessibility)</td></tr>
+<tr><td>Programming</td><td>gameplay-, engine-, ai-, network-, tools-, ui-programmer</td></tr>
+<tr><td>Production &amp; ops</td><td>prototyper (worktree-isolated), performance-analyst, devops-engineer, analytics-engineer, security-engineer, qa-tester, accessibility-specialist, live-ops-designer, community-manager, sound-designer</td></tr>
+<tr><td>Engine — Unity</td><td>unity-specialist → unity-dots-, unity-shader-, unity-addressables-, unity-ui-specialist</td></tr>
+<tr><td>Engine — Unreal</td><td>unreal-specialist → ue-gas-, ue-blueprint-, ue-replication-, ue-umg-specialist</td></tr>
+<tr><td>Engine — Godot</td><td>godot-specialist → godot-csharp-, gdscript-, gdextension-, shader-specialist</td></tr>
+</tbody>
+</table>
+<div class="callout">
+<strong>Recurring hard boundary:</strong> design/art/narrative agents are "collaborative consultant, not autonomous executor." They carry <code>disallowedTools: Bash</code>, produce <em>specs/docs only</em>, explicitly forbid themselves from writing code or making final art, and defer the final call to you via <code>AskUserQuestion</code>. Implementation is pushed to programmer agents.
+</div>
+</section>
+
+<section id="gs-skills">
+<h3>All 73 skills (by category)</h3>
+<details>
+<summary>Expand the full 73-skill catalog</summary>
+<table>
+<thead><tr><th>Category</th><th>Skills</th></tr></thead>
+<tbody>
+<tr><td>Onboarding &amp; navigation</td><td><code>/start</code> · <code>/help</code> · <code>/project-stage-detect</code> · <code>/setup-engine</code> · <code>/adopt</code></td></tr>
+<tr><td>Game design</td><td><code>/brainstorm</code> · <code>/map-systems</code> · <code>/design-system</code> · <code>/quick-design</code> · <code>/review-all-gdds</code> · <code>/propagate-design-change</code></td></tr>
+<tr><td>Art &amp; assets</td><td><code>/art-bible</code> · <code>/asset-spec</code> · <code>/asset-audit</code></td></tr>
+<tr><td>UX</td><td><code>/ux-design</code> · <code>/ux-review</code></td></tr>
+<tr><td>Architecture</td><td><code>/create-architecture</code> · <code>/architecture-decision</code> · <code>/architecture-review</code> · <code>/create-control-manifest</code></td></tr>
+<tr><td>Stories &amp; sprints</td><td><code>/create-epics</code> · <code>/create-stories</code> · <code>/dev-story</code> · <code>/sprint-plan</code> · <code>/sprint-status</code> · <code>/story-readiness</code> · <code>/story-done</code> · <code>/estimate</code></td></tr>
+<tr><td>Reviews &amp; analysis</td><td><code>/design-review</code> · <code>/code-review</code> · <code>/balance-check</code> · <code>/content-audit</code> · <code>/scope-check</code> · <code>/perf-profile</code> · <code>/tech-debt</code> · <code>/gate-check</code> · <code>/consistency-check</code> · <code>/security-audit</code></td></tr>
+<tr><td>QA &amp; testing</td><td><code>/qa-plan</code> · <code>/smoke-check</code> · <code>/soak-test</code> · <code>/regression-suite</code> · <code>/test-setup</code> · <code>/test-helpers</code> · <code>/test-evidence-review</code> · <code>/test-flakiness</code> · <code>/skill-test</code> · <code>/skill-improve</code></td></tr>
+<tr><td>Production</td><td><code>/milestone-review</code> · <code>/retrospective</code> · <code>/bug-report</code> · <code>/bug-triage</code> · <code>/reverse-document</code> · <code>/playtest-report</code></td></tr>
+<tr><td>Release</td><td><code>/release-checklist</code> · <code>/launch-checklist</code> · <code>/changelog</code> · <code>/patch-notes</code> · <code>/hotfix</code> · <code>/day-one-patch</code></td></tr>
+<tr><td>Creative &amp; content</td><td><code>/prototype</code> · <code>/vertical-slice</code> · <code>/onboard</code> · <code>/localize</code></td></tr>
+<tr><td>Team orchestration</td><td><code>/team-combat</code> · <code>/team-narrative</code> · <code>/team-ui</code> · <code>/team-release</code> · <code>/team-polish</code> · <code>/team-audio</code> · <code>/team-level</code> · <code>/team-live-ops</code> · <code>/team-qa</code></td></tr>
+</tbody>
+</table>
+</details>
+<div class="callout warn">
+<strong>Skills are mostly NOT standalone.</strong> Most hard-abort without the studio scaffolding around them — e.g. <code>/art-bible</code> aborts "No game concept found. Run <code>/brainstorm</code> first," <code>/asset-spec</code> aborts "No art bible found," <code>/design-system</code> needs concept + systems-index, and <code>team-*</code>/<code>art-bible</code> <code>Task</code>-spawn agents from <code>.claude/agents/</code>. The cleanly deletable unit is the test-harness folder, not individual skills. So you can't just lift one skill file and expect it to run.
+</div>
+</section>
+
+<section id="gs-creative">
+<h3>Deep dive — the character-design-relevant agents &amp; skills</h3>
+<p>There is <strong>no standalone <code>character-design</code> skill</strong> and <strong>no pixel/sprite generator</strong>. Character design is handled as (a) <code>/art-bible</code> <em>Section 5 "Character Design Direction"</em>, and (b) <code>/asset-spec</code> in <code>character:</code> mode, which emits per-asset visual specs <em>plus AI image-generation prompts</em>. Narrative character work lives in the <code>narrative-director</code> / <code>world-builder</code> / <code>writer</code> agents and <code>/team-narrative</code>.</p>
+
+<h4>The skills worth borrowing</h4>
+<table>
+<thead><tr><th>Skill</th><th>What it actually does (per its SKILL.md)</th></tr></thead>
+<tbody>
+<tr><td><code>/brainstorm</code></td><td>6-phase facilitated ideation (not one-shot): Creative Discovery → 3 distinct concepts via verb-first/mashup/experience-first → core-loop design (30s/5min/session) → 3-5 pillars + anti-pillars + a <strong>Visual Identity Anchor</strong> → validate vs Bartle/Quantic player types → scope check. Resumes from an existing concept doc. Output: <code>design/gdd/game-concept.md</code>.</td></tr>
+<tr><td><code>/art-bible</code></td><td>Authors a <strong>9-section visual-identity spec section-by-section</strong>, mandatorily delegating each section to the <code>art-director</code> agent. Sections: Visual Identity Statement, Mood &amp; Atmosphere, Shape Language, Color System, <strong>Character Design Direction</strong>, Environment Design Language, UI/HUD, Asset Standards, Reference Direction. It <em>gates downstream asset production</em>. Has a "retrofit mode" to fill only empty sections of an existing bible.</td></tr>
+<tr><td><code>/asset-spec</code></td><td>Turns approved GDDs / level docs / <strong>character profiles</strong> into per-asset specs (<code>ASSET-NNN</code>), each carrying a visual description + an <strong>AI image-generation prompt</strong>, anchored to the art bible's rules, with dimensions/format/naming from <code>technical-artist</code>. Closest thing to a concept-art/sprite <em>specification</em> workflow — it specifies and prompts, it does not render.</td></tr>
+<tr><td><code>/design-system</code></td><td>Walks one system's GDD through 8 required sections (Overview, Player Fantasy, Detailed Rules, Formulas, Edge Cases, Dependencies, Tuning Knobs, Acceptance Criteria) — precise enough for a programmer to implement from. Has a <code>retrofit</code> mode for existing GDDs.</td></tr>
+<tr><td><code>/team-narrative</code></td><td>Spawns narrative-director + writer + world-builder + art-director + level-designer + localization-lead to produce cohesive story/lore, cross-referencing existing lore for contradictions.</td></tr>
+</tbody>
+</table>
+
+<h4>The agents worth reading (high-quality prompts)</h4>
+<table>
+<thead><tr><th>Agent</th><th>Distinctive substance</th><th>Hard boundary</th></tr></thead>
+<tbody>
+<tr><td><strong>art-director</strong></td><td>Owns the art bible as visual source of truth; corrective reviews grounded in Gestalt, color theory, visual hierarchy. Dual mode: consultant + gate reviewer (<code>AD-ART-BIBLE</code>).</td><td>MUST NOT write code/shaders or make actual pixel/3D art → pushes to <code>technical-artist</code>.</td></tr>
+<tr><td><strong>creative-director</strong></td><td>Falsifiable 3-5 pillars + anti-pillars; MDA aesthetics, SDT, Flow, ludonarrative consonance; a scope-cut ladder. Opus.</td><td>Presents 2-3 options, "this is your call."</td></tr>
+<tr><td><strong>narrative-director</strong></td><td>"Ludonarrative Harmony" — flag where mechanics and story fight; fixed World-Building Standard (Core Concept, Rules, History, Connections, Player Relevance, Contradictions Check).</td><td>Does NOT write final prose → delegates to <code>writer</code>; deep lore → <code>world-builder</code>.</td></tr>
+<tr><td><strong>world-builder</strong></td><td>Strict canon discipline: Canon Level, Visible-To-Player, Cross-References, Contradictions Check, Source; deliberate "Mystery Layering" (truth documented separately).</td><td>MUST NOT write player text or alter canon without narrative-director approval.</td></tr>
+<tr><td><strong>writer</strong></td><td>Localization-first craft: speaker tags + context notes, named placeholders (<code>{player_name}</code>), a <strong>120-char dialogue-box cap</strong>, VA-friendly rhythm.</td><td>MUST NOT make arc decisions, design quests, or invent contradicting lore. (Note: file still carries copy-pasted programmer boilerplate — a quality tell.)</td></tr>
+<tr><td><strong>systems-designer</strong></td><td>Mandatory "Formula Output Format" (named expression + variable table + output range + worked example); checks <code>entities.yaml</code> before defining cross-system values.</td><td>Defers vision to <code>game-designer</code>; docs-only.</td></tr>
+</tbody>
+</table>
+<p class="meta">These two agents underpin the art-bible/asset-spec skills but live in <code>.claude/agents/</code>, not in the skills. Character design specifically = <code>/art-bible</code> §5 + <code>/asset-spec</code> <code>character:</code> mode — there is no dedicated character skill.</p>
+</section>
+
+<section id="gs-brownfield">
+<h3>The existing-project / hooks / rules evidence in one place</h3>
+<table>
+<thead><tr><th>Mechanism</th><th>Behavior</th><th>Effect on a Unity repo</th></tr></thead>
+<tbody>
+<tr><td>12 hooks</td><td>Advisory + exit-early. Only hard block: invalid JSON under <code>assets/data/</code>. Push-branch block is commented out.</td><td><span class="no">Silently no-op</span> — they grep <code>src/gameplay/</code>, <code>assets/</code>, never <code>Assets/Scripts/</code>.</td></tr>
+<tr><td>11 rules</td><td>Path-scoped markdown guidance (<code>src/gameplay/**</code>, <code>src/core/**</code>…). Guidance only; never block.</td><td><span class="no">Inert</span> — paths don't match. You'd hand-rewrite globs to use them.</td></tr>
+<tr><td>settings.json permissions</td><td>Allow read-only git/tests; deny <code>rm -rf</code>, force-push, <code>.env</code> reads.</td><td><span class="maybe">Benign + generic</span>; would activate if <code>.claude/</code> copied in.</td></tr>
+<tr><td>Folder model</td><td><code>src/ assets/ design/ docs/ tests/ prototypes/ production/</code> at repo root.</td><td><span class="bad">Collision risk</span> with your <code>docs/</code>, <code>design/</code>, and a competing <code>CLAUDE.md</code>.</td></tr>
+<tr><td>Install</td><td>Clone template as repo root, run <code>/start</code>. <strong>No marketplace, no installer.</strong></td><td>To attach to Astra you'd manually copy <code>.claude/</code> in — undocumented as a drop-in.</td></tr>
+</tbody>
+</table>
+</section>
+
+<section id="gs-usage">
+<h3>How to use it — and how NOT to</h3>
+<div class="callout good">
+<strong>Good uses</strong>
+<ul>
+  <li><strong>Mine the creative prompts.</strong> Read <code>art-director</code>, <code>creative-director</code>, <code>narrative-director</code>, <code>world-builder</code>, <code>writer</code>, <code>game-designer</code>, <code>systems-designer</code> and the <code>/art-bible</code> / <code>/brainstorm</code> / <code>/design-system</code> skill bodies. They're well-structured, theory-grounded prompt scaffolds you can adapt — zero install needed (the clone is already in <code>_reference/</code>).</li>
+  <li><strong>Borrow the artifact standards.</strong> The 8-section GDD, the 9-section art bible (esp. §5 Character Design Direction), the asset-spec "visual description + AI-gen prompt" pattern, and the formula-output format are directly reusable in your own docs.</li>
+  <li><strong>As a process checklist.</strong> The 7-phase pipeline and gate questions are a sane sanity-check even if you never run the skills.</li>
+</ul>
+</div>
+<div class="callout bad">
+<strong>How NOT to use it</strong>
+<ul>
+  <li><strong>Don't clone it as / over your Astra repo root.</strong> Folder + <code>CLAUDE.md</code> collisions; inert hooks/rules; a Godot-defaulted config to untangle.</li>
+  <li><strong>Don't expect its hooks/rules to guard your Unity code.</strong> They key off <code>src/...</code>/<code>assets/...</code> and never match <code>Assets/Scripts/...</code>; you'd get a false sense of enforcement.</li>
+  <li><strong>Don't lift one skill and expect it to run standalone.</strong> Most hard-abort without the concept→art-bible→GDD→architecture artifact chain and the agents they <code>Task</code>-spawn.</li>
+  <li><strong>Don't treat it as a productivity autopilot.</strong> It's deliberately collaborative — value is in the structure/questions, and that structure has real overhead for a solo dev on a 60-min prototype.</li>
+</ul>
+</div>
+</section>
+
+<section id="gs-astra-fit">
+<h3>Fit to Project Astra</h3>
+<p><strong>Value = the agents, skills, templates, and process docs.</strong> The on-disk enforcement is wired for a layout you don't use, and the org-chart/pipeline is heavyweight for a solo 60-minute-prototype scope. The Unity agents are real but generic — they won't know your <code>GameFlow</code>, <code>UnitDefinition</code> SOs, pixel pipeline, or HD-2D identity. <strong>Recommended mode: read &amp; adapt, don't adopt.</strong> The single most Astra-relevant artifacts are <code>/art-bible</code> §5 (Character Design Direction) and the <code>art-director</code> + <code>narrative-director</code> + <code>world-builder</code> + <code>writer</code> prompts — exactly the gaps a custom Astra character skill would fill.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- STORY SKILLS -->
+<!-- ============================================================ -->
+<section id="ss-overview">
+<h2 class="sec">Story Skills — what it actually is</h2>
+<p>A focused set of <strong>7 Agent Skills + a deterministic <code>story</code> CLI</strong> for planning, tracking, and drafting <strong>prose fiction</strong> in plain markdown with YAML frontmatter. MIT, <strong>v0.3.1</strong>, author Daniel Dewhurst, active. Installs as a proper Claude Code <em>plugin</em>:</p>
+<pre>/plugin marketplace add danjdewhurst/story-skills
+/plugin install story-skills@story-skills</pre>
+<p>The headline feature is the <strong>continuity engine</strong>: character deaths, promises/payoffs, open questions, scene casts, and durable object/knowledge state live in frontmatter, and <code>story continuity</code> "treats contradictions like a compiler treats type errors" — catching dead characters reappearing, payoffs landing before setup, unfired Chekhov guns, and stale state, deterministically, in CI.</p>
+</section>
+
+<section id="ss-skills">
+<h3>The 7 skills</h3>
+<table>
+<thead><tr><th>Skill</th><th>What it does</th><th>Trigger</th><th>Outputs</th></tr></thead>
+<tbody>
+<tr><td>story-init</td><td>Scaffolds the full story-bible folder tree + registries + <code>story.md</code></td><td>"Start a new story"</td><td>Whole project tree (see schema)</td></tr>
+<tr><td>character-management</td><td>Character profiles: traits, arcs, relationships, family trees, timeline</td><td>"Create a character"</td><td><code>characters/{name}.md</code> + index updates</td></tr>
+<tr><td>worldbuilding</td><td>Locations &amp; systems (magic/politics/tech/religion/economy/military/social/education), factions, artifacts</td><td>"Design a magic system"</td><td><code>worldbuilding/{type}/{name}.md</code></td></tr>
+<tr><td>plot-structure</td><td>Arcs (three-act, hero's journey, Save the Cat, <strong>kishōtenketsu</strong>), timeline, promises/questions, foreshadowing</td><td>"Create a plot arc"</td><td><code>plot/arcs/*</code>, <code>plot/timeline.md</code>, continuity entries</td></tr>
+<tr><td>chapter-writing</td><td>Outline-first prose drafting that pulls from all bible files</td><td>"Write the next chapter"</td><td><code>chapters/chapter-NN.md</code> + scene records</td></tr>
+<tr><td>revision-continuity</td><td>Revision passes (continuity audit / developmental / line edit / proof) without breaking continuity</td><td>"Continuity-check ch.3"</td><td>Edits to chapters + dependent metadata</td></tr>
+<tr><td>story-maintenance</td><td>Runs the deterministic CLI: validate, reindex, wordcount, links, continuity, report, next, doctor, migrate, add/rename/remove, <strong>import</strong>, export, build</td><td>"Validate my story project"</td><td>Rebuilt registries, reports, <code>dist/</code> (md/EPUB/DOCX)</td></tr>
+</tbody>
+</table>
+<p class="meta">For stronger prose it recommends pairing <code>chapter-writing</code> with the external <code>forjd/better-writing</code> skill.</p>
+</section>
+
+<section id="ss-schema">
+<h3>The on-disk story-bible schema</h3>
+<pre>my-story/
+├── story.md                 # bible: title, schema-version:2, genre, themes, pov, tense
+├── characters/
+│   ├── _index.md            # registry + Relationship Map + Family Trees
+│   └── {name-kebab}.md
+├── worldbuilding/
+│   ├── _index.md
+│   ├── locations/  systems/  factions/  artifacts/
+├── plot/
+│   ├── _index.md            # structure model, arcs table
+│   ├── arcs/{arc}.md   └── timeline.md
+├── scenes/
+│   ├── _index.md            # machine-readable scene registry
+│   └── chapter-NN-scene-NN.md
+├── continuity/
+│   ├── state.md             # character / object / knowledge state
+│   ├── questions/{q}.md     # open mysteries (introduced/resolved chapters)
+│   └── promises/{p}.md      # setup/payoff (planted/payoff chapters)
+├── glossary/terms/{term}.md
+└── chapters/
+    ├── _index.md            # chapter registry + total word count
+    └── chapter-NN.md</pre>
+<p>Conventions: kebab-case IDs, YAML frontmatter on every file, <code>_index.md</code> as authoritative registry, bidirectional cross-links, and the key <code>characters</code> (present in-scene) vs <code>mentions</code> (referenced/flashback — legal for dead characters) distinction that makes the continuity engine precise.</p>
+</section>
+
+<section id="ss-templates">
+<h3>The character &amp; world templates (the actual fields)</h3>
+<h4>character-management — template fields</h4>
+<p><strong>Frontmatter:</strong> <code>name</code>, <code>role</code> (protagonist|antagonist|supporting|minor), <code>age</code>, <code>status</code> (alive|deceased|unknown), <code>died-in</code> (chapter — pairs with deceased so continuity flags posthumous appearances), <code>aliases[]</code>, <code>relationships[]</code> (<code>{character, type}</code>), <code>locations[]</code>, <code>tags[]</code>, <code>arc</code>.</p>
+<p><strong>Body sections:</strong> Appearance · Personality &amp; Traits · Backstory · Motivations &amp; Goals (external <em>want</em> vs internal <em>need</em>) · Location References · Voice &amp; Speech Patterns (+ 2-3 example dialogue lines) · Character Arc (start / turning points / end) · Timeline (When | Event | Relevance). <strong>Relationships</strong> are bidirectional with defined inverse pairs (parent↔child, mentor↔student…); <strong>family trees</strong> live as an indented list in the index.</p>
+<div class="callout warn"><strong>No game-data fields whatsoever.</strong> There is no class, no stats (HP/Str/Skl/Spd/…), no growths, no weapon ranks, no affinity, no recruitment chapter, no sprite/portrait path, no SO reference. This is a <em>novelist's</em> character sheet.</div>
+<h4>worldbuilding — four templates</h4>
+<ul>
+  <li><strong>Location</strong>: type, region, population, controlled-by, notable-characters; Description / History / Culture / Notable Features / Current State.</li>
+  <li><strong>System</strong>: type (magic/political/tech/religion/economic/military/social/education), prevalence; Overview / Rules &amp; Limitations / History / Practitioners / Impact on Society.</li>
+  <li><strong>Faction</strong>: type, status, members, locations; Purpose / Power Base / Members / Conflicts.</li>
+  <li><strong>Artifact</strong>: type, status (active|lost|destroyed|hidden|transferred), owner, location; Description / Function (can/can't do, what it costs) / History / Current State.</li>
+</ul>
+</section>
+
+<section id="ss-import">
+<h3>The import path — and exactly where it stops</h3>
+<p>There <em>is</em> an import path, but it ingests <strong>manuscript prose only</strong>:</p>
+<ul>
+  <li><code>story import draft.md --title "…"</code> (or a directory of chapter files) splits on chapter headings, strips frontmatter, computes word counts, writes <code>chapters/chapter-NN.md</code>, scaffolds the full project, and <strong>prints recurring proper-noun candidates</strong> as <em>suggestions</em>.</li>
+  <li>It does <strong>not</strong> parse existing character sheets, lore wikis, faction docs, or stat tables. There's no <code>--characters</code>, no structured-doc importer. Chapter frontmatter (<code>pov</code>, <code>characters</code>, <code>locations</code>, <code>arcs</code>) is left empty.</li>
+  <li>Turning name-candidates into real character/world files is a <strong>manual follow-up</strong> via <code>story add character</code> / <code>story add location</code>.</li>
+</ul>
+<div class="callout bad">For Astra this means your existing <code>.asset</code> units, <code>prototype_design 001.md</code>, and lore docs <strong>cannot be auto-imported</strong> — only running prose, at chapter granularity. You'd hand-transcribe into the markdown bible.</div>
+</section>
+
+<section id="ss-usage">
+<h3>How to use it — and how NOT to</h3>
+<div class="callout good">
+<strong>Good uses (for a game)</strong>
+<ul>
+  <li><strong>As a parallel narrative/lore bible</strong> for the <em>writing</em> layer — characters' inner lives, motivations (want vs need), arcs, relationships, family trees, factions, mythic artifacts (the relic bow), locations.</li>
+  <li><strong>For its continuity engine</strong> — deterministic checks on death ordering, promise→payoff, unfired setups, POV/cast consistency. A strong fit for a story-mode campaign with permadeath (you already have <em>UM-02 Lord Permadeath</em> — exactly the kind of fact <code>story continuity</code> polices).</li>
+  <li><strong>For its plot/arc/foreshadowing structure</strong>, including kishōtenketsu — handy for an Indian-myth narrative.</li>
+</ul>
+</div>
+<div class="callout bad">
+<strong>How NOT to use it</strong>
+<ul>
+  <li><strong>Don't expect it to replace your <code>character-sheets</code>.</strong> It has zero game-data — your <code>TEMPLATE.md</code> is richer for a tactical RPG.</li>
+  <li><strong>Don't expect <code>story import</code> to ingest your Unity SOs or lore docs.</strong> It only splits prose manuscripts into chapters.</li>
+  <li><strong>Don't treat a "scene/chapter" as a playable map/encounter.</strong> Wrong atomic unit — no map, objectives, turn scripting, or win conditions.</li>
+  <li><strong>Don't run its CLI to generate game content.</strong> It's for deterministic maintenance of a markdown prose bible, nothing else.</li>
+</ul>
+</div>
+</section>
+
+<section id="ss-astra-fit">
+<h3>Fit to Project Astra</h3>
+<p>Clean to install and genuinely additive for the <strong>narrative-bible + continuity</strong> layer, which your current pipeline doesn't formalize. But it's silent on everything that makes a unit a <em>game</em> unit (stats, classes, sprites, dialogue assets, map/encounter data), and there's no bridge to your Unity ScriptableObjects. Best role: a <strong>parallel prose/lore/continuity bible</strong>, hand-synced with the game data — or simply a source of two ideas worth stealing: the <em>continuity-engine concept</em> and the <em>relationship/family-tree registry</em>.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SYNTHESIS -->
+<!-- ============================================================ -->
+<section id="compare">
+<h2 class="sec">Head-to-head, and how both relate to your existing pipeline</h2>
+<table>
+<thead><tr><th></th><th>Game Studios</th><th>Story Skills</th></tr></thead>
+<tbody>
+<tr><td>Category</td><td>Full process framework (org-chart + pipeline)</td><td>Focused narrative-bible plugin + CLI</td></tr>
+<tr><td>Scope vs Astra</td><td>Heavyweight; built for whole-game production</td><td>Lightweight; covers the prose/lore/continuity slice</td></tr>
+<tr><td>Install</td><td>Clone template as repo root (no marketplace)</td><td>Proper Claude Code plugin marketplace</td></tr>
+<tr><td>Existing-project support</td><td><span class="yes">Yes</span> (adopt/reverse-document) but layout-mismatched to Unity</td><td><span class="maybe">Partial</span> — prose import only, no structured-doc ingest</td></tr>
+<tr><td>Character design</td><td><code>/art-bible</code> §5 + <code>/asset-spec</code> (specs + AI prompts); narrative agents</td><td>Rich <em>narrative</em> character template; no visual/asset side</td></tr>
+<tr><td>Game data (stats/sprites/dialogue assets)</td><td><span class="no">No</span> (generic; you'd author GDDs)</td><td><span class="no">No</span> (novel-centric)</td></tr>
+<tr><td>Standout idea to steal</td><td>9-section art bible; consultant agent prompts; phase gates</td><td>Deterministic continuity engine; relationship/family-tree registry</td></tr>
+<tr><td>Maintenance</td><td>Solo-maintained, v1.0.0 (2026-05), MIT</td><td>Solo-maintained, v0.3.1, MIT</td></tr>
+</tbody>
+</table>
+<h4>Crucial context: your existing pipeline already beats both on the game-specific parts</h4>
+<p>Your <code>docs/character-sheets/TEMPLATE.md</code> already carries FE-canonical stats, pancha-bhuta affinity, dharma alignment, a full visual brief (silhouette / garments / sigil / weapon / critical pose / do's-and-don'ts), a dialogue library (recruit/level-up/crit/death/idle barks), and a 3-page artist hand-off renderer. <strong>Neither repo has any of that.</strong> What they add is orthogonal:</p>
+<ul>
+  <li><strong>Game Studios adds process discipline</strong> — the art-bible §5 standard, the consultant-agent question flow, the GDD/formula standards.</li>
+  <li><strong>Story Skills adds cross-character/cross-arc continuity</strong> — a deterministic guarantee that relationships, deaths, and foreshadowing stay consistent as the cast and story grow.</li>
+</ul>
+</section>
+
+<section id="recommendations">
+<h2 class="sec">Recommendations (yours to accept or reject)</h2>
+<ol>
+  <li><strong>Don't adopt either wholesale.</strong> Game Studios is the wrong shape for a mature Unity repo (layout mismatch, collisions, heavyweight pipeline for a 60-min prototype). Story Skills covers only one slice and can't ingest your game data.</li>
+  <li><strong>Mine Game Studios now (zero cost — it's already in <code>_reference/</code>).</strong> Read these prompt files and lift their structure into your own character pipeline: <code>art-director.md</code>, <code>narrative-director.md</code>, <code>world-builder.md</code>, <code>writer.md</code>, <code>creative-director.md</code>, <code>systems-designer.md</code>, and the <code>art-bible</code> / <code>brainstorm</code> / <code>design-system</code> SKILL bodies. The <strong>9-section art bible (esp. §5 Character Design Direction)</strong> and the <strong>asset-spec "visual description + AI-gen prompt"</strong> pattern are the most directly reusable.</li>
+  <li><strong>Trial Story Skills only if you want a formal prose/lore/continuity bible.</strong> Install it in a scratch folder (not your Unity repo root), point it at one arc, and judge whether the continuity engine + relationship registry earn a place alongside (not inside) your character-sheets. If not, steal just the continuity-engine idea.</li>
+  <li><strong>The convergent move</strong> (what this deep read reinforces): build a custom <code>astra-character-designer</code> skill that fuses — Story Skills' <em>character / relationship / continuity structure</em> + Game Studios' <em>art-bible §5 + asset-spec discipline</em> + your own <em>TEMPLATE.md schema</em> (the game data + dialogue library no one else has) + your <em>PixelLab prompting conventions</em> for the visual output. That's a tool tuned to Astra that neither repo provides.</li>
+</ol>
+<p class="meta">Both clones live under <code>_reference/</code> (gitignored) so you can browse the raw files yourself anytime; nothing was installed and your git status is untouched.</p>
+</section>
+
+<section id="sources">
+<h2 class="sec">Sources &amp; local paths</h2>
+<ul>
+  <li><span class="filepath">_reference/Claude-Code-Game-Studios/</span> — README.md, CLAUDE.md, UPGRADING.md, <code>.claude/agents/*</code> (49), <code>.claude/skills/*</code> (73), <code>.claude/hooks/*</code> (12), <code>.claude/rules/*</code> (11), <code>.claude/docs/*</code>, <code>docs/WORKFLOW-GUIDE.md</code>, <code>docs/examples/session-adopt-brownfield.md</code></li>
+  <li><span class="filepath">_reference/story-skills/</span> — README.md, AGENTS.md, docs/first-20-minutes.md, docs/schema-v2.md, <code>skills/*/SKILL.md</code> (7) + reference templates, <code>src/import.js</code>, <code>examples/the-last-ember/</code></li>
+  <li>GitHub: <a href="https://github.com/Donchitos/Claude-Code-Game-Studios">Donchitos/Claude-Code-Game-Studios</a> · <a href="https://github.com/danjdewhurst/story-skills">danjdewhurst/story-skills</a></li>
+</ul>
+</section>
+
+</main>
+</div>
+</body>
+</html>

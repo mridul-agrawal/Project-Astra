@@ -87,7 +87,17 @@ namespace ProjectAstra.Core.Combat.Playback
         {
             Debug.LogWarning($"[CombatPlaybackDispatcher] Fallback instant playback — {reason}.");
             CombatResultApplicator.Finalize(ctx);
+            RaiseInstantDeaths(ctx);
             ctx.OnComplete?.Invoke();
+        }
+
+        // The playback controllers raise deaths at the kill keyframe; the instant path
+        // has no keyframes, so it must raise them itself or kills are silently lost
+        // (victory watchers would never conclude the battle).
+        internal static void RaiseInstantDeaths(CombatPlaybackContext ctx)
+        {
+            if (ctx.Result.DefenderDied) UnitDeathHook.HandleDeath(ctx.Defender, ctx.Attacker, ctx.DeathChannel);
+            if (ctx.Result.AttackerDied) UnitDeathHook.HandleDeath(ctx.Attacker, ctx.Defender, ctx.DeathChannel);
         }
     }
 }

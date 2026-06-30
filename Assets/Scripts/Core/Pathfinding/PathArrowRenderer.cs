@@ -9,8 +9,11 @@ namespace ProjectAstra.Core.Pathfinding
     // GameObjects for reuse.
     public class PathArrowRenderer : MonoBehaviour
     {
-        private static readonly Color ArrowColor = new(0.5f, 0.95f, 1.0f, 0.85f);
+        private static readonly Color DefaultArrowColor = new(0.5f, 0.95f, 1.0f, 0.85f);
         private static readonly Color32 SpritePixelColor = new(255, 255, 255, 255);
+
+        private Color _arrowColor = DefaultArrowColor;
+        private int _sortingOrder;
 
         const int SpriteSize = 16;
         const int BodyMin = 5;
@@ -35,6 +38,14 @@ namespace ProjectAstra.Core.Pathfinding
         {
             if (_container != null)
                 Destroy(_container.gameObject);
+        }
+
+        // Secondary instances (e.g. an enemy-intent telegraph) re-tint and re-layer their
+        // arrows; the player's arrow keeps the defaults.
+        public void SetStyle(Color color, int sortingOrder)
+        {
+            _arrowColor = color;
+            _sortingOrder = sortingOrder;
         }
 
         public void ShowPath(List<Vector2Int> path)
@@ -106,7 +117,8 @@ namespace ProjectAstra.Core.Pathfinding
 
             var sr = obj.GetComponent<SpriteRenderer>();
             sr.sprite = _sprites[type];
-            sr.color = ArrowColor;
+            sr.color = _arrowColor;
+            sr.sortingOrder = _sortingOrder;
 
             _activeSegments.Add(obj);
         }

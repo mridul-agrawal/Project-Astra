@@ -25,7 +25,7 @@ namespace ProjectAstra.Core.Dialogue
         public PortraitFacing PortraitFacing => _portraitFacing;
         public string Text => _text;
 
-        internal static DialogueLine CreateForTest(string speakerId, string text,
+        internal static DialogueLine Create(string speakerId, string text,
             DialogueExpression expression = DialogueExpression.Neutral,
             PortraitPosition position = PortraitPosition.Left,
             PortraitFacing facing = PortraitFacing.Left)

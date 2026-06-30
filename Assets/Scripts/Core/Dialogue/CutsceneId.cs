@@ -7,5 +7,6 @@ namespace ProjectAstra.Core.Dialogue
     {
         None = 0,
         Opening,
+        Ch1Ending,
     }
 }

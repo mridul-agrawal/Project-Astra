@@ -23,6 +23,7 @@ namespace ProjectAstra.Core.Turn
         private UnitRegistry _unitRegistry;
         private int _turnCounter;
         private Coroutine _aiPhaseCoroutine;
+        private IScriptedEnemyPhase _scriptedPhase;
 
         public BattlePhase CurrentPhase => _phaseManager?.CurrentPhase ?? BattlePhase.PlayerPhase;
         public int TurnCounter => _turnCounter;
@@ -77,6 +78,7 @@ namespace ProjectAstra.Core.Turn
             _phaseManager.SetHasAllies(_hasAllies || _unitRegistry.HasUnitsOfFaction(Faction.Allied));
             _phaseManager.Reset();
             RegisterSceneUnits();
+            _scriptedPhase = FindScriptedPhase();
 
             AudioManager.Instance?.PlayMusic(SoundId.MusicMap);
             AudioManager.Instance?.PlayAmbient(SoundId.AmbientWind);
@@ -101,6 +103,14 @@ namespace ProjectAstra.Core.Turn
             foreach (var behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
                 if (behaviour is IBattlePrologue prologue)
                     return prologue;
+            return null;
+        }
+
+        private static IScriptedEnemyPhase FindScriptedPhase()
+        {
+            foreach (var behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
+                if (behaviour is IScriptedEnemyPhase scripted)
+                    return scripted;
             return null;
         }
 
@@ -140,14 +150,17 @@ namespace ProjectAstra.Core.Turn
             _turnEventChannel?.RaisePhaseStarted(phase, _turnCounter);
 
             if (phase != BattlePhase.PlayerPhase)
-                _aiPhaseCoroutine = StartCoroutine(RunAIPhase());
+                _aiPhaseCoroutine = StartCoroutine(RunAIPhase(phase));
         }
 
-        // Placeholder AI: waits the configured delay so the phase reads visibly, then ends.
-        // EndCurrentPhase auto-marks any units that didn't act, so no per-unit logic is needed here yet.
-        private IEnumerator RunAIPhase()
+        // Scripted battles choreograph their AI phases; otherwise the placeholder delay keeps
+        // the phase visible. EndCurrentPhase auto-marks any units that didn't act either way.
+        private IEnumerator RunAIPhase(BattlePhase phase)
         {
-            yield return new WaitForSeconds(_aiPhaseDelaySeconds);
+            if (_scriptedPhase != null && _scriptedPhase.TryBuildPhaseScript(phase, _turnCounter, out var routine))
+                yield return StartCoroutine(routine);
+            else
+                yield return new WaitForSeconds(_aiPhaseDelaySeconds);
             EndCurrentPhase();
         }
 

@@ -4479,6 +4479,14 @@ MonoBehaviour:
     _turnFilter: 1
     _script: {fileID: 11400000, guid: 61401fd2e8939ad4cb7f554665e61a84, type: 2}
     _fireOnce: 1
+  - _event: 0
+    _turnFilter: 2
+    _script: {fileID: 11400000, guid: 5be61f76b3344d0aa6830455722865aa, type: 2}
+    _fireOnce: 1
+  - _event: 0
+    _turnFilter: 3
+    _script: {fileID: 11400000, guid: d345497c738e4622bb32da8c9bdfd5ae, type: 2}
+    _fireOnce: 1
 --- !u!4 &113097127
 Transform:
   m_ObjectHideFlags: 0
@@ -14773,7 +14781,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapBootstrapper
   _mapRenderer: {fileID: 268787981}
   _unitSpawner: {fileID: 506087793}
-  _mapData: {fileID: 11400000, guid: 3e9be69f80946f845b57c0b282bb258e, type: 2}
+  _mapData: {fileID: 11400000, guid: 9c725033086d2c245ac62e4fb60c4e9d, type: 2}
 --- !u!4 &506087792
 Transform:
   m_ObjectHideFlags: 0
@@ -17580,6 +17588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfe5889e49d50343a15e148d5d98b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.Prologue.Map1RaidPrologue
+  _aranyaArrivalScript: {fileID: 11400000, guid: 98b8667b91db48d4c816ce4bbb47fe34, type: 2}
 --- !u!4 &648357904
 Transform:
   m_ObjectHideFlags: 0
@@ -32129,7 +32138,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.LordDeathWatcher
   _deathChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
-  _dialoguePlayer: {fileID: 1301574311}
   _fadeDurationSeconds: 1
   _fallbackLine: The hero has fallen.
 --- !u!114 &1202195124
@@ -33856,114 +33864,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1294079538}
   m_CullTransparentMesh: 1
---- !u!1001 &1301574310
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 93029102586532493, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_Name
-      value: DialogueSequence
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1861690973071570142, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
---- !u!114 &1301574311 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 840954102595872961, guid: fe5dc25c1608ec042bd8436d434cc037, type: 3}
-  m_PrefabInstance: {fileID: 1301574310}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 771acf378b6e6664d8b2e8ef41a3b37f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.DialogueSequencePlayer
 --- !u!1 &1302206020
 GameObject:
   m_ObjectHideFlags: 0
@@ -50055,6 +49955,83 @@ RectTransform:
   m_AnchoredPosition: {x: 244, y: 0}
   m_SizeDelta: {x: 564, y: 280}
   m_Pivot: {x: 0, y: 1}
+--- !u!1 &1915433196
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1915433200}
+  - component: {fileID: 1915433199}
+  - component: {fileID: 1915433198}
+  - component: {fileID: 1915433197}
+  m_Layer: 0
+  m_Name: Map1Director
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1915433197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915433196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73aa00dacc92fd2499741769581379e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.Map1.Map1BattleDirector
+  tuning: {fileID: 11400000, guid: 66a25e946f5805b4ca24974e7e2af0ab, type: 2}
+  turnEvents: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
+  battleDialogueEvents: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
+  deathEvents: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
+  telegraph: {fileID: 1915433199}
+  objectiveBanner: {fileID: 1915433198}
+  bossTauntScript: {fileID: 11400000, guid: ce024eb442744ea5abd1f3f27a7845fc, type: 2}
+--- !u!114 &1915433198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915433196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d177562ba7f018147badd5a83eff1394, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Overlays.ObjectiveBannerUI
+--- !u!114 &1915433199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915433196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79a14880a578a404db2ea677436cd6b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.EnemyIntentTelegraph
+--- !u!4 &1915433200
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915433196}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1918578840
 GameObject:
   m_ObjectHideFlags: 0
@@ -58297,9 +58274,9 @@ SceneRoots:
   - {fileID: 1130846240}
   - {fileID: 1202195122}
   - {fileID: 1559972108}
-  - {fileID: 1301574310}
   - {fileID: 1995867635}
   - {fileID: 843855193}
   - {fileID: 113097127}
   - {fileID: 1745841788}
   - {fileID: 648357904}
+  - {fileID: 1915433200}

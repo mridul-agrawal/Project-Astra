@@ -15,3 +15,4 @@ MonoBehaviour:
   _speakers:
   - {fileID: 11400000, guid: a6421f565073f3048a2f0f5c28c9414a, type: 2}
   - {fileID: 11400000, guid: f85a0c31b232c3f499df2865f5dd7de3, type: 2}
+  - {fileID: 11400000, guid: 4d2df040508744a2b2a5353b437f74e4, type: 2}

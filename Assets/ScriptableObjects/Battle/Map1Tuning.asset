@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7eef80d52382f3c418cc5cd1272b4725, type: 3}
+  m_Name: Map1Tuning
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.Map1.Map1Tuning
+  RaiderUnitId: rakshasa_raider
+  BossUnitId: rakshasa_miniboss
+  IntentPath:
+  - {x: 7, y: 7}
+  - {x: 7, y: 6}
+  - {x: 7, y: 5}
+  - {x: 7, y: 4}
+  - {x: 7, y: 3}
+  - {x: 7, y: 2}
+  IntentPathAfterAdvance:
+  - {x: 7, y: 5}
+  - {x: 7, y: 4}
+  - {x: 7, y: 3}
+  - {x: 7, y: 2}
+  ThreatenedVillagerTile: {x: 7, y: 2}
+  CorkHintTile: {x: 7, y: 4}
+  GuidedMovePath:
+  - {x: 10, y: 2}
+  - {x: 9, y: 2}
+  - {x: 9, y: 3}
+  - {x: 8, y: 3}
+  - {x: 7, y: 3}
+  - {x: 7, y: 4}
+  RaiderAdvancePath:
+  - {x: 7, y: 7}
+  - {x: 7, y: 6}
+  - {x: 7, y: 5}
+  RaiderFeintHoldSeconds: 0.5
+  RaiderDuelOutcomes: 0000000001000000
+  BossDuelOutcomes: 000000000000000002000000
+  LowHpCaption: Not yet. Suvarnapur still stands behind me.
+  CaptionHoldSeconds: 1.8
+  CameraPanSeconds: 0.8
+  GameplayOrthoSize: 4.21875
+  BossFrameTile: {x: 7, y: 9}
+  LevelUpGrowthThreshold: 40

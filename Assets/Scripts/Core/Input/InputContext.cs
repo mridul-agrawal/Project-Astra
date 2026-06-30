@@ -43,6 +43,10 @@ namespace ProjectAstra.Core.Input
 
         private static readonly Dictionary<GameState, HashSet<string>> ContextMap = new()
         {
+            // Nothing listens during the splash video today; Confirm is allowed so a
+            // future skip can hook in without a context change.
+            { GameState.Splash, new HashSet<string> { Confirm } },
+
             { GameState.TitleScreen, new HashSet<string> { Confirm } },
 
             { GameState.MainMenu, CursorAndMenuActions },

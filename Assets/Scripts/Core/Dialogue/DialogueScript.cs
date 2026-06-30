@@ -47,6 +47,36 @@ namespace ProjectAstra.Core.Dialogue
                 _nodes[i]?.SetNodeId(i);
         }
 
+        // Builds a one-segment script from code at runtime (no asset) for dynamic,
+        // data-driven dialogue like a unit's last words. An empty/unset speaker falls
+        // back to the narrator so the runner shows the text instead of skipping it.
+        public static DialogueScript CreateRuntime(string scriptId, string speakerId,
+            IReadOnlyList<string> lines, float textSpeed = -1f, float autoAdvanceDelay = 0f,
+            PortraitPosition position = PortraitPosition.Left)
+        {
+            string resolvedSpeaker = string.IsNullOrEmpty(speakerId)
+                ? DialogueSpeakerRegistry.NarratorId
+                : speakerId;
+
+            // Portraits face inward toward the text: a Left portrait looks Right; others
+            // keep the art's native Left facing.
+            PortraitFacing facing = position == PortraitPosition.Left
+                ? PortraitFacing.Right
+                : PortraitFacing.Left;
+
+            int count = lines?.Count ?? 0;
+            var built = new DialogueLine[count];
+            for (int i = 0; i < count; i++)
+                built[i] = DialogueLine.Create(resolvedSpeaker, lines[i], position: position, facing: facing);
+
+            var segment = DialogueSegment.Create(null, textSpeed, autoAdvanceDelay, built);
+
+            var script = CreateInstance<DialogueScript>();
+            script._scriptId = scriptId;
+            script._segments = new List<DialogueSegment> { segment };
+            return script;
+        }
+
         // Test helper to create a script without needing to create an asset file. Not intended for production use.
         internal static DialogueScript CreateForTest(string scriptId, params DialogueNode[] nodes)
         {

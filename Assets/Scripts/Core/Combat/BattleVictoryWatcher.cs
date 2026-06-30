@@ -62,6 +62,8 @@ namespace ProjectAstra.Core.Combat
                 Conclude(new BattleConclusion(BattleWinner.Enemy, BattleEndCause.AllPlayerUnitsDead));
         }
 
+        private BattleConclusion? _pendingConclusion;
+
         private void Conclude(BattleConclusion conclusion)
         {
             _concluded = true;
@@ -73,15 +75,28 @@ namespace ProjectAstra.Core.Combat
             var sets = FindObjectsByType<CommitmentSet>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var s in sets) s.RunEvaluators(conclusion);
 
-            if (conclusion.Winner == BattleWinner.Enemy)
-            {
-                GameStateManager.Instance?.RequestTransition(GameState.GameOver);
-                return;
-            }
+            // The killing blow usually lands mid-CombatAnimation, where the end-of-chapter
+            // transition is illegal — and the EXP/level-up payoff still owes the player a
+            // screen. Update pumps the conclusion until the moment is right.
+            _pendingConclusion = conclusion;
+        }
 
-            // Player victory: pick Ledger vs ChapterClear.
-            GameStateManager.Instance?.RequestTransition(
-                ShouldShowLedger() ? GameState.WarLedger : GameState.ChapterClear);
+        private void Update()
+        {
+            if (_pendingConclusion == null) return;
+
+            var gsm = GameStateManager.Instance;
+            if (gsm == null) { _pendingConclusion = null; return; }   // direct-play: nowhere to go
+            if (gsm.CurrentState != GameState.BattleMap) return;
+            if (ExpGranter.Instance != null && ExpGranter.Instance.IsBusy) return;
+
+            var conclusion = _pendingConclusion.Value;
+            var target = conclusion.Winner == BattleWinner.Enemy
+                ? GameState.GameOver
+                : ShouldShowLedger() ? GameState.WarLedger : GameState.ChapterClear;
+
+            if (gsm.RequestTransition(target, nameof(BattleVictoryWatcher)))
+                _pendingConclusion = null;
         }
 
         // Spec: show the Ledger only when at least one of these is true.

@@ -23,7 +23,7 @@ MonoBehaviour:
   _hit: 90
   _crit: 5
   _weight: 4
-  _minRange: 2
+  _minRange: 1
   _maxRange: 2
   _maxUses: 45
   _indestructible: 0

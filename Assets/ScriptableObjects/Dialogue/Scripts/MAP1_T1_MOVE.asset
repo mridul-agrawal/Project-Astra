@@ -21,9 +21,9 @@ MonoBehaviour:
     - _speakerId: PROTAGONIST
       _expression: 5
       _portraitPosition: 0
-      _portraitFacing: 0
-      _text: "I need to get near the village \u2014 I have to reach the people before
-        the Rakshasas do."
+      _portraitFacing: 1
+      _text: I need to get near the village. I have to reach the people before the
+        Rakshas do.
   _nodes:
   - _nodeId: 0
     _speakerId: PROTAGONIST

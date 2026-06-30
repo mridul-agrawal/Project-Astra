@@ -36,6 +36,9 @@ namespace ProjectAstra.Core.Combat
         private readonly Queue<Pending> _queue = new Queue<Pending>();
         private bool _draining;
 
+        // True while grants/level-ups are animating — end-of-chapter flow waits on this.
+        public bool IsBusy => _draining || _queue.Count > 0;
+
         private struct Pending
         {
             public TestUnit recipient;
@@ -128,7 +131,7 @@ namespace ProjectAstra.Core.Combat
             var preStats = inst.Stats;
             var portrait = inst.Definition != null ? inst.Definition.Portrait : null;
 
-            var gains = inst.ApplyLevelUp(RollRandom);
+            var gains = inst.ApplyLevelUp(CombatScriptOverride.GrowthRoll ?? RollRandom);
             inst.ConsumeExpForLevelUp();
 
             GameStateManager.Instance?.RequestTransition(GameState.LevelUpScreen, nameof(ExpGranter));

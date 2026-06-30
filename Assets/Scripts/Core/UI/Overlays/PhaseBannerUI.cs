@@ -92,7 +92,7 @@ namespace ProjectAstra.Core.UI.Overlays
         private IEnumerator ShowBanner(BattlePhase phase, int turnNumber)
         {
             ApplyPhaseVisuals(phase, turnNumber);
-            if (_bannerRoot == null) yield break;
+            if (_bannerRoot == null) { RaiseBannerFinished(phase, turnNumber); yield break; }
 
             _bannerRoot.gameObject.SetActive(true);
             if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(true);
@@ -103,6 +103,14 @@ namespace ProjectAstra.Core.UI.Overlays
 
             _bannerRoot.gameObject.SetActive(false);
             if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(false);
+
+            RaiseBannerFinished(phase, turnNumber);
+        }
+
+        // Lets phase-start dialogue wait until the banner is gone instead of overlapping it.
+        private void RaiseBannerFinished(BattlePhase phase, int turnNumber)
+        {
+            if (_turnEventChannel != null) _turnEventChannel.RaisePhaseBannerFinished(phase, turnNumber);
         }
 
         private IEnumerator AnimateSlideAndDim(float fromX, float toX,

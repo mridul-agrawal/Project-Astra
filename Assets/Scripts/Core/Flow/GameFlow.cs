@@ -22,6 +22,7 @@ namespace ProjectAstra.Core.Flow
         {
             Step.PlayCutscene(CutsceneId.Opening),
             Step.LoadBattle(MapId.Map1_BridgeAtSuvarnapur),
+            Step.PlayCutscene(CutsceneId.Ch1Ending),
         };
 
         private int _index = -1;
@@ -64,7 +65,11 @@ namespace ProjectAstra.Core.Flow
             {
                 case StepKind.Cutscene: RequestState(GameState.Cutscene); break;
                 case StepKind.Battle:   RequestState(GameState.BattleMap); break;
-                default:                Debug.Log("[GameFlow] Campaign complete — no further steps."); break;
+                default:
+                    Debug.Log("[GameFlow] Campaign complete — returning to title.");
+                    _index = -1;   // a fresh Begin() restarts from the top
+                    RequestState(GameState.TitleScreen);
+                    break;
             }
         }
 

@@ -59,6 +59,8 @@ namespace ProjectAstra.Core.State
 
                 new TransitionEntry(GameState.Cutscene, GameState.PreBattlePrep),
                 new TransitionEntry(GameState.Cutscene, GameState.BattleMap),
+                // Campaign complete: the ending cutscene hands back to the title.
+                new TransitionEntry(GameState.Cutscene, GameState.TitleScreen),
 
                 new TransitionEntry(GameState.PreBattlePrep, GameState.BattleMap),
 

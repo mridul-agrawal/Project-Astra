@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Audio;
+using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
@@ -92,7 +93,13 @@ namespace ProjectAstra.Core.UI.Progression
             InputManager.Instance.OnConfirm    -= ConfirmSelection;
         }
 
-        private void GoToCutscene() => GameStateManager.Instance.RequestTransition(GameState.Cutscene, nameof(ChapterClearUI));
+        // The campaign decides what follows a cleared chapter; direct transition is the
+        // editor direct-play fallback (no GameFlow when the scene runs standalone).
+        private void GoToCutscene()
+        {
+            if (GameFlow.Instance != null) GameFlow.Instance.NotifyBattleFinished();
+            else GameStateManager.Instance.RequestTransition(GameState.Cutscene, nameof(ChapterClearUI));
+        }
         private void GoToSaveMenu() => GameStateManager.Instance.RequestTransition(GameState.SaveMenu, nameof(ChapterClearUI));
 
         // Guards input callbacks against firing during an in-progress transition away from this screen.

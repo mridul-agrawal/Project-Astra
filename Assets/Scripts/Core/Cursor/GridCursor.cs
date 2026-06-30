@@ -237,9 +237,11 @@ namespace ProjectAstra.Core.Cursor
                         _staffExecutor.TryCommitHeal(selected, target, _unitSelectionFlow.CompleteAction);
                     else
                     {
+                        // Held-skip first, then PreCombat — a map script may force a speed
+                        // for its scripted combats and must win over the held key.
+                        ApplyPerCombatSpeedOverrideIfHeld();
                         if (target != null) _battleDialogueChannel?.Raise(BattleDialogueEventType.PreCombat);
                         AudioManager.Instance?.Play(SoundId.ConfirmEngage);
-                        ApplyPerCombatSpeedOverrideIfHeld();
                         _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
                     }
                     break;
@@ -464,6 +466,14 @@ namespace ProjectAstra.Core.Cursor
 
         internal void SetValidMoveTiles(HashSet<Vector2Int> tiles) =>
             _unitSelectionFlow.SetValidMoveTiles(tiles);
+
+        // Tutorial seam: restricts the selected unit's movement to the given tiles and
+        // redraws the highlight to match, so the guidance is visible rather than implied.
+        public void ConstrainMovementTo(HashSet<Vector2Int> tiles)
+        {
+            _unitSelectionFlow.SetValidMoveTiles(tiles);
+            _rangeHighlighter?.ShowMovementRange(tiles, null);
+        }
 
         internal void EnsureMoveTileAllowed(Vector2Int tile) =>
             _unitSelectionFlow.EnsureMoveTileAllowed(tile);

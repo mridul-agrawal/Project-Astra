@@ -7,9 +7,11 @@ using TMPro;
 using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Grid;
+using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.Units;
 using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.Dialogue;
 using CursorMode = ProjectAstra.Core.Cursor.CursorMode;
 using CameraController = ProjectAstra.Core.Camera.CameraController;
 
@@ -26,6 +28,9 @@ namespace ProjectAstra.Core.Battle.Prologue
     // real animation can replace them later without touching the choreography. (Camera/audio later.)
     public class Map1RaidPrologue : MonoBehaviour, IBattlePrologue
     {
+        [Tooltip("Aranya's arrival vow, played through the shared dialogue view when she reaches the south bank.")]
+        [SerializeField] private DialogueScript _aranyaArrivalScript;
+
         // North bank (high y); the only crossing is the footbridge at (7,5).
         private static readonly Vector2Int RaiderHome = new(7, 7);   // raider's Turn-1 tile (holds the line)
         private static readonly Vector2Int BossTile = new(7, 9);
@@ -70,27 +75,63 @@ namespace ProjectAstra.Core.Battle.Prologue
 
         private const float LetterboxBarHeight = 110f;     // per 1080-tall reference
         private const float LetterboxFadeSeconds = 0.4f;
+        private const float SkipHintDelaySeconds = 1f;
+        private const float SkipHintFadeSeconds = 0.4f;
 
         private static readonly Color DangerRed = new(0.95f, 0.27f, 0.22f, 1f);
 
+        private TestUnit aranya;
+        private TestUnit raider;
+        private readonly List<(TestUnit unit, Vector2Int home)> posedVillagers = new();
+        private readonly List<GameObject> cinematicProps = new();
+        private GridCursor cursor;
+        private CameraController cinematicCamera;
+        private bool skipRequested;
+        private bool choreographyDone;
+
+        // Runs the choreography as a child coroutine so the skip key can cut it short at any
+        // point; both endings funnel through FinalizeToGameplayState — the single source of
+        // the terminal state the player's Turn 1 starts from.
         public IEnumerator Play()
         {
             if (!IsMap1Loaded()) yield break;
 
-            ResolveActors(out var aranya, out var raider, out var villagers, out var villagerSprite);
-            var cursor = FindFirstObjectByType<GridCursor>();
+            ResolveActors(out aranya, out raider, out var villagers, out var villagerSprite);
+            cursor = FindFirstObjectByType<GridCursor>();
+            cinematicCamera = FindFirstObjectByType<CameraController>();
             cursor?.SetMode(CursorMode.Locked);
 
-            var camera = FindFirstObjectByType<CameraController>();
-            if (camera != null)
+            skipRequested = false;
+            choreographyDone = false;
+            if (InputManager.Instance != null) InputManager.Instance.OnSkipDialogue += RequestSkip;
+
+            StartCoroutine(ShowSkipHintAfterDelay());
+            StartCoroutine(RunChoreography(villagers, villagerSprite));
+            while (!choreographyDone && !skipRequested) yield return null;
+
+            if (InputManager.Instance != null) InputManager.Instance.OnSkipDialogue -= RequestSkip;
+            FinalizeToGameplayState();
+        }
+
+        private void RequestSkip() => skipRequested = true;
+
+        private void OnDestroy()
+        {
+            if (InputManager.Instance != null) InputManager.Instance.OnSkipDialogue -= RequestSkip;
+        }
+
+        private IEnumerator RunChoreography(List<TestUnit> villagers, SpriteRenderer villagerSprite)
+        {
+            if (cinematicCamera != null)
             {
-                camera.BeginCinematic();
-                camera.SnapCinematicFrame(NorthFrame, NorthZoomOrtho);  // open tight on the raid up north
+                cinematicCamera.BeginCinematic();
+                cinematicCamera.SnapCinematicFrame(NorthFrame, NorthZoomOrtho);  // open tight on the raid up north
             }
 
             // TODO(audio): raid tension music here once a music clip is wired (none exists yet).
 
             GameObject letterbox = BuildLetterbox(out var topBar, out var bottomBar);
+            cinematicProps.Add(letterbox);
             StartCoroutine(AnimateBars(topBar, bottomBar, 0f, LetterboxBarHeight, LetterboxFadeSeconds));
 
             // Pose: Aranya waits off the south edge; the villagers are caught up north; one of them
@@ -101,10 +142,12 @@ namespace ProjectAstra.Core.Battle.Prologue
 
             var flees = PoseVillagersForFlight(villagers);
             var victim = SpawnVictimToken(VictimTile, villagerSprite);
+            if (victim != null) cinematicProps.Add(victim);
 
             // Telegraph the target — a pulsing "!" over the doomed villager — under the raid's roar.
-            GameObject victimAlert = victim != null ? SpawnMarker(ToWorld(VictimTile), "!", DangerRed, 56f) : null;
-            Coroutine alertPulse = victimAlert != null ? StartCoroutine(PulseTransform(victimAlert.transform)) : null;
+            GameObject victimAlert = victim != null ? WorldMarker.Spawn(ToWorld(VictimTile), "!", DangerRed, 56f) : null;
+            if (victimAlert != null) cinematicProps.Add(victimAlert);
+            Coroutine alertPulse = victimAlert != null ? StartCoroutine(WorldMarker.Pulse(victimAlert.transform)) : null;
             AudioManager.Instance?.Play(SoundId.RakshasaRoar);
 
             yield return Hold(0.9f);
@@ -113,7 +156,7 @@ namespace ProjectAstra.Core.Battle.Prologue
             if (raider != null) yield return LungeAt(raider, VictimTile);
             if (alertPulse != null) StopCoroutine(alertPulse);
             if (victimAlert != null) Destroy(victimAlert);
-            if (camera != null) StartCoroutine(camera.Shake(0.18f, 0.28f));
+            if (cinematicCamera != null) StartCoroutine(cinematicCamera.Shake(0.18f, 0.28f));
             AudioManager.Instance?.Play(SoundId.HitCrit);         // the killing blow
             AudioManager.Instance?.Play(SoundId.VillagerScream);  // a life cut short
             yield return PlayDeath(victim);
@@ -121,7 +164,7 @@ namespace ProjectAstra.Core.Battle.Prologue
 
             // The chase: survivors flee south across the bridge, past the raider, scattering home —
             // and the camera zooms back out and pans down with them, the village opening into view.
-            if (camera != null) StartCoroutine(camera.CinematicFrameTo(SouthFrame, GameplayOrtho, PanDownSeconds));
+            if (cinematicCamera != null) StartCoroutine(cinematicCamera.CinematicFrameTo(SouthFrame, GameplayOrtho, PanDownSeconds));
             yield return FleeVillagers(flees);
             yield return Hold(0.5f);
 
@@ -130,16 +173,34 @@ namespace ProjectAstra.Core.Battle.Prologue
             if (aranya != null) yield return WalkUnit(aranya, AranyaWalkOn, WalkTilesPerSecond);
             yield return Hold(0.4f);
 
-            // Lift the letterbox, land everyone on their Turn-1 tiles, restore the gameplay
-            // camera, and hand control to the player.
-            if (letterbox != null)
-            {
-                yield return AnimateBars(topBar, bottomBar, LetterboxBarHeight, 0f, LetterboxFadeSeconds);
-                Destroy(letterbox);
-            }
+            // Her vow, before control passes — Confirm advances (the cursor is Locked, so
+            // nothing else consumes it).
+            if (_aranyaArrivalScript != null && DialogueService.Instance != null)
+                yield return DialogueService.Instance.PlayRoutine(_aranyaArrivalScript, DialogueTriggeringContext.Cutscene);
+
+            yield return AnimateBars(topBar, bottomBar, LetterboxBarHeight, 0f, LetterboxFadeSeconds);
+            choreographyDone = true;
+        }
+
+        // The one terminal state both endings (natural finish and skip) land on: props gone,
+        // everyone on their Turn-1 tile, gameplay camera restored, cursor freed.
+        private void FinalizeToGameplayState()
+        {
+            StopAllCoroutines();
+            DialogueService.Instance?.Skip();
+
+            foreach (var prop in cinematicProps)
+                if (prop != null) Destroy(prop);
+            cinematicProps.Clear();
+
+            var aranyaSprite = SpriteOf(aranya);
+            if (aranyaSprite != null) aranyaSprite.enabled = true;
             SnapTo(aranya, AranyaHome);
             SnapTo(raider, RaiderHome);
-            camera?.EndCinematic(AranyaHome);
+            foreach (var (unit, home) in posedVillagers) SnapTo(unit, home);
+            posedVillagers.Clear();
+
+            cinematicCamera?.EndCinematic(AranyaHome);
             cursor?.SetMode(CursorMode.Free);
         }
 
@@ -166,12 +227,14 @@ namespace ProjectAstra.Core.Battle.Prologue
         }
 
         // Move each villager to its authored north start; return the (unit, flee-path) pairs to run.
-        private static List<(TestUnit unit, Vector2Int[] path)> PoseVillagersForFlight(List<TestUnit> villagers)
+        // Remembers each one's Turn-1 tile so a skip can snap it straight home.
+        private List<(TestUnit unit, Vector2Int[] path)> PoseVillagersForFlight(List<TestUnit> villagers)
         {
             var flees = new List<(TestUnit, Vector2Int[])>();
             foreach (var villager in villagers)
             {
                 if (!FleePlans.TryGetValue(villager.gridPosition, out var plan)) continue;
+                posedVillagers.Add((villager, villager.gridPosition));
                 PlaceAt(villager, plan.Start);
                 flees.Add((villager, plan.Path));
             }
@@ -243,8 +306,12 @@ namespace ProjectAstra.Core.Battle.Prologue
             if (victim == null) yield break;
             var sprite = victim.GetComponent<SpriteRenderer>();
 
-            GameObject mark = SpawnMarker(victim.transform.position, "X", DangerRed, 56f);
-            if (mark != null) StartCoroutine(RiseAndFade(mark, 0.7f, 0.5f));
+            GameObject mark = WorldMarker.Spawn(victim.transform.position, "X", DangerRed, 56f);
+            if (mark != null)
+            {
+                cinematicProps.Add(mark);
+                StartCoroutine(WorldMarker.RiseAndFade(mark, 0.7f, 0.5f));
+            }
 
             yield return HitFlashEffect.Flash(sprite, 0.1f, DangerRed);   // a red death flash
             StartCoroutine(SlideDown(victim.transform, 0.3f, 0.45f));
@@ -279,6 +346,56 @@ namespace ProjectAstra.Core.Battle.Prologue
         }
 
         private static IEnumerator Hold(float seconds) { yield return new WaitForSeconds(seconds); }
+
+        // --- skip hint ---
+
+        // "[M] Skip" appears after a beat so the cinematic opens clean.
+        private IEnumerator ShowSkipHintAfterDelay()
+        {
+            yield return Hold(SkipHintDelaySeconds);
+
+            var hint = BuildSkipHint(out var group);
+            cinematicProps.Add(hint);
+
+            float elapsed = 0f;
+            while (elapsed < SkipHintFadeSeconds && group != null)
+            {
+                elapsed += Time.deltaTime;
+                group.alpha = Mathf.Clamp01(elapsed / SkipHintFadeSeconds);
+                yield return null;
+            }
+        }
+
+        private static GameObject BuildSkipHint(out CanvasGroup group)
+        {
+            var go = new GameObject("SkipHint");
+            var canvas = go.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 1001;   // above the letterbox bars
+
+            var scaler = go.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1920, 1080);
+
+            group = go.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+
+            var textGo = new GameObject("Text", typeof(RectTransform));
+            textGo.transform.SetParent(go.transform, false);
+            var tmp = textGo.AddComponent<TextMeshProUGUI>();
+            tmp.text = "[M] Skip";
+            tmp.fontSize = 28f;
+            tmp.alignment = TextAlignmentOptions.BottomRight;
+            tmp.color = new Color(1f, 1f, 1f, 0.75f);
+            tmp.raycastTarget = false;
+
+            var rect = textGo.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(0f, 28f);     // sits on the bottom letterbox bar
+            rect.offsetMax = new Vector2(-36f, 0f);
+            return go;
+        }
 
         // --- letterbox (cinematic black bars) ---
         // ScreenSpaceOverlay so the bars always sit above the map and units; they stay
@@ -336,75 +453,6 @@ namespace ProjectAstra.Core.Battle.Prologue
         private static void SetBarHeight(RectTransform bar, float height)
         {
             if (bar != null) bar.sizeDelta = new Vector2(bar.sizeDelta.x, height);
-        }
-
-        // --- legibility markers ("!" danger / "✕" death) ---
-        // World-space TMP symbols on the camera-rendered UIOverlay layer, so a first-time viewer
-        // can read "this villager is the target" and "they were killed" without art or text.
-
-        private static GameObject SpawnMarker(Vector3 worldPos, string text, Color color, float fontSize)
-        {
-            var go = new GameObject("CinematicMarker");
-            go.transform.position = worldPos + new Vector3(0f, 0.5f, 0f);  // above the villager's head
-
-            var canvas = go.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.WorldSpace;
-            canvas.sortingLayerName = "UIOverlay";
-            canvas.sortingOrder = 200;
-            var rect = canvas.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(110f, 110f);
-            rect.localScale = Vector3.one * 0.018f;
-
-            go.AddComponent<CanvasGroup>();
-
-            var textGo = new GameObject("Text", typeof(RectTransform));
-            textGo.transform.SetParent(go.transform, false);
-            var tmp = textGo.AddComponent<TextMeshProUGUI>();
-            tmp.text = text;
-            tmp.fontSize = fontSize;
-            tmp.fontStyle = FontStyles.Bold;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = color;
-            tmp.outlineColor = Color.black;
-            tmp.outlineWidth = 0.25f;
-            tmp.raycastTarget = false;
-
-            var textRect = textGo.GetComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            return go;
-        }
-
-        private static IEnumerator PulseTransform(Transform t)
-        {
-            Vector3 baseScale = t.localScale;
-            float time = 0f;
-            while (t != null)
-            {
-                time += Time.deltaTime;
-                t.localScale = baseScale * (1f + 0.2f * Mathf.Sin(time * 9f));
-                yield return null;
-            }
-        }
-
-        private static IEnumerator RiseAndFade(GameObject marker, float duration, float rise)
-        {
-            var group = marker.GetComponent<CanvasGroup>();
-            Vector3 start = marker.transform.position;
-            Vector3 end = start + Vector3.up * rise;
-            float elapsed = 0f;
-            while (elapsed < duration)
-            {
-                if (marker == null) yield break;
-                elapsed += Time.deltaTime;
-                float p = Mathf.Clamp01(elapsed / duration);
-                marker.transform.position = Vector3.Lerp(start, end, p);
-                if (group != null) group.alpha = 1f - p;
-                yield return null;
-            }
-            if (marker != null) Destroy(marker);
         }
 
         // --- placement / lookup ---
