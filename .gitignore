@@ -95,6 +95,10 @@ crashlytics-build.properties
 # Editor-time screenshots captured for verification; not shipped assets.
 /Assets/Screenshots/
 
+# Unity crash-recovery scene backups; never part of the project.
+/Assets/_Recovery/
+/Assets/_Recovery.meta
+
 # Quarantined legacy files awaiting final removal.
 /.legacy/
 
