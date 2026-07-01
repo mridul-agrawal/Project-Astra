@@ -9,7 +9,7 @@ namespace ProjectAstra.Core.UI.Progression
 {
     // Game Over controller. Lives on the "GameOver" root built by
     // GameOverBuilder. Discovers buttons at OnEnable from ButtonsContainer's
-    // children in sibling order — index 0 → MainMenu, 1 → SaveMenu. Order
+    // children in sibling order — index 0 → Title, 1 → SaveMenu. Order
     // must match GameOverBuilder.ButtonLabels.
     public class GameOverUI : MonoBehaviour
     {
@@ -67,13 +67,13 @@ namespace ProjectAstra.Core.UI.Progression
 
         private void WireClicks()
         {
-            _buttons[0].onClick.AddListener(GoToMainMenu);
+            _buttons[0].onClick.AddListener(GoToTitle);
             _buttons[1].onClick.AddListener(GoToSaveMenu);
         }
 
         private void UnwireClicks()
         {
-            _buttons[0].onClick.RemoveListener(GoToMainMenu);
+            _buttons[0].onClick.RemoveListener(GoToTitle);
             _buttons[1].onClick.RemoveListener(GoToSaveMenu);
         }
 
@@ -91,7 +91,7 @@ namespace ProjectAstra.Core.UI.Progression
             InputManager.Instance.OnConfirm    -= ConfirmSelection;
         }
 
-        private void GoToMainMenu() => GameStateManager.Instance.RequestTransition(GameState.MainMenu, nameof(GameOverUI));
+        private void GoToTitle() => GameStateManager.Instance.RequestTransition(GameState.TitleScreen, nameof(GameOverUI));
         private void GoToSaveMenu() => GameStateManager.Instance.RequestTransition(GameState.SaveMenu, nameof(GameOverUI));
 
         // Guards input callbacks against firing during an in-progress transition away from this screen.

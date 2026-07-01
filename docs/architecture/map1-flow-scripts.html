@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map 1 Flow · Scripts in Use — Project Astra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15120c; --bg2:#1b1710; --card:#1d1810; --card2:#221c12;
+    --ink:#ece3d1; --dim:#b9ad94; --faint:#867c66;
+    --gold:#e6b873; --gold-deep:#c6913f; --gold-line:rgba(230,184,115,.16);
+    --persist:#8fb8cc;          /* boot / always-on */
+    --cond:#d49b5b;             /* conditional */
+    --off:#b3807e;              /* not in this flow */
+    --rule:rgba(236,227,209,.10);
+    --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+    --disp:'Cinzel',Georgia,serif;
+    --serif:'Cormorant Garamond',Georgia,serif;
+    --body:'Mulish',-apple-system,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(120% 80% at 80% -10%, rgba(230,184,115,.07), transparent 60%),
+      radial-gradient(90% 60% at 0% 100%, rgba(143,184,204,.05), transparent 55%),
+      var(--bg);
+    color:var(--ink); font-family:var(--body); font-size:16.5px; line-height:1.65;
+    -webkit-font-smoothing:antialiased; letter-spacing:.005em;
+    padding:0 0 6rem;
+  }
+  /* faint grain */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:0 28px}
+
+  /* ---------- header ---------- */
+  header{padding:4.2rem 0 2.2rem; border-bottom:1px solid var(--rule)}
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.42em; text-transform:uppercase;
+    color:var(--gold); opacity:.85}
+  h1{font-family:var(--disp); font-weight:600; font-size:clamp(2.3rem,6vw,3.7rem); line-height:1.04;
+    margin:.5rem 0 .1rem; color:var(--ink); letter-spacing:.01em}
+  h1 .dot{color:var(--gold-deep)}
+  .lede{font-family:var(--serif); font-size:1.35rem; font-style:italic; color:var(--dim); max-width:60ch; margin-top:.55rem}
+  .meta{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1.4rem}
+  .tag{font-family:var(--mono); font-size:.72rem; letter-spacing:.04em; color:var(--dim);
+    border:1px solid var(--rule); border-radius:999px; padding:.32rem .7rem; background:var(--card)}
+  .tag b{color:var(--gold); font-weight:600}
+
+  /* ---------- overview rail ---------- */
+  .overview{margin:2rem 0 .5rem; padding:1.15rem 1.2rem; background:var(--card); border:1px solid var(--rule); border-radius:14px}
+  .overview .ol{font-family:var(--mono); font-size:.68rem; letter-spacing:.3em; text-transform:uppercase; color:var(--faint); margin-bottom:.85rem}
+  .steps{display:flex; flex-wrap:wrap; align-items:center; gap:.15rem .15rem}
+  .steps a{display:inline-flex; align-items:center; gap:.5rem; text-decoration:none}
+  .steps .s{font-family:var(--mono); font-size:.82rem; color:var(--dim); padding:.3rem .55rem; border-radius:8px;
+    border:1px solid transparent; transition:.18s}
+  .steps a:hover .s{color:var(--ink); background:var(--card2); border-color:var(--gold-line)}
+  .steps .arr{color:var(--gold-deep); opacity:.55; font-family:var(--mono); font-size:.8rem}
+
+  /* ---------- legend ---------- */
+  .legend{display:flex; flex-wrap:wrap; gap:1.1rem; margin:1.6rem 0 .4rem; font-size:.85rem; color:var(--dim)}
+  .legend span{display:inline-flex; align-items:center; gap:.45rem}
+  .swatch{width:.78rem; height:.78rem; border-radius:3px; display:inline-block}
+  .sw-core{background:var(--gold)} .sw-persist{background:var(--persist)}
+  .sw-cond{background:var(--cond)} .sw-off{background:var(--off)}
+
+  /* ---------- timeline ---------- */
+  .timeline{position:relative; margin-top:2.4rem; padding-left:54px}
+  .timeline::before{content:""; position:absolute; left:18px; top:6px; bottom:40px; width:2px;
+    background:linear-gradient(var(--gold-deep), var(--gold-line) 92%, transparent)}
+  .phase{position:relative; margin-bottom:2.7rem; opacity:0; transform:translateY(14px);
+    animation:rise .6s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1; transform:none}}
+  .node{position:absolute; left:-54px; top:0; width:38px; height:38px; border-radius:50%;
+    display:grid; place-items:center; font-family:var(--disp); font-weight:600; font-size:1rem;
+    color:var(--bg); background:var(--gold); box-shadow:0 0 0 5px var(--bg), 0 0 18px rgba(230,184,115,.25)}
+  .node.io{background:var(--persist)}
+  .phase-head{display:flex; align-items:baseline; flex-wrap:wrap; gap:.3rem .8rem; margin-bottom:1rem}
+  .phase-head h2{font-family:var(--disp); font-weight:600; font-size:1.32rem; color:var(--ink); letter-spacing:.012em}
+  .scene{font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; color:var(--gold);
+    border:1px solid var(--gold-line); border-radius:6px; padding:.16rem .5rem}
+
+  /* ---------- script rows ---------- */
+  ul.scripts{list-style:none; display:flex; flex-direction:column; gap:.55rem}
+  .script{background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--gold);
+    border-radius:11px; padding:.85rem 1rem .8rem; transition:.18s}
+  .script:hover{border-color:var(--gold-line); background:var(--card2); transform:translateX(2px)}
+  .script.io{border-left-color:var(--persist)}
+  .row1{display:flex; align-items:center; flex-wrap:wrap; gap:.55rem}
+  code.name{font-family:var(--mono); font-weight:600; font-size:.96rem; color:var(--gold);
+    background:rgba(230,184,115,.08); border:1px solid var(--gold-line); border-radius:7px; padding:.18rem .55rem}
+  .script.io code.name{color:var(--persist); background:rgba(143,184,204,.09); border-color:rgba(143,184,204,.2)}
+  .badge{font-family:var(--mono); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase;
+    padding:.16rem .45rem; border-radius:5px; color:var(--persist); background:rgba(143,184,204,.12); border:1px solid rgba(143,184,204,.22)}
+  .iface{color:var(--faint); font-family:var(--mono); font-size:.78rem}
+  .desc{display:block; margin-top:.4rem; color:var(--ink); font-size:.97rem}
+  .desc .m{font-family:var(--mono); font-size:.86rem; color:var(--dim); background:rgba(236,227,209,.05); padding:.04rem .3rem; border-radius:4px}
+  .uses{margin-top:.5rem; font-size:.84rem; color:var(--faint); display:flex; flex-wrap:wrap; align-items:baseline; gap:.32rem}
+  .uses .lbl{font-family:var(--mono); font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-deep); margin-right:.2rem}
+  .uses code{font-family:var(--mono); font-size:.8rem; color:var(--dim); white-space:nowrap}
+  .uses code::after{content:"·"; color:var(--faint); margin-left:.32rem; opacity:.5}
+  .uses code:last-child::after{content:""}
+  .note{margin-top:.7rem; font-style:italic; font-family:var(--serif); font-size:1.05rem; color:var(--dim);
+    border-top:1px dashed var(--rule); padding-top:.6rem}
+
+  /* ---------- appendix sections ---------- */
+  .appendix{margin-top:3.4rem; padding-top:2rem; border-top:1px solid var(--rule)}
+  .appendix h2{font-family:var(--disp); font-weight:600; font-size:1.5rem; margin-bottom:.3rem}
+  .appendix .sub{font-family:var(--serif); font-style:italic; font-size:1.15rem; color:var(--dim); margin-bottom:1.2rem; max-width:62ch}
+  .group{background:var(--card); border:1px solid var(--rule); border-radius:11px; padding:.85rem 1.05rem; margin-bottom:.7rem}
+  .group.cond{border-left:3px solid var(--cond)}
+  .group.off{border-left:3px solid var(--off); opacity:.92}
+  .group h3{font-family:var(--body); font-weight:700; font-size:.95rem; color:var(--ink); margin-bottom:.35rem}
+  .group.cond h3{color:var(--cond)} .group.off h3{color:var(--off)}
+  .group p{font-size:.93rem; color:var(--dim)}
+  .group code{font-family:var(--mono); font-size:.82rem; color:var(--ink)}
+  .group.off code{color:var(--dim)}
+
+  footer{margin-top:3.4rem; padding-top:1.6rem; border-top:1px solid var(--rule); color:var(--faint); font-size:.86rem}
+  footer b{color:var(--dim)}
+  footer .src{font-family:var(--mono); font-size:.76rem; margin-top:.6rem; color:var(--faint)}
+
+  @media (max-width:560px){
+    .timeline{padding-left:42px} .node{left:-42px; width:32px; height:32px; font-size:.85rem}
+    .timeline::before{left:14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Project Astra — Engine Reference</div>
+    <h1>Map 1 Flow <span class="dot">·</span> Scripts in Use</h1>
+    <p class="lede">Every runtime script that actually fires, traced from boot to the end of the first map — in the order it enters the flow.</p>
+    <div class="meta">
+      <span class="tag"><b>Path</b>&nbsp; Boot → Splash → Title → Cutscene → Map 1 → Victory → Ending → Title</span>
+      <span class="tag"><b>Scope</b>&nbsp; your code under Assets/Scripts/Core</span>
+      <span class="tag"><b>Excludes</b>&nbsp; packages · editor tooling · tests</span>
+    </div>
+  </header>
+
+  <div class="overview">
+    <div class="ol">The Flow</div>
+    <nav class="steps">
+      <a href="#p0"><span class="s">0 · Boot</span></a><span class="arr">→</span>
+      <a href="#p1"><span class="s">1 · Splash</span></a><span class="arr">→</span>
+      <a href="#p2"><span class="s">2 · Title</span></a><span class="arr">→</span>
+      <a href="#p3"><span class="s">3 · Opening Cutscene</span></a><span class="arr">→</span>
+      <a href="#p4"><span class="s">4 · Map Load</span></a><span class="arr">→</span>
+      <a href="#p5"><span class="s">5 · Prologue</span></a><span class="arr">→</span>
+      <a href="#p6"><span class="s">6 · Turn Loop</span></a><span class="arr">→</span>
+      <a href="#p7"><span class="s">7 · Enemy Phase</span></a><span class="arr">→</span>
+      <a href="#p8"><span class="s">8 · Victory</span></a><span class="arr">→</span>
+      <a href="#p9"><span class="s">9 · Ending</span></a>
+    </nav>
+  </div>
+
+  <div class="legend">
+    <span><i class="swatch sw-core"></i> Core — always exercised</span>
+    <span><i class="swatch sw-persist"></i> Boot-persistent (lives the whole session)</span>
+    <span><i class="swatch sw-cond"></i> Conditional</span>
+    <span><i class="swatch sw-off"></i> Not in this flow</span>
+  </div>
+
+  <main class="timeline">
+
+    <!-- PHASE 0 -->
+    <section class="phase" id="p0" style="animation-delay:.05s">
+      <div class="node io">0</div>
+      <div class="phase-head"><h2>Boot — persistent singletons</h2><span class="scene">BootScene</span></div>
+      <ul class="scripts">
+        <li class="script io"><div class="row1"><code class="name">GameStateManager</code><span class="badge">persistent</span></div>
+          <span class="desc">Top-level state machine; validates every transition.</span>
+          <div class="uses"><span class="lbl">uses</span><code>GameState</code><code>GameStateTransitionTable</code><code>GameStateEventChannel</code></div></li>
+        <li class="script io"><div class="row1"><code class="name">SceneLoader</code><span class="badge">persistent</span></div>
+          <span class="desc">Maps each <span class="m">GameState</span> to a scene and loads it through a fade; auto-creates <span class="m">ScreenFader</span>.</span></li>
+        <li class="script io"><div class="row1"><code class="name">ScreenFader</code><span class="iface">runtime-instantiated</span></div>
+          <span class="desc">Full-screen fade for every scene swap.</span></li>
+        <li class="script io"><div class="row1"><code class="name">GameFlow</code><span class="badge">persistent</span></div>
+          <span class="desc">Campaign director — <span class="m">Begin / NotifyCutsceneFinished / NotifyBattleFinished</span>; holds Opening → Map 1 → Ending.</span>
+          <div class="uses"><span class="lbl">uses</span><code>CutsceneId</code><code>MapId</code><code>CutsceneCatalog</code><code>MapCatalog</code><code>MapData</code><code>DialogueScript</code></div></li>
+        <li class="script io"><div class="row1"><code class="name">InputManager</code><span class="badge">persistent</span></div>
+          <span class="desc">Raw device input → logical actions, state-gated, with DAS auto-shift.</span>
+          <div class="uses"><span class="lbl">uses</span><code>InputContext</code><code>DelayedAutoShift</code></div></li>
+        <li class="script io"><div class="row1"><code class="name">AudioManager</code><span class="badge">persistent</span></div>
+          <span class="desc">Music / SFX / mixer buses.</span>
+          <div class="uses"><span class="lbl">uses</span><code>SoundId</code><code>AudioLibrary</code><code>SoundSO</code><code>AudioBus</code></div></li>
+        <li class="script io"><div class="row1"><code class="name">DialogueService</code><span class="badge">persistent</span></div>
+          <span class="desc">Shared dialogue runner/queue; owns the persistent dialogue view.</span>
+          <div class="uses"><span class="lbl">uses</span><code>DialogueRunner</code><code>IDialogueView</code><code>DialogueView</code><code>DialogueScript</code><code>DialogueSegment</code><code>DialogueLine</code><code>DialogueNode</code><code>DialogueSpeaker</code><code>DialogueSpeakerRegistry</code><code>DialogueSettings</code><code>DialogueExpression</code><code>PortraitPosition</code><code>PortraitFacing</code><code>DialogueTriggeringContext</code></div></li>
+        <li class="script io"><div class="row1"><code class="name">OverlayManager</code><span class="badge">persistent</span></div>
+          <span class="desc">On state change, instantiates the matching <span class="m">Resources/Overlays/{State}</span> prefab.</span>
+          <div class="uses"><span class="lbl">uses</span><code>GameStateEventChannel</code></div></li>
+      </ul>
+      <p class="note">Shared event-channel SOs created at boot and used throughout: GameStateEventChannel · TurnEventChannel · UnitDeathEventChannel · BattleDialogueEventChannel.</p>
+    </section>
+
+    <!-- PHASE 1 -->
+    <section class="phase" id="p1" style="animation-delay:.12s">
+      <div class="node">1</div>
+      <div class="phase-head"><h2>Splash</h2><span class="scene">Splash</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">SplashScreenController</code></div>
+          <span class="desc">Plays the splash video, then transitions to the Title screen.</span></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 2 -->
+    <section class="phase" id="p2" style="animation-delay:.19s">
+      <div class="node">2</div>
+      <div class="phase-head"><h2>Title</h2><span class="scene">TitleScreen</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">TitleScreenUI</code></div>
+          <span class="desc">Plays title music; on Confirm calls <span class="m">GameFlow.Begin()</span> → straight into the opening cutscene.</span></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 3 -->
+    <section class="phase" id="p3" style="animation-delay:.26s">
+      <div class="node">3</div>
+      <div class="phase-head"><h2>Opening Cutscene</h2><span class="scene">Cutscene</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">CutsceneUI</code></div>
+          <span class="desc">Asks <span class="m">GameFlow</span> for the current script (<span class="m">OPENING_CH01</span>), plays it via <span class="m">DialogueService</span>, reports back when done.</span>
+          <div class="uses"><span class="lbl">rendered by</span><code>DialogueService</code><code>DialogueRunner</code><code>DialogueView</code></div></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 4 -->
+    <section class="phase" id="p4" style="animation-delay:.33s">
+      <div class="node">4</div>
+      <div class="phase-head"><h2>Map 1 Load &amp; Spawn</h2><span class="scene">BattleMap · init</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">MapBootstrapper</code></div>
+          <span class="desc">Orchestrates map setup on scene load.</span></li>
+        <li class="script"><div class="row1"><code class="name">MapRenderer</code></div>
+          <span class="desc">Paints <span class="m">MapData</span> onto the tilemap layers; answers terrain queries.</span>
+          <div class="uses"><span class="lbl">uses</span><code>MapData</code><code>MapCatalog</code><code>MapId</code><code>TilesetDefinition</code><code>TerrainType</code><code>MapLayer</code><code>SyncedAnimatedTile</code><code>TerrainBackgroundDatabase</code></div></li>
+        <li class="script"><div class="row1"><code class="name">PathfindingService</code><code class="name">Pathfinder</code></div>
+          <span class="desc">Builds the reachability / attack-range graph (Dijkstra + Manhattan).</span>
+          <div class="uses"><span class="lbl">uses</span><code>TerrainStatTable</code><code>TerrainType</code><code>MovementType</code></div></li>
+        <li class="script"><div class="row1"><code class="name">UnitSpawner</code></div>
+          <span class="desc">Spawns units from data — creates <span class="m">TestUnit</span> + <span class="m">UnitInventory</span> per unit.</span>
+          <div class="uses"><span class="lbl">uses</span><code>UnitDefinition</code><code>ClassDefinition</code><code>UnitDatabase</code><code>UnitInstance</code><code>UnitRegistry</code><code>InventoryLoadout</code><code>InventoryItem</code><code>WeaponData</code><code>WeaponDefinition</code><code>StatArray</code><code>StatIndex</code><code>Faction</code><code>ClassType</code><code>MovementType</code><code>WeaponType</code><code>DamageType</code><code>MagicSchool</code><code>WeaponRank</code><code>WeaponTier</code><code>PanchaBhuta</code><code>Personality</code></div></li>
+        <li class="script"><div class="row1"><code class="name">CameraController</code><code class="name">MapCamera</code></div>
+          <span class="desc">Deadzone camera tracking and framing.</span></li>
+        <li class="script"><div class="row1"><code class="name">TurnManager</code></div>
+          <span class="desc">Battle orchestrator — runs the prologue, then the phase loop.</span>
+          <div class="uses"><span class="lbl">uses</span><code>BattlePhaseManager</code><code>BattlePhase</code><code>TurnEventChannel</code><code>UnitRegistry</code><code>IBattlePrologue</code><code>IScriptedEnemyPhase</code></div></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 5 -->
+    <section class="phase" id="p5" style="animation-delay:.40s">
+      <div class="node">5</div>
+      <div class="phase-head"><h2>Beat 0 — Prologue</h2><span class="scene">before turn 1</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">Map1RaidPrologue</code><span class="iface">: IBattlePrologue</span></div>
+          <span class="desc">The scripted on-map raid cinematic.</span>
+          <div class="uses"><span class="lbl">uses</span><code>WorldMarker</code><code>HitFlashEffect</code><code>SpriteFader</code><code>CameraController</code><code>CursorMode</code><code>GridCursor</code><code>DialogueService</code><code>MAP1_PROLOGUE_ARANYA</code><code>DialogueSpeaker</code></div></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 6 -->
+    <section class="phase" id="p6" style="animation-delay:.47s">
+      <div class="node">6</div>
+      <div class="phase-head"><h2>Player / Turn Loop</h2><span class="scene">interactive core</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">PhaseBannerUI</code></div>
+          <span class="desc">Slides the "Player Phase" banner; raises <span class="m">PhaseBannerFinished</span> when done.</span></li>
+        <li class="script"><div class="row1"><code class="name">DialogueTriggerDriver</code></div>
+          <span class="desc">After the banner finishes, fires the tutorial line (<span class="m">MAP1_T1_MOVE</span>).</span>
+          <div class="uses"><span class="lbl">uses</span><code>DialogueTrigger</code><code>BattleDialogueEventChannel</code><code>BattleDialogueEventType</code></div></li>
+        <li class="script"><div class="row1"><code class="name">Map1BattleDirector</code><span class="iface">: IScriptedEnemyPhase</span></div>
+          <span class="desc">Scripted beats, intent telegraph, deterministic duels.</span>
+          <div class="uses"><span class="lbl">uses</span><code>Map1Beat</code><code>Map1Tuning</code><code>EnemyIntentTelegraph</code><code>ObjectiveBannerUI</code><code>ScriptedCombatRng</code><code>CombatScriptOverride</code><code>CombatAnimationSettingsRef</code><code>WorldMarker</code><code>UnitMover</code></div></li>
+        <li class="script"><div class="row1"><code class="name">GridCursor</code></div>
+          <span class="desc">Input hub + cursor-mode state machine; composes the per-action flows.</span>
+          <div class="uses"><span class="lbl">composes</span><code>UnitSelectionFlow</code><code>ActionMenuFlow</code><code>TargetingFlow</code><code>CantoFlow</code><code>AdjacentAllyFinder</code></div>
+          <div class="uses"><span class="lbl">uses</span><code>CursorMode</code><code>CursorAnimator</code><code>PathfindingService</code></div></li>
+        <li class="script"><div class="row1"><code class="name">RangeHighlighter</code><code class="name">PathArrowRenderer</code></div>
+          <span class="desc">Move/attack range tiles and the planning arrow.</span></li>
+        <li class="script"><div class="row1"><code class="name">UnitMover</code></div>
+          <span class="desc">Animates a unit along the committed path.</span></li>
+        <li class="script"><div class="row1"><code class="name">UnitActionMenuUI</code></div>
+          <span class="desc">The post-move Attack / Item / Wait menu.</span></li>
+        <li class="script"><div class="row1"><code class="name">CombatExecutor</code></div>
+          <span class="desc">Resolves an attack and dispatches playback.</span>
+          <div class="uses"><span class="lbl">combat core</span><code>CombatEngine</code><code>CombatRound</code><code>CombatForecast</code><code>IRng</code><code>ScriptedCombatRng</code><code>CombatScriptOverride</code><code>CritContext</code><code>CritContextClassifier</code><code>WeaponTriangle</code><code>WeaponData</code><code>StatUtils</code><code>StatArray</code><code>HPThreshold</code><code>NiyatiSymbol</code></div>
+          <div class="uses"><span class="lbl">playback</span><code>CombatPlaybackDispatcher</code><code>CombatPlan</code><code>CombatPlaybackContext</code><code>CombatResultApplicator</code><code>BraveFlowComposer</code><code>CombatTiming</code><code>CombatAnimationSettings</code></div></li>
+        <li class="script"><div class="row1"><code class="name">CombatForecastUI</code><code class="name">CombatForecastRefs</code></div>
+          <span class="desc">Pre-combat odds panel.</span></li>
+        <li class="script"><div class="row1"><code class="name">SkipModePlaybackController</code></div>
+          <span class="desc">Fast / skip combat-resolution path.</span></li>
+        <li class="script"><div class="row1"><code class="name">CombatPlaybackController</code><code class="name">CombatFighterView</code><code class="name">CombatSceneRefs</code><span class="iface">CombatAnimation overlay</span></div>
+          <span class="desc">The combat-animation overlay, instantiated on the <span class="m">CombatAnimation</span> state.</span>
+          <div class="uses"><span class="lbl">uses</span><code>HitFlashEffect</code></div></li>
+        <li class="script"><div class="row1"><code class="name">BattleMapHUDController</code><code class="name">BattleMapUI</code></div>
+          <span class="desc">HUD and pause entry, live for the whole battle.</span></li>
+        <li class="script"><div class="row1"><code class="name">UnitInfoPanelUI</code><code class="name">UnitInfoItemDetailUI</code><code class="name">UnitInfoSupportDetailUI</code></div>
+          <span class="desc">The unit inspector. <span class="uses" style="display:inline">uses <code>UnitInfoContext</code></span></span></li>
+        <li class="script"><div class="row1"><code class="name">MapHpBar</code><code class="name">MapDamageFloat</code></div>
+          <span class="desc">On-map HP bars and floating damage numbers.</span></li>
+        <li class="script"><div class="row1"><code class="name">ToastNotificationUI</code><code class="name">ConfirmDialogUI</code></div>
+          <span class="desc">Toasts and confirm prompts.</span></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 7 -->
+    <section class="phase" id="p7" style="animation-delay:.54s">
+      <div class="node">7</div>
+      <div class="phase-head"><h2>Enemy Phase — scripted beats</h2></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">TurnManager</code><span class="arr" style="color:var(--faint)">→</span><code class="name">Map1BattleDirector.TryBuildPhaseScript</code></div>
+          <span class="desc">Raider advance / hold, the objective flip (→ <span class="m">ObjectiveBannerUI</span>), the boss taunt (<span class="m">DialogueService</span> + <span class="m">MAP1_BOSS_TAUNT</span>). Determinism via <span class="m">ScriptedCombatRng / CombatScriptOverride</span>.</span>
+          <div class="uses"><span class="lbl">deaths via</span><code>UnitDeathHook</code><code>UnitDeathEventChannel</code></div></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 8 -->
+    <section class="phase" id="p8" style="animation-delay:.61s">
+      <div class="node">8</div>
+      <div class="phase-head"><h2>Victory &amp; Post-Victory Wrap</h2></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">ExpGranter</code></div>
+          <span class="desc">Grants EXP after kills, triggers level-up.</span>
+          <div class="uses"><span class="lbl">uses</span><code>UnitInstance</code><code>ExpMath</code><code>StatArray</code><code>StatUtils</code></div></li>
+        <li class="script"><div class="row1"><code class="name">ExpGainOverlayUI</code><code class="name">LevelUpScreenUI</code></div>
+          <span class="desc">EXP count-up overlay and the level-up screen.</span></li>
+        <li class="script"><div class="row1"><code class="name">BattleVictoryWatcher</code></div>
+          <span class="desc">Detects the win and drives the transition into ChapterClear / back into <span class="m">GameFlow</span>.</span></li>
+        <li class="script"><div class="row1"><code class="name">CommitmentTracker</code><code class="name">DeterministicCommitmentEvaluator</code><code class="name">DeathRegistry</code><code class="name">NamedCommanderScanner</code><code class="name">WarLedgerUI</code></div>
+          <span class="desc">Passive trackers running through the battle, read at the end (commitments like <span class="m">ProtectSuvarnapurVillage</span>, named-enemy deaths for the boss).</span>
+          <div class="uses"><span class="lbl">uses</span><code>Commitment</code><code>ChapterContext</code><code>WarLedgerRefs</code><code>WarLedgerServices</code></div></li>
+        <li class="script"><div class="row1"><code class="name">ChapterClearUI</code><span class="scene">ChapterClear</span></div>
+          <span class="desc">Chapter-clear screen → continues to the ending cutscene.</span></li>
+      </ul>
+    </section>
+
+    <!-- PHASE 9 -->
+    <section class="phase" id="p9" style="animation-delay:.68s">
+      <div class="node io">9</div>
+      <div class="phase-head"><h2>Ending Cutscene → Title</h2><span class="scene">Cutscene → TitleScreen</span></div>
+      <ul class="scripts">
+        <li class="script"><div class="row1"><code class="name">CutsceneUI</code></div>
+          <span class="desc">Plays <span class="m">ENDING_CH01</span> via <span class="m">DialogueService</span>; on finish <span class="m">GameFlow</span> reports campaign-complete → back to <span class="m">TitleScreenUI</span>.</span></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- APPENDIX: CONDITIONAL -->
+  <section class="appendix">
+    <h2>Present in BattleMap, but conditional</h2>
+    <p class="sub">Placed in the scene, but only fires if a specific action or condition occurs — and Map 1's simple teaching flow usually doesn't trigger these.</p>
+    <div class="group cond"><h3>Inventory UI</h3><p><code>InventoryMenuUI</code> · <code>InventoryFullPromptUI</code> · <code>InventoryPopupRefs</code> · <code>ItemBreakToaster</code> · <code>ItemSortComparer</code> · <code>InventoryAcquisition</code> · <code>EquipResolver</code> — only when a unit's items are opened. (<code>UnitInventory</code>, <code>InventoryItem</code>, <code>WeaponData</code> themselves <i>are</i> core — they back every unit.)</p></div>
+    <div class="group cond"><h3>Trade</h3><p><code>TradeScreenUI</code> · <code>TradeSession</code> · <code>TradeScreenRowVisuals</code> — only if trade is opened.</p></div>
+    <div class="group cond"><h3>Convoy</h3><p><code>ConvoyBootstrap</code> (its Awake <i>does</i> initialize the convoy) · <code>ConvoyUI</code> · <code>SupplyConvoy</code> · <code>SupplyConvoyRefs</code> · <code>IConvoy</code> — UI only if opened.</p></div>
+    <div class="group cond"><h3>Staff / healing</h3><p><code>StaffExecutor</code> · <code>StaffEffects</code> · <code>StaffRangeResolver</code> · <code>HealingTileSystem</code> · <code>HealFloatSpawner</code> · <code>ConsumableEffects</code> — Map 1 has no healer or heal-tiles in the core flow.</p></div>
+    <div class="group cond"><h3>Pause / menus (overlay prefabs)</h3><p><code>BattleMapPausedOverlayUI</code> · <code>SaveMenuOverlayUI</code> · <code>SettingsMenuOverlayUI</code> — only if the player pauses.</p></div>
+    <div class="group cond"><h3>Misc visual</h3><p><code>FlyingHoverAnimator</code> — only with a flying unit.</p></div>
+  </section>
+
+  <!-- APPENDIX: NOT IN FLOW -->
+  <section class="appendix">
+    <h2>Defined, but not part of this win flow</h2>
+    <p class="sub">They exist in your code, but never run on the Boot → Map 1 → victory path.</p>
+    <div class="group off"><h3>Loss branch</h3><p><code>LordDeathWatcher</code> · <code>GameOverUI</code> · <code>UnitDeathHook</code> (loss path) — fire only on a defeat.</p></div>
+    <div class="group off"><h3>Bypassed / unused screens</h3><p><code>MainMenuUI</code> (removed from the flow) · <code>PreBattlePrepUI</code> (not in the campaign) · <code>DialogueOverlayUI</code> (old Dialogue.prefab; DialogueService owns the real view).</p></div>
+    <div class="group off"><h3>Future-stub interfaces (declared, not exercised in Map 1)</h3><p><code>IFogOfWarProvider</code> · <code>ICivilianThreadService</code> · <code>IDeathEpitaphProvider</code> · <code>ISupportProvider</code> · <code>ISupportBonusProvider</code> · <code>SupportCombatBonus</code> · <code>BondStage</code> · <code>ITemporaryModifierProvider</code> · <code>IPersistable</code> · <code>WeaponRankTracker</code></p></div>
+  </section>
+
+  <footer>
+    <p><b>Accuracy:</b> the MonoBehaviour lists are exact — read straight from the scene and prefab files. The helper/SO attributions come from the call-graph; they're solid for the traced systems, while the <i>Conditional</i> group is where "used" is fuzziest (initialized vs. actually triggered in a given Map 1 playthrough), which is why it's split out rather than claimed as core.</p>
+    <p class="src">source · docs/architecture/map1-flow-scripts.md &nbsp;·&nbsp; flow path: BootScene → Splash → TitleScreen → Cutscene → BattleMap (Map 1) → ChapterClear → Cutscene → TitleScreen</p>
+  </footer>
+
+</div>
+</body>
+</html>

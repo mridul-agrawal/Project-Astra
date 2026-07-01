@@ -83,3 +83,9 @@ MonoBehaviour:
     To: 4
   - From: 14
     To: 0
+  - From: 0
+    To: 2
+  - From: 10
+    To: 0
+  - From: 5
+    To: 0

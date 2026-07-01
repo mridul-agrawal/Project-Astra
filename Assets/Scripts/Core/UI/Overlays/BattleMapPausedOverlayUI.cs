@@ -92,7 +92,7 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void ConfirmQuit()
         {
-            GameStateManager.Instance.RequestTransition(GameState.MainMenu, nameof(BattleMapPausedOverlayUI));
+            GameStateManager.Instance.RequestTransition(GameState.TitleScreen, nameof(BattleMapPausedOverlayUI));
         }
 
         private void Navigate(Vector2Int dir)
