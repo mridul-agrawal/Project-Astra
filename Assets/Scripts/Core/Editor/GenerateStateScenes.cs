@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.Editor
 
         // Only TitleScreen and BattleMap use the generic generator. MainMenu, Cutscene,
         // PreBattlePrep, ChapterClear, and GameOver each have a dedicated scene builder
-        // under Assets/Editor/*Builder.cs (shared layout via TitleMenuLayoutBuilder).
+        // via a dedicated *Builder.cs in this folder (shared layout via TitleMenuLayoutBuilder).
         private static readonly GameState[] SceneStates =
         {
             GameState.TitleScreen, GameState.BattleMap,
