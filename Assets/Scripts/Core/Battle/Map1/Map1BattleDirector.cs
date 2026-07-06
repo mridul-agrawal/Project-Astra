@@ -24,7 +24,6 @@ namespace ProjectAstra.Core.Battle.Map1
     {
         [SerializeField] private Map1Tuning tuning;
         [SerializeField] private BattleDialogueEventChannel battleDialogueEvents;
-        [SerializeField] private UnitDeathEventChannel deathEvents;
         [SerializeField] private EnemyIntentTelegraph telegraph;
         [SerializeField] private ObjectiveBannerUI objectiveBanner;
         [SerializeField] private DialogueScript bossTauntScript;
@@ -48,14 +47,14 @@ namespace ProjectAstra.Core.Battle.Map1
         {
             EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
             if (battleDialogueEvents != null) battleDialogueEvents.Register(OnBattleDialogueEvent);
-            if (deathEvents != null) deathEvents.Register(OnUnitDied);
+            EventService.Instance.UnitDeath.Register(OnUnitDied);
         }
 
         private void OnDisable()
         {
             if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
             if (battleDialogueEvents != null) battleDialogueEvents.Unregister(OnBattleDialogueEvent);
-            if (deathEvents != null) deathEvents.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
             CombatScriptOverride.Clear();
         }
 

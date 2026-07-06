@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
@@ -26,20 +27,18 @@ namespace ProjectAstra.Core.Combat
     // screen per spec.
     public class BattleVictoryWatcher : MonoBehaviour
     {
-        [SerializeField] private UnitDeathEventChannel _deathChannel;
-
         public event Action<BattleConclusion> OnBattleConcluded;
 
         private bool _concluded;
 
         private void Awake()
         {
-            if (_deathChannel != null) _deathChannel.Register(OnUnitDied);
+            EventService.Instance.UnitDeath.Register(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (_deathChannel != null) _deathChannel.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
         }
 
         private void OnUnitDied(UnitDeathEventArgs args)

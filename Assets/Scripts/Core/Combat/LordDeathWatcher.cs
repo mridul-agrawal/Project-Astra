@@ -1,5 +1,6 @@
 using System.Collections;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.Units;
@@ -21,7 +22,6 @@ namespace ProjectAstra.Core.Combat
     // the end-of-chapter conclusion for Lord deaths.
     public class LordDeathWatcher : MonoBehaviour
     {
-        [SerializeField] private UnitDeathEventChannel _deathChannel;
 
         [Tooltip("How long the Lord's sprite fades out before the last-words dialogue begins.")]
         [SerializeField] private float _fadeDurationSeconds = 1.0f;
@@ -33,12 +33,12 @@ namespace ProjectAstra.Core.Combat
 
         private void Awake()
         {
-            if (_deathChannel != null) _deathChannel.Register(OnUnitDied);
+            EventService.Instance.UnitDeath.Register(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (_deathChannel != null) _deathChannel.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
         }
 
         private void OnUnitDied(UnitDeathEventArgs args)

@@ -459,54 +459,13 @@ namespace ProjectAstra.Core.Editor
         // UM-01 War's Ledger — subsystem wiring
         // ==============================================================
 
-        private const string DeathChannelAssetPath =
-            "Assets/ScriptableObjects/Core/UnitDeathEventChannel.asset";
-
         private static void SetupWarLedgerSubsystems()
         {
-            var channel = EnsureDeathEventChannel();
-
-            EnsureComponent<DeathRegistry>("DeathRegistry", c => {
-                var so = new SerializedObject(c);
-                so.FindProperty("_deathChannel").objectReferenceValue = channel;
-                so.ApplyModifiedPropertiesWithoutUndo();
-            });
-
+            // The death channel now comes from EventService — these components just need to exist.
+            EnsureComponent<DeathRegistry>("DeathRegistry", null);
             EnsureComponent<CommitmentTracker>("CommitmentTracker", null);
-
             EnsureComponent<ChapterMeta>("ChapterMeta", null);
-
-            EnsureComponent<BattleVictoryWatcher>("BattleVictoryWatcher", c => {
-                var so = new SerializedObject(c);
-                so.FindProperty("_deathChannel").objectReferenceValue = channel;
-                so.ApplyModifiedPropertiesWithoutUndo();
-            });
-
-            // Wire the channel onto GridCursor so the death hook has something to fire.
-            var cursor = Object.FindAnyObjectByType<GridCursor>();
-            if (cursor != null)
-            {
-                var so = new SerializedObject(cursor);
-                var prop = so.FindProperty("_deathEventChannel");
-                if (prop != null && prop.objectReferenceValue != channel)
-                {
-                    prop.objectReferenceValue = channel;
-                    so.ApplyModifiedPropertiesWithoutUndo();
-                }
-            }
-        }
-
-        private static UnitDeathEventChannel EnsureDeathEventChannel()
-        {
-            var channel = AssetDatabase.LoadAssetAtPath<UnitDeathEventChannel>(DeathChannelAssetPath);
-            if (channel != null) return channel;
-
-            Directory.CreateDirectory(Path.GetDirectoryName(DeathChannelAssetPath));
-            channel = ScriptableObject.CreateInstance<UnitDeathEventChannel>();
-            AssetDatabase.CreateAsset(channel, DeathChannelAssetPath);
-            AssetDatabase.SaveAssets();
-            Debug.Log($"CursorSceneSetup: created {DeathChannelAssetPath}");
-            return channel;
+            EnsureComponent<BattleVictoryWatcher>("BattleVictoryWatcher", null);
         }
 
         private static T EnsureComponent<T>(string goName, System.Action<T> configure)

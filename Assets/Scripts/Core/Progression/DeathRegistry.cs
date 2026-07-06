@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Events;
 
 namespace ProjectAstra.Core.Progression
 {
@@ -39,8 +40,6 @@ namespace ProjectAstra.Core.Progression
     {
         public static DeathRegistry Instance { get; private set; }
 
-        [SerializeField] private UnitDeathEventChannel _deathChannel;
-
         private readonly List<DeathEntry> _entries = new();
         private int _unnamedEnemyDeathCount;
 
@@ -70,12 +69,12 @@ namespace ProjectAstra.Core.Progression
             if (Instance != null && Instance != this) Destroy(Instance.gameObject);
             Instance = this;
 
-            if (_deathChannel != null) _deathChannel.Register(OnUnitDied);
+            EventService.Instance.UnitDeath.Register(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (_deathChannel != null) _deathChannel.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
             if (Instance == this) Instance = null;
         }
 

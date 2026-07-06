@@ -55,9 +55,6 @@ namespace ProjectAstra.Core.Cursor
         [SerializeField] private UnitInfoPanelUI _unitInfoPanelUI;
         [SerializeField] private CombatForecastUI _combatForecastUI;
 
-        [Header("UM-01 War's Ledger")]
-        [SerializeField] private UnitDeathEventChannel _deathEventChannel;
-
         [Header("Combat Animation")]
         [SerializeField] private SkipModePlaybackController _skipModeController;
 
@@ -314,8 +311,10 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_combatExecutor != null) return;
             var dispatcher = new CombatPlaybackDispatcher(_skipModeController);
+            // Null in EditMode tests (no EventService); the real channel at runtime.
+            var deathChannel = EventService.Instance != null ? EventService.Instance.UnitDeath : null;
             _combatExecutor = new CombatExecutor(
-                _mapRenderer, _terrainStatTable, _deathEventChannel,
+                _mapRenderer, _terrainStatTable, deathChannel,
                 _combatForecastUI, _toastUI, dispatcher);
         }
 
