@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Input
@@ -20,7 +21,6 @@ namespace ProjectAstra.Core.Input
         public static InputManager Instance { get; private set; }
 
         [SerializeField] private InputActionAsset _inputActions;
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
 
         [Header("DAS Settings")]
         [SerializeField] private float _dasInitialDelay = 0.4f;
@@ -57,6 +57,7 @@ namespace ProjectAstra.Core.Input
 
         private bool _confirmPendingThisFrame;
         private bool _cancelPendingThisFrame;
+        private bool stateSubscribed;
 
         private void Awake()
         {
@@ -73,23 +74,22 @@ namespace ProjectAstra.Core.Input
 
         private void OnEnable()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnStateChanged);
-
             InputSystem.onActionChange += OnInputActionChange;
         }
 
+        // Subscribe in Start (not OnEnable) so EventService.Instance is guaranteed set —
+        // this component boots alongside EventService, so OnEnable ordering isn't safe.
         private void Start()
         {
+            EventService.Instance.GameState.Register(OnStateChanged);
+            stateSubscribed = true;
+
             _currentState = GameStateManager.Instance.CurrentState;
             ApplyContextFilter(_currentState);
         }
 
         private void OnDisable()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnStateChanged);
-
             InputSystem.onActionChange -= OnInputActionChange;
         }
 
@@ -98,6 +98,9 @@ namespace ProjectAstra.Core.Input
         // Detach them here so a destroyed InputManager can't keep handling input.
         private void OnDestroy()
         {
+            if (stateSubscribed && EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnStateChanged);
+
             UnbindActions();
             _gameplayMap?.Disable();
         }

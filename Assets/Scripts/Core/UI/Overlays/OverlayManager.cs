@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -12,9 +13,8 @@ namespace ProjectAstra.Core.UI.Overlays
     {
         const string OverlayResourceFolder = "Overlays";
 
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
-
         private GameObject _activeOverlay;
+        private bool subscribed;
 
         // Dialogue is intentionally not here: DialogueService owns one persistent
         // dialogue view across scenes, so OverlayManager must not also spawn one.
@@ -28,8 +28,19 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void Awake() => DontDestroyOnLoad(gameObject);
 
-        private void OnEnable()  => _stateChangedChannel.Register(OnStateChanged);
-        private void OnDisable() => _stateChangedChannel.Unregister(OnStateChanged);
+        // Subscribe in Start (not OnEnable) so EventService.Instance is set — this boots
+        // alongside EventService, so relying on OnEnable ordering isn't safe.
+        private void Start()
+        {
+            EventService.Instance.GameState.Register(OnStateChanged);
+            subscribed = true;
+        }
+
+        private void OnDestroy()
+        {
+            if (subscribed && EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnStateChanged);
+        }
 
         private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
         {

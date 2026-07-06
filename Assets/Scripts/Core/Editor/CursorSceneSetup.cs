@@ -56,7 +56,6 @@ namespace ProjectAstra.Core.Editor
 
         private struct SceneAssets
         {
-            public GameStateEventChannel stateChannel;
             public TurnEventChannel turnChannel;
             public TerrainStatTable terrainStatTable;
             public Sprite cursorSprite;
@@ -70,8 +69,6 @@ namespace ProjectAstra.Core.Editor
         {
             return new SceneAssets
             {
-                stateChannel = AssetDatabase.LoadAssetAtPath<GameStateEventChannel>(
-                    "Assets/ScriptableObjects/Core/GameStateChanged.asset"),
                 turnChannel = AssetDatabase.LoadAssetAtPath<TurnEventChannel>(
                     "Assets/ScriptableObjects/Core/TurnEventChannel.asset"),
                 terrainStatTable = AssetDatabase.LoadAssetAtPath<TerrainStatTable>(
@@ -138,7 +135,6 @@ namespace ProjectAstra.Core.Editor
             var so = new SerializedObject(cursor);
             so.FindProperty("_mapRenderer").objectReferenceValue = mapRenderer;
             so.FindProperty("_terrainStatTable").objectReferenceValue = assets.terrainStatTable;
-            so.FindProperty("_stateChangedChannel").objectReferenceValue = assets.stateChannel;
             so.FindProperty("_spriteRenderer").objectReferenceValue = spriteRenderer;
             so.FindProperty("_idleSprite").objectReferenceValue = assets.cursorIdle;
             so.FindProperty("_selectedSprite").objectReferenceValue = assets.cursorSelected;
@@ -427,15 +423,7 @@ namespace ProjectAstra.Core.Editor
                     prop.objectReferenceValue = ledgerInstance;
                     so.ApplyModifiedPropertiesWithoutUndo();
                 }
-                // Wire the GameStateEventChannel (assets.stateChannel loaded at the top)
-                var stateProp = so.FindProperty("_stateChannel");
-                if (stateProp != null && stateProp.objectReferenceValue == null)
-                {
-                    var stateChan = AssetDatabase.LoadAssetAtPath<GameStateEventChannel>(
-                        "Assets/ScriptableObjects/Core/GameStateChanged.asset");
-                    if (stateChan != null) stateProp.objectReferenceValue = stateChan;
-                    so.ApplyModifiedPropertiesWithoutUndo();
-                }
+                // GameState channel is now reached via EventService, not wired here.
             }
             else if (ledgerPrefab == null)
             {
@@ -546,7 +534,6 @@ namespace ProjectAstra.Core.Editor
 
             var so = new SerializedObject(tm);
             so.FindProperty("_turnEventChannel").objectReferenceValue = assets.turnChannel;
-            so.FindProperty("_stateChangedChannel").objectReferenceValue = assets.stateChannel;
             so.FindProperty("_hasAllies").boolValue = false;
             so.ApplyModifiedPropertiesWithoutUndo();
 

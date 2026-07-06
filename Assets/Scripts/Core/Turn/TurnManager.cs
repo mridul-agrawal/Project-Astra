@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using ProjectAstra.Core.Audio;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Units;
 
@@ -14,7 +15,6 @@ namespace ProjectAstra.Core.Turn
         public static TurnManager Instance { get; private set; }
 
         [SerializeField] private TurnEventChannel _turnEventChannel;
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private bool _hasAllies;
         // Placeholder: how long an AI phase visibly lingers before auto-ending. Replace once real AI exists.
         [SerializeField] private float _aiPhaseDelaySeconds = 1f;
@@ -45,8 +45,7 @@ namespace ProjectAstra.Core.Turn
 
         private void OnEnable()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnGameStateChanged);
+            EventService.Instance.GameState.Register(OnGameStateChanged);
         }
 
         private void Start()
@@ -58,8 +57,8 @@ namespace ProjectAstra.Core.Turn
 
         private void OnDisable()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnGameStateChanged);
+            if (EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnGameStateChanged);
         }
 
         private void OnDestroy()

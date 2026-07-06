@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Scenes
@@ -11,8 +12,6 @@ namespace ProjectAstra.Core.Scenes
     // states, transient UI states) — those are someone else's problem.
     public class SceneLoader : MonoBehaviour
     {
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
-
         private string _currentBaseScene;
 
         // States that map to an actual scene file under Assets/Scenes/. Anything not in this
@@ -47,7 +46,7 @@ namespace ProjectAstra.Core.Scenes
 
         private void Start()
         {
-            _stateChangedChannel.Register(OnStateChanged);
+            EventService.Instance.GameState.Register(OnStateChanged);
 
             var initialState = GameStateManager.Instance.CurrentState;
             if (SceneStates.Contains(initialState))
@@ -59,7 +58,8 @@ namespace ProjectAstra.Core.Scenes
 
         private void OnDestroy()
         {
-            _stateChangedChannel.Unregister(OnStateChanged);
+            if (EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnStateChanged);
         }
 
         private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)

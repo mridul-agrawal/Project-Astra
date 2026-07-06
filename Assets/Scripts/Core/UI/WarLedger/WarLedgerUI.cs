@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.State;
@@ -28,23 +29,23 @@ namespace ProjectAstra.Core.UI.WarLedger
         public static bool HasInputFocus { get; private set; }
 
         [SerializeField] private GameObject _popupInstance;
-        [SerializeField] private GameStateEventChannel _stateChannel;
 
         private WarLedgerRefs _refs;
         private bool _subscribed;
 
         private void Awake()
         {
-            if (_stateChannel != null)
+            if (EventService.Instance != null)
             {
-                _stateChannel.Register(OnStateChanged);
+                EventService.Instance.GameState.Register(OnStateChanged);
                 _subscribed = true;
             }
         }
 
         private void OnDestroy()
         {
-            if (_subscribed && _stateChannel != null) _stateChannel.Unregister(OnStateChanged);
+            if (_subscribed && EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnStateChanged);
             if (HasInputFocus) Hide();
         }
 

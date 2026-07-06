@@ -11,8 +11,12 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Scenes;
 using ProjectAstra.Core.State;
+using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.CombatAnimation;
@@ -444,23 +448,23 @@ namespace ProjectAstra.Core.Editor
                 go.AddComponent<InputSystemUIInputModule>();
             }
 
-            // SceneLoader
-            var loader = UnityEngine.Object.FindFirstObjectByType<SceneLoader>();
-            if (loader == null)
-            {
-                var go = new GameObject("SceneLoader");
-                loader = go.AddComponent<SceneLoader>();
-            }
-            SetField(loader, "_stateChangedChannel", eventChannel);
+            // EventService — the single place every channel is wired; all consumers read
+            // them via EventService.Instance, so no per-consumer wiring happens below.
+            var eventService = UnityEngine.Object.FindFirstObjectByType<EventService>();
+            if (eventService == null)
+                eventService = new GameObject("EventService").AddComponent<EventService>();
+            SetField(eventService, "gameState", eventChannel);
+            SetField(eventService, "turn", LoadAsset<TurnEventChannel>("t:TurnEventChannel", "Assets/ScriptableObjects"));
+            SetField(eventService, "unitDeath", LoadAsset<UnitDeathEventChannel>("t:UnitDeathEventChannel", "Assets/ScriptableObjects"));
+            SetField(eventService, "battleDialogue", LoadAsset<BattleDialogueEventChannel>("t:BattleDialogueEventChannel", "Assets/ScriptableObjects"));
 
-            // OverlayManager
-            var overlayManager = UnityEngine.Object.FindFirstObjectByType<OverlayManager>();
-            if (overlayManager == null)
-            {
-                var go = new GameObject("OverlayManager");
-                overlayManager = go.AddComponent<OverlayManager>();
-            }
-            SetField(overlayManager, "_stateChangedChannel", eventChannel);
+            // SceneLoader (self-serves its channel from EventService)
+            if (UnityEngine.Object.FindFirstObjectByType<SceneLoader>() == null)
+                new GameObject("SceneLoader").AddComponent<SceneLoader>();
+
+            // OverlayManager (self-serves its channel from EventService)
+            if (UnityEngine.Object.FindFirstObjectByType<OverlayManager>() == null)
+                new GameObject("OverlayManager").AddComponent<OverlayManager>();
 
             // Remove legacy StateUIController if present
             var legacyGo = GameObject.Find("StateUIController");

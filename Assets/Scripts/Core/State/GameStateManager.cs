@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using ProjectAstra.Core.Events;
 
 [assembly: InternalsVisibleTo("ProjectAstra.Core.Tests")]
 
@@ -13,9 +14,10 @@ namespace ProjectAstra.Core.State
 
         [Header("Configuration")]
         [SerializeField] private GameStateTransitionTable _transitionTable;
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private GameState _initialState = GameState.TitleScreen;
 
+        // Cached from EventService at Awake (or injected by Initialize in EditMode tests).
+        private GameStateEventChannel _stateChangedChannel;
         private GameState _currentState;
         private GameState _menuReturnState;
 
@@ -38,6 +40,10 @@ namespace ProjectAstra.Core.State
 
             _transitionTable.Initialize();
             _currentState = _initialState;
+
+            _stateChangedChannel = EventService.Instance != null ? EventService.Instance.GameState : null;
+            if (_stateChangedChannel == null)
+                Debug.LogError("[GameStateManager] EventService GameState channel unavailable at Awake.");
         }
 
         private void LateUpdate()

@@ -6,6 +6,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.UI.CombatAnimation;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.Pathfinding;
@@ -42,7 +43,6 @@ namespace ProjectAstra.Core.Cursor
         [Header("Dependencies")]
         [SerializeField] private MapRenderer _mapRenderer;
         [SerializeField] private TerrainStatTable _terrainStatTable;
-        [SerializeField] private GameStateEventChannel _stateChangedChannel;
         [SerializeField] private RangeHighlighter _rangeHighlighter;
         [SerializeField] private PathArrowRenderer _pathArrowRenderer;
         [SerializeField] private UnitMover _unitMover;
@@ -381,14 +381,13 @@ namespace ProjectAstra.Core.Cursor
 
         private void AddListenersToGameStateEvents()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Register(OnGameStateChanged);
+            EventService.Instance.GameState.Register(OnGameStateChanged);
         }
 
         private void RemoveListenersFromGameStateEvents()
         {
-            if (_stateChangedChannel != null)
-                _stateChangedChannel.Unregister(OnGameStateChanged);
+            if (EventService.Instance != null)
+                EventService.Instance.GameState.Unregister(OnGameStateChanged);
         }
 
         // --- Mode/position internals ---
