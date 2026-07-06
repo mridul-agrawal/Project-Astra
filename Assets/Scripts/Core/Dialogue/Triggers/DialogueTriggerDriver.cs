@@ -11,7 +11,6 @@ namespace ProjectAstra.Core.Dialogue
     // DialogueTriggerSet, display lives in DialogueService.
     public class DialogueTriggerDriver : MonoBehaviour
     {
-        [SerializeField] private BattleDialogueEventChannel _battleChannel;
         [SerializeField] private List<DialogueTrigger> _triggers = new();
 
         private DialogueTriggerSet _set;
@@ -21,13 +20,16 @@ namespace ProjectAstra.Core.Dialogue
         private void OnEnable()
         {
             EventService.Instance.Turn.RegisterPhaseBannerFinished(OnPhaseBannerFinished);
-            if (_battleChannel != null) _battleChannel.Register(OnBattleEvent);
+            EventService.Instance.BattleDialogue.Register(OnBattleEvent);
         }
 
         private void OnDisable()
         {
-            if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
-            if (_battleChannel != null) _battleChannel.Unregister(OnBattleEvent);
+            if (EventService.Instance != null)
+            {
+                EventService.Instance.Turn.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
+                EventService.Instance.BattleDialogue.Unregister(OnBattleEvent);
+            }
         }
 
         // Fire the player-phase dialogue only after the phase banner has finished, so the

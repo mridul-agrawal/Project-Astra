@@ -58,9 +58,6 @@ namespace ProjectAstra.Core.Cursor
         [Header("Combat Animation")]
         [SerializeField] private SkipModePlaybackController _skipModeController;
 
-        [Header("Tutorial Dialogue")]
-        [SerializeField] private BattleDialogueEventChannel _battleDialogueChannel;
-
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private Sprite _idleSprite;
@@ -219,13 +216,13 @@ namespace ProjectAstra.Core.Cursor
                     if (_currentMode == CursorMode.UnitSelected)
                     {
                         AudioManager.Instance?.Play(SoundId.ConfirmUnitSelect);
-                        _battleDialogueChannel?.Raise(BattleDialogueEventType.UnitSelected);
+                        EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.UnitSelected);
                     }
                     break;
                 case CursorMode.UnitSelected:
                     AudioManager.Instance?.Play(SoundId.ConfirmMove);
                     _unitSelectionFlow.TryCommitMovement(_gridPosition);
-                    _battleDialogueChannel?.Raise(BattleDialogueEventType.MoveConfirmed);
+                    EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.MoveConfirmed);
                     break;
                 case CursorMode.Targeting:
                     var selected = _unitSelectionFlow.SelectedUnit;
@@ -237,7 +234,7 @@ namespace ProjectAstra.Core.Cursor
                         // Held-skip first, then PreCombat — a map script may force a speed
                         // for its scripted combats and must win over the held key.
                         ApplyPerCombatSpeedOverrideIfHeld();
-                        if (target != null) _battleDialogueChannel?.Raise(BattleDialogueEventType.PreCombat);
+                        if (target != null) EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.PreCombat);
                         AudioManager.Instance?.Play(SoundId.ConfirmEngage);
                         _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
                     }

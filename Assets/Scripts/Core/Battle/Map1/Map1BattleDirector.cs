@@ -23,7 +23,6 @@ namespace ProjectAstra.Core.Battle.Map1
     public class Map1BattleDirector : MonoBehaviour, IScriptedEnemyPhase
     {
         [SerializeField] private Map1Tuning tuning;
-        [SerializeField] private BattleDialogueEventChannel battleDialogueEvents;
         [SerializeField] private EnemyIntentTelegraph telegraph;
         [SerializeField] private ObjectiveBannerUI objectiveBanner;
         [SerializeField] private DialogueScript bossTauntScript;
@@ -46,14 +45,14 @@ namespace ProjectAstra.Core.Battle.Map1
         private void OnEnable()
         {
             EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
-            if (battleDialogueEvents != null) battleDialogueEvents.Register(OnBattleDialogueEvent);
+            EventService.Instance.BattleDialogue.Register(OnBattleDialogueEvent);
             EventService.Instance.UnitDeath.Register(OnUnitDied);
         }
 
         private void OnDisable()
         {
             if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
-            if (battleDialogueEvents != null) battleDialogueEvents.Unregister(OnBattleDialogueEvent);
+            if (EventService.Instance != null) EventService.Instance.BattleDialogue.Unregister(OnBattleDialogueEvent);
             if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
             CombatScriptOverride.Clear();
         }

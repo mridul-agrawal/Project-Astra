@@ -67,9 +67,7 @@ namespace ProjectAstra.EditorTools
             var driver = GetOrCreateDriver();
 
             var so = new SerializedObject(driver);
-            // Turn channel now comes from EventService — only the battle-dialogue channel is wired here.
-            so.FindProperty("_battleChannel").objectReferenceValue = channel;
-
+            // Turn and battle-dialogue channels now come from EventService — only triggers are wired here.
             var triggers = so.FindProperty("_triggers");
             triggers.arraySize = 1;
             var trigger = triggers.GetArrayElementAtIndex(0);
@@ -79,8 +77,6 @@ namespace ProjectAstra.EditorTools
             trigger.FindPropertyRelative("_fireOnce").boolValue = true;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(driver);
-
-            WireCursorChannel(channel);
         }
 
         private static DialogueTriggerDriver GetOrCreateDriver()
@@ -90,17 +86,6 @@ namespace ProjectAstra.EditorTools
 
             var go = new GameObject("DialogueTriggerDriver");
             return go.AddComponent<DialogueTriggerDriver>();
-        }
-
-        private static void WireCursorChannel(BattleDialogueEventChannel channel)
-        {
-            var cursor = Object.FindObjectOfType<GridCursor>();
-            if (cursor == null) { Debug.LogWarning("[BattleTutorialDialogueAuthor] No GridCursor in open scene; skipped cursor channel wiring."); return; }
-
-            var so = new SerializedObject(cursor);
-            so.FindProperty("_battleDialogueChannel").objectReferenceValue = channel;
-            so.ApplyModifiedPropertiesWithoutUndo();
-            EditorUtility.SetDirty(cursor);
         }
     }
 }
