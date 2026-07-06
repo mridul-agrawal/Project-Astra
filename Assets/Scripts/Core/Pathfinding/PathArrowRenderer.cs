@@ -64,6 +64,8 @@ namespace ProjectAstra.Core.Pathfinding
         {
             foreach (var obj in _activeSegments)
             {
+                // Skip segments already destroyed during scene teardown — nothing to reset or reuse.
+                if (obj == null) continue;
                 obj.SetActive(false);
                 _pool.Enqueue(obj);
             }
