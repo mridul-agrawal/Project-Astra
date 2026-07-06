@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using ProjectAstra.Core.Audio;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -21,9 +22,6 @@ namespace ProjectAstra.Core.UI.Overlays
         static readonly Color AlliedTextColor = new(0.627f, 0.910f, 0.667f, 1f);
 
         static readonly Color TurnTextColor = new(0.541f, 0.478f, 0.345f, 1f);
-
-        [Header("Event Channel")]
-        [SerializeField] private TurnEventChannel _turnEventChannel;
 
         [Header("UI References")]
         [SerializeField] private RectTransform _bannerRoot;
@@ -60,14 +58,13 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void OnEnable()
         {
-            if (_turnEventChannel != null)
-                _turnEventChannel.RegisterPhaseStarted(OnPhaseStarted);
+            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
         }
 
         private void OnDisable()
         {
-            if (_turnEventChannel != null)
-                _turnEventChannel.UnregisterPhaseStarted(OnPhaseStarted);
+            if (EventService.Instance != null)
+                EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
         }
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)
@@ -110,7 +107,7 @@ namespace ProjectAstra.Core.UI.Overlays
         // Lets phase-start dialogue wait until the banner is gone instead of overlapping it.
         private void RaiseBannerFinished(BattlePhase phase, int turnNumber)
         {
-            if (_turnEventChannel != null) _turnEventChannel.RaisePhaseBannerFinished(phase, turnNumber);
+            if (EventService.Instance != null) EventService.Instance.Turn.RaisePhaseBannerFinished(phase, turnNumber);
         }
 
         private IEnumerator AnimateSlideAndDim(float fromX, float toX,

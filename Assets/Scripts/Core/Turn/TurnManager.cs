@@ -14,11 +14,12 @@ namespace ProjectAstra.Core.Turn
     {
         public static TurnManager Instance { get; private set; }
 
-        [SerializeField] private TurnEventChannel _turnEventChannel;
         [SerializeField] private bool _hasAllies;
         // Placeholder: how long an AI phase visibly lingers before auto-ending. Replace once real AI exists.
         [SerializeField] private float _aiPhaseDelaySeconds = 1f;
 
+        // Cached from EventService at Awake; the manager raises phase/turn events on it.
+        private TurnEventChannel turnChannel;
         private BattlePhaseManager _phaseManager;
         private UnitRegistry _unitRegistry;
         private int _turnCounter;
@@ -28,7 +29,6 @@ namespace ProjectAstra.Core.Turn
         public BattlePhase CurrentPhase => _phaseManager?.CurrentPhase ?? BattlePhase.PlayerPhase;
         public int TurnCounter => _turnCounter;
         public UnitRegistry UnitRegistry => _unitRegistry;
-        public TurnEventChannel TurnEventChannel => _turnEventChannel;
 
         private void Awake()
         {
@@ -38,6 +38,10 @@ namespace ProjectAstra.Core.Turn
                 return;
             }
             Instance = this;
+
+            turnChannel = EventService.Instance != null ? EventService.Instance.Turn : null;
+            if (turnChannel == null)
+                Debug.LogError("[TurnManager] EventService Turn channel unavailable at Awake.");
 
             _unitRegistry = new UnitRegistry();
             _phaseManager = new BattlePhaseManager(_hasAllies);
@@ -119,7 +123,7 @@ namespace ProjectAstra.Core.Turn
 
             var endingPhase = _phaseManager.CurrentPhase;
             _unitRegistry.MarkAllActed(PhaseToFaction(endingPhase));
-            _turnEventChannel?.RaisePhaseEnded(endingPhase);
+            turnChannel?.RaisePhaseEnded(endingPhase);
 
             _phaseManager.AdvancePhase();
             AdvanceTurnIfNewRound();
@@ -146,7 +150,7 @@ namespace ProjectAstra.Core.Turn
         {
             var phase = _phaseManager.CurrentPhase;
             _unitRegistry.ResetPhaseFlags(PhaseToFaction(phase));
-            _turnEventChannel?.RaisePhaseStarted(phase, _turnCounter);
+            turnChannel?.RaisePhaseStarted(phase, _turnCounter);
 
             if (phase != BattlePhase.PlayerPhase)
                 _aiPhaseCoroutine = StartCoroutine(RunAIPhase(phase));
@@ -183,7 +187,7 @@ namespace ProjectAstra.Core.Turn
         {
             if (_phaseManager.CurrentPhase != BattlePhase.PlayerPhase) return;
             _turnCounter++;
-            _turnEventChannel?.RaiseTurnAdvanced(_turnCounter);
+            turnChannel?.RaiseTurnAdvanced(_turnCounter);
         }
 
         internal static Faction PhaseToFaction(BattlePhase phase) => phase switch

@@ -1,3 +1,4 @@
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
@@ -11,21 +12,19 @@ namespace ProjectAstra.Core.Terrain
     // Subscribes after UnitRegistry.ResetPhaseFlags via TurnEventChannel — that ordering is intentional.
     public class HealingTileSystem : MonoBehaviour
     {
-        [SerializeField] private TurnEventChannel _turnEventChannel;
         [SerializeField] private TerrainStatTable _terrainStatTable;
         [SerializeField] private MapRenderer _mapRenderer;
         [SerializeField] private HealFloatSpawner _healFloatSpawner;
 
         private void Awake()
         {
-            if (_turnEventChannel != null)
-                _turnEventChannel.RegisterPhaseStarted(OnPhaseStarted);
+            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
         }
 
         private void OnDestroy()
         {
-            if (_turnEventChannel != null)
-                _turnEventChannel.UnregisterPhaseStarted(OnPhaseStarted);
+            if (EventService.Instance != null)
+                EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
         }
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)

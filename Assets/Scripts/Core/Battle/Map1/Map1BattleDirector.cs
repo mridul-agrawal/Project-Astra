@@ -6,6 +6,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI.Overlays;
@@ -22,7 +23,6 @@ namespace ProjectAstra.Core.Battle.Map1
     public class Map1BattleDirector : MonoBehaviour, IScriptedEnemyPhase
     {
         [SerializeField] private Map1Tuning tuning;
-        [SerializeField] private TurnEventChannel turnEvents;
         [SerializeField] private BattleDialogueEventChannel battleDialogueEvents;
         [SerializeField] private UnitDeathEventChannel deathEvents;
         [SerializeField] private EnemyIntentTelegraph telegraph;
@@ -46,14 +46,14 @@ namespace ProjectAstra.Core.Battle.Map1
 
         private void OnEnable()
         {
-            if (turnEvents != null) turnEvents.RegisterPhaseStarted(OnPhaseStarted);
+            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
             if (battleDialogueEvents != null) battleDialogueEvents.Register(OnBattleDialogueEvent);
             if (deathEvents != null) deathEvents.Register(OnUnitDied);
         }
 
         private void OnDisable()
         {
-            if (turnEvents != null) turnEvents.UnregisterPhaseStarted(OnPhaseStarted);
+            if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
             if (battleDialogueEvents != null) battleDialogueEvents.Unregister(OnBattleDialogueEvent);
             if (deathEvents != null) deathEvents.Unregister(OnUnitDied);
             CombatScriptOverride.Clear();

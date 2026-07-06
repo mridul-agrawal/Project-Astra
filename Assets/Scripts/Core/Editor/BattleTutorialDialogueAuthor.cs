@@ -64,11 +64,10 @@ namespace ProjectAstra.EditorTools
 
         private static void WireDriverIntoOpenScene(BattleDialogueEventChannel channel, DialogueScript script)
         {
-            var turnChannel = AssetDatabase.LoadAssetAtPath<TurnEventChannel>(TurnChannelPath);
             var driver = GetOrCreateDriver();
 
             var so = new SerializedObject(driver);
-            so.FindProperty("_turnChannel").objectReferenceValue = turnChannel;
+            // Turn channel now comes from EventService — only the battle-dialogue channel is wired here.
             so.FindProperty("_battleChannel").objectReferenceValue = channel;
 
             var triggers = so.FindProperty("_triggers");

@@ -277,10 +277,7 @@ namespace ProjectAstra.Core.Editor
         {
             var so = new SerializedObject(bannerUI);
 
-            var turnChannel = AssetDatabase.LoadAssetAtPath<TurnEventChannel>(
-                "Assets/ScriptableObjects/Core/TurnEventChannel.asset");
-            so.FindProperty("_turnEventChannel").objectReferenceValue = turnChannel;
-
+            // Turn channel now comes from EventService — no wiring here.
             so.FindProperty("_bannerRoot").objectReferenceValue = root;
             so.FindProperty("_dimOverlay").objectReferenceValue = dimOverlay;
             so.FindProperty("_borderTop").objectReferenceValue = borderTop;

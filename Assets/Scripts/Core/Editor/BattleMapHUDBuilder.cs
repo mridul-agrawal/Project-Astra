@@ -438,16 +438,12 @@ namespace ProjectAstra.EditorTools
             controller.StatValueAvo  = root.Find("TileInfoPanel/StatValueAvo").GetComponent<TextMeshProUGUI>();
             controller.HealValue     = root.Find("TileInfoPanel/HealValue").GetComponent<TextMeshProUGUI>();
 
-            // Data sources — ScriptableObjects wired by path
+            // Data sources — ScriptableObjects wired by path. (Turn channel now comes from EventService.)
             controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Grid.TerrainStatTable>(
                 "Assets/ScriptableObjects/Map/TerrainStatTable.asset");
-            controller.TurnChannel   = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Turn.TurnEventChannel>(
-                "Assets/ScriptableObjects/Core/TurnEventChannel.asset");
 
             if (controller.StatTable == null)
                 Debug.LogWarning("BattleMapHUDBuilder: TerrainStatTable asset not found — tile bonuses will be 0.");
-            if (controller.TurnChannel == null)
-                Debug.LogWarning("BattleMapHUDBuilder: TurnEventChannel asset not found — turn number will not update.");
         }
 
         // ==================================================================

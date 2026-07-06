@@ -56,7 +56,6 @@ namespace ProjectAstra.Core.Editor
 
         private struct SceneAssets
         {
-            public TurnEventChannel turnChannel;
             public TerrainStatTable terrainStatTable;
             public Sprite cursorSprite;
             public Sprite cursorIdle;
@@ -69,8 +68,6 @@ namespace ProjectAstra.Core.Editor
         {
             return new SceneAssets
             {
-                turnChannel = AssetDatabase.LoadAssetAtPath<TurnEventChannel>(
-                    "Assets/ScriptableObjects/Core/TurnEventChannel.asset"),
                 terrainStatTable = AssetDatabase.LoadAssetAtPath<TerrainStatTable>(
                     "Assets/ScriptableObjects/Map/TerrainStatTable.asset"),
                 cursorSprite = AssetDatabase.LoadAssetAtPath<Sprite>(
@@ -533,7 +530,6 @@ namespace ProjectAstra.Core.Editor
             var tm = go.AddComponent<TurnManager>();
 
             var so = new SerializedObject(tm);
-            so.FindProperty("_turnEventChannel").objectReferenceValue = assets.turnChannel;
             so.FindProperty("_hasAllies").boolValue = false;
             so.ApplyModifiedPropertiesWithoutUndo();
 
@@ -558,11 +554,8 @@ namespace ProjectAstra.Core.Editor
 
             var bannerGO = new GameObject("PhaseBannerUI");
             bannerGO.transform.SetParent(canvas.transform, false);
-            var banner = bannerGO.AddComponent<PhaseBannerUI>();
-
-            var so = new SerializedObject(banner);
-            so.FindProperty("_turnEventChannel").objectReferenceValue = assets.turnChannel;
-            so.ApplyModifiedPropertiesWithoutUndo();
+            bannerGO.AddComponent<PhaseBannerUI>();
+            // PhaseBannerUI reads its Turn channel via EventService — no wiring needed here.
 
             Undo.RegisterCreatedObjectUndo(bannerGO, "Create PhaseBannerUI");
         }

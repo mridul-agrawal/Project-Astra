@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.Dialogue
@@ -10,7 +11,6 @@ namespace ProjectAstra.Core.Dialogue
     // DialogueTriggerSet, display lives in DialogueService.
     public class DialogueTriggerDriver : MonoBehaviour
     {
-        [SerializeField] private TurnEventChannel _turnChannel;
         [SerializeField] private BattleDialogueEventChannel _battleChannel;
         [SerializeField] private List<DialogueTrigger> _triggers = new();
 
@@ -20,13 +20,13 @@ namespace ProjectAstra.Core.Dialogue
 
         private void OnEnable()
         {
-            if (_turnChannel != null) _turnChannel.RegisterPhaseBannerFinished(OnPhaseBannerFinished);
+            EventService.Instance.Turn.RegisterPhaseBannerFinished(OnPhaseBannerFinished);
             if (_battleChannel != null) _battleChannel.Register(OnBattleEvent);
         }
 
         private void OnDisable()
         {
-            if (_turnChannel != null) _turnChannel.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
+            if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
             if (_battleChannel != null) _battleChannel.Unregister(OnBattleEvent);
         }
 

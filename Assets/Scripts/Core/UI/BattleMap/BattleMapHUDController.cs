@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Turn;
@@ -53,7 +54,6 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         [Header("Data Sources")]
         public TerrainStatTable StatTable;
-        public TurnEventChannel TurnChannel;
 
         [Header("Configuration")]
         [TextArea] public string ObjectiveText = "Slay the Asura Lord";
@@ -87,11 +87,8 @@ namespace ProjectAstra.Core.UI.BattleMap
             _tileInfoOnLeft = false;
 
             if (_cursor != null) _cursor.OnCursorMoved += HandleCursorMoved;
-            if (TurnChannel != null)
-            {
-                TurnChannel.RegisterPhaseStarted(HandlePhaseStarted);
-                TurnChannel.RegisterTurnAdvanced(HandleTurnAdvanced);
-            }
+            EventService.Instance.Turn.RegisterPhaseStarted(HandlePhaseStarted);
+            EventService.Instance.Turn.RegisterTurnAdvanced(HandleTurnAdvanced);
 
             if (ObjText != null) ObjText.text = ObjectiveText;
         }
@@ -110,10 +107,10 @@ namespace ProjectAstra.Core.UI.BattleMap
         private void OnDestroy()
         {
             if (_cursor != null) _cursor.OnCursorMoved -= HandleCursorMoved;
-            if (TurnChannel != null)
+            if (EventService.Instance != null)
             {
-                TurnChannel.UnregisterPhaseStarted(HandlePhaseStarted);
-                TurnChannel.UnregisterTurnAdvanced(HandleTurnAdvanced);
+                EventService.Instance.Turn.UnregisterPhaseStarted(HandlePhaseStarted);
+                EventService.Instance.Turn.UnregisterTurnAdvanced(HandleTurnAdvanced);
             }
         }
 
