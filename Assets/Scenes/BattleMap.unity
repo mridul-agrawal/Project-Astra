@@ -4472,8 +4472,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102df106fca12ac42ae5dd71efd666c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueTriggerDriver
-  _turnChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
-  _battleChannel: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
   _triggers:
   - _event: 0
     _turnFilter: 1
@@ -14087,7 +14085,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.WarLedgerUI
   _popupInstance: {fileID: 1552249863}
-  _stateChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
 --- !u!1 &486394018
 GameObject:
   m_ObjectHideFlags: 0
@@ -14517,7 +14514,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebe9596f7d305fb48862a1369d8f74e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.PhaseBannerUI
-  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
   _bannerRoot: {fileID: 2003072389}
   _borderTop: {fileID: 1544134053}
   _borderBottom: {fileID: 408700418}
@@ -19313,7 +19309,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GridCursor
   _mapRenderer: {fileID: 268787981}
   _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
-  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
   _rangeHighlighter: {fileID: 694383137}
   _pathArrowRenderer: {fileID: 694383136}
   _unitMover: {fileID: 694383135}
@@ -19325,9 +19320,7 @@ MonoBehaviour:
   _convoyUI: {fileID: 848863361}
   _unitInfoPanelUI: {fileID: 934369861}
   _combatForecastUI: {fileID: 1467876469}
-  _deathEventChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
   _skipModeController: {fileID: 1745841787}
-  _battleDialogueChannel: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
   _spriteRenderer: {fileID: 2111737127}
   _idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
   _selectedSprite: {fileID: 21300000, guid: a989ce4cdbdf47d0a3c2cb441d3982ab, type: 3}
@@ -29743,7 +29736,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45150541c9fe21e4a9cf68de21bb4288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Progression.DeathRegistry
-  _deathChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
 --- !u!4 &1118191521
 Transform:
   m_ObjectHideFlags: 0
@@ -32109,7 +32101,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0eb00634c8b77eb46974f182d6106fc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.BattleVictoryWatcher
-  _deathChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
 --- !u!4 &1202195122
 Transform:
   m_ObjectHideFlags: 0
@@ -32137,7 +32128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164e58a5b3cb1334eb9cb3de260be06f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.LordDeathWatcher
-  _deathChannel: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
   _fadeDurationSeconds: 1
   _fallbackLine: The hero has fallen.
 --- !u!114 &1202195124
@@ -32166,7 +32156,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b5441400db8014e85487c59d291054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.HealingTileSystem
-  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
   _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
   _mapRenderer: {fileID: 268787981}
   _healFloatSpawner: {fileID: 1202195126}
@@ -32557,8 +32546,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f502f59d90130a4c89a6347fab34680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TurnManager
-  _turnEventChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
-  _stateChangedChannel: {fileID: 11400000, guid: c681c1bf46b841648b698da4fe6330b6, type: 2}
   _hasAllies: 0
   _aiPhaseDelaySeconds: 1
 --- !u!4 &1225757592
@@ -49987,9 +49974,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.Map1.Map1BattleDirector
   tuning: {fileID: 11400000, guid: 66a25e946f5805b4ca24974e7e2af0ab, type: 2}
-  turnEvents: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
-  battleDialogueEvents: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
-  deathEvents: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
   telegraph: {fileID: 1915433199}
   objectiveBanner: {fileID: 1915433198}
   bossTauntScript: {fileID: 11400000, guid: ce024eb442744ea5abd1f3f27a7845fc, type: 2}
@@ -50462,7 +50446,6 @@ MonoBehaviour:
   StatValueAvo: {fileID: 222183576}
   HealValue: {fileID: 1964986945}
   StatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
-  TurnChannel: {fileID: 11400000, guid: 9139d9fdc4b0e044db72af109ed48cac, type: 2}
   ObjectiveText: Slay the Asura Lord
 --- !u!1 &1930414530
 GameObject:
