@@ -8,9 +8,9 @@ using ProjectAstra.Core.Dialogue;
 namespace ProjectAstra.Core.Events
 {
     // The one place that holds every ScriptableObject event channel. Any script —
-    // MonoBehaviour or plain C# — reaches a bus through EventService.Instance.<Channel>
-    // instead of carrying its own wired reference, so the channels are wired exactly
-    // once (here) and stay decoupled from the gameplay managers that raise on them.
+    // MonoBehaviour or plain C# — raises and subscribes through this service's facade
+    // (RaiseX / SubscribeX) instead of touching a channel, so the channels are wired
+    // exactly once (here) and nothing else in the project ever names one.
     //
     // Runs first (negative execution order) so Instance is set before any listener's
     // Awake/OnEnable/Start touches it.
@@ -24,11 +24,6 @@ namespace ProjectAstra.Core.Events
         [SerializeField] private TurnEventChannel turn;
         [SerializeField] private UnitDeathEventChannel unitDeath;
         [SerializeField] private BattleDialogueEventChannel battleDialogue;
-
-        public GameStateEventChannel GameState => gameState;
-        public TurnEventChannel Turn => turn;
-        public UnitDeathEventChannel UnitDeath => unitDeath;
-        public BattleDialogueEventChannel BattleDialogue => battleDialogue;
 
         // Publish/subscribe facade. Callers ask the service to raise or listen; the
         // channel assets stay sealed behind here so nothing else ever names a channel.
