@@ -16,8 +16,6 @@ namespace ProjectAstra.Core.State
         [SerializeField] private GameStateTransitionTable _transitionTable;
         [SerializeField] private GameState _initialState = GameState.TitleScreen;
 
-        // Cached from EventService at Awake (or injected by Initialize in EditMode tests).
-        private GameStateEventChannel _stateChangedChannel;
         private GameState _currentState;
         private GameState _menuReturnState;
 
@@ -40,10 +38,6 @@ namespace ProjectAstra.Core.State
 
             _transitionTable.Initialize();
             _currentState = _initialState;
-
-            _stateChangedChannel = EventService.Instance != null ? EventService.Instance.GameState : null;
-            if (_stateChangedChannel == null)
-                Debug.LogError("[GameStateManager] EventService GameState channel unavailable at Awake.");
         }
 
         private void LateUpdate()
@@ -110,12 +104,7 @@ namespace ProjectAstra.Core.State
         {
             var previous = _currentState;
             _currentState = target;
-
-            _stateChangedChannel?.Raise(new GameStateEventChannel.StateChangeArgs
-            {
-                PreviousState = previous,
-                NewState = target
-            });
+            EventService.Instance?.RaiseGameStateChanged(previous, target);
         }
 
         private void LogInvalidContextMenuReturn(string requester) =>
@@ -130,10 +119,9 @@ namespace ProjectAstra.Core.State
         #region Test helpers
 
         // Awake() doesn't run in EditMode tests, so this lets fixtures wire dependencies manually.
-        internal void Initialize(GameStateTransitionTable transitionTable, GameStateEventChannel eventChannel, GameState initialState)
+        internal void Initialize(GameStateTransitionTable transitionTable, GameState initialState)
         {
             _transitionTable = transitionTable;
-            _stateChangedChannel = eventChannel;
             _initialState = initialState;
 
             Instance = this;

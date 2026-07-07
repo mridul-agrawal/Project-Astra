@@ -49,7 +49,7 @@ namespace ProjectAstra.Core.Turn
 
         private void OnEnable()
         {
-            EventService.Instance.GameState.Register(OnGameStateChanged);
+            EventService.Instance.SubscribeGameStateChanged(OnGameStateChanged);
         }
 
         private void Start()
@@ -62,7 +62,7 @@ namespace ProjectAstra.Core.Turn
         private void OnDisable()
         {
             if (EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnGameStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnGameStateChanged);
         }
 
         private void OnDestroy()
@@ -198,7 +198,7 @@ namespace ProjectAstra.Core.Turn
             _                       => Faction.Player,
         };
 
-        private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnGameStateChanged(StateChangeArgs args)
         {
             if (args.NewState == GameState.BattleMap && args.PreviousState != GameState.BattleMapPaused)
                 StartBattle();

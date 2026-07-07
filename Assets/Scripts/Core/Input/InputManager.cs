@@ -81,7 +81,7 @@ namespace ProjectAstra.Core.Input
         // this component boots alongside EventService, so OnEnable ordering isn't safe.
         private void Start()
         {
-            EventService.Instance.GameState.Register(OnStateChanged);
+            EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
             stateSubscribed = true;
 
             _currentState = GameStateManager.Instance.CurrentState;
@@ -99,7 +99,7 @@ namespace ProjectAstra.Core.Input
         private void OnDestroy()
         {
             if (stateSubscribed && EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
 
             UnbindActions();
             _gameplayMap?.Disable();
@@ -141,7 +141,7 @@ namespace ProjectAstra.Core.Input
             BindActions();
         }
 
-        private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnStateChanged(StateChangeArgs args)
         {
             _currentState = args.NewState;
             ApplyContextFilter(_currentState);

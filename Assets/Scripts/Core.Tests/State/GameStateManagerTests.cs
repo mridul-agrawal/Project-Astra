@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using ProjectAstra.Core;
 using ProjectAstra.Core.State;
+using ProjectAstra.Core.Events;
 
 namespace ProjectAstra.Core.Tests.State
 {
@@ -12,6 +13,7 @@ namespace ProjectAstra.Core.Tests.State
     public class GameStateManagerTests
     {
         private GameObject _go;
+        private GameObject _eventServiceGo;
         private GameStateManager _manager;
         private GameStateTransitionTable _table;
         private GameStateEventChannel _channel;
@@ -24,11 +26,14 @@ namespace ProjectAstra.Core.Tests.State
             _table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
             _channel = ScriptableObject.CreateInstance<GameStateEventChannel>();
 
+            _eventServiceGo = new GameObject("TestEventService");
+            _eventServiceGo.AddComponent<EventService>().InitializeForTest(_channel, null, null, null);
+
             var field = typeof(GameStateTransitionTable).GetField("_validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
 
-            _manager.Initialize(_table, _channel, GameState.TitleScreen);
+            _manager.Initialize(_table, GameState.TitleScreen);
         }
 
         [TearDown]
@@ -41,6 +46,7 @@ namespace ProjectAstra.Core.Tests.State
                 instanceProp.SetValue(null, null);
             }
             UnityEngine.Object.DestroyImmediate(_go);
+            UnityEngine.Object.DestroyImmediate(_eventServiceGo);
             UnityEngine.Object.DestroyImmediate(_table);
             UnityEngine.Object.DestroyImmediate(_channel);
         }
@@ -138,7 +144,7 @@ namespace ProjectAstra.Core.Tests.State
         [Test]
         public void StateChangedEvent_ContainsCorrectPreviousAndNewState()
         {
-            GameStateEventChannel.StateChangeArgs? received = null;
+            StateChangeArgs? received = null;
             _channel.Register(args => received = args);
 
             _manager.RequestTransition(GameState.MainMenu, "test");
@@ -151,7 +157,7 @@ namespace ProjectAstra.Core.Tests.State
         [Test]
         public void StateChangedEvent_DoesNotFireOnIllegalTransition()
         {
-            GameStateEventChannel.StateChangeArgs? received = null;
+            StateChangeArgs? received = null;
             _channel.Register(args => received = args);
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition"));
@@ -224,7 +230,7 @@ namespace ProjectAstra.Core.Tests.State
         [Test]
         public void ForceState_RaisesEvent()
         {
-            GameStateEventChannel.StateChangeArgs? received = null;
+            StateChangeArgs? received = null;
             _channel.Register(args => received = args);
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));

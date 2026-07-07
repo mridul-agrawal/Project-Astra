@@ -11,7 +11,7 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.WarLedger
 {
-    // War's Ledger runtime controller. Subscribes to GameStateEventChannel;
+    // War's Ledger runtime controller. Subscribes to game-state changes via EventService;
     // on entering WarLedger it reads DeathRegistry / CommitmentTracker /
     // ICivilianThreadService / IDeathEpitaphProvider and populates the prefab.
     // Dismissed on Confirm — fires a transition to ChapterClear.
@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.UI.WarLedger
         {
             if (EventService.Instance != null)
             {
-                EventService.Instance.GameState.Register(OnStateChanged);
+                EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
                 _subscribed = true;
             }
         }
@@ -45,11 +45,11 @@ namespace ProjectAstra.Core.UI.WarLedger
         private void OnDestroy()
         {
             if (_subscribed && EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
             if (HasInputFocus) Hide();
         }
 
-        private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnStateChanged(StateChangeArgs args)
         {
             if (args.NewState == GameState.WarLedger) Show();
             else if (args.PreviousState == GameState.WarLedger) Hide();

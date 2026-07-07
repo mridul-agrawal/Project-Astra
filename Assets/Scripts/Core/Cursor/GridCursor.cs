@@ -377,13 +377,13 @@ namespace ProjectAstra.Core.Cursor
 
         private void AddListenersToGameStateEvents()
         {
-            EventService.Instance.GameState.Register(OnGameStateChanged);
+            EventService.Instance.SubscribeGameStateChanged(OnGameStateChanged);
         }
 
         private void RemoveListenersFromGameStateEvents()
         {
             if (EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnGameStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnGameStateChanged);
         }
 
         // --- Mode/position internals ---
@@ -500,7 +500,7 @@ namespace ProjectAstra.Core.Cursor
 
         // --- Game state events ---
 
-        private void OnGameStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnGameStateChanged(StateChangeArgs args)
         {
             if (args.NewState == GameState.BattleMap)
                 SetMode(CursorMode.Free);

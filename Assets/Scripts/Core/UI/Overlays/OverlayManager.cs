@@ -32,17 +32,17 @@ namespace ProjectAstra.Core.UI.Overlays
         // alongside EventService, so relying on OnEnable ordering isn't safe.
         private void Start()
         {
-            EventService.Instance.GameState.Register(OnStateChanged);
+            EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
             subscribed = true;
         }
 
         private void OnDestroy()
         {
             if (subscribed && EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
         }
 
-        private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnStateChanged(StateChangeArgs args)
         {
             DestroyActiveOverlay();
             if (ManagedOverlays.Contains(args.NewState))

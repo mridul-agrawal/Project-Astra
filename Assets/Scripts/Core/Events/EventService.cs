@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
@@ -28,6 +29,42 @@ namespace ProjectAstra.Core.Events
         public TurnEventChannel Turn => turn;
         public UnitDeathEventChannel UnitDeath => unitDeath;
         public BattleDialogueEventChannel BattleDialogue => battleDialogue;
+
+        // Publish/subscribe facade. Callers ask the service to raise or listen; the
+        // channel assets stay sealed behind here so nothing else ever names a channel.
+
+        // Game state
+        public void RaiseGameStateChanged(GameState previous, GameState next) =>
+            gameState?.Raise(new StateChangeArgs { PreviousState = previous, NewState = next });
+        public void SubscribeGameStateChanged(Action<StateChangeArgs> handler) => gameState?.Register(handler);
+        public void UnsubscribeGameStateChanged(Action<StateChangeArgs> handler) => gameState?.Unregister(handler);
+
+        // Turn cycle
+        public void RaisePhaseStarted(BattlePhase phase, int turnNumber) => turn?.RaisePhaseStarted(phase, turnNumber);
+        public void SubscribePhaseStarted(Action<BattlePhase, int> handler) => turn?.RegisterPhaseStarted(handler);
+        public void UnsubscribePhaseStarted(Action<BattlePhase, int> handler) => turn?.UnregisterPhaseStarted(handler);
+
+        public void RaisePhaseEnded(BattlePhase phase) => turn?.RaisePhaseEnded(phase);
+        public void SubscribePhaseEnded(Action<BattlePhase> handler) => turn?.RegisterPhaseEnded(handler);
+        public void UnsubscribePhaseEnded(Action<BattlePhase> handler) => turn?.UnregisterPhaseEnded(handler);
+
+        public void RaiseTurnAdvanced(int turnNumber) => turn?.RaiseTurnAdvanced(turnNumber);
+        public void SubscribeTurnAdvanced(Action<int> handler) => turn?.RegisterTurnAdvanced(handler);
+        public void UnsubscribeTurnAdvanced(Action<int> handler) => turn?.UnregisterTurnAdvanced(handler);
+
+        public void RaisePhaseBannerFinished(BattlePhase phase, int turnNumber) => turn?.RaisePhaseBannerFinished(phase, turnNumber);
+        public void SubscribePhaseBannerFinished(Action<BattlePhase, int> handler) => turn?.RegisterPhaseBannerFinished(handler);
+        public void UnsubscribePhaseBannerFinished(Action<BattlePhase, int> handler) => turn?.UnregisterPhaseBannerFinished(handler);
+
+        // Unit death
+        public void RaiseUnitDeath(UnitDeathEventArgs args) => unitDeath?.Raise(args);
+        public void SubscribeUnitDeath(Action<UnitDeathEventArgs> handler) => unitDeath?.Register(handler);
+        public void UnsubscribeUnitDeath(Action<UnitDeathEventArgs> handler) => unitDeath?.Unregister(handler);
+
+        // Battle-map dialogue moments
+        public void RaiseBattleDialogue(BattleDialogueEventType eventType) => battleDialogue?.Raise(eventType);
+        public void SubscribeBattleDialogue(Action<BattleDialogueEventType> handler) => battleDialogue?.Register(handler);
+        public void UnsubscribeBattleDialogue(Action<BattleDialogueEventType> handler) => battleDialogue?.Unregister(handler);
 
         private void Awake()
         {

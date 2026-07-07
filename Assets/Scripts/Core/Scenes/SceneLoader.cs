@@ -46,7 +46,7 @@ namespace ProjectAstra.Core.Scenes
 
         private void Start()
         {
-            EventService.Instance.GameState.Register(OnStateChanged);
+            EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
 
             var initialState = GameStateManager.Instance.CurrentState;
             if (SceneStates.Contains(initialState))
@@ -59,10 +59,10 @@ namespace ProjectAstra.Core.Scenes
         private void OnDestroy()
         {
             if (EventService.Instance != null)
-                EventService.Instance.GameState.Unregister(OnStateChanged);
+                EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
         }
 
-        private void OnStateChanged(GameStateEventChannel.StateChangeArgs args)
+        private void OnStateChanged(StateChangeArgs args)
         {
             if (!SceneStates.Contains(args.NewState)) return;
 
