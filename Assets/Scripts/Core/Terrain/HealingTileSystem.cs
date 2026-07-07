@@ -9,7 +9,7 @@ using UnityEngine;
 namespace ProjectAstra.Core.Terrain
 {
     // Heals each faction's units standing on healing tiles (Fort/Throne/Gate/Village) when their phase starts.
-    // Subscribes after UnitRegistry.ResetPhaseFlags via TurnEventChannel — that ordering is intentional.
+    // Subscribes after UnitRegistry.ResetPhaseFlags via EventService — that ordering is intentional.
     public class HealingTileSystem : MonoBehaviour
     {
         [SerializeField] private TerrainStatTable _terrainStatTable;
@@ -18,13 +18,13 @@ namespace ProjectAstra.Core.Terrain
 
         private void Awake()
         {
-            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
+            EventService.Instance.SubscribePhaseStarted(OnPhaseStarted);
         }
 
         private void OnDestroy()
         {
             if (EventService.Instance != null)
-                EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
+                EventService.Instance.UnsubscribePhaseStarted(OnPhaseStarted);
         }
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)

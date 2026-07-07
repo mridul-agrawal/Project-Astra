@@ -85,7 +85,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
                     var args = UnitDeathHook.PrepareDeath(receiver, attacker);
                     yield return SpriteFader.FadeOut(receiverSprite, _deathFadeDuration);
                     UnitDeathHook.HideVictim(receiver);
-                    UnitDeathHook.RaiseDeath(args, ctx.DeathChannel);
+                    UnitDeathHook.RaiseDeath(args);
                     break;
                 }
 

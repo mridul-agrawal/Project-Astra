@@ -33,12 +33,12 @@ namespace ProjectAstra.Core.Combat
 
         private void Awake()
         {
-            EventService.Instance.UnitDeath.Register(OnUnitDied);
+            EventService.Instance.SubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnUnitDied(UnitDeathEventArgs args)

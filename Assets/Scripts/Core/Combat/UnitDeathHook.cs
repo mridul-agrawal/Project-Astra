@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ProjectAstra.Core.Cursor;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.Units;
@@ -19,17 +20,17 @@ namespace ProjectAstra.Core.Combat
     //                   counts when the event fires), clear inventory.
     //   HideVictim    — SetActive(false) on the map sprite. Skipped for Lords
     //                   so LordDeathWatcher can fade them itself.
-    //   RaiseDeath    — fire the event on the channel; listeners include
+    //   RaiseDeath    — fire the event through EventService; listeners include
     //                   BattleVictoryWatcher, DeathRegistry, LordDeathWatcher.
     public static class UnitDeathHook
     {
         // Composite — original "instant" behavior for non-combat callers.
-        public static void HandleDeath(TestUnit victim, TestUnit killer, UnitDeathEventChannel channel)
+        public static void HandleDeath(TestUnit victim, TestUnit killer)
         {
             if (victim == null) return;
             var args = PrepareDeath(victim, killer);
             HideVictim(victim);
-            RaiseDeath(args, channel);
+            RaiseDeath(args);
         }
 
         // Build the death event args, unregister from the turn registry,
@@ -84,10 +85,10 @@ namespace ProjectAstra.Core.Combat
                 victim.gameObject.SetActive(false);
         }
 
-        // Fire the death event on the provided channel.
-        public static void RaiseDeath(UnitDeathEventArgs args, UnitDeathEventChannel channel)
+        // Fire the death event through EventService.
+        public static void RaiseDeath(UnitDeathEventArgs args)
         {
-            channel?.Raise(args);
+            EventService.Instance?.RaiseUnitDeath(args);
         }
 
         private static DeathFaction Classify(TestUnit victim, UnitDefinition def)

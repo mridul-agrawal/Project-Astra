@@ -23,7 +23,6 @@ namespace ProjectAstra.Core.Cursor
     {
         private readonly MapRenderer _mapRenderer;
         private readonly TerrainStatTable _terrainStatTable;
-        private readonly UnitDeathEventChannel _deathChannel;
         private readonly CombatForecastUI _combatForecastUI;
         private readonly ToastNotificationUI _toastUI;
         private readonly CombatPlaybackDispatcher _dispatcher;
@@ -31,14 +30,12 @@ namespace ProjectAstra.Core.Cursor
         public CombatExecutor(
             MapRenderer mapRenderer,
             TerrainStatTable terrainStatTable,
-            UnitDeathEventChannel deathChannel,
             CombatForecastUI combatForecastUI,
             ToastNotificationUI toastUI,
             CombatPlaybackDispatcher dispatcher)
         {
             _mapRenderer = mapRenderer;
             _terrainStatTable = terrainStatTable;
-            _deathChannel = deathChannel;
             _combatForecastUI = combatForecastUI;
             _toastUI = toastUI;
             _dispatcher = dispatcher;
@@ -69,7 +66,6 @@ namespace ProjectAstra.Core.Cursor
                 Attacker = attacker,
                 Defender = defender,
                 Result = result,
-                DeathChannel = _deathChannel,
                 ToastUI = _toastUI,
                 OnComplete = onComplete,
                 PreStepHook = CombatScriptOverride.PreStepHook,

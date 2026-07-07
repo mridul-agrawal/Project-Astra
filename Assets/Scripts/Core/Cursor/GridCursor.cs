@@ -216,13 +216,13 @@ namespace ProjectAstra.Core.Cursor
                     if (_currentMode == CursorMode.UnitSelected)
                     {
                         AudioManager.Instance?.Play(SoundId.ConfirmUnitSelect);
-                        EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.UnitSelected);
+                        EventService.Instance?.RaiseBattleDialogue(BattleDialogueEventType.UnitSelected);
                     }
                     break;
                 case CursorMode.UnitSelected:
                     AudioManager.Instance?.Play(SoundId.ConfirmMove);
                     _unitSelectionFlow.TryCommitMovement(_gridPosition);
-                    EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.MoveConfirmed);
+                    EventService.Instance?.RaiseBattleDialogue(BattleDialogueEventType.MoveConfirmed);
                     break;
                 case CursorMode.Targeting:
                     var selected = _unitSelectionFlow.SelectedUnit;
@@ -234,7 +234,7 @@ namespace ProjectAstra.Core.Cursor
                         // Held-skip first, then PreCombat — a map script may force a speed
                         // for its scripted combats and must win over the held key.
                         ApplyPerCombatSpeedOverrideIfHeld();
-                        if (target != null) EventService.Instance?.BattleDialogue?.Raise(BattleDialogueEventType.PreCombat);
+                        if (target != null) EventService.Instance?.RaiseBattleDialogue(BattleDialogueEventType.PreCombat);
                         AudioManager.Instance?.Play(SoundId.ConfirmEngage);
                         _combatExecutor.TryCommitAttack(selected, target, _unitSelectionFlow.CompleteAction);
                     }
@@ -308,10 +308,8 @@ namespace ProjectAstra.Core.Cursor
         {
             if (_combatExecutor != null) return;
             var dispatcher = new CombatPlaybackDispatcher(_skipModeController);
-            // Null in EditMode tests (no EventService); the real channel at runtime.
-            var deathChannel = EventService.Instance != null ? EventService.Instance.UnitDeath : null;
             _combatExecutor = new CombatExecutor(
-                _mapRenderer, _terrainStatTable, deathChannel,
+                _mapRenderer, _terrainStatTable,
                 _combatForecastUI, _toastUI, dispatcher);
         }
 

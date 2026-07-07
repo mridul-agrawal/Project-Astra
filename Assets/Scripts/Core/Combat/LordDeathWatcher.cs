@@ -10,7 +10,7 @@ namespace ProjectAstra.Core.Combat
 {
     // UM-02 — Lord Permadeath = Game Over.
     //
-    // Listens on the shared UnitDeathEventChannel. When a Lord dies:
+    // Listens for unit deaths via EventService. When a Lord dies:
     //   1. Fades the Lord's sprite over _fadeDurationSeconds (so the death
     //      registers visually — today's flow hides units instantly).
     //   2. Hides the GameObject.
@@ -33,12 +33,12 @@ namespace ProjectAstra.Core.Combat
 
         private void Awake()
         {
-            EventService.Instance.UnitDeath.Register(OnUnitDied);
+            EventService.Instance.SubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnUnitDied(UnitDeathEventArgs args)

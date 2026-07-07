@@ -16,7 +16,7 @@ namespace ProjectAstra.Core.UI.BattleMap
     // Tile Info Panel). Attached to Canvas/BattleMapHUD by BattleMapHUDBuilder;
     // fields are wired at build time.
     //
-    // Subscribes to GridCursor.OnCursorMoved and TurnEventChannel phase/turn
+    // Subscribes to GridCursor.OnCursorMoved and EventService phase/turn
     // events and updates the live TMP/Image widgets. FE GBA behaviour:
     //   • Unit Card shows the unit under the cursor and hides when none.
     //   • Tile Info Panel auto-swaps bottom-left ↔ bottom-right based on cursor side.
@@ -87,8 +87,8 @@ namespace ProjectAstra.Core.UI.BattleMap
             _tileInfoOnLeft = false;
 
             if (_cursor != null) _cursor.OnCursorMoved += HandleCursorMoved;
-            EventService.Instance.Turn.RegisterPhaseStarted(HandlePhaseStarted);
-            EventService.Instance.Turn.RegisterTurnAdvanced(HandleTurnAdvanced);
+            EventService.Instance.SubscribePhaseStarted(HandlePhaseStarted);
+            EventService.Instance.SubscribeTurnAdvanced(HandleTurnAdvanced);
 
             if (ObjText != null) ObjText.text = ObjectiveText;
         }
@@ -109,8 +109,8 @@ namespace ProjectAstra.Core.UI.BattleMap
             if (_cursor != null) _cursor.OnCursorMoved -= HandleCursorMoved;
             if (EventService.Instance != null)
             {
-                EventService.Instance.Turn.UnregisterPhaseStarted(HandlePhaseStarted);
-                EventService.Instance.Turn.UnregisterTurnAdvanced(HandleTurnAdvanced);
+                EventService.Instance.UnsubscribePhaseStarted(HandlePhaseStarted);
+                EventService.Instance.UnsubscribeTurnAdvanced(HandleTurnAdvanced);
             }
         }
 

@@ -33,7 +33,7 @@ namespace ProjectAstra.Core.Progression
     }
 
     // Session-scoped registry of every recorded death. Drop on a scene-level
-    // GameObject in BattleMap; subscribes to UnitDeathEventChannel on Awake.
+    // GameObject in BattleMap; subscribes to unit-death events via EventService on Awake.
     // The IPersistable hook is a forward-compatible no-op today — the save
     // system ticket will eventually consume Serialize/Restore.
     public class DeathRegistry : MonoBehaviour, IPersistable<DeathRegistryDto>
@@ -69,12 +69,12 @@ namespace ProjectAstra.Core.Progression
             if (Instance != null && Instance != this) Destroy(Instance.gameObject);
             Instance = this;
 
-            EventService.Instance.UnitDeath.Register(OnUnitDied);
+            EventService.Instance.SubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnDestroy()
         {
-            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribeUnitDeath(OnUnitDied);
             if (Instance == this) Instance = null;
         }
 

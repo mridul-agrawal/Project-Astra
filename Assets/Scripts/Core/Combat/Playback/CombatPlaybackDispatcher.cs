@@ -96,8 +96,8 @@ namespace ProjectAstra.Core.Combat.Playback
         // (victory watchers would never conclude the battle).
         internal static void RaiseInstantDeaths(CombatPlaybackContext ctx)
         {
-            if (ctx.Result.DefenderDied) UnitDeathHook.HandleDeath(ctx.Defender, ctx.Attacker, ctx.DeathChannel);
-            if (ctx.Result.AttackerDied) UnitDeathHook.HandleDeath(ctx.Attacker, ctx.Defender, ctx.DeathChannel);
+            if (ctx.Result.DefenderDied) UnitDeathHook.HandleDeath(ctx.Defender, ctx.Attacker);
+            if (ctx.Result.AttackerDied) UnitDeathHook.HandleDeath(ctx.Attacker, ctx.Defender);
         }
     }
 }

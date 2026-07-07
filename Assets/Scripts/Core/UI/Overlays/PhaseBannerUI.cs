@@ -58,13 +58,13 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void OnEnable()
         {
-            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
+            EventService.Instance.SubscribePhaseStarted(OnPhaseStarted);
         }
 
         private void OnDisable()
         {
             if (EventService.Instance != null)
-                EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
+                EventService.Instance.UnsubscribePhaseStarted(OnPhaseStarted);
         }
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)
@@ -107,7 +107,7 @@ namespace ProjectAstra.Core.UI.Overlays
         // Lets phase-start dialogue wait until the banner is gone instead of overlapping it.
         private void RaiseBannerFinished(BattlePhase phase, int turnNumber)
         {
-            if (EventService.Instance != null) EventService.Instance.Turn.RaisePhaseBannerFinished(phase, turnNumber);
+            if (EventService.Instance != null) EventService.Instance.RaisePhaseBannerFinished(phase, turnNumber);
         }
 
         private IEnumerator AnimateSlideAndDim(float fromX, float toX,

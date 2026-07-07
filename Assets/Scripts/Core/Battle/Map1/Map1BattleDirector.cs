@@ -44,16 +44,16 @@ namespace ProjectAstra.Core.Battle.Map1
 
         private void OnEnable()
         {
-            EventService.Instance.Turn.RegisterPhaseStarted(OnPhaseStarted);
-            EventService.Instance.BattleDialogue.Register(OnBattleDialogueEvent);
-            EventService.Instance.UnitDeath.Register(OnUnitDied);
+            EventService.Instance.SubscribePhaseStarted(OnPhaseStarted);
+            EventService.Instance.SubscribeBattleDialogue(OnBattleDialogueEvent);
+            EventService.Instance.SubscribeUnitDeath(OnUnitDied);
         }
 
         private void OnDisable()
         {
-            if (EventService.Instance != null) EventService.Instance.Turn.UnregisterPhaseStarted(OnPhaseStarted);
-            if (EventService.Instance != null) EventService.Instance.BattleDialogue.Unregister(OnBattleDialogueEvent);
-            if (EventService.Instance != null) EventService.Instance.UnitDeath.Unregister(OnUnitDied);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribePhaseStarted(OnPhaseStarted);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribeBattleDialogue(OnBattleDialogueEvent);
+            if (EventService.Instance != null) EventService.Instance.UnsubscribeUnitDeath(OnUnitDied);
             CombatScriptOverride.Clear();
         }
 

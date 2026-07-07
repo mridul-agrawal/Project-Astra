@@ -19,16 +19,16 @@ namespace ProjectAstra.Core.Dialogue
 
         private void OnEnable()
         {
-            EventService.Instance.Turn.RegisterPhaseBannerFinished(OnPhaseBannerFinished);
-            EventService.Instance.BattleDialogue.Register(OnBattleEvent);
+            EventService.Instance.SubscribePhaseBannerFinished(OnPhaseBannerFinished);
+            EventService.Instance.SubscribeBattleDialogue(OnBattleEvent);
         }
 
         private void OnDisable()
         {
             if (EventService.Instance != null)
             {
-                EventService.Instance.Turn.UnregisterPhaseBannerFinished(OnPhaseBannerFinished);
-                EventService.Instance.BattleDialogue.Unregister(OnBattleEvent);
+                EventService.Instance.UnsubscribePhaseBannerFinished(OnPhaseBannerFinished);
+                EventService.Instance.UnsubscribeBattleDialogue(OnBattleEvent);
             }
         }
 

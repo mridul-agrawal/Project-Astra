@@ -15,7 +15,6 @@ namespace ProjectAstra.Core.Combat.Playback
         public CombatResult Result;
         public CombatPlan Plan;  // Brave-fused step list; null = controller walks Result.Hits directly (Skip mode).
         public TerrainType DefenderTerrain;  // Drives the overlay background art via TerrainBackgroundDatabase.
-        public UnitDeathEventChannel DeathChannel;
         public ToastNotificationUI ToastUI;
         public Action OnComplete;
         public Func<CombatPlaybackContext, int, IEnumerator> PreStepHook;  // Scripted-map seam; yielded before each plan step (Normal/Fast only).

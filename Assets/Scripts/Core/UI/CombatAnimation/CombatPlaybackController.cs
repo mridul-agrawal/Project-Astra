@@ -249,7 +249,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             }
 
             UnitDeathHook.HideVictim(victim);
-            UnitDeathHook.RaiseDeath(args, ctx.DeathChannel);
+            UnitDeathHook.RaiseDeath(args);
         }
 
         // --- Helpers ---
