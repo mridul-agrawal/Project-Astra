@@ -12,20 +12,27 @@ namespace ProjectAstra.Core.State
     {
         public static GameStateManager Instance { get; private set; }
 
-        [Header("Configuration")]
-        [SerializeField] private GameStateTransitionTable _transitionTable;
-        [SerializeField] private GameState _initialState = GameState.TitleScreen;
+        // Inspector References:
+        [SerializeField] private GameStateTransitionTable transitionTable;
+        [SerializeField] private GameState initialState = GameState.TitleScreen;
 
-        private GameState _currentState;
-        private GameState _menuReturnState;
+        // Private Variables:
+        private GameState currentState;
+        private GameState stateToReturnToWhenMenuCloses;
+        private bool hasTransitionedThisFrame;
 
-        // First transition request in a frame wins; the rest are discarded.
-        private bool _oneTransitionPerFrameGate;
-
-        public GameState CurrentState => _currentState;
-        public GameState MenuReturnState => _menuReturnState;
+        // Properties:
+        public GameState CurrentState => currentState;
+        public GameState MenuReturnState => stateToReturnToWhenMenuCloses;
 
         private void Awake()
+        {
+            InitializeSingleton();
+            transitionTable.Initialize();
+            currentState = initialState;
+        }
+
+        private void InitializeSingleton()
         {
             if (Instance != null && Instance != this)
             {
@@ -35,15 +42,9 @@ namespace ProjectAstra.Core.State
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
-
-            _transitionTable.Initialize();
-            _currentState = _initialState;
         }
 
-        private void LateUpdate()
-        {
-            _oneTransitionPerFrameGate = false;
-        }
+        private void LateUpdate() => ResetFrameGate();
 
         public bool RequestTransition(GameState target, string requester = null)
         {
@@ -52,20 +53,68 @@ namespace ProjectAstra.Core.State
 
             RememberMenuReturnIfNeeded(target);
             ExecuteTransition(target);
-            _oneTransitionPerFrameGate = true;
+            hasTransitionedThisFrame = true;
             return true;
         }
 
+        private void ExecuteTransition(GameState target)
+        {
+            var previous = currentState;
+            currentState = target;
+            EventService.Instance?.RaiseGameStateChanged(previous, target);
+        }
+
+        // Returns true (and logs) if the requested move isn't in the transition table.
+        private bool IsIllegalTransition(GameState target, string requester)
+        {
+            if (transitionTable.IsValid(currentState, target)) return false;
+            Debug.LogError(
+                $"[GameStateManager] ILLEGAL transition: {currentState} -> {target}. Requester: {RequesterName(requester)}");
+            return true;
+        }
+
+        private static string RequesterName(string requester) => requester ?? "unknown";
+
+
+        // Return From Menu Logic:
+        // Called by Context Menu UI Scripts to transition back to previous game states:
         public bool ReturnFromContextMenu(string requester = null)
         {
-            if (!IsContextMenu(_currentState))
+            if (!IsThisStateContextMenu(currentState))
             {
                 LogInvalidContextMenuReturn(requester);
                 return false;
             }
 
-            return RequestTransition(_menuReturnState, requester);
+            return RequestTransition(stateToReturnToWhenMenuCloses, requester);
         }
+
+        private void RememberMenuReturnIfNeeded(GameState target)
+        {
+            if (IsThisStateContextMenu(target))
+                stateToReturnToWhenMenuCloses = currentState;
+        }
+
+        private static bool IsThisStateContextMenu(GameState state) => state == GameState.SaveMenu || state == GameState.SettingsMenu;
+
+        private void LogInvalidContextMenuReturn(string requester) => Debug.LogError(
+                $"[GameStateManager] ReturnFromContextMenu called from invalid state: {currentState}. " +
+                $"Requester: {RequesterName(requester)}");
+
+
+        // Frame Gate Logic:
+        private bool IsBlockedThisFrame(GameState target, string requester)
+        {
+            if (!hasTransitionedThisFrame) return false;
+            Debug.LogWarning(
+                $"[GameStateManager] Transition to {target} discarded — " +
+                $"already processed a transition this frame. Requester: {RequesterName(requester)}");
+            return true;
+        }
+
+        internal void ResetFrameGate() => hasTransitionedThisFrame = false;
+
+        #region Test Support
 
         // Bypasses the transition table. Use only for crash recovery or null-state fallback —
         // every call logs an error so unexpected forces stay loud and visible.
@@ -75,66 +124,20 @@ namespace ProjectAstra.Core.State
             ExecuteTransition(state);
         }
 
-        // Returns true (and logs) if a transition has already been processed this frame.
-        private bool IsBlockedThisFrame(GameState target, string requester)
-        {
-            if (!_oneTransitionPerFrameGate) return false;
-            Debug.LogWarning(
-                $"[GameStateManager] Transition to {target} discarded — " +
-                $"already processed a transition this frame. Requester: {RequesterName(requester)}");
-            return true;
-        }
-
-        // Returns true (and logs) if the requested move isn't in the transition table.
-        private bool IsIllegalTransition(GameState target, string requester)
-        {
-            if (_transitionTable.IsValid(_currentState, target)) return false;
-            Debug.LogError(
-                $"[GameStateManager] ILLEGAL transition: {_currentState} -> {target}. Requester: {RequesterName(requester)}");
-            return true;
-        }
-
-        private void RememberMenuReturnIfNeeded(GameState target)
-        {
-            if (IsContextMenu(target))
-                _menuReturnState = _currentState;
-        }
-
-        private void ExecuteTransition(GameState target)
-        {
-            var previous = _currentState;
-            _currentState = target;
-            EventService.Instance?.RaiseGameStateChanged(previous, target);
-        }
-
-        private void LogInvalidContextMenuReturn(string requester) =>
-            Debug.LogError(
-                $"[GameStateManager] ReturnFromContextMenu called from invalid state: {_currentState}. " +
-                $"Requester: {RequesterName(requester)}");
-
-        private static bool IsContextMenu(GameState state) => state == GameState.SaveMenu || state == GameState.SettingsMenu;
-
-        private static string RequesterName(string requester) => requester ?? "unknown";
-
-        #region Test helpers
 
         // Awake() doesn't run in EditMode tests, so this lets fixtures wire dependencies manually.
         internal void Initialize(GameStateTransitionTable transitionTable, GameState initialState)
         {
-            _transitionTable = transitionTable;
-            _initialState = initialState;
+            this.transitionTable = transitionTable;
+            this.initialState = initialState;
 
             Instance = this;
-            _transitionTable.Initialize();
-            _currentState = _initialState;
-            _oneTransitionPerFrameGate = false;
-        }
-
-        internal void ResetFrameGate()
-        {
-            _oneTransitionPerFrameGate = false;
+            this.transitionTable.Initialize();
+            currentState = this.initialState;
+            hasTransitionedThisFrame = false;
         }
 
         #endregion
+
     }
 }

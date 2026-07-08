@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d0d5737db7ed9346a0d528094553987, type: 3}
   m_Name: TransitionTable
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GameStateTransitionTable
-  _validTransitions:
+  validTransitions:
   - From: 0
     To: 1
   - From: 1

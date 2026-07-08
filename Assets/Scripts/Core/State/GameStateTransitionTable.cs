@@ -21,28 +21,40 @@ namespace ProjectAstra.Core.State
             }
         }
 
-        [SerializeField] private TransitionEntry[] _validTransitions;
+        [SerializeField] private TransitionEntry[] validTransitions;
 
-        private HashSet<(GameState, GameState)> _lookupSet;
+        private HashSet<(GameState, GameState)> lookupSet;
 
-        public int TransitionCount => _validTransitions != null ? _validTransitions.Length : 0;
+        public int TransitionCount => validTransitions != null ? validTransitions.Length : 0;
 
         public bool IsValid(GameState from, GameState to)
         {
-            if (_lookupSet == null) Initialize();
-            return _lookupSet.Contains((from, to));
+            if (lookupSet == null) Initialize();
+            return lookupSet.Contains((from, to));
         }
 
         public void Initialize()
         {
-            int capacity = _validTransitions != null ? _validTransitions.Length : 0;
-            _lookupSet = new HashSet<(GameState, GameState)>(capacity);
+            int capacity = validTransitions != null ? validTransitions.Length : 0;
+            lookupSet = new HashSet<(GameState, GameState)>(capacity);
 
-            if (_validTransitions == null) return;
+            if (validTransitions == null) return;
 
-            foreach (var entry in _validTransitions)
-                _lookupSet.Add((entry.From, entry.To));
+            foreach (var entry in validTransitions)
+                lookupSet.Add((entry.From, entry.To));
         }
+
+
+        // Test helper methods:
+
+#if UNITY_EDITOR
+        [ContextMenu("Populate Default Transitions")]
+        private void PopulateDefaults()
+        {
+            validTransitions = CreateDefaultTransitions();
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
 
         // Seed data for the SO asset. Used by the inspector context-menu and by tests.
         public static TransitionEntry[] CreateDefaultTransitions()
@@ -101,14 +113,5 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.LevelUpScreen, GameState.BattleMap),
             };
         }
-
-#if UNITY_EDITOR
-        [ContextMenu("Populate Default Transitions")]
-        private void PopulateDefaults()
-        {
-            _validTransitions = CreateDefaultTransitions();
-            UnityEditor.EditorUtility.SetDirty(this);
-        }
-#endif
     }
 }

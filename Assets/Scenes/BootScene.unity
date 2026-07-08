@@ -828,8 +828,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2acd328459624c040a23e5d38e0de4c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GameStateManager
-  _transitionTable: {fileID: 11400000, guid: 5a25e2f8fb709f140bfaa1bb9be5d6dc, type: 2}
-  _initialState: 14
+  transitionTable: {fileID: 11400000, guid: 5a25e2f8fb709f140bfaa1bb9be5d6dc, type: 2}
+  initialState: 14
 --- !u!4 &1755540676
 Transform:
   m_ObjectHideFlags: 0

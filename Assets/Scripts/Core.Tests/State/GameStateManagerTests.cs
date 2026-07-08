@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Tests.State
             _eventServiceGo = new GameObject("TestEventService");
             _eventServiceGo.AddComponent<EventService>().InitializeForTest(_channel, null, null, null);
 
-            var field = typeof(GameStateTransitionTable).GetField("_validTransitions",
+            var field = typeof(GameStateTransitionTable).GetField("validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
 

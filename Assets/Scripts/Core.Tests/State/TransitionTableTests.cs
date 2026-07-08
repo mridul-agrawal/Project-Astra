@@ -15,7 +15,7 @@ namespace ProjectAstra.Core.Tests.State
         public void SetUp()
         {
             _table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
-            var field = typeof(GameStateTransitionTable).GetField("_validTransitions",
+            var field = typeof(GameStateTransitionTable).GetField("validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
             _table.Initialize();

@@ -185,7 +185,7 @@ namespace ProjectAstra.Core.Editor
             var path = AssetDatabase.GUIDToAssetPath(guids[0]);
             var table = AssetDatabase.LoadAssetAtPath<GameStateTransitionTable>(path);
             var so = new SerializedObject(table);
-            var list = so.FindProperty("_validTransitions");
+            var list = so.FindProperty("validTransitions");
 
             for (int i = 0; i < list.arraySize; i++)
             {
