@@ -5,14 +5,7 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.Scenes
 {
     // Designer-owned list of the GameStates that have their own scene file under
-    // Assets/Scenes/ (named after the state). SceneLoader loads/swaps only these;
-    // every other state (overlays, sub-states) it leaves alone. Editable in the
-    // inspector so scenes and states can be added or removed during prototyping
-    // without touching code.
-    //
-    // NOTE: entries are GameState enum values, which Unity stores by number. If you
-    // REORDER the GameState enum, re-check this asset — the stored values won't move
-    // with it.
+    // Assets/Scenes/ (named after the state).
     [CreateAssetMenu(fileName = "SceneStateCatalog", menuName = "Project Astra/Core/Scene State Catalog")]
     public class SceneStateCatalog : ScriptableObject
     {
@@ -30,9 +23,6 @@ namespace ProjectAstra.Core.Scenes
             GameState.GameOver,
         };
 
-        // True if this state should load a scene. Linear scan — the list is tiny and
-        // only checked on transitions, and staying uncached means a designer's edits
-        // in play mode take effect immediately.
         public bool HasScene(GameState state) => sceneStates.Contains(state);
     }
 }

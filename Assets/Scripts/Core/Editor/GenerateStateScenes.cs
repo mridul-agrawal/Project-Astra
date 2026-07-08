@@ -462,7 +462,7 @@ namespace ProjectAstra.Core.Editor
             var sceneLoader = UnityEngine.Object.FindFirstObjectByType<SceneLoader>();
             if (sceneLoader == null)
                 sceneLoader = new GameObject("SceneLoader").AddComponent<SceneLoader>();
-            SetField(sceneLoader, "sceneCatalog", LoadAsset<SceneStateCatalog>("t:SceneStateCatalog", "Assets/ScriptableObjects"));
+            SetField(sceneLoader, "sceneStateCatalog", LoadAsset<SceneStateCatalog>("t:SceneStateCatalog", "Assets/ScriptableObjects"));
 
             // OverlayManager (self-serves its channel from EventService)
             if (UnityEngine.Object.FindFirstObjectByType<OverlayManager>() == null)
