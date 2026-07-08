@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core.Turn;
 
-namespace ProjectAstra.Core.Turn
+namespace ProjectAstra.Core.Events
 {
     // A pub/sub channel for turn-cycle events: a phase just started, a phase just ended, or the
     // round counter just ticked. Stored as a ScriptableObject so broadcasters (TurnManager) and

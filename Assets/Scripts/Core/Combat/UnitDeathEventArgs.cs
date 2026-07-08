@@ -61,19 +61,4 @@ namespace ProjectAstra.Core.Combat
         // stays Unity-serializable.
         [NonSerialized] public TestUnit victim;
     }
-
-    // ScriptableObject event bus for unit deaths. Mirrors GameStateEventChannel
-    // — Register / Unregister / Raise. Listeners: DeathRegistry,
-    // BattleVictoryWatcher, LordDeathWatcher, future analytics.
-    [CreateAssetMenu(fileName = "UnitDeathEventChannel",
-        menuName = "Project Astra/Core/Unit Death Event Channel")]
-    public class UnitDeathEventChannel : ScriptableObject
-    {
-        private Action<UnitDeathEventArgs> _onUnitDied;
-
-        public void Register(Action<UnitDeathEventArgs> listener) => _onUnitDied += listener;
-        public void Unregister(Action<UnitDeathEventArgs> listener) => _onUnitDied -= listener;
-
-        public void Raise(UnitDeathEventArgs args) => _onUnitDied?.Invoke(args);
-    }
 }

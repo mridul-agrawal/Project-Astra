@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core.State;
 
-namespace ProjectAstra.Core.State
+namespace ProjectAstra.Core.Events
 {
     // A pub/sub channel for "the game state just changed." Stored as a ScriptableObject
     // so broadcasters (GameStateManager) and listeners (SceneLoader, OverlayManager,
@@ -10,11 +11,11 @@ namespace ProjectAstra.Core.State
     [CreateAssetMenu(fileName = "GameStateChanged", menuName = "Project Astra/Core/Game State Event Channel")]
     public class GameStateEventChannel : ScriptableObject
     {
-        private Action<StateChangeArgs> _onStateChanged;
+        private Action<StateChangeArgs> onStateChanged;
 
-        public void Register(Action<StateChangeArgs> listener) => _onStateChanged += listener;
-        public void Unregister(Action<StateChangeArgs> listener) => _onStateChanged -= listener;
+        public void Register(Action<StateChangeArgs> listener) => onStateChanged += listener;
+        public void Unregister(Action<StateChangeArgs> listener) => onStateChanged -= listener;
 
-        public void Raise(StateChangeArgs args) => _onStateChanged?.Invoke(args);
+        public void Raise(StateChangeArgs args) => onStateChanged?.Invoke(args);
     }
 }

@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core.Dialogue;
 
-namespace ProjectAstra.Core.Dialogue
+namespace ProjectAstra.Core.Events
 {
     // Broadcasts battle-map moments (unit selected, move confirmed, pre-combat) so the
     // tutorial trigger driver can react without the cursor ever knowing about dialogue.

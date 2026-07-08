@@ -1,5 +1,6 @@
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Turn;
 using UnityEditor;
 using UnityEngine;
