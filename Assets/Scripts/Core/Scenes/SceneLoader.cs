@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -7,31 +6,24 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Scenes
 {
-    // Swaps the active Unity scene in response to game state changes. Knows the explicit
-    // set of states that have a corresponding scene asset; ignores everything else (overlay
-    // states, transient UI states) — those are someone else's problem.
+    // Swaps the active Unity scene in response to game state changes.
+    // Knows the explicit set of states that have a corresponding scene asset.
+    // Ignores everything else (overlay states, transient UI states) — those are someone else's problem.
     public class SceneLoader : MonoBehaviour
     {
-        private string _currentBaseScene;
+        private string currentBaseScene;
 
-        // States that map to an actual scene file under Assets/Scenes/. Anything not in this
-        // set is a no-op for SceneLoader (overlays, sub-states, etc.).
-        private static readonly HashSet<GameState> SceneStates = new()
-        {
-            GameState.Splash,
-            GameState.TitleScreen,
-            GameState.MainMenu,
-            GameState.Cutscene,
-            GameState.PreBattlePrep,
-            GameState.BattleMap,
-            GameState.ChapterClear,
-            GameState.GameOver,
-        };
+        // Designer-owned list of which states have a scene file. Wired to the asset in
+        // BootScene — edit that asset (not this script) to add or remove scenes.
+        [SerializeField] private SceneStateCatalog sceneCatalog;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
             EnsureScreenFader();
+
+            if (sceneCatalog == null)
+                Debug.LogError("[SceneLoader] Scene State Catalog is not wired — SceneLoader will load no scenes.");
 
             var eventSystem = FindFirstObjectByType<EventSystem>();
             if (eventSystem != null)
@@ -49,10 +41,10 @@ namespace ProjectAstra.Core.Scenes
             EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
 
             var initialState = GameStateManager.Instance.CurrentState;
-            if (SceneStates.Contains(initialState))
+            if (HasSceneFor(initialState))
             {
-                _currentBaseScene = initialState.ToString();
-                SceneManager.LoadScene(_currentBaseScene);
+                currentBaseScene = initialState.ToString();
+                LoadBaseScene(currentBaseScene, useFader: false);
             }
         }
 
@@ -64,14 +56,31 @@ namespace ProjectAstra.Core.Scenes
 
         private void OnStateChanged(StateChangeArgs args)
         {
-            if (!SceneStates.Contains(args.NewState)) return;
+            if (!HasSceneFor(args.NewState)) return;
 
             string sceneName = args.NewState.ToString();
-            if (sceneName == _currentBaseScene) return;
+            if (sceneName == currentBaseScene) return;
 
-            _currentBaseScene = sceneName;
+            currentBaseScene = sceneName;
+            LoadBaseScene(sceneName, useFader: true);
+        }
 
-            if (ScreenFader.Instance != null)
+        private bool HasSceneFor(GameState state) => sceneCatalog != null && sceneCatalog.HasScene(state);
+
+        // Swaps in a base scene, fading through black when a ScreenFader exists. Guards
+        // against a catalog entry whose scene isn't in Build Settings, so a designer's
+        // typo logs a clear error instead of a raw LoadScene exception.
+        private void LoadBaseScene(string sceneName, bool useFader)
+        {
+            if (!Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                Debug.LogError(
+                    $"[SceneLoader] '{sceneName}' is in the Scene State Catalog but has no matching scene in " +
+                    $"Build Settings. Add the scene, or remove {sceneName} from the catalog.");
+                return;
+            }
+
+            if (useFader && ScreenFader.Instance != null)
                 ScreenFader.Instance.RunTransition(() => SceneManager.LoadScene(sceneName));
             else
                 SceneManager.LoadScene(sceneName);

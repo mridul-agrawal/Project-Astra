@@ -459,8 +459,10 @@ namespace ProjectAstra.Core.Editor
             SetField(eventService, "battleDialogue", LoadAsset<BattleDialogueEventChannel>("t:BattleDialogueEventChannel", "Assets/ScriptableObjects"));
 
             // SceneLoader (self-serves its channel from EventService)
-            if (UnityEngine.Object.FindFirstObjectByType<SceneLoader>() == null)
-                new GameObject("SceneLoader").AddComponent<SceneLoader>();
+            var sceneLoader = UnityEngine.Object.FindFirstObjectByType<SceneLoader>();
+            if (sceneLoader == null)
+                sceneLoader = new GameObject("SceneLoader").AddComponent<SceneLoader>();
+            SetField(sceneLoader, "sceneCatalog", LoadAsset<SceneStateCatalog>("t:SceneStateCatalog", "Assets/ScriptableObjects"));
 
             // OverlayManager (self-serves its channel from EventService)
             if (UnityEngine.Object.FindFirstObjectByType<OverlayManager>() == null)

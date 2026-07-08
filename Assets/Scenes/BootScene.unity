@@ -679,6 +679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9821566a547bdc2419153574746f2b34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.SceneLoader
+  sceneCatalog: {fileID: 11400000, guid: 86f27d0734073c042ad9852cfdb28b53, type: 2}
 --- !u!4 &1567155997
 Transform:
   m_ObjectHideFlags: 0
