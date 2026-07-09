@@ -578,7 +578,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Splash.SplashScreenController
   _videoPlayer: {fileID: 607740616}
   _fadeGroup: {fileID: 1620349716}
-  _fadeDuration: 0.35
 --- !u!4 &1953012927
 Transform:
   m_ObjectHideFlags: 0
