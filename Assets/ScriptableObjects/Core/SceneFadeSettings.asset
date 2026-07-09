@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b359c0a739a5ed40a765741cf29665d, type: 3}
-  m_Name: SceneTransitionSettings
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Scenes.SceneTransitionSettings
+  m_Script: {fileID: 11500000, guid: 91d0c266a2da0344789666d0a9dd6729, type: 3}
+  m_Name: SceneFadeSettings
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Scenes.SceneFadeSettings
   fadeDuration: 0.35
