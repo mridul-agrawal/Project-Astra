@@ -9,6 +9,7 @@ namespace ProjectAstra.Core.Scenes
     public class SceneLoader : MonoBehaviour
     {
         private string currentScene;
+        private ScreenFader screenFader;
         [SerializeField] private SceneStateCatalog sceneStateCatalog;
 
         private void Awake()
@@ -30,8 +31,7 @@ namespace ProjectAstra.Core.Scenes
 
         private void InitializeSceneFader()
         {
-            if (ScreenFader.Instance == null)
-                new GameObject("ScreenFader").AddComponent<ScreenFader>();
+            screenFader = new GameObject("ScreenFader").AddComponent<ScreenFader>();
         }
 
         private void Start()
@@ -75,8 +75,8 @@ namespace ProjectAstra.Core.Scenes
                 return;
             }
 
-            if (useFader && ScreenFader.Instance != null)
-                ScreenFader.Instance.RunTransition(() => SceneManager.LoadScene(sceneName));
+            if (useFader && screenFader != null)
+                screenFader.RunTransition(() => SceneManager.LoadScene(sceneName));
             else
                 SceneManager.LoadScene(sceneName);
         }

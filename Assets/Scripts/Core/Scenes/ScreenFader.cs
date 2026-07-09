@@ -12,8 +12,6 @@ namespace ProjectAstra.Core.Scenes
     // UI, so nothing in a scene needs to wire it up.
     public class ScreenFader : MonoBehaviour
     {
-        public static ScreenFader Instance { get; private set; }
-
         [SerializeField] private float _fadeDuration = 0.35f;
 
         // Largest time step a single frame may contribute to a fade. Keeps a load-frame hitch
@@ -24,13 +22,6 @@ namespace ProjectAstra.Core.Scenes
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            Instance = this;
             DontDestroyOnLoad(gameObject);
             BuildOverlay();
         }
