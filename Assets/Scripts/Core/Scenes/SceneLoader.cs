@@ -11,6 +11,7 @@ namespace ProjectAstra.Core.Scenes
         private string currentScene;
         private ScreenFader screenFader;
         [SerializeField] private SceneStateCatalog sceneStateCatalog;
+        [SerializeField] private ScreenFader faderPrefab;
 
         private void Awake()
         {
@@ -31,7 +32,12 @@ namespace ProjectAstra.Core.Scenes
 
         private void InitializeSceneFader()
         {
-            screenFader = new GameObject("ScreenFader").AddComponent<ScreenFader>();
+            if (faderPrefab == null)
+            {
+                Debug.LogError("[SceneLoader] Fader prefab is not wired — scene transitions won't fade.");
+                return;
+            }
+            screenFader = Instantiate(faderPrefab);
         }
 
         private void Start()

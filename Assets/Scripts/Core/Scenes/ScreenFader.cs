@@ -1,36 +1,35 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using ProjectAstra.Core.Audio;
 
 namespace ProjectAstra.Core.Scenes
 {
-    // A persistent full-screen black overlay that covers scene swaps. SceneLoader asks it to
-    // fade to black, run the load, then fade back in — so transitions read as a smooth crossfade
-    // instead of an instant pop. Lives across scene loads (DontDestroyOnLoad) and builds its own
-    // UI, so nothing in a scene needs to wire it up.
+    // A persistent full-screen overlay that covers scene swaps. Its look (canvas + colour) is
+    // authored on the ScreenFader prefab; its fade timing comes from SceneTransitionSettings, so
+    // functional tuning stays separate from the view. Instantiated and owned by SceneLoader.
+    [RequireComponent(typeof(CanvasGroup))]
     public class ScreenFader : MonoBehaviour
     {
-        [SerializeField] private float _fadeDuration = 0.35f;
+        [SerializeField] private SceneTransitionSettings _settings;
 
         // Largest time step a single frame may contribute to a fade. Keeps a load-frame hitch
-        // from snapping the fade straight to its end.
+        // from snapping the fade straight to its end. A technical frame-pacing guard, not
+        // designer feel, so it stays in code.
         private const float MaxFadeStep = 1f / 30f;
+
+        private const float FallbackFadeDuration = 0.35f;
 
         private CanvasGroup _group;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-            BuildOverlay();
+            _group = GetComponent<CanvasGroup>();
         }
 
         // Fade to black, run the swap at full black, then fade back in. Blocks input while covered.
-        public void RunTransition(Action onBlack)
-        {
-            StartCoroutine(Transition(onBlack));
-        }
+        public void RunTransition(Action onBlack) => StartCoroutine(Transition(onBlack));
 
         private IEnumerator Transition(Action onBlack)
         {
@@ -47,41 +46,18 @@ namespace ProjectAstra.Core.Scenes
 
         private IEnumerator Fade(float target)
         {
+            float duration = _settings != null ? _settings.FadeDuration : FallbackFadeDuration;
             float start = _group.alpha;
             float elapsed = 0f;
-            while (elapsed < _fadeDuration)
+            while (elapsed < duration)
             {
                 // Cap the step so a scene-load hitch (a huge single delta) can't finish the
                 // fade in one frame — the fade-in always animates regardless of load time.
                 elapsed += Mathf.Min(Time.unscaledDeltaTime, MaxFadeStep);
-                _group.alpha = Mathf.Lerp(start, target, elapsed / _fadeDuration);
+                _group.alpha = Mathf.Lerp(start, target, elapsed / duration);
                 yield return null;
             }
             _group.alpha = target;
-        }
-
-        private void BuildOverlay()
-        {
-            var canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = short.MaxValue;   // above every other canvas, including overlays
-
-            _group = gameObject.AddComponent<CanvasGroup>();
-            _group.alpha = 0f;
-            _group.interactable = false;
-            _group.blocksRaycasts = false;
-
-            var blackGo = new GameObject("Black", typeof(RectTransform));
-            blackGo.transform.SetParent(transform, false);
-            var image = blackGo.AddComponent<Image>();
-            image.color = Color.black;
-            image.raycastTarget = false;
-
-            var rect = blackGo.GetComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
         }
     }
 }

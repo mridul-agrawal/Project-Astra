@@ -680,6 +680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.SceneLoader
   sceneStateCatalog: {fileID: 11400000, guid: 86f27d0734073c042ad9852cfdb28b53, type: 2}
+  faderPrefab: {fileID: 6640907452981032190, guid: 617edca22a4b36c40bcb11a09284b067, type: 3}
 --- !u!4 &1567155997
 Transform:
   m_ObjectHideFlags: 0
