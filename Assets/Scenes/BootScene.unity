@@ -876,6 +876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4309370796315f04ab4161a73d40afff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Flow.GameFlow
+  _campaign: {fileID: 11400000, guid: 8f075270fdd7bdd48af8da45653411b7, type: 2}
   _mapCatalog: {fileID: 11400000, guid: 2826a6ebad232a34cae350884e7b1a29, type: 2}
   _cutsceneCatalog: {fileID: 11400000, guid: 0411b9e634ff6274c95eb388158154bf, type: 2}
 --- !u!4 &1994050361
