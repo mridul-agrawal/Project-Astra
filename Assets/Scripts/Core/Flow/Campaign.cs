@@ -12,7 +12,6 @@ namespace ProjectAstra.Core.Flow
 
         public int Count => steps.Count;
 
-        // The step at this index, or null when the index has run past the end of the campaign.
         public CampaignStep StepAt(int index) => (index >= 0 && index < steps.Count) ? steps[index] : null;
     }
 }

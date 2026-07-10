@@ -5,32 +5,24 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Flow
 {
-    // The campaign director. The whole game's running order lives in the Campaign asset, read
-    // top-to-bottom. GameFlow drives the scene-state machine: it decides which cutscene script
-    // plays and which battle map loads, advancing one step each time a cutscene or battle reports
-    // it finished. The Cutscene and BattleMap scenes stay "dumb" — they ask GameFlow what to
-    // present (CurrentCutsceneScript / CurrentMap) and call back when done.
     public class GameFlow : MonoBehaviour
     {
         public static GameFlow Instance { get; private set; }
 
-        [SerializeField] private Campaign _campaign;
-        [SerializeField] private MapCatalog _mapCatalog;
-        [SerializeField] private CutsceneCatalog _cutsceneCatalog;
+        [SerializeField] private Campaign campaign;
+        [SerializeField] private MapCatalog mapCatalog;
+        [SerializeField] private CutsceneCatalog cutsceneCatalog;
+        private int stepIndex = -1;
 
-        private int _index = -1;
-
-        // The current beat, or null when the index has run past the end (or no campaign is wired —
-        // e.g. editor direct-play, where scenes fall back to their own defaults).
-        private CampaignStep Current => _campaign != null ? _campaign.StepAt(_index) : null;
+        private CampaignStep CurrentStep => campaign != null ? campaign.StepAt(stepIndex) : null;
 
         public DialogueScript CurrentCutsceneScript =>
-            (Current != null && Current.Kind == CampaignStepKind.Cutscene && _cutsceneCatalog != null)
-                ? _cutsceneCatalog.Get(Current.Cutscene) : null;
+            (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.Cutscene && cutsceneCatalog != null)
+                ? cutsceneCatalog.Get(CurrentStep.Cutscene) : null;
 
         public MapData CurrentMap =>
-            (Current != null && Current.Kind == CampaignStepKind.Battle && _mapCatalog != null)
-                ? _mapCatalog.Get(Current.Map) : null;
+            (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.Battle && mapCatalog != null)
+                ? mapCatalog.Get(CurrentStep.Map) : null;
 
         private void Awake()
         {
@@ -48,19 +40,19 @@ namespace ProjectAstra.Core.Flow
         public void Begin() => EnterStep(0);
 
         // The Cutscene scene calls this when its dialogue finishes.
-        public void NotifyCutsceneFinished() => EnterStep(_index + 1);
+        public void NotifyCutsceneFinished() => EnterStep(stepIndex + 1);
 
         // Called when a battle is cleared/won (hook for the next beat once battle-end exists).
-        public void NotifyBattleFinished() => EnterStep(_index + 1);
+        public void NotifyBattleFinished() => EnterStep(stepIndex + 1);
 
         private void EnterStep(int index)
         {
-            _index = index;
-            var step = Current;
+            this.stepIndex = index;
+            var step = CurrentStep;
             if (step == null)
             {
                 Debug.Log("[GameFlow] Campaign complete — returning to title.");
-                _index = -1;   // a fresh Begin() restarts from the top
+                this.stepIndex = -1;   // a fresh Begin() restarts from the top
                 RequestState(GameState.TitleScreen);
                 return;
             }
