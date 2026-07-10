@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map 1 Flow — Script Review Checklist</title>
+<style>
+  :root {
+    --ink: #ece3d1;
+    --muted: #b9ad94;
+    --faint: #867c66;
+    --line: rgba(236,227,209,.11);
+    --bg: #15120c;
+    --card: #1d1810;
+    --card2: #221c12;
+    --accent: #e6b873;
+    --accent-deep: #c6913f;
+    --accent-line: rgba(230,184,115,.18);
+    --core: #e6b873;
+    --cond: #d49b5b;
+    --out: #b3807e;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.02'/%3E%3C/svg%3E");
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 96px; }
+  code, .mono { font-family: "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace; }
+
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; color: var(--ink); }
+  .sub { color: var(--muted); font-size: 13.5px; margin: 0 0 18px; }
+  .sub code { background: rgba(236,227,209,.07); padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+
+  /* sticky progress bar */
+  .status {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(21,18,12,0.9);
+    backdrop-filter: blur(7px);
+    border-bottom: 1px solid var(--line);
+    margin: 0 -20px 22px; padding: 12px 20px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+  .count { font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .count b { color: var(--accent); }
+  .bar { flex: 1 1 200px; height: 8px; background: rgba(236,227,209,.09); border-radius: 999px; overflow: hidden; min-width: 140px; }
+  .bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-deep), var(--accent)); transition: width .18s ease; }
+  .btn {
+    font: inherit; font-size: 13px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--card);
+    color: var(--muted); padding: 5px 12px; border-radius: 7px;
+  }
+  .btn:hover { color: var(--ink); border-color: var(--accent-line); background: var(--card2); }
+
+  section { margin: 26px 0 0; }
+  .phase {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line);
+  }
+  .phase .note { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--faint); font-size: 12px; }
+
+  ul.list { list-style: none; margin: 0; padding: 0; }
+  li.item {
+    display: flex; gap: 11px; align-items: flex-start;
+    padding: 9px 10px; border-radius: 8px; margin: 2px 0;
+    border: 1px solid transparent; border-left: 2px solid transparent;
+  }
+  li.item:hover { background: var(--card); border-color: var(--line); border-left-color: var(--accent-line); }
+  li.item input[type=checkbox] {
+    margin: 3px 0 0; width: 17px; height: 17px; flex: none; cursor: pointer; accent-color: var(--accent);
+  }
+  .body { flex: 1; min-width: 0; }
+  .names { cursor: pointer; }
+  .names .n { font-weight: 600; font-family: "SF Mono", "Cascadia Code", Consolas, Menlo, monospace; font-size: 13.5px; color: var(--accent); }
+  .names .plus { color: var(--faint); font-weight: 400; padding: 0 3px; }
+  .desc { color: var(--muted); font-size: 13.5px; }
+  .uses { color: var(--faint); font-size: 12px; margin-top: 3px; }
+  .uses b { color: var(--muted); font-weight: 600; }
+  .uses code { background: rgba(236,227,209,.06); padding: 0 4px; border-radius: 3px; }
+
+  /* tag chips */
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: .04em; padding: 1px 6px; border-radius: 5px; vertical-align: 1px; margin-left: 2px; border: 1px solid transparent; }
+  .tag.core { color: var(--core); background: rgba(230,184,115,.12); border-color: rgba(230,184,115,.24); }
+  .tag.cond { color: var(--cond); background: rgba(212,155,91,.12); border-color: rgba(212,155,91,.26); }
+  .tag.out  { color: var(--out);  background: rgba(179,128,126,.12); border-color: rgba(179,128,126,.26); }
+
+  /* checked state */
+  li.item.done { opacity: 0.4; }
+  li.item.done .names .n,
+  li.item.done .desc { text-decoration: line-through; }
+  li.item.done .uses { display: none; }
+
+  .legend { color: var(--muted); font-size: 12.5px; margin: 4px 0 0; }
+  .foot { margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Map 1 Flow — Script Review Checklist</h1>
+  <p class="sub">Every runtime script that runs in the traced flow (Boot → Splash → Title → cutscene → Map 1 → victory → ending), in first-appearance order. Derived from <code>map1-flow-scripts.html</code>. Tick a script as you review it — progress is saved in this browser. <span class="tag core">CORE</span> always runs · <span class="tag cond">COND</span> only if triggered · <span class="tag out">OUT</span> defined but outside this win flow.</p>
+
+  <div class="status">
+    <span class="count"><b id="done">0</b> / <span id="total">0</span> reviewed</span>
+    <span class="bar"><span id="fill"></span></span>
+    <button class="btn" id="reset">Reset all</button>
+  </div>
+
+  <!-- PHASE 0 -->
+  <section>
+    <div class="phase">Phase 0 — Boot (BootScene) · persistent singletons, alive all session</div>
+    <ul class="list">
+      <li class="item" data-id="gamestatemanager"><input type="checkbox"><div class="body"><div class="names"><span class="n">GameStateManager</span> <span class="tag core">CORE</span></div><div class="desc">Top-level state machine; validates every transition.</div><div class="uses"><b>uses:</b> <code>GameState</code>, <code>GameStateTransitionTable</code>, <code>GameStateEventChannel</code></div></div></li>
+      <li class="item" data-id="sceneloader"><input type="checkbox"><div class="body"><div class="names"><span class="n">SceneLoader</span> <span class="tag core">CORE</span></div><div class="desc">Maps each GameState to a scene, loads through a fade; instantiates the fader prefab.</div></div></li>
+      <li class="item" data-id="screenfader"><input type="checkbox"><div class="body"><div class="names"><span class="n">ScreenFader</span> <span class="tag core">CORE</span></div><div class="desc">Full-screen fade for every scene swap (SceneLoader-owned, prefab-instantiated).</div><div class="uses"><b>uses:</b> <code>SceneFadeSettings</code></div></div></li>
+      <li class="item" data-id="gameflow"><input type="checkbox"><div class="body"><div class="names"><span class="n">GameFlow</span> <span class="tag core">CORE</span></div><div class="desc">Campaign director (Begin / NotifyCutsceneFinished / NotifyBattleFinished); holds Opening → Map1 → Ending.</div><div class="uses"><b>uses:</b> <code>CutsceneId</code>, <code>MapId</code>, <code>CutsceneCatalog</code>, <code>MapCatalog</code>, <code>MapData</code>, <code>DialogueScript</code></div></div></li>
+      <li class="item" data-id="inputmanager"><input type="checkbox"><div class="body"><div class="names"><span class="n">InputManager</span> <span class="tag core">CORE</span></div><div class="desc">Raw input → logical actions, state-gated, DAS.</div><div class="uses"><b>uses:</b> <code>InputContext</code>, <code>DelayedAutoShift</code></div></div></li>
+      <li class="item" data-id="audiomanager"><input type="checkbox"><div class="body"><div class="names"><span class="n">AudioManager</span> <span class="tag core">CORE</span></div><div class="desc">Music / SFX / mixer buses.</div><div class="uses"><b>uses:</b> <code>SoundId</code>, <code>AudioLibrary</code>, <code>SoundSO</code>, <code>AudioBus</code></div></div></li>
+      <li class="item" data-id="dialogueservice"><input type="checkbox"><div class="body"><div class="names"><span class="n">DialogueService</span> <span class="tag core">CORE</span></div><div class="desc">Shared dialogue runner/queue; owns the persistent dialogue view.</div><div class="uses"><b>uses:</b> <code>DialogueRunner</code>, <code>IDialogueView</code>/<code>DialogueView</code>, <code>DialogueScript</code>/<code>Segment</code>/<code>Line</code>/<code>Node</code>, <code>DialogueSpeaker</code>/<code>Registry</code>, <code>DialogueSettings</code>, <code>DialogueExpression</code>, <code>PortraitPosition</code>/<code>Facing</code></div></div></li>
+      <li class="item" data-id="overlaymanager"><input type="checkbox"><div class="body"><div class="names"><span class="n">OverlayManager</span> <span class="tag core">CORE</span></div><div class="desc">On state change, instantiates Resources/Overlays/{State} prefabs.</div><div class="uses"><b>uses:</b> <code>GameStateEventChannel</code></div></div></li>
+    </ul>
+    <p class="legend">Shared event-channel SOs created at boot, used throughout: <code>GameStateEventChannel</code>, <code>TurnEventChannel</code>, <code>UnitDeathEventChannel</code>, <code>BattleDialogueEventChannel</code>.</p>
+  </section>
+
+  <!-- PHASE 1 -->
+  <section>
+    <div class="phase">Phase 1 — Splash (Splash scene)</div>
+    <ul class="list">
+      <li class="item" data-id="splashscreencontroller"><input type="checkbox"><div class="body"><div class="names"><span class="n">SplashScreenController</span> <span class="tag core">CORE</span></div><div class="desc">Plays the splash video, then → TitleScreen.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section>
+    <div class="phase">Phase 2 — Title (TitleScreen scene)</div>
+    <ul class="list">
+      <li class="item" data-id="titlescreenui"><input type="checkbox"><div class="body"><div class="names"><span class="n">TitleScreenUI</span> <span class="tag core">CORE</span></div><div class="desc">Title music; on Confirm calls GameFlow.Begin() (→ opening cutscene).</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section>
+    <div class="phase">Phase 3 — Opening cutscene (Cutscene scene)</div>
+    <ul class="list">
+      <li class="item" data-id="cutsceneui-open"><input type="checkbox"><div class="body"><div class="names"><span class="n">CutsceneUI</span> <span class="desc">(opening)</span> <span class="tag core">CORE</span></div><div class="desc">Asks GameFlow for the current script (OPENING_CH01), plays it via DialogueService, reports back when done.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 4 -->
+  <section>
+    <div class="phase">Phase 4 — Map 1 load &amp; spawn (BattleMap scene init)</div>
+    <ul class="list">
+      <li class="item" data-id="mapbootstrapper"><input type="checkbox"><div class="body"><div class="names"><span class="n">MapBootstrapper</span> <span class="tag core">CORE</span></div><div class="desc">Orchestrates map setup on scene load.</div></div></li>
+      <li class="item" data-id="maprenderer"><input type="checkbox"><div class="body"><div class="names"><span class="n">MapRenderer</span> <span class="tag core">CORE</span></div><div class="desc">Paints MapData onto tilemap layers; terrain queries.</div><div class="uses"><b>uses:</b> <code>MapData</code>/<code>MapCatalog</code>/<code>MapId</code>, <code>TilesetDefinition</code>, <code>TerrainType</code>, <code>MapLayer</code>, <code>SyncedAnimatedTile</code>, <code>TerrainBackgroundDatabase</code></div></div></li>
+      <li class="item" data-id="pathfinding"><input type="checkbox"><div class="body"><div class="names"><span class="n">PathfindingService</span> <span class="plus">+</span> <span class="n">Pathfinder</span> <span class="tag core">CORE</span></div><div class="desc">Reachability / attack-range graph (Dijkstra + Manhattan).</div><div class="uses"><b>uses:</b> <code>TerrainStatTable</code>, <code>TerrainType</code>, <code>MovementType</code></div></div></li>
+      <li class="item" data-id="unitspawner"><input type="checkbox"><div class="body"><div class="names"><span class="n">UnitSpawner</span> <span class="tag core">CORE</span></div><div class="desc">Spawns units from data; creates TestUnit + UnitInventory.</div><div class="uses"><b>uses:</b> <code>UnitDefinition</code>/<code>ClassDefinition</code>/<code>UnitDatabase</code>, <code>UnitInstance</code>, <code>UnitRegistry</code>, <code>InventoryLoadout</code>/<code>Item</code>/<code>WeaponData</code>, <code>StatArray</code>, <code>Faction</code>, <code>ClassType</code>, <code>MovementType</code>, weapon enums, <code>PanchaBhuta</code>, <code>Personality</code></div></div></li>
+      <li class="item" data-id="cameracontroller"><input type="checkbox"><div class="body"><div class="names"><span class="n">CameraController</span> <span class="plus">+</span> <span class="n">MapCamera</span> <span class="tag core">CORE</span></div><div class="desc">Deadzone camera tracking / framing.</div></div></li>
+      <li class="item" data-id="turnmanager"><input type="checkbox"><div class="body"><div class="names"><span class="n">TurnManager</span> <span class="tag core">CORE</span></div><div class="desc">Battle orchestrator; runs the prologue, then the phase loop.</div><div class="uses"><b>uses:</b> <code>BattlePhaseManager</code>, <code>BattlePhase</code>, <code>TurnEventChannel</code>, <code>UnitRegistry</code>, <code>IBattlePrologue</code>, <code>IScriptedEnemyPhase</code></div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 5 -->
+  <section>
+    <div class="phase">Phase 5 — Beat 0 prologue (before turn 1)</div>
+    <ul class="list">
+      <li class="item" data-id="map1raidprologue"><input type="checkbox"><div class="body"><div class="names"><span class="n">Map1RaidPrologue</span> <span class="desc">(IBattlePrologue)</span> <span class="tag core">CORE</span></div><div class="desc">The scripted on-map raid cinematic.</div><div class="uses"><b>uses:</b> <code>WorldMarker</code>, <code>HitFlashEffect</code>, <code>SpriteFader</code>, <code>CameraController</code>, <code>GridCursor</code>, <code>DialogueService.PlayRoutine</code> (MAP1_PROLOGUE_ARANYA)</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 6 -->
+  <section>
+    <div class="phase">Phase 6 — Player / turn loop (interactive core)</div>
+    <ul class="list">
+      <li class="item" data-id="phasebannerui"><input type="checkbox"><div class="body"><div class="names"><span class="n">PhaseBannerUI</span> <span class="tag core">CORE</span></div><div class="desc">Slides the "Player Phase" banner; raises PhaseBannerFinished.</div></div></li>
+      <li class="item" data-id="dialoguetriggerdriver"><input type="checkbox"><div class="body"><div class="names"><span class="n">DialogueTriggerDriver</span> <span class="tag core">CORE</span></div><div class="desc">After the banner, fires the tutorial line (MAP1_T1_MOVE).</div><div class="uses"><b>uses:</b> <code>DialogueTrigger</code>, <code>BattleDialogueEventChannel</code>, <code>BattleDialogueEventType</code></div></div></li>
+      <li class="item" data-id="map1battledirector"><input type="checkbox"><div class="body"><div class="names"><span class="n">Map1BattleDirector</span> <span class="desc">(IScriptedEnemyPhase)</span> <span class="tag core">CORE</span></div><div class="desc">Scripted beats, intent telegraph, deterministic duels.</div><div class="uses"><b>uses:</b> <code>Map1Beat</code>, <code>Map1Tuning</code>, <code>EnemyIntentTelegraph</code>, <code>ObjectiveBannerUI</code>, <code>ScriptedCombatRng</code>, <code>CombatScriptOverride</code>, <code>WorldMarker</code>, <code>UnitMover</code>, <code>CameraController</code></div></div></li>
+      <li class="item" data-id="gridcursor"><input type="checkbox"><div class="body"><div class="names"><span class="n">GridCursor</span> <span class="tag core">CORE</span></div><div class="desc">Input hub + cursor-mode state machine.</div><div class="uses"><b>composes:</b> <code>UnitSelectionFlow</code>, <code>ActionMenuFlow</code>, <code>TargetingFlow</code>, <code>CantoFlow</code>, <code>AdjacentAllyFinder</code>; <b>uses:</b> <code>CursorMode</code>, <code>CursorAnimator</code>, <code>PathfindingService</code></div></div></li>
+      <li class="item" data-id="rangehighlighter"><input type="checkbox"><div class="body"><div class="names"><span class="n">RangeHighlighter</span> <span class="plus">+</span> <span class="n">PathArrowRenderer</span> <span class="tag core">CORE</span></div><div class="desc">Move/attack range tiles + the planning arrow.</div></div></li>
+      <li class="item" data-id="unitmover"><input type="checkbox"><div class="body"><div class="names"><span class="n">UnitMover</span> <span class="tag core">CORE</span></div><div class="desc">Animates a unit along the committed path.</div></div></li>
+      <li class="item" data-id="unitactionmenuui"><input type="checkbox"><div class="body"><div class="names"><span class="n">UnitActionMenuUI</span> <span class="tag core">CORE</span></div><div class="desc">The post-move Attack/Item/Wait menu.</div></div></li>
+      <li class="item" data-id="combatexecutor"><input type="checkbox"><div class="body"><div class="names"><span class="n">CombatExecutor</span> <span class="tag core">CORE</span></div><div class="desc">Resolves an attack and dispatches playback.</div><div class="uses"><b>combat core:</b> <code>CombatEngine</code>, <code>CombatRound</code>, <code>CombatForecast</code>, <code>IRng</code>/<code>ScriptedCombatRng</code>, <code>WeaponTriangle</code>, <code>StatUtils</code>, <code>HPThreshold</code>, <code>NiyatiSymbol</code>. <b>playback:</b> <code>CombatPlaybackDispatcher</code>, <code>CombatPlan</code>, <code>CombatPlaybackContext</code>, <code>CombatResultApplicator</code>, <code>BraveFlowComposer</code>, <code>CombatTiming</code></div></div></li>
+      <li class="item" data-id="combatforecastui"><input type="checkbox"><div class="body"><div class="names"><span class="n">CombatForecastUI</span> <span class="plus">+</span> <span class="n">CombatForecastRefs</span> <span class="tag core">CORE</span></div><div class="desc">Pre-combat odds panel.</div></div></li>
+      <li class="item" data-id="skipmodeplayback"><input type="checkbox"><div class="body"><div class="names"><span class="n">SkipModePlaybackController</span> <span class="tag core">CORE</span></div><div class="desc">Fast/skip combat resolution path.</div></div></li>
+      <li class="item" data-id="combatplayback-overlay"><input type="checkbox"><div class="body"><div class="names"><span class="n">CombatPlaybackController</span> <span class="plus">+</span> <span class="n">CombatFighterView</span> <span class="plus">+</span> <span class="n">CombatSceneRefs</span> <span class="tag core">CORE</span></div><div class="desc">Combat-animation overlay (on the CombatAnimation state) → HitFlashEffect.</div></div></li>
+      <li class="item" data-id="battlemaphud"><input type="checkbox"><div class="body"><div class="names"><span class="n">BattleMapHUDController</span> <span class="plus">+</span> <span class="n">BattleMapUI</span> <span class="tag core">CORE</span></div><div class="desc">HUD + pause entry (live the whole battle).</div></div></li>
+      <li class="item" data-id="unitinfopanelui"><input type="checkbox"><div class="body"><div class="names"><span class="n">UnitInfoPanelUI</span> <span class="tag core">CORE</span></div><div class="desc">Unit inspector.</div><div class="uses"><b>with:</b> <code>UnitInfoItemDetailUI</code>, <code>UnitInfoSupportDetailUI</code>, <code>UnitInfoContext</code></div></div></li>
+      <li class="item" data-id="maphpbar"><input type="checkbox"><div class="body"><div class="names"><span class="n">MapHpBar</span> <span class="plus">+</span> <span class="n">MapDamageFloat</span> <span class="tag core">CORE</span></div><div class="desc">On-map HP bars + damage numbers.</div></div></li>
+      <li class="item" data-id="toastnotificationui"><input type="checkbox"><div class="body"><div class="names"><span class="n">ToastNotificationUI</span> <span class="plus">+</span> <span class="n">ConfirmDialogUI</span> <span class="tag core">CORE</span></div><div class="desc">Toasts + confirm prompts.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 7 -->
+  <section>
+    <div class="phase">Phase 7 — Enemy phase / scripted beats <span class="note">— driven by TurnManager → Map1BattleDirector.TryBuildPhaseScript (no new scripts; determinism via ScriptedCombatRng, deaths via UnitDeathHook → UnitDeathEventChannel)</span></div>
+  </section>
+
+  <!-- PHASE 8 -->
+  <section>
+    <div class="phase">Phase 8 — Victory &amp; post-victory wrap</div>
+    <ul class="list">
+      <li class="item" data-id="expgranter"><input type="checkbox"><div class="body"><div class="names"><span class="n">ExpGranter</span> <span class="tag core">CORE</span></div><div class="desc">Grants EXP after kills, triggers level-up.</div><div class="uses"><b>uses:</b> <code>UnitInstance</code>, <code>ExpMath</code>, <code>StatArray</code>/<code>StatUtils</code></div></div></li>
+      <li class="item" data-id="expoverlay"><input type="checkbox"><div class="body"><div class="names"><span class="n">ExpGainOverlayUI</span> <span class="plus">+</span> <span class="n">LevelUpScreenUI</span> <span class="tag core">CORE</span></div><div class="desc">EXP count-up + the level-up screen.</div></div></li>
+      <li class="item" data-id="battlevictorywatcher"><input type="checkbox"><div class="body"><div class="names"><span class="n">BattleVictoryWatcher</span> <span class="tag core">CORE</span></div><div class="desc">Detects the win, drives the transition into ChapterClear / back into GameFlow.</div></div></li>
+      <li class="item" data-id="commitmenttracker"><input type="checkbox"><div class="body"><div class="names"><span class="n">CommitmentTracker</span> <span class="plus">+</span> <span class="n">DeterministicCommitmentEvaluator</span> <span class="tag core">CORE</span></div><div class="desc">Passive trackers running through the battle, read at the end.</div><div class="uses"><b>with:</b> <code>Commitment</code> (e.g. ProtectSuvarnapurVillage), <code>ChapterContext</code>, <code>DeathRegistry</code>, <code>NamedCommanderScanner</code>, <code>WarLedgerUI</code> (+ <code>WarLedgerRefs</code>, <code>WarLedgerServices</code>)</div></div></li>
+      <li class="item" data-id="chapterclearui"><input type="checkbox"><div class="body"><div class="names"><span class="n">ChapterClearUI</span> <span class="tag core">CORE</span></div><div class="desc">Chapter-clear screen → on to the ending cutscene.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- PHASE 9 -->
+  <section>
+    <div class="phase">Phase 9 — Ending cutscene → Title</div>
+    <ul class="list">
+      <li class="item" data-id="cutsceneui-end"><input type="checkbox"><div class="body"><div class="names"><span class="n">CutsceneUI</span> <span class="desc">(ending)</span> <span class="tag core">CORE</span></div><div class="desc">Plays ENDING_CH01 via DialogueService; on finish GameFlow reports campaign-complete → back to TitleScreenUI.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- CONDITIONAL -->
+  <section>
+    <div class="phase">Present in BattleMap but conditional <span class="note">— only fire if triggered; Map 1's flow usually doesn't</span></div>
+    <ul class="list">
+      <li class="item" data-id="c-inventory"><input type="checkbox"><div class="body"><div class="names"><span class="n">Inventory UI</span> <span class="tag cond">COND</span></div><div class="desc">InventoryMenuUI, InventoryFullPromptUI, InventoryPopupRefs, ItemBreakToaster, ItemSortComparer, InventoryAcquisition, EquipResolver, ConsumableEffects — only when a unit's items are opened.</div></div></li>
+      <li class="item" data-id="c-trade"><input type="checkbox"><div class="body"><div class="names"><span class="n">Trade</span> <span class="tag cond">COND</span></div><div class="desc">TradeScreenUI, TradeSession, TradeScreenRowVisuals — only if trade is opened.</div></div></li>
+      <li class="item" data-id="c-convoy"><input type="checkbox"><div class="body"><div class="names"><span class="n">Convoy</span> <span class="tag cond">COND</span></div><div class="desc">ConvoyBootstrap (Awake does init the convoy), ConvoyUI, SupplyConvoy, SupplyConvoyRefs, IConvoy — UI only if opened.</div></div></li>
+      <li class="item" data-id="c-staff"><input type="checkbox"><div class="body"><div class="names"><span class="n">Staff / healing</span> <span class="tag cond">COND</span></div><div class="desc">StaffExecutor, StaffEffects, StaffRangeResolver, HealingTileSystem, HealFloatSpawner, ConsumableEffects — Map 1 has no healer / heal-tiles in the core flow.</div></div></li>
+      <li class="item" data-id="c-pause"><input type="checkbox"><div class="body"><div class="names"><span class="n">Pause / menus</span> <span class="tag cond">COND</span></div><div class="desc">BattleMapPausedOverlayUI, SaveMenuOverlayUI, SettingsMenuOverlayUI — only if the player pauses.</div></div></li>
+      <li class="item" data-id="c-flying"><input type="checkbox"><div class="body"><div class="names"><span class="n">FlyingHoverAnimator</span> <span class="tag cond">COND</span></div><div class="desc">Only with a flying unit.</div></div></li>
+    </ul>
+  </section>
+
+  <!-- OUT OF FLOW -->
+  <section>
+    <div class="phase">Defined but not part of this win flow</div>
+    <ul class="list">
+      <li class="item" data-id="o-loss"><input type="checkbox"><div class="body"><div class="names"><span class="n">Loss branch</span> <span class="tag out">OUT</span></div><div class="desc">LordDeathWatcher, GameOverUI, UnitDeathHook (loss path) — fire only on defeat.</div></div></li>
+      <li class="item" data-id="o-bypassed"><input type="checkbox"><div class="body"><div class="names"><span class="n">Bypassed / unused screens</span> <span class="tag out">OUT</span></div><div class="desc">MainMenuUI (removed from flow), PreBattlePrepUI (not in campaign), DialogueOverlayUI (old Dialogue.prefab; DialogueService owns the real view).</div></div></li>
+      <li class="item" data-id="o-stubs"><input type="checkbox"><div class="body"><div class="names"><span class="n">Future-stub interfaces</span> <span class="tag out">OUT</span></div><div class="desc">IFogOfWarProvider, ICivilianThreadService, IDeathEpitaphProvider, ISupportProvider/ISupportBonusProvider/SupportCombatBonus/BondStage, ITemporaryModifierProvider, IPersistable, WeaponRankTracker.</div></div></li>
+    </ul>
+  </section>
+
+  <div class="foot">Source: <code>docs/architecture/map1-flow-scripts.html</code>. Excludes external packages, editor tooling (<code>*Builder.cs</code>, <code>Core/Editor</code>), and tests. Checklist state lives in this browser's localStorage under <code>map1-checklist:*</code>.</div>
+
+</div>
+
+<script>
+(function () {
+  var KEY = "map1-checklist:";
+  var items = Array.prototype.slice.call(document.querySelectorAll("li.item"));
+  var doneEl = document.getElementById("done");
+  var totalEl = document.getElementById("total");
+  var fillEl = document.getElementById("fill");
+
+  totalEl.textContent = items.length;
+
+  function refresh() {
+    var n = items.filter(function (li) { return li.classList.contains("done"); }).length;
+    doneEl.textContent = n;
+    fillEl.style.width = items.length ? (100 * n / items.length) + "%" : "0%";
+  }
+
+  items.forEach(function (li) {
+    var id = li.getAttribute("data-id");
+    var box = li.querySelector("input[type=checkbox]");
+    var checked = false;
+    try { checked = localStorage.getItem(KEY + id) === "1"; } catch (e) {}
+    box.checked = checked;
+    li.classList.toggle("done", checked);
+
+    function set(v) {
+      box.checked = v;
+      li.classList.toggle("done", v);
+      try { v ? localStorage.setItem(KEY + id, "1") : localStorage.removeItem(KEY + id); } catch (e) {}
+      refresh();
+    }
+    box.addEventListener("change", function () { set(box.checked); });
+    // clicking the name row toggles too (but let the checkbox handle its own clicks)
+    li.querySelector(".names").addEventListener("click", function () { set(!box.checked); });
+  });
+
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("Clear all checkmarks?")) return;
+    items.forEach(function (li) {
+      var id = li.getAttribute("data-id");
+      li.classList.remove("done");
+      li.querySelector("input[type=checkbox]").checked = false;
+      try { localStorage.removeItem(KEY + id); } catch (e) {}
+    });
+    refresh();
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
