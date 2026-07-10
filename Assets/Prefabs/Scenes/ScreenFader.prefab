@@ -87,7 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c753c8f44b8cac41bb6526b0408503f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Scenes.ScreenFader
-  fadeSettings: {fileID: 11400000, guid: b2000115f639b304eb5df3ea97200598, type: 2}
+  sceneFadeSettings: {fileID: 11400000, guid: b2000115f639b304eb5df3ea97200598, type: 2}
 --- !u!1 &6575380922446074333
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: SceneFadeSettings
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Scenes.SceneFadeSettings
   fadeDuration: 0.35
+  maxFadeStep: 0.033333335
+  opaque: 1
+  transparent: 0
