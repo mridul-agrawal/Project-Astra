@@ -12,6 +12,10 @@ namespace ProjectAstra.Core.Units
 
         private Dictionary<string, UnitDefinition> _byId;
 
+        // The registered units, in author order. Editor tooling reads this to offer a picker of
+        // the ids that will actually resolve at runtime.
+        public IReadOnlyList<UnitDefinition> Units => _units;
+
         public bool TryResolve(string unitId, out UnitDefinition definition)
         {
             EnsureIndexBuilt();
