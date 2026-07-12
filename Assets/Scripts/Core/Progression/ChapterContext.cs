@@ -23,12 +23,12 @@ namespace ProjectAstra.Core.Progression
     // entries with the correct chapter number.
     public class ChapterMeta : MonoBehaviour
     {
-        [SerializeField] private int _chapterNumber = 1;
-        [SerializeField] private string _chapterTitle = "";
+        [SerializeField] private int chapterNumber = 1;
+        [SerializeField] private string chapterTitle = "";
 
         private void Awake()
         {
-            ChapterContext.SetFromScene(_chapterNumber, _chapterTitle);
+            ChapterContext.SetFromScene(chapterNumber, chapterTitle);
         }
     }
 }

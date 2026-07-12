@@ -9,9 +9,9 @@ namespace ProjectAstra.Core.Stats
     {
         public const int Length = 9;
 
-        [SerializeField] private int[] _values;
+        [SerializeField] private int[] values;
 
-        public static StatArray Create() => new StatArray { _values = new int[Length] };
+        public static StatArray Create() => new StatArray { values = new int[Length] };
 
         public static StatArray From(int hp, int str, int mag, int skl, int spd, int def, int res, int con, int niyati)
         {
@@ -30,15 +30,15 @@ namespace ProjectAstra.Core.Stats
 
         public int this[StatIndex index]
         {
-            get { EnsureInitialized(); return _values[(int)index]; }
-            set { EnsureInitialized(); _values[(int)index] = value; }
+            get { EnsureInitialized(); return values[(int)index]; }
+            set { EnsureInitialized(); values[(int)index] = value; }
         }
 
         // Allocates _values on first access; without this, default(StatArray) would null-ref on read.
         private void EnsureInitialized()
         {
-            if (_values == null || _values.Length != Length)
-                _values = new int[Length];
+            if (values == null || values.Length != Length)
+                values = new int[Length];
         }
     }
 }

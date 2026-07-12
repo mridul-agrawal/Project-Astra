@@ -18,24 +18,24 @@ namespace ProjectAstra.Core.Cursor
     // for Heal and OnActionSelected.Fortify for Fortify).
     public class StaffExecutor
     {
-        private readonly CombatForecastUI _combatForecastUI;
-        private readonly ToastNotificationUI _toastUI;
+        private readonly CombatForecastUI combatForecastUI;
+        private readonly ToastNotificationUI toastUI;
 
         public StaffExecutor(CombatForecastUI combatForecastUI, ToastNotificationUI toastUI)
         {
-            _combatForecastUI = combatForecastUI;
-            _toastUI = toastUI;
+            this.combatForecastUI = combatForecastUI;
+            this.toastUI = toastUI;
         }
 
         // Single-target heal. Early-outs (no target, broken staff) still fire
         // onComplete so the caller never has to branch.
         public void TryCommitHeal(TestUnit healer, TestUnit target, Action onComplete)
         {
-            _combatForecastUI?.Hide();
+            combatForecastUI?.Hide();
 
             if (target == null) { onComplete?.Invoke(); return; }
 
-            ItemBreakToaster.WithBreakAnnouncements(healer, _toastUI, () =>
+            ItemBreakToaster.WithBreakAnnouncements(healer, toastUI, () =>
             {
                 if (healer.Inventory.TryUseStaff(target, out int healed, out string fail))
                 {
@@ -56,7 +56,7 @@ namespace ProjectAstra.Core.Cursor
             var allUnits = new List<TestUnit>(
                 UnityEngine.Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None));
 
-            ItemBreakToaster.WithBreakAnnouncements(healer, _toastUI, () =>
+            ItemBreakToaster.WithBreakAnnouncements(healer, toastUI, () =>
             {
                 if (healer.Inventory.TryUseFortify(allUnits, out var healed, out string fail))
                 {

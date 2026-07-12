@@ -12,49 +12,49 @@ namespace ProjectAstra.Core.Tests.State
     [TestFixture]
     public class GameStateManagerTests
     {
-        private GameObject _go;
-        private GameObject _eventServiceGo;
-        private GameStateManager _manager;
-        private GameStateTransitionTable _table;
-        private GameStateEventChannel _channel;
+        private GameObject go;
+        private GameObject eventServiceGo;
+        private GameStateManager manager;
+        private GameStateTransitionTable table;
+        private GameStateEventChannel channel;
 
         [SetUp]
         public void SetUp()
         {
-            _go = new GameObject("TestGameStateManager");
-            _manager = _go.AddComponent<GameStateManager>();
-            _table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
-            _channel = ScriptableObject.CreateInstance<GameStateEventChannel>();
+            go = new GameObject("TestGameStateManager");
+            manager = go.AddComponent<GameStateManager>();
+            table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
+            channel = ScriptableObject.CreateInstance<GameStateEventChannel>();
 
-            _eventServiceGo = new GameObject("TestEventService");
-            _eventServiceGo.AddComponent<EventService>().InitializeForTest(_channel, null, null, null);
+            eventServiceGo = new GameObject("TestEventService");
+            eventServiceGo.AddComponent<EventService>().InitializeForTest(channel, null, null, null);
 
             var field = typeof(GameStateTransitionTable).GetField("validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
+            field.SetValue(table, GameStateTransitionTable.CreateDefaultTransitions());
 
-            _manager.Initialize(_table, GameState.TitleScreen);
+            manager.Initialize(table, GameState.TitleScreen);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (GameStateManager.Instance == _manager)
+            if (GameStateManager.Instance == manager)
             {
                 var instanceProp = typeof(GameStateManager).GetProperty("Instance",
                     System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                 instanceProp.SetValue(null, null);
             }
-            UnityEngine.Object.DestroyImmediate(_go);
-            UnityEngine.Object.DestroyImmediate(_eventServiceGo);
-            UnityEngine.Object.DestroyImmediate(_table);
-            UnityEngine.Object.DestroyImmediate(_channel);
+            UnityEngine.Object.DestroyImmediate(go);
+            UnityEngine.Object.DestroyImmediate(eventServiceGo);
+            UnityEngine.Object.DestroyImmediate(table);
+            UnityEngine.Object.DestroyImmediate(channel);
         }
 
         [Test]
         public void InitialState_IsTitleScreen()
         {
-            Assert.AreEqual(GameState.TitleScreen, _manager.CurrentState);
+            Assert.AreEqual(GameState.TitleScreen, manager.CurrentState);
         }
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]
@@ -93,13 +93,13 @@ namespace ProjectAstra.Core.Tests.State
         public void ValidTransition_Succeeds(GameState startState, GameState target)
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(startState, "test setup");
-            _manager.ResetFrameGate();
+            manager.ForceState(startState, "test setup");
+            manager.ResetFrameGate();
 
-            bool result = _manager.RequestTransition(target, "test");
+            bool result = manager.RequestTransition(target, "test");
 
             Assert.IsTrue(result, $"Transition {startState} -> {target} should succeed");
-            Assert.AreEqual(target, _manager.CurrentState);
+            Assert.AreEqual(target, manager.CurrentState);
         }
 
         [TestCase(GameState.TitleScreen, GameState.BattleMap)]
@@ -108,46 +108,46 @@ namespace ProjectAstra.Core.Tests.State
         public void IllegalTransition_Rejected_StateUnchanged(GameState startState, GameState target)
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(startState, "test setup");
-            _manager.ResetFrameGate();
+            manager.ForceState(startState, "test setup");
+            manager.ResetFrameGate();
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition"));
-            bool result = _manager.RequestTransition(target, "test");
+            bool result = manager.RequestTransition(target, "test");
 
             Assert.IsFalse(result, $"Transition {startState} -> {target} should be rejected");
-            Assert.AreEqual(startState, _manager.CurrentState, "State should remain unchanged");
+            Assert.AreEqual(startState, manager.CurrentState, "State should remain unchanged");
         }
 
         [Test]
         public void SecondTransitionSameFrame_IsDiscarded()
         {
-            bool first = _manager.RequestTransition(GameState.MainMenu, "first");
+            bool first = manager.RequestTransition(GameState.MainMenu, "first");
             Assert.IsTrue(first);
 
             LogAssert.Expect(LogType.Warning, new Regex(@"\[GameStateManager\] Transition to .+ discarded"));
-            bool second = _manager.RequestTransition(GameState.Cutscene, "second");
+            bool second = manager.RequestTransition(GameState.Cutscene, "second");
             Assert.IsFalse(second);
-            Assert.AreEqual(GameState.MainMenu, _manager.CurrentState);
+            Assert.AreEqual(GameState.MainMenu, manager.CurrentState);
         }
 
         [Test]
         public void AfterFrameGateReset_TransitionSucceeds()
         {
-            _manager.RequestTransition(GameState.MainMenu, "first");
-            _manager.ResetFrameGate();
+            manager.RequestTransition(GameState.MainMenu, "first");
+            manager.ResetFrameGate();
 
-            bool result = _manager.RequestTransition(GameState.Cutscene, "second");
+            bool result = manager.RequestTransition(GameState.Cutscene, "second");
             Assert.IsTrue(result);
-            Assert.AreEqual(GameState.Cutscene, _manager.CurrentState);
+            Assert.AreEqual(GameState.Cutscene, manager.CurrentState);
         }
 
         [Test]
         public void StateChangedEvent_ContainsCorrectPreviousAndNewState()
         {
             StateChangeArgs? received = null;
-            _channel.Register(args => received = args);
+            channel.Register(args => received = args);
 
-            _manager.RequestTransition(GameState.MainMenu, "test");
+            manager.RequestTransition(GameState.MainMenu, "test");
 
             Assert.IsNotNull(received);
             Assert.AreEqual(GameState.TitleScreen, received.Value.PreviousState);
@@ -158,10 +158,10 @@ namespace ProjectAstra.Core.Tests.State
         public void StateChangedEvent_DoesNotFireOnIllegalTransition()
         {
             StateChangeArgs? received = null;
-            _channel.Register(args => received = args);
+            channel.Register(args => received = args);
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition"));
-            _manager.RequestTransition(GameState.BattleMap, "test");
+            manager.RequestTransition(GameState.BattleMap, "test");
 
             Assert.IsNull(received);
         }
@@ -169,53 +169,53 @@ namespace ProjectAstra.Core.Tests.State
         [Test]
         public void SaveMenu_StoresMenuReturnState()
         {
-            _manager.RequestTransition(GameState.MainMenu, "test");
-            _manager.ResetFrameGate();
-            _manager.RequestTransition(GameState.BattleMap, "test");
-            _manager.ResetFrameGate();
-            _manager.RequestTransition(GameState.BattleMapPaused, "test");
-            _manager.ResetFrameGate();
+            manager.RequestTransition(GameState.MainMenu, "test");
+            manager.ResetFrameGate();
+            manager.RequestTransition(GameState.BattleMap, "test");
+            manager.ResetFrameGate();
+            manager.RequestTransition(GameState.BattleMapPaused, "test");
+            manager.ResetFrameGate();
 
-            _manager.RequestTransition(GameState.SaveMenu, "test");
+            manager.RequestTransition(GameState.SaveMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, _manager.MenuReturnState);
+            Assert.AreEqual(GameState.BattleMapPaused, manager.MenuReturnState);
         }
 
         [Test]
         public void SettingsMenu_StoresMenuReturnState()
         {
-            _manager.RequestTransition(GameState.MainMenu, "test");
-            _manager.ResetFrameGate();
-            _manager.RequestTransition(GameState.BattleMap, "test");
-            _manager.ResetFrameGate();
-            _manager.RequestTransition(GameState.BattleMapPaused, "test");
-            _manager.ResetFrameGate();
+            manager.RequestTransition(GameState.MainMenu, "test");
+            manager.ResetFrameGate();
+            manager.RequestTransition(GameState.BattleMap, "test");
+            manager.ResetFrameGate();
+            manager.RequestTransition(GameState.BattleMapPaused, "test");
+            manager.ResetFrameGate();
 
-            _manager.RequestTransition(GameState.SettingsMenu, "test");
+            manager.RequestTransition(GameState.SettingsMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, _manager.MenuReturnState);
+            Assert.AreEqual(GameState.BattleMapPaused, manager.MenuReturnState);
         }
 
         [Test]
         public void ReturnFromContextMenu_TransitionsToStoredContext()
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(GameState.BattleMapPaused, "test setup");
-            _manager.ResetFrameGate();
-            _manager.RequestTransition(GameState.SaveMenu, "test");
-            _manager.ResetFrameGate();
+            manager.ForceState(GameState.BattleMapPaused, "test setup");
+            manager.ResetFrameGate();
+            manager.RequestTransition(GameState.SaveMenu, "test");
+            manager.ResetFrameGate();
 
-            bool result = _manager.ReturnFromContextMenu("test");
+            bool result = manager.ReturnFromContextMenu("test");
 
             Assert.IsTrue(result);
-            Assert.AreEqual(GameState.BattleMapPaused, _manager.CurrentState);
+            Assert.AreEqual(GameState.BattleMapPaused, manager.CurrentState);
         }
 
         [Test]
         public void ReturnFromContextMenu_RejectsIfNotInContextMenuState()
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ReturnFromContextMenu called from invalid state"));
-            bool result = _manager.ReturnFromContextMenu("test");
+            bool result = manager.ReturnFromContextMenu("test");
             Assert.IsFalse(result);
         }
 
@@ -223,18 +223,18 @@ namespace ProjectAstra.Core.Tests.State
         public void ForceState_BypassesTransitionTable()
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(GameState.BattleMap, "test recovery");
-            Assert.AreEqual(GameState.BattleMap, _manager.CurrentState);
+            manager.ForceState(GameState.BattleMap, "test recovery");
+            Assert.AreEqual(GameState.BattleMap, manager.CurrentState);
         }
 
         [Test]
         public void ForceState_RaisesEvent()
         {
             StateChangeArgs? received = null;
-            _channel.Register(args => received = args);
+            channel.Register(args => received = args);
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
-            _manager.ForceState(GameState.MainMenu, "test");
+            manager.ForceState(GameState.MainMenu, "test");
 
             Assert.IsNotNull(received);
             Assert.AreEqual(GameState.TitleScreen, received.Value.PreviousState);

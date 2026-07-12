@@ -8,27 +8,27 @@ namespace ProjectAstra.Core.Units
     [CreateAssetMenu(menuName = "Project Astra/Units/Unit Database")]
     public class UnitDatabase : ScriptableObject
     {
-        [SerializeField] private List<UnitDefinition> _units = new();
+        [SerializeField] private List<UnitDefinition> units = new();
 
-        private Dictionary<string, UnitDefinition> _byId;
+        private Dictionary<string, UnitDefinition> byId;
 
         // The registered units, in author order. Editor tooling reads this to offer a picker of
         // the ids that will actually resolve at runtime.
-        public IReadOnlyList<UnitDefinition> Units => _units;
+        public IReadOnlyList<UnitDefinition> Units => units;
 
         public bool TryResolve(string unitId, out UnitDefinition definition)
         {
             EnsureIndexBuilt();
-            return _byId.TryGetValue(unitId ?? string.Empty, out definition);
+            return byId.TryGetValue(unitId ?? string.Empty, out definition);
         }
 
         private void EnsureIndexBuilt()
         {
-            if (_byId != null) return;
-            _byId = new Dictionary<string, UnitDefinition>();
-            foreach (UnitDefinition unit in _units)
+            if (byId != null) return;
+            byId = new Dictionary<string, UnitDefinition>();
+            foreach (UnitDefinition unit in units)
                 if (unit != null && !string.IsNullOrEmpty(unit.UnitId))
-                    _byId[unit.UnitId] = unit;
+                    byId[unit.UnitId] = unit;
         }
     }
 }

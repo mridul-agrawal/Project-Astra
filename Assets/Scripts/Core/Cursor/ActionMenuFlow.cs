@@ -30,32 +30,32 @@ namespace ProjectAstra.Core.Cursor
     // GridCursor's selection-flow concerns, not ActionMenu's.
     public class ActionMenuFlow
     {
-        private readonly UnitActionMenuUI _actionMenuUI;
-        private readonly InventoryMenuUI _inventoryMenuUI;
-        private readonly ConfirmDialogUI _confirmDialogUI;
-        private readonly TradeScreenUI _tradeUI;
-        private readonly ConvoyUI _convoyUI;
-        private readonly ToastNotificationUI _toastUI;
-        private readonly TargetingFlow _targetingFlow;
-        private readonly StaffExecutor _staffExecutor;
-        private readonly GridCursor _cursor;
+        private readonly UnitActionMenuUI actionMenuUI;
+        private readonly InventoryMenuUI inventoryMenuUI;
+        private readonly ConfirmDialogUI confirmDialogUI;
+        private readonly TradeScreenUI tradeUI;
+        private readonly ConvoyUI convoyUI;
+        private readonly ToastNotificationUI toastUI;
+        private readonly TargetingFlow targetingFlow;
+        private readonly StaffExecutor staffExecutor;
+        private readonly GridCursor cursor;
 
-        private TestUnit _selectedUnit;
-        private Vector2Int _committedDestination;
-        private Action _onComplete;
-        private Action _onCancelToUnitSelected;
+        private TestUnit selectedUnit;
+        private Vector2Int committedDestination;
+        private Action onComplete;
+        private Action onCancelToUnitSelected;
 
-        private readonly List<ActionChoice> _choices = new();
-        private List<Vector2Int> _enemyTiles = new();
-        private List<Vector2Int> _healTiles = new();
-        private List<TestUnit> _adjacentAllies = new();
-        private ActionChoice? _lastChoice;
+        private readonly List<ActionChoice> choices = new();
+        private List<Vector2Int> enemyTiles = new();
+        private List<Vector2Int> healTiles = new();
+        private List<TestUnit> adjacentAllies = new();
+        private ActionChoice? lastChoice;
 
-        public ActionChoice? LastChoice => _lastChoice;
+        public ActionChoice? LastChoice => lastChoice;
 
         // Cleared by GridCursor at end of turn / unit deselect so the next
         // selection starts fresh.
-        public void ClearLastChoice() => _lastChoice = null;
+        public void ClearLastChoice() => lastChoice = null;
 
         public ActionMenuFlow(
             UnitActionMenuUI actionMenuUI,
@@ -68,15 +68,15 @@ namespace ProjectAstra.Core.Cursor
             StaffExecutor staffExecutor,
             GridCursor cursor)
         {
-            _actionMenuUI = actionMenuUI;
-            _inventoryMenuUI = inventoryMenuUI;
-            _confirmDialogUI = confirmDialogUI;
-            _tradeUI = tradeUI;
-            _convoyUI = convoyUI;
-            _toastUI = toastUI;
-            _targetingFlow = targetingFlow;
-            _staffExecutor = staffExecutor;
-            _cursor = cursor;
+            this.actionMenuUI = actionMenuUI;
+            this.inventoryMenuUI = inventoryMenuUI;
+            this.confirmDialogUI = confirmDialogUI;
+            this.tradeUI = tradeUI;
+            this.convoyUI = convoyUI;
+            this.toastUI = toastUI;
+            this.targetingFlow = targetingFlow;
+            this.staffExecutor = staffExecutor;
+            this.cursor = cursor;
         }
 
         // Shows the action menu for the unit at its just-committed destination.
@@ -86,14 +86,14 @@ namespace ProjectAstra.Core.Cursor
         public void Show(TestUnit unit, Vector2Int committedDestination,
             Action onComplete, Action onCancelToUnitSelected)
         {
-            _selectedUnit = unit;
-            _committedDestination = committedDestination;
-            _onComplete = onComplete;
-            _onCancelToUnitSelected = onCancelToUnitSelected;
+            selectedUnit = unit;
+            this.committedDestination = committedDestination;
+            this.onComplete = onComplete;
+            this.onCancelToUnitSelected = onCancelToUnitSelected;
 
             var labels = new List<string>();
-            _choices.Clear();
-            _enemyTiles = _targetingFlow.GetEnemiesInAttackRange(_selectedUnit, _committedDestination);
+            choices.Clear();
+            enemyTiles = targetingFlow.GetEnemiesInAttackRange(selectedUnit, committedDestination);
 
             TryAddAttackAction(labels);
             TryAddStaffAction(labels);
@@ -102,28 +102,28 @@ namespace ProjectAstra.Core.Cursor
             TryAddSupplyAction(labels);
 
             labels.Add("Wait");
-            _choices.Add(ActionChoice.Wait);
+            choices.Add(ActionChoice.Wait);
 
-            _cursor.SetMode(CursorMode.ActionMenu);
-            _actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
+            cursor.SetMode(CursorMode.ActionMenu);
+            actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
         }
 
         // --- Per-action eligibility ---
 
         private void TryAddAttackAction(List<string> labels)
         {
-            if (_enemyTiles.Count == 0) return;
-            if (_selectedUnit == null || _selectedUnit.Inventory.IsUnarmed) return;
+            if (enemyTiles.Count == 0) return;
+            if (selectedUnit == null || selectedUnit.Inventory.IsUnarmed) return;
 
             labels.Add("Attack");
-            _choices.Add(ActionChoice.Attack);
+            choices.Add(ActionChoice.Attack);
         }
 
         private void TryAddStaffAction(List<string> labels)
         {
-            if (_selectedUnit == null) return;
+            if (selectedUnit == null) return;
 
-            var staff = _selectedUnit.equippedWeapon;
+            var staff = selectedUnit.equippedWeapon;
             if (staff.weaponType != WeaponType.Staff) return;
             if (staff.staffEffect == StaffEffect.None || staff.IsBroken) return;
 
@@ -135,88 +135,88 @@ namespace ProjectAstra.Core.Cursor
 
         private void TryAddFortifyAction(List<string> labels)
         {
-            var staff = _selectedUnit.equippedWeapon;
-            int mag = GetMagStat(_selectedUnit);
+            var staff = selectedUnit.equippedWeapon;
+            int mag = GetMagStat(selectedUnit);
             var allUnits = UnityEngine.Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None);
 
             foreach (var u in allUnits)
             {
-                if (u == _selectedUnit) continue;
-                if (!StaffEffects.CanHealTarget(_selectedUnit, u, staff, mag, out _)) continue;
+                if (u == selectedUnit) continue;
+                if (!StaffEffects.CanHealTarget(selectedUnit, u, staff, mag, out _)) continue;
 
                 labels.Add("Fortify");
-                _choices.Add(ActionChoice.Fortify);
+                choices.Add(ActionChoice.Fortify);
                 return;
             }
         }
 
         private void TryAddHealAction(List<string> labels)
         {
-            _healTiles = _targetingFlow.GetAlliesInHealRange(
-                _selectedUnit, _committedDestination, GetMagStat(_selectedUnit));
-            if (_healTiles.Count == 0) return;
+            healTiles = targetingFlow.GetAlliesInHealRange(
+                selectedUnit, committedDestination, GetMagStat(selectedUnit));
+            if (healTiles.Count == 0) return;
 
             labels.Add("Heal");
-            _choices.Add(ActionChoice.Heal);
+            choices.Add(ActionChoice.Heal);
         }
 
         private void TryAddItemAction(List<string> labels)
         {
-            if (_selectedUnit == null || _selectedUnit.Inventory.OccupiedCount == 0) return;
+            if (selectedUnit == null || selectedUnit.Inventory.OccupiedCount == 0) return;
 
             labels.Add("Item");
-            _choices.Add(ActionChoice.Item);
+            choices.Add(ActionChoice.Item);
         }
 
         private void TryAddTradeAction(List<string> labels)
         {
-            _adjacentAllies = _selectedUnit != null
+            adjacentAllies = selectedUnit != null
                 ? AdjacentAllyFinder.FindAdjacentAllies(
-                    _committedDestination, Faction.Player, _selectedUnit, FindUnitAt)
+                    committedDestination, Faction.Player, selectedUnit, FindUnitAt)
                 : new List<TestUnit>();
 
-            if (_adjacentAllies.Count == 0) return;
+            if (adjacentAllies.Count == 0) return;
 
             labels.Add("Trade");
-            _choices.Add(ActionChoice.Trade);
+            choices.Add(ActionChoice.Trade);
         }
 
         private void TryAddSupplyAction(List<string> labels)
         {
-            if (_selectedUnit == null || !_selectedUnit.isLord) return;
+            if (selectedUnit == null || !selectedUnit.isLord) return;
             if (!Convoy.Current.IsAvailable) return;
 
             labels.Add("Supply");
-            _choices.Add(ActionChoice.Supply);
+            choices.Add(ActionChoice.Supply);
         }
 
         // --- Dispatch ---
 
         private void OnActionSelected(int index)
         {
-            if (index < 0 || index >= _choices.Count)
+            if (index < 0 || index >= choices.Count)
             {
-                _lastChoice = ActionChoice.Wait;
-                _onComplete?.Invoke();
+                lastChoice = ActionChoice.Wait;
+                onComplete?.Invoke();
                 return;
             }
 
-            _lastChoice = _choices[index];
+            lastChoice = choices[index];
 
-            switch (_choices[index])
+            switch (choices[index])
             {
                 case ActionChoice.Attack: EnterAttackTargeting(); break;
                 case ActionChoice.Heal: EnterHealTargeting(); break;
-                case ActionChoice.Fortify: _staffExecutor.TryCommitFortify(_selectedUnit, _onComplete); break;
+                case ActionChoice.Fortify: staffExecutor.TryCommitFortify(selectedUnit, onComplete); break;
                 case ActionChoice.Item: OpenInventoryMenu(); break;
                 case ActionChoice.Trade: ShowTradeTargetMenu(); break;
                 case ActionChoice.Supply: OpenConvoyUI(); break;
                 case ActionChoice.Wait:
-                default: _onComplete?.Invoke(); break;
+                default: onComplete?.Invoke(); break;
             }
         }
 
-        private void OnActionCancelled() => _onCancelToUnitSelected?.Invoke();
+        private void OnActionCancelled() => onCancelToUnitSelected?.Invoke();
 
         // Attack/Heal need _validMoveTiles in GridCursor to be set to the
         // target set before TargetingFlow takes over, because the cursor
@@ -225,69 +225,69 @@ namespace ProjectAstra.Core.Cursor
         // callback on the cursor's SetValidMoveTiles seam (added below).
         private void EnterAttackTargeting()
         {
-            if (_enemyTiles.Count == 0) { _onComplete?.Invoke(); return; }
-            _cursor.SetValidMoveTiles(new HashSet<Vector2Int>(_enemyTiles));
-            _targetingFlow.EnterAttackTargeting(_selectedUnit, _enemyTiles);
+            if (enemyTiles.Count == 0) { onComplete?.Invoke(); return; }
+            cursor.SetValidMoveTiles(new HashSet<Vector2Int>(enemyTiles));
+            targetingFlow.EnterAttackTargeting(selectedUnit, enemyTiles);
         }
 
         private void EnterHealTargeting()
         {
-            if (_healTiles.Count == 0) { ReShow(); return; }
-            _cursor.SetValidMoveTiles(new HashSet<Vector2Int>(_healTiles));
-            _targetingFlow.EnterHealTargeting(_selectedUnit, _healTiles);
+            if (healTiles.Count == 0) { ReShow(); return; }
+            cursor.SetValidMoveTiles(new HashSet<Vector2Int>(healTiles));
+            targetingFlow.EnterHealTargeting(selectedUnit, healTiles);
         }
 
         // --- Sub-action openers ---
 
         private void OpenInventoryMenu()
         {
-            if (_selectedUnit == null || _inventoryMenuUI == null) { ReShow(); return; }
+            if (selectedUnit == null || inventoryMenuUI == null) { ReShow(); return; }
 
-            _inventoryMenuUI.Show(_selectedUnit, _confirmDialogUI,
-                onConsumableUsed: () => _onComplete?.Invoke(),
+            inventoryMenuUI.Show(selectedUnit, confirmDialogUI,
+                onConsumableUsed: () => onComplete?.Invoke(),
                 onClose: ReShow);
         }
 
         private void ShowTradeTargetMenu()
         {
-            if (_adjacentAllies.Count == 1)
+            if (adjacentAllies.Count == 1)
             {
-                OpenTrade(_adjacentAllies[0]);
+                OpenTrade(adjacentAllies[0]);
                 return;
             }
 
             var names = new List<string>();
-            foreach (var ally in _adjacentAllies)
+            foreach (var ally in adjacentAllies)
                 names.Add(ally.name);
 
-            _actionMenuUI?.Show(names,
-                index => OpenTrade(_adjacentAllies[index]),
+            actionMenuUI?.Show(names,
+                index => OpenTrade(adjacentAllies[index]),
                 ReShow);
         }
 
         private void OpenTrade(TestUnit target)
         {
-            if (_selectedUnit == null || _tradeUI == null) { ReShow(); return; }
+            if (selectedUnit == null || tradeUI == null) { ReShow(); return; }
 
-            var session = new TradeSession(_selectedUnit, target);
-            _tradeUI.Show(session, _confirmDialogUI,
+            var session = new TradeSession(selectedUnit, target);
+            tradeUI.Show(session, confirmDialogUI,
                 onConfirm: ReShow,
                 onCancel: ReShow);
         }
 
         private void OpenConvoyUI()
         {
-            if (_selectedUnit == null || _convoyUI == null) { ReShow(); return; }
+            if (selectedUnit == null || convoyUI == null) { ReShow(); return; }
 
             var convoy = Convoy.Current as SupplyConvoy;
             if (convoy == null) { ReShow(); return; }
 
-            _convoyUI.Show(convoy, _selectedUnit, _toastUI, onClose: () => _onComplete?.Invoke());
+            convoyUI.Show(convoy, selectedUnit, toastUI, onClose: () => onComplete?.Invoke());
         }
 
         // Re-opens the menu with the same callbacks; used when a sub-action
         // dialog dismisses and we want to land back on the parent menu.
-        private void ReShow() => Show(_selectedUnit, _committedDestination, _onComplete, _onCancelToUnitSelected);
+        private void ReShow() => Show(selectedUnit, committedDestination, onComplete, onCancelToUnitSelected);
 
         // --- Static helpers ---
 

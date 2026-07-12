@@ -278,16 +278,16 @@ namespace ProjectAstra.Core.Editor
             var so = new SerializedObject(bannerUI);
 
             // Turn channel now comes from EventService — no wiring here.
-            so.FindProperty("_bannerRoot").objectReferenceValue = root;
-            so.FindProperty("_dimOverlay").objectReferenceValue = dimOverlay;
-            so.FindProperty("_borderTop").objectReferenceValue = borderTop;
-            so.FindProperty("_borderBottom").objectReferenceValue = borderBottom;
-            so.FindProperty("_innerBorderTop").objectReferenceValue = innerBorderTop;
-            so.FindProperty("_innerBorderBottom").objectReferenceValue = innerBorderBottom;
-            so.FindProperty("_phaseText").objectReferenceValue = phaseText;
-            so.FindProperty("_turnText").objectReferenceValue = turnText;
+            so.FindProperty("bannerRoot").objectReferenceValue = root;
+            so.FindProperty("dimOverlay").objectReferenceValue = dimOverlay;
+            so.FindProperty("borderTop").objectReferenceValue = borderTop;
+            so.FindProperty("borderBottom").objectReferenceValue = borderBottom;
+            so.FindProperty("innerBorderTop").objectReferenceValue = innerBorderTop;
+            so.FindProperty("innerBorderBottom").objectReferenceValue = innerBorderBottom;
+            so.FindProperty("phaseText").objectReferenceValue = phaseText;
+            so.FindProperty("turnText").objectReferenceValue = turnText;
 
-            var orbProp = so.FindProperty("_orbImages");
+            var orbProp = so.FindProperty("orbImages");
             orbProp.arraySize = orbs.Length;
             for (int i = 0; i < orbs.Length; i++)
                 orbProp.GetArrayElementAtIndex(i).objectReferenceValue = orbs[i];
@@ -296,9 +296,9 @@ namespace ProjectAstra.Core.Editor
             var crimsonMat = AssetDatabase.LoadAssetAtPath<Material>(MatDir + "PhaseTextCrimsonGlow.mat");
             var emeraldMat = AssetDatabase.LoadAssetAtPath<Material>(MatDir + "PhaseTextEmeraldGlow.mat");
 
-            so.FindProperty("_playerGlowMat").objectReferenceValue = goldMat;
-            so.FindProperty("_enemyGlowMat").objectReferenceValue = crimsonMat;
-            so.FindProperty("_alliedGlowMat").objectReferenceValue = emeraldMat;
+            so.FindProperty("playerGlowMat").objectReferenceValue = goldMat;
+            so.FindProperty("enemyGlowMat").objectReferenceValue = crimsonMat;
+            so.FindProperty("alliedGlowMat").objectReferenceValue = emeraldMat;
 
             so.ApplyModifiedPropertiesWithoutUndo();
         }

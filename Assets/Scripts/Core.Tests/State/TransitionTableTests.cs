@@ -9,29 +9,29 @@ namespace ProjectAstra.Core.Tests.State
     [TestFixture]
     public class TransitionTableTests
     {
-        private GameStateTransitionTable _table;
+        private GameStateTransitionTable table;
 
         [SetUp]
         public void SetUp()
         {
-            _table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
+            table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
             var field = typeof(GameStateTransitionTable).GetField("validTransitions",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            field.SetValue(_table, GameStateTransitionTable.CreateDefaultTransitions());
-            _table.Initialize();
+            field.SetValue(table, GameStateTransitionTable.CreateDefaultTransitions());
+            table.Initialize();
         }
 
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(_table);
+            UnityEngine.Object.DestroyImmediate(table);
         }
 
         [Test]
         public void TransitionCount_MatchesDefaults()
         {
             var defaults = GameStateTransitionTable.CreateDefaultTransitions();
-            Assert.AreEqual(defaults.Length, _table.TransitionCount);
+            Assert.AreEqual(defaults.Length, table.TransitionCount);
         }
 
         [TestCase(GameState.TitleScreen, GameState.MainMenu)]
@@ -69,7 +69,7 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.LevelUpScreen, GameState.BattleMap)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
-            Assert.IsTrue(_table.IsValid(from, to),
+            Assert.IsTrue(table.IsValid(from, to),
                 $"Expected transition {from} -> {to} to be valid");
         }
 
@@ -78,7 +78,7 @@ namespace ProjectAstra.Core.Tests.State
         {
             foreach (GameState state in Enum.GetValues(typeof(GameState)))
             {
-                Assert.IsFalse(_table.IsValid(state, state),
+                Assert.IsFalse(table.IsValid(state, state),
                     $"Self-transition {state} -> {state} should be invalid");
             }
         }
@@ -92,7 +92,7 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.PreBattlePrep, GameState.MainMenu)]
         public void IllegalTransition_ReturnsFalse(GameState from, GameState to)
         {
-            Assert.IsFalse(_table.IsValid(from, to),
+            Assert.IsFalse(table.IsValid(from, to),
                 $"Expected transition {from} -> {to} to be invalid");
         }
     }

@@ -538,9 +538,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cd87e6ea4a6ce74c913da000c8828e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.SettingsMenuOverlayUI
-  _navigationButtons:
+  navigationButtons:
   - {fileID: 828983917192506388}
-  _returnButton: {fileID: 828983917192506388}
+  returnButton: {fileID: 828983917192506388}
 --- !u!1 &7270655187367942024
 GameObject:
   m_ObjectHideFlags: 0

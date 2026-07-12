@@ -17,18 +17,18 @@ namespace ProjectAstra.Core.Cursor
     // caller's turn-finalization callback.
     public class CantoFlow
     {
-        private readonly GridCursor _cursor;
-        private readonly ActionMenuFlow _actionMenuFlow;
+        private readonly GridCursor cursor;
+        private readonly ActionMenuFlow actionMenuFlow;
 
-        private bool _isCantoMode;
-        private int _preCantoMovementPoints;
+        private bool isCantoMode;
+        private int preCantoMovementPoints;
 
-        public bool IsCantoMode => _isCantoMode;
+        public bool IsCantoMode => isCantoMode;
 
         public CantoFlow(GridCursor cursor, ActionMenuFlow actionMenuFlow)
         {
-            _cursor = cursor;
-            _actionMenuFlow = actionMenuFlow;
+            this.cursor = cursor;
+            this.actionMenuFlow = actionMenuFlow;
         }
 
         // Returns true and re-enters UnitSelected if canto applies; false
@@ -40,10 +40,10 @@ namespace ProjectAstra.Core.Cursor
             Pathfinder.ReachabilityResult reachability,
             HashSet<Vector2Int> validMoveTiles)
         {
-            if (_isCantoMode) return false;
+            if (isCantoMode) return false;
             if (selectedUnit == null) return false;
 
-            var lastChoice = _actionMenuFlow?.LastChoice;
+            var lastChoice = actionMenuFlow?.LastChoice;
             if (lastChoice == ActionChoice.Wait || lastChoice == null) return false;
 
             var cls = selectedUnit.UnitInstance?.CurrentClass;
@@ -54,16 +54,16 @@ namespace ProjectAstra.Core.Cursor
             int remaining = selectedUnit.movementPoints - costPaid;
             if (remaining <= 0) return false;
 
-            _preCantoMovementPoints = selectedUnit.movementPoints;
+            preCantoMovementPoints = selectedUnit.movementPoints;
             selectedUnit.movementPoints = remaining;
-            _isCantoMode = true;
+            isCantoMode = true;
 
-            _cursor.EnterUnitSelectedMode();
+            cursor.EnterUnitSelectedMode();
 
             // The unit's own tile is a legal "stay put" exit during canto, so
             // make sure the constraint set includes it even when reachability
             // would otherwise exclude it (e.g. zero-cost moves).
-            _cursor.EnsureMoveTileAllowed(selectedUnit.gridPosition);
+            cursor.EnsureMoveTileAllowed(selectedUnit.gridPosition);
 
             return true;
         }
@@ -73,12 +73,12 @@ namespace ProjectAstra.Core.Cursor
         // CantoFlow's contract ends at canto unwind.
         public void FinalizeCanto(TestUnit selectedUnit)
         {
-            _isCantoMode = false;
+            isCantoMode = false;
             if (selectedUnit != null)
-                selectedUnit.movementPoints = _preCantoMovementPoints;
-            _actionMenuFlow?.ClearLastChoice();
+                selectedUnit.movementPoints = preCantoMovementPoints;
+            actionMenuFlow?.ClearLastChoice();
         }
 
-        public void ResetState() => _isCantoMode = false;
+        public void ResetState() => isCantoMode = false;
     }
 }

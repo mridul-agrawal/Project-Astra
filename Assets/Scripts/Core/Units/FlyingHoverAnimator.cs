@@ -11,24 +11,24 @@ namespace ProjectAstra.Core.Units
     // in lockstep.
     public class FlyingHoverAnimator : MonoBehaviour
     {
-        [SerializeField] private float _amplitude = 0.25f;
-        [SerializeField] private float _periodSeconds = 1.2f;
+        [SerializeField] private float amplitude = 0.25f;
+        [SerializeField] private float periodSeconds = 1.2f;
 
-        private float _baseLocalY;
-        private float _phaseOffset;
+        private float baseLocalY;
+        private float phaseOffset;
 
         private void Awake()
         {
-            _baseLocalY = transform.localPosition.y;
-            _phaseOffset = Random.Range(0f, 2f * Mathf.PI);
+            baseLocalY = transform.localPosition.y;
+            phaseOffset = Random.Range(0f, 2f * Mathf.PI);
         }
 
         private void Update()
         {
-            if (_periodSeconds <= 0f) return;
+            if (periodSeconds <= 0f) return;
 
-            float omega = 2f * Mathf.PI / _periodSeconds;
-            float y = _baseLocalY + Mathf.Sin(Time.time * omega + _phaseOffset) * _amplitude;
+            float omega = 2f * Mathf.PI / periodSeconds;
+            float y = baseLocalY + Mathf.Sin(Time.time * omega + phaseOffset) * amplitude;
             var p = transform.localPosition;
             p.y = y;
             transform.localPosition = p;

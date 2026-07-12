@@ -31,8 +31,8 @@ namespace ProjectAstra.EditorTools
             if (script == null) return false;
 
             var so = new SerializedObject(script);
-            var segments = so.FindProperty("_segments");
-            var nodes = so.FindProperty("_nodes");
+            var segments = so.FindProperty("segments");
+            var nodes = so.FindProperty("nodes");
 
             if (segments.arraySize > 0) { Debug.Log($"[DialogueMigration] Skip (already segmented): {path}"); return false; }
             if (nodes.arraySize == 0) { Debug.Log($"[DialogueMigration] Skip (no legacy nodes): {path}"); return false; }
@@ -55,9 +55,9 @@ namespace ProjectAstra.EditorTools
             for (int i = 0; i < nodes.arraySize; i++)
             {
                 var n = nodes.GetArrayElementAtIndex(i);
-                var bg = n.FindPropertyRelative("_fullScreenImage").objectReferenceValue;
-                float speed = n.FindPropertyRelative("_textSpeedOverride").floatValue;
-                float auto = n.FindPropertyRelative("_autoAdvanceDelay").floatValue;
+                var bg = n.FindPropertyRelative("fullScreenImage").objectReferenceValue;
+                float speed = n.FindPropertyRelative("textSpeedOverride").floatValue;
+                float auto = n.FindPropertyRelative("autoAdvanceDelay").floatValue;
 
                 if (current == null || current.Background != bg
                     || !Mathf.Approximately(current.Speed, speed) || !Mathf.Approximately(current.Auto, auto))
@@ -68,11 +68,11 @@ namespace ProjectAstra.EditorTools
 
                 current.Lines.Add(new LineData
                 {
-                    Speaker = n.FindPropertyRelative("_speakerId").stringValue,
-                    Expression = n.FindPropertyRelative("_expression").enumValueIndex,
-                    Position = n.FindPropertyRelative("_portraitPosition").enumValueIndex,
-                    Facing = n.FindPropertyRelative("_portraitFacing").enumValueIndex,
-                    Text = n.FindPropertyRelative("_text").stringValue
+                    Speaker = n.FindPropertyRelative("speakerId").stringValue,
+                    Expression = n.FindPropertyRelative("expression").enumValueIndex,
+                    Position = n.FindPropertyRelative("portraitPosition").enumValueIndex,
+                    Facing = n.FindPropertyRelative("portraitFacing").enumValueIndex,
+                    Text = n.FindPropertyRelative("text").stringValue
                 });
             }
             return groups;
@@ -85,21 +85,21 @@ namespace ProjectAstra.EditorTools
             {
                 var seg = segments.GetArrayElementAtIndex(g);
                 var group = groups[g];
-                seg.FindPropertyRelative("_background").objectReferenceValue = group.Background;
-                seg.FindPropertyRelative("_textSpeed").floatValue = group.Speed;
-                seg.FindPropertyRelative("_autoAdvanceDelay").floatValue = group.Auto;
+                seg.FindPropertyRelative("background").objectReferenceValue = group.Background;
+                seg.FindPropertyRelative("textSpeed").floatValue = group.Speed;
+                seg.FindPropertyRelative("autoAdvanceDelay").floatValue = group.Auto;
 
-                var lines = seg.FindPropertyRelative("_lines");
+                var lines = seg.FindPropertyRelative("lines");
                 lines.arraySize = group.Lines.Count;
                 for (int l = 0; l < group.Lines.Count; l++)
                 {
                     var line = lines.GetArrayElementAtIndex(l);
                     var ld = group.Lines[l];
-                    line.FindPropertyRelative("_speakerId").stringValue = ld.Speaker;
-                    line.FindPropertyRelative("_expression").enumValueIndex = ld.Expression;
-                    line.FindPropertyRelative("_portraitPosition").enumValueIndex = ld.Position;
-                    line.FindPropertyRelative("_portraitFacing").enumValueIndex = ld.Facing;
-                    line.FindPropertyRelative("_text").stringValue = ld.Text;
+                    line.FindPropertyRelative("speakerId").stringValue = ld.Speaker;
+                    line.FindPropertyRelative("expression").enumValueIndex = ld.Expression;
+                    line.FindPropertyRelative("portraitPosition").enumValueIndex = ld.Position;
+                    line.FindPropertyRelative("portraitFacing").enumValueIndex = ld.Facing;
+                    line.FindPropertyRelative("text").stringValue = ld.Text;
                 }
             }
         }
@@ -126,8 +126,8 @@ namespace ProjectAstra.EditorTools
                 var script = AssetDatabase.LoadAssetAtPath<DialogueScript>(path);
                 if (script == null) continue;
                 var so = new SerializedObject(script);
-                if (so.FindProperty("_segments").arraySize == 0) continue;
-                var nodes = so.FindProperty("_nodes");
+                if (so.FindProperty("segments").arraySize == 0) continue;
+                var nodes = so.FindProperty("nodes");
                 if (nodes.arraySize == 0) continue;
                 nodes.arraySize = 0;
                 so.ApplyModifiedPropertiesWithoutUndo();

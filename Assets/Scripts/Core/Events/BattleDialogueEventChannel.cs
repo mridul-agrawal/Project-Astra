@@ -10,11 +10,11 @@ namespace ProjectAstra.Core.Events
     [CreateAssetMenu(fileName = "BattleDialogueEventChannel", menuName = "Project Astra/Dialogue/Battle Dialogue Event Channel")]
     public class BattleDialogueEventChannel : ScriptableObject
     {
-        private Action<BattleDialogueEventType> _onEvent;
+        private Action<BattleDialogueEventType> onEvent;
 
-        public void Register(Action<BattleDialogueEventType> listener) => _onEvent += listener;
-        public void Unregister(Action<BattleDialogueEventType> listener) => _onEvent -= listener;
+        public void Register(Action<BattleDialogueEventType> listener) => onEvent += listener;
+        public void Unregister(Action<BattleDialogueEventType> listener) => onEvent -= listener;
 
-        public void Raise(BattleDialogueEventType eventType) => _onEvent?.Invoke(eventType);
+        public void Raise(BattleDialogueEventType eventType) => onEvent?.Invoke(eventType);
     }
 }

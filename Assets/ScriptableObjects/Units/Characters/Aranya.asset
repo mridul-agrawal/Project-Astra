@@ -12,28 +12,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
   m_Name: Aranya
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
-  _unitName: Aranya
-  _unitId: aranya
-  _defaultClass: {fileID: 11400000, guid: 42860aaef314de14a96b9e41ba8a216b, type: 2}
-  _defaultLoadout: {fileID: 11400000, guid: 6ba4f49110879e344a1884975623a714, type: 2}
-  _baseStats:
-    _values: 140000000700000002000000060000000800000005000000030000000700000006000000
-  _baseLevel: 1
-  _personalGrowths:
-    _values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
-  _mapSprite: {fileID: 21300000, guid: 7e3c28c97d7c8c248b8237b529a82dff, type: 3}
-  _portrait: {fileID: 21300000, guid: 2ec72ea8574078a42973c480905fff89, type: 3}
-  _woundedPortrait: {fileID: 0}
-  _criticalPortrait: {fileID: 0}
-  _deceasedPortrait: {fileID: 0}
-  _stressedOverlay: {fileID: 0}
-  _affinity: 0
-  _personality: 0
-  _isNamedCommander: 0
-  _oneLineIdentity: 
-  _isLord: 1
-  _lastWordsLines:
+  unitName: Aranya
+  unitId: aranya
+  defaultClass: {fileID: 11400000, guid: 42860aaef314de14a96b9e41ba8a216b, type: 2}
+  defaultLoadout: {fileID: 11400000, guid: 6ba4f49110879e344a1884975623a714, type: 2}
+  baseStats:
+    values: 140000000700000002000000060000000800000005000000030000000700000006000000
+  baseLevel: 1
+  personalGrowths:
+    values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
+  mapSprite: {fileID: 21300000, guid: 7e3c28c97d7c8c248b8237b529a82dff, type: 3}
+  portrait: {fileID: 21300000, guid: 2ec72ea8574078a42973c480905fff89, type: 3}
+  woundedPortrait: {fileID: 0}
+  criticalPortrait: {fileID: 0}
+  deceasedPortrait: {fileID: 0}
+  stressedOverlay: {fileID: 0}
+  affinity: 0
+  personality: 0
+  isNamedCommander: 0
+  oneLineIdentity: 
+  isLord: 1
+  lastWordsLines:
   - Gandiva... slips from my grasp.
   - Krishna... was this the path you saw?
   - The story... ends here...
-  _speaker: {fileID: 11400000, guid: a6421f565073f3048a2f0f5c28c9414a, type: 2}
+  speaker: {fileID: 11400000, guid: a6421f565073f3048a2f0f5c28c9414a, type: 2}

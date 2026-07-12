@@ -30,85 +30,85 @@ namespace ProjectAstra.Core.UI.UnitInfo
         static readonly Color ColGold  = new Color32(0xc8, 0xa0, 0x40, 0xff);
         static readonly Color ColSilver = new Color32(0xa0, 0xa8, 0xb8, 0xff);
 
-        [SerializeField] Sprite _hpFillGreen;
-        [SerializeField] Sprite _hpFillYellow;
-        [SerializeField] Sprite _hpFillRed;
-        [SerializeField] Sprite _pageDotActive;
-        [SerializeField] Sprite _pageDotInactive;
+        [SerializeField] Sprite hpFillGreen;
+        [SerializeField] Sprite hpFillYellow;
+        [SerializeField] Sprite hpFillRed;
+        [SerializeField] Sprite pageDotActive;
+        [SerializeField] Sprite pageDotInactive;
 
         [Header("Bond pip / support row chrome")]
-        [SerializeField] Sprite _bondPipLit;
-        [SerializeField] Sprite _bondPipUnlit;
-        [SerializeField] Sprite _bondPipEncounter;
-        [SerializeField] Sprite _notifBadge;
-        [SerializeField] Sprite _diyaMemorial;
-        [SerializeField] Sprite _shapathIcon;
-        [SerializeField] Sprite _thresholdMark;
+        [SerializeField] Sprite bondPipLit;
+        [SerializeField] Sprite bondPipUnlit;
+        [SerializeField] Sprite bondPipEncounter;
+        [SerializeField] Sprite notifBadge;
+        [SerializeField] Sprite diyaMemorial;
+        [SerializeField] Sprite shapathIcon;
+        [SerializeField] Sprite thresholdMark;
 
         [Header("Affinity icons (index matches PanchaBhuta enum, 0=None unused)")]
-        [SerializeField] Sprite[] _affinityIcons;
+        [SerializeField] Sprite[] affinityIcons;
 
         [Header("Material for deceased portrait")]
-        [SerializeField] Material _desaturatedMaterial;
+        [SerializeField] Material desaturatedMaterial;
 
         [Header("Detail sub-panels")]
-        [SerializeField] UnitInfoItemDetailUI _itemDetail;
-        [SerializeField] UnitInfoSupportDetailUI _supportDetail;
+        [SerializeField] UnitInfoItemDetailUI itemDetail;
+        [SerializeField] UnitInfoSupportDetailUI supportDetail;
 
-        TestUnit _unit;
-        UnitInfoContext _ctx = UnitInfoContext.BattleMap;
-        int _currentPage;
-        int _maxPage;
-        GameObject[] _pages;
-        Image[] _dots;
-        GameObject _dimOverlay;
+        TestUnit unit;
+        UnitInfoContext ctx = UnitInfoContext.BattleMap;
+        int currentPage;
+        int maxPage;
+        GameObject[] pages;
+        Image[] dots;
+        GameObject dimOverlay;
 
         // Shared section refs
-        TextMeshProUGUI _unitNameText;
-        TextMeshProUGUI _classNameText;
-        TextMeshProUGUI _lvValueText;
-        TextMeshProUGUI _expLabelText;
-        TextMeshProUGUI _expValueText;
-        TextMeshProUGUI _hpCurrentText;
-        TextMeshProUGUI _hpSepText;
-        TextMeshProUGUI _hpMaxText;
-        RectTransform _hpBarFill;
-        Image _hpBarFillImage;
-        RectTransform _hpBarOuter;
-        Image _portraitImage;
-        Image _stressOverlayImage;
-        Image _affinityIconImage;
-        TextMeshProUGUI _affinityLabelText;
-        TextMeshProUGUI _personalityLabelText;
+        TextMeshProUGUI unitNameText;
+        TextMeshProUGUI classNameText;
+        TextMeshProUGUI lvValueText;
+        TextMeshProUGUI expLabelText;
+        TextMeshProUGUI expValueText;
+        TextMeshProUGUI hpCurrentText;
+        TextMeshProUGUI hpSepText;
+        TextMeshProUGUI hpMaxText;
+        RectTransform hpBarFill;
+        Image hpBarFillImage;
+        RectTransform hpBarOuter;
+        Image portraitImage;
+        Image stressOverlayImage;
+        Image affinityIconImage;
+        TextMeshProUGUI affinityLabelText;
+        TextMeshProUGUI personalityLabelText;
 
         // Stats page extra refs
-        TextMeshProUGUI _movValueText;
-        GameObject _dharmicThresholdBanner;
+        TextMeshProUGUI movValueText;
+        GameObject dharmicThresholdBanner;
 
         // Supports page
-        RectTransform _supportsList;
-        GameObject _supportRowTemplate;
-        TextMeshProUGUI _supportsEmptyText;
+        RectTransform supportsList;
+        GameObject supportRowTemplate;
+        TextMeshProUGUI supportsEmptyText;
 
         // Intra-page row selection
-        int _selectedItemRow;
-        int _selectedBondRow;
-        readonly System.Collections.Generic.List<TextMeshProUGUI> _visibleItemNameTMPs = new();
-        readonly System.Collections.Generic.List<int> _visibleItemSlotIndices = new();
-        readonly System.Collections.Generic.List<TextMeshProUGUI> _visibleBondNameTMPs = new();
-        readonly System.Collections.Generic.List<SupportBond> _visibleBondData = new();
+        int selectedItemRow;
+        int selectedBondRow;
+        readonly System.Collections.Generic.List<TextMeshProUGUI> visibleItemNameTMPs = new();
+        readonly System.Collections.Generic.List<int> visibleItemSlotIndices = new();
+        readonly System.Collections.Generic.List<TextMeshProUGUI> visibleBondNameTMPs = new();
+        readonly System.Collections.Generic.List<SupportBond> visibleBondData = new();
 
         // Providers (scene-level, optional)
-        ISupportProvider _supportProvider;
-        ITemporaryModifierProvider _modifierProvider;
-        ISupportBonusProvider _supportBonusProvider;
-        IFogOfWarProvider _fogProvider;
+        ISupportProvider supportProvider;
+        ITemporaryModifierProvider modifierProvider;
+        ISupportBonusProvider supportBonusProvider;
+        IFogOfWarProvider fogProvider;
 
-        Material _portraitOriginalMaterial;
-        float _hpBarReferenceWidth;
+        Material portraitOriginalMaterial;
+        float hpBarReferenceWidth;
 
-        bool _refsDiscovered;
-        bool _providersDiscovered;
+        bool refsDiscovered;
+        bool providersDiscovered;
 
         public void Show(TestUnit unit) => Show(unit, UnitInfoContext.BattleMap);
 
@@ -116,24 +116,24 @@ namespace ProjectAstra.Core.UI.UnitInfo
         {
             if (unit == null) return;
 
-            if (!_providersDiscovered) DiscoverProviders();
+            if (!providersDiscovered) DiscoverProviders();
 
             // HM-08 / MT-04. Unrevealed enemies in fog of war can't be inspected.
-            if (_fogProvider != null && unit.UnitInstance != null && !_fogProvider.IsRevealed(unit.UnitInstance))
+            if (fogProvider != null && unit.UnitInstance != null && !fogProvider.IsRevealed(unit.UnitInstance))
                 return;
 
-            _unit = unit;
-            _ctx = ctx;
-            _currentPage = 0;
-            _maxPage = unit.faction == Faction.Player ? 2 : 1;
+            this.unit = unit;
+            this.ctx = ctx;
+            currentPage = 0;
+            maxPage = unit.faction == Faction.Player ? 2 : 1;
 
-            if (!_refsDiscovered) DiscoverReferences();
+            if (!refsDiscovered) DiscoverReferences();
 
             BindSharedSection();
             SetActivePage(0);
             UpdatePageIndicator();
 
-            if (_dimOverlay != null) _dimOverlay.SetActive(true);
+            if (dimOverlay != null) dimOverlay.SetActive(true);
             gameObject.SetActive(true);
 
             HasInputFocus = true;
@@ -143,12 +143,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void DiscoverProviders()
         {
-            _providersDiscovered = true;
+            providersDiscovered = true;
             // Scene-level optional providers; any missing → safe defaults.
-            _supportProvider      = FindInterface<ISupportProvider>();
-            _modifierProvider     = FindInterface<ITemporaryModifierProvider>();
-            _supportBonusProvider = FindInterface<ISupportBonusProvider>();
-            _fogProvider          = FindInterface<IFogOfWarProvider>();
+            supportProvider      = FindInterface<ISupportProvider>();
+            modifierProvider     = FindInterface<ITemporaryModifierProvider>();
+            supportBonusProvider = FindInterface<ISupportBonusProvider>();
+            fogProvider          = FindInterface<IFogOfWarProvider>();
         }
 
         static T FindInterface<T>() where T : class
@@ -165,9 +165,9 @@ namespace ProjectAstra.Core.UI.UnitInfo
             UnsubscribeInput();
 
             gameObject.SetActive(false);
-            if (_dimOverlay != null) _dimOverlay.SetActive(false);
+            if (dimOverlay != null) dimOverlay.SetActive(false);
 
-            _unit = null;
+            unit = null;
             if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
@@ -195,31 +195,31 @@ namespace ProjectAstra.Core.UI.UnitInfo
         {
             // Only act when the main panel has focus (i.e. no detail sub-panel is open).
             if (UnitInfoItemDetailUI.HasInputFocus || UnitInfoSupportDetailUI.HasInputFocus) return;
-            if (_currentPage == 1) OpenSelectedItemDetail();
-            else if (_currentPage == 2) OpenSelectedBondDetail();
+            if (currentPage == 1) OpenSelectedItemDetail();
+            else if (currentPage == 2) OpenSelectedBondDetail();
         }
 
         void OpenSelectedItemDetail()
         {
-            if (_itemDetail == null || _unit == null) return;
-            if (_visibleItemSlotIndices.Count == 0) return;
-            int row = Mathf.Clamp(_selectedItemRow, 0, _visibleItemSlotIndices.Count - 1);
-            int slotIdx = _visibleItemSlotIndices[row];
-            var slot = _unit.Inventory?.GetSlot(slotIdx) ?? InventoryItem.None;
+            if (itemDetail == null || unit == null) return;
+            if (visibleItemSlotIndices.Count == 0) return;
+            int row = Mathf.Clamp(selectedItemRow, 0, visibleItemSlotIndices.Count - 1);
+            int slotIdx = visibleItemSlotIndices[row];
+            var slot = unit.Inventory?.GetSlot(slotIdx) ?? InventoryItem.None;
             if (slot.kind == ItemKind.None) return;
             UnsubscribeInput();
             AudioManager.Instance?.Play(SoundId.UiConfirm);
-            _itemDetail.Show(slot, () => { SubscribeInput(); });
+            itemDetail.Show(slot, () => { SubscribeInput(); });
         }
 
         void OpenSelectedBondDetail()
         {
-            if (_supportDetail == null || _unit == null || _unit.UnitInstance == null) return;
-            if (_visibleBondData.Count == 0) return;
-            int row = Mathf.Clamp(_selectedBondRow, 0, _visibleBondData.Count - 1);
+            if (supportDetail == null || unit == null || unit.UnitInstance == null) return;
+            if (visibleBondData.Count == 0) return;
+            int row = Mathf.Clamp(selectedBondRow, 0, visibleBondData.Count - 1);
             UnsubscribeInput();
             AudioManager.Instance?.Play(SoundId.UiConfirm);
-            _supportDetail.Show(_unit.UnitInstance, _visibleBondData[row], _supportBonusProvider, () => { SubscribeInput(); });
+            supportDetail.Show(unit.UnitInstance, visibleBondData[row], supportBonusProvider, () => { SubscribeInput(); });
         }
 
         void NavigatePage(Vector2Int dir)
@@ -230,68 +230,68 @@ namespace ProjectAstra.Core.UI.UnitInfo
             else if (dir.y != 0)
             {
                 int delta = dir.y < 0 ? 1 : -1; // Unity's +y is up-on-screen; rows flow downward.
-                if (_currentPage == 1) MoveItemSelection(delta);
-                else if (_currentPage == 2) MoveBondSelection(delta);
+                if (currentPage == 1) MoveItemSelection(delta);
+                else if (currentPage == 2) MoveBondSelection(delta);
             }
         }
 
         void MoveItemSelection(int delta)
         {
-            if (_visibleItemNameTMPs.Count == 0) return;
-            int n = _visibleItemNameTMPs.Count;
-            _selectedItemRow = (_selectedItemRow + delta + n) % n;
+            if (visibleItemNameTMPs.Count == 0) return;
+            int n = visibleItemNameTMPs.Count;
+            selectedItemRow = (selectedItemRow + delta + n) % n;
             UpdateItemHighlight();
             AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         void MoveBondSelection(int delta)
         {
-            if (_visibleBondNameTMPs.Count == 0) return;
-            int n = _visibleBondNameTMPs.Count;
-            _selectedBondRow = (_selectedBondRow + delta + n) % n;
+            if (visibleBondNameTMPs.Count == 0) return;
+            int n = visibleBondNameTMPs.Count;
+            selectedBondRow = (selectedBondRow + delta + n) % n;
             UpdateBondHighlight();
             AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         void UpdateItemHighlight()
         {
-            for (int i = 0; i < _visibleItemNameTMPs.Count; i++)
+            for (int i = 0; i < visibleItemNameTMPs.Count; i++)
             {
-                var t = _visibleItemNameTMPs[i];
+                var t = visibleItemNameTMPs[i];
                 if (t == null) continue;
-                t.color = i == _selectedItemRow ? ColGold : ColIvory;
+                t.color = i == selectedItemRow ? ColGold : ColIvory;
             }
         }
 
         void UpdateBondHighlight()
         {
-            for (int i = 0; i < _visibleBondNameTMPs.Count; i++)
+            for (int i = 0; i < visibleBondNameTMPs.Count; i++)
             {
-                var t = _visibleBondNameTMPs[i];
+                var t = visibleBondNameTMPs[i];
                 if (t == null) continue;
-                if (i == _visibleBondData.Count) break;
+                if (i == visibleBondData.Count) break;
                 // Deceased rows stay silver/struck-through regardless of selection.
-                if (_visibleBondData[i].IsDeceased)
+                if (visibleBondData[i].IsDeceased)
                 {
                     t.color = new Color(ColSilver.r, ColSilver.g, ColSilver.b, 0.4f);
                 }
                 else
                 {
-                    t.color = i == _selectedBondRow ? ColGold : ColIvory;
+                    t.color = i == selectedBondRow ? ColGold : ColIvory;
                 }
             }
         }
 
         void NextPage()
         {
-            int next = _currentPage >= _maxPage ? 0 : _currentPage + 1;
+            int next = currentPage >= maxPage ? 0 : currentPage + 1;
             SetActivePage(next);
             AudioManager.Instance?.Play(SoundId.UiTab);
         }
 
         void PrevPage()
         {
-            int prev = _currentPage <= 0 ? _maxPage : _currentPage - 1;
+            int prev = currentPage <= 0 ? maxPage : currentPage - 1;
             SetActivePage(prev);
             AudioManager.Instance?.Play(SoundId.UiTab);
         }
@@ -300,36 +300,36 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void SetActivePage(int page)
         {
-            if (_pages == null) return;
+            if (pages == null) return;
 
-            for (int i = 0; i < _pages.Length; i++)
-                if (_pages[i] != null)
-                    _pages[i].SetActive(i == page);
+            for (int i = 0; i < pages.Length; i++)
+                if (pages[i] != null)
+                    pages[i].SetActive(i == page);
 
             // Reset row selection when entering a selection-aware page.
-            if (page == 1) _selectedItemRow = 0;
-            else if (page == 2) _selectedBondRow = 0;
+            if (page == 1) selectedItemRow = 0;
+            else if (page == 2) selectedBondRow = 0;
 
-            _currentPage = page;
+            currentPage = page;
             UpdatePageIndicator();
             BindCurrentPage();
         }
 
         void UpdatePageIndicator()
         {
-            if (_dots == null) return;
-            for (int i = 0; i < _dots.Length; i++)
+            if (dots == null) return;
+            for (int i = 0; i < dots.Length; i++)
             {
-                if (_dots[i] == null) continue;
-                bool isActive = i == _currentPage;
-                if (_pageDotActive != null && _pageDotInactive != null)
+                if (dots[i] == null) continue;
+                bool isActive = i == currentPage;
+                if (pageDotActive != null && pageDotInactive != null)
                 {
-                    _dots[i].sprite = isActive ? _pageDotActive : _pageDotInactive;
-                    _dots[i].color = Color.white;
+                    dots[i].sprite = isActive ? pageDotActive : pageDotInactive;
+                    dots[i].color = Color.white;
                 }
                 else
                 {
-                    _dots[i].color = isActive
+                    dots[i].color = isActive
                         ? ColGold
                         : new Color(ColGold.r, ColGold.g, ColGold.b, 0.3f);
                 }
@@ -338,7 +338,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindCurrentPage()
         {
-            switch (_currentPage)
+            switch (currentPage)
             {
                 case 0: BindStatsPage(); break;
                 case 1: BindInventoryPage(); break;
@@ -352,14 +352,14 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void DiscoverReferences()
         {
-            _refsDiscovered = true;
+            refsDiscovered = true;
 
             // Dim overlay is a sibling
             var canvasT = transform.parent;
             if (canvasT != null)
             {
                 var overlayT = canvasT.Find("UnitInfoDimOverlay");
-                if (overlayT != null) _dimOverlay = overlayT.gameObject;
+                if (overlayT != null) dimOverlay = overlayT.gameObject;
             }
 
             // Pages
@@ -369,7 +369,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 var stats = container.Find("StatsPage");
                 var inv = container.Find("InventoryPage");
                 var sup = container.Find("SupportsPage");
-                _pages = new[]
+                pages = new[]
                 {
                     stats != null ? stats.gameObject : null,
                     inv != null ? inv.gameObject : null,
@@ -381,65 +381,65 @@ namespace ProjectAstra.Core.UI.UnitInfo
             var dotsParent = FindDeep(transform, "PageIndicator");
             if (dotsParent != null)
             {
-                _dots = new Image[3];
+                dots = new Image[3];
                 for (int i = 0; i < 3 && i < dotsParent.childCount; i++)
-                    _dots[i] = dotsParent.GetChild(i).GetComponent<Image>();
+                    dots[i] = dotsParent.GetChild(i).GetComponent<Image>();
             }
 
             // Shared section
-            _unitNameText = FindTMP(transform, "UnitName");
-            _classNameText = FindTMP(transform, "ClassName");
-            _lvValueText = FindTMP(transform, "LvValue");
-            _expLabelText = FindTMP(transform, "ExpLabel");
-            _expValueText = FindTMP(transform, "ExpValue");
-            _hpCurrentText = FindTMP(transform, "HpCurrent");
-            _hpSepText = FindTMP(transform, "HpSep");
-            _hpMaxText = FindTMP(transform, "HpMax");
+            unitNameText = FindTMP(transform, "UnitName");
+            classNameText = FindTMP(transform, "ClassName");
+            lvValueText = FindTMP(transform, "LvValue");
+            expLabelText = FindTMP(transform, "ExpLabel");
+            expValueText = FindTMP(transform, "ExpValue");
+            hpCurrentText = FindTMP(transform, "HpCurrent");
+            hpSepText = FindTMP(transform, "HpSep");
+            hpMaxText = FindTMP(transform, "HpMax");
 
             var hpFillT = FindDeep(transform, "HpBarFill");
             if (hpFillT != null)
             {
-                _hpBarFill = hpFillT.GetComponent<RectTransform>();
-                _hpBarFillImage = hpFillT.GetComponent<Image>();
+                hpBarFill = hpFillT.GetComponent<RectTransform>();
+                hpBarFillImage = hpFillT.GetComponent<Image>();
             }
             var hpOuterT = FindDeep(transform, "HpBarOuter");
             if (hpOuterT != null)
             {
-                _hpBarOuter = hpOuterT.GetComponent<RectTransform>();
-                _hpBarReferenceWidth = _hpBarOuter.rect.width;
+                hpBarOuter = hpOuterT.GetComponent<RectTransform>();
+                hpBarReferenceWidth = hpBarOuter.rect.width;
             }
 
             var portraitT = FindDeep(transform, "PortraitPlaceholder");
             if (portraitT != null)
             {
-                _portraitImage = portraitT.GetComponent<Image>();
-                if (_portraitImage != null) _portraitOriginalMaterial = _portraitImage.material;
+                portraitImage = portraitT.GetComponent<Image>();
+                if (portraitImage != null) portraitOriginalMaterial = portraitImage.material;
             }
 
             // New shared-section nodes
             var stressT = FindDeep(transform, "StressOverlay");
-            if (stressT != null) _stressOverlayImage = stressT.GetComponent<Image>();
+            if (stressT != null) stressOverlayImage = stressT.GetComponent<Image>();
 
             var affT = FindDeep(transform, "AffinIcon");
-            if (affT != null) _affinityIconImage = affT.GetComponent<Image>();
-            _affinityLabelText = FindTMP(transform, "AffinLabel");
-            _personalityLabelText = FindTMP(transform, "PersonalityLabel");
+            if (affT != null) affinityIconImage = affT.GetComponent<Image>();
+            affinityLabelText = FindTMP(transform, "AffinLabel");
+            personalityLabelText = FindTMP(transform, "PersonalityLabel");
 
             // Stats page extras
-            _movValueText = FindTMP(transform, "StatR_Mov/Value");
+            movValueText = FindTMP(transform, "StatR_Mov/Value");
             var dtbT = FindDeep(transform, "DharmicThresholdBanner");
-            if (dtbT != null) _dharmicThresholdBanner = dtbT.gameObject;
+            if (dtbT != null) dharmicThresholdBanner = dtbT.gameObject;
 
             // Supports list
             var supListT = FindDeep(transform, "SupportList");
-            if (supListT != null) _supportsList = supListT.GetComponent<RectTransform>();
+            if (supListT != null) supportsList = supListT.GetComponent<RectTransform>();
             var supTemplateT = FindDeep(transform, "SupportRowTemplate");
             if (supTemplateT != null)
             {
-                _supportRowTemplate = supTemplateT.gameObject;
-                _supportRowTemplate.SetActive(false);
+                supportRowTemplate = supTemplateT.gameObject;
+                supportRowTemplate.SetActive(false);
             }
-            _supportsEmptyText = FindTMP(transform, "SupportsEmptyText");
+            supportsEmptyText = FindTMP(transform, "SupportsEmptyText");
         }
 
         // ================================================================
@@ -448,125 +448,125 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindSharedSection()
         {
-            var inst = _unit.UnitInstance;
+            var inst = unit.UnitInstance;
             var def = inst?.Definition;
 
             // Name
-            if (_unitNameText != null)
+            if (unitNameText != null)
             {
                 string name = def != null && !string.IsNullOrEmpty(def.UnitName)
-                    ? def.UnitName : _unit.gameObject.name;
-                _unitNameText.text = name.ToUpper();
+                    ? def.UnitName : unit.gameObject.name;
+                unitNameText.text = name.ToUpper();
             }
 
             // Class
-            if (_classNameText != null)
+            if (classNameText != null)
             {
                 var cls = inst?.CurrentClass;
-                _classNameText.text = cls != null ? cls.ClassName : "Unknown";
+                classNameText.text = cls != null ? cls.ClassName : "Unknown";
             }
 
             // Level
-            if (_lvValueText != null)
+            if (lvValueText != null)
             {
                 int level = inst?.Level ?? 1;
-                _lvValueText.text = level.ToString();
+                lvValueText.text = level.ToString();
             }
 
             // EXP — "MAX" for promoted cap; "--" for unpromoted Lv 20 (still accumulates silently); hidden for enemy.
-            bool showExp = _unit.faction != Faction.Enemy;
+            bool showExp = unit.faction != Faction.Enemy;
             bool atCap = inst != null && inst.IsAtLevelCap;
             bool atUnpromotedCap = inst != null && inst.CurrentClass != null
                 && !inst.CurrentClass.IsPromoted && inst.Level >= UnitInstance.PromotedLevelCap;
-            if (_expValueText != null)
+            if (expValueText != null)
             {
-                _expValueText.gameObject.SetActive(showExp);
-                if (atCap) _expValueText.text = "MAX";
-                else if (atUnpromotedCap) _expValueText.text = "--";
-                else _expValueText.text = (inst?.CurrentEXP ?? 0) + " / " + UnitInstance.ExpPerLevel;
+                expValueText.gameObject.SetActive(showExp);
+                if (atCap) expValueText.text = "MAX";
+                else if (atUnpromotedCap) expValueText.text = "--";
+                else expValueText.text = (inst?.CurrentEXP ?? 0) + " / " + UnitInstance.ExpPerLevel;
             }
-            if (_expLabelText != null) _expLabelText.gameObject.SetActive(showExp);
+            if (expLabelText != null) expLabelText.gameObject.SetActive(showExp);
 
             // HP
-            int currentHP = inst != null ? inst.CurrentHP : _unit.currentHP;
-            int maxHP = inst != null ? inst.MaxHP : _unit.maxHP;
+            int currentHP = inst != null ? inst.CurrentHP : unit.currentHP;
+            int maxHP = inst != null ? inst.MaxHP : unit.maxHP;
 
-            if (_hpCurrentText != null) _hpCurrentText.text = currentHP.ToString();
-            if (_hpMaxText != null) _hpMaxText.text = maxHP.ToString();
+            if (hpCurrentText != null) hpCurrentText.text = currentHP.ToString();
+            if (hpMaxText != null) hpMaxText.text = maxHP.ToString();
 
-            if (_hpBarFillImage != null)
+            if (hpBarFillImage != null)
             {
                 float frac = maxHP > 0 ? Mathf.Clamp01((float)currentHP / maxHP) : 0;
                 var sprite = HpSpriteForFraction(frac);
                 if (sprite != null)
                 {
-                    _hpBarFillImage.sprite = sprite;
-                    _hpBarFillImage.color = Color.white;
+                    hpBarFillImage.sprite = sprite;
+                    hpBarFillImage.color = Color.white;
                 }
                 else
                 {
-                    _hpBarFillImage.color = HpColorForFraction(frac);
+                    hpBarFillImage.color = HpColorForFraction(frac);
                 }
 
-                if (_hpBarFillImage.type == Image.Type.Filled)
+                if (hpBarFillImage.type == Image.Type.Filled)
                 {
-                    _hpBarFillImage.fillAmount = frac;
+                    hpBarFillImage.fillAmount = frac;
                 }
-                else if (_hpBarFill != null)
+                else if (hpBarFill != null)
                 {
-                    _hpBarFill.anchorMax = new Vector2(frac, 1);
+                    hpBarFill.anchorMax = new Vector2(frac, 1);
                 }
             }
 
             // HP bar width scaling — proportional to MaxHP vs. a 60-HP reference, clamped to 1.5×.
-            if (_hpBarOuter != null && _hpBarReferenceWidth > 0f)
+            if (hpBarOuter != null && hpBarReferenceWidth > 0f)
             {
                 float scale = Mathf.Clamp(maxHP / 60f, 0.35f, 1.5f);
-                var size = _hpBarOuter.sizeDelta;
-                size.x = _hpBarReferenceWidth * scale - _hpBarReferenceWidth; // delta over the baseline
-                _hpBarOuter.sizeDelta = size;
+                var size = hpBarOuter.sizeDelta;
+                size.x = hpBarReferenceWidth * scale - hpBarReferenceWidth; // delta over the baseline
+                hpBarOuter.sizeDelta = size;
             }
 
             // Portrait variant pick — dead > critical > wounded > full.
-            if (_portraitImage != null && def != null)
+            if (portraitImage != null && def != null)
             {
-                bool isDead = (inst != null && inst.IsDead) || _ctx == UnitInfoContext.ObituaryFromSupportList;
+                bool isDead = (inst != null && inst.IsDead) || ctx == UnitInfoContext.ObituaryFromSupportList;
                 Sprite portrait = PickPortrait(def, inst?.HPThreshold ?? HPThreshold.Normal, isDead);
-                _portraitImage.sprite = portrait;
+                portraitImage.sprite = portrait;
 
                 // Desaturation (dead state)
-                if (isDead && _desaturatedMaterial != null)
-                    _portraitImage.material = _desaturatedMaterial;
+                if (isDead && desaturatedMaterial != null)
+                    portraitImage.material = desaturatedMaterial;
                 else
-                    _portraitImage.material = _portraitOriginalMaterial;
+                    portraitImage.material = portraitOriginalMaterial;
             }
 
             // Stress overlay — USE-04 Tier 1+ layers an extra sprite atop the portrait.
-            if (_stressOverlayImage != null)
+            if (stressOverlayImage != null)
             {
                 bool showStress = inst != null && inst.StressTier >= 1 && def != null && def.StressedOverlay != null;
-                _stressOverlayImage.gameObject.SetActive(showStress);
-                if (showStress) _stressOverlayImage.sprite = def.StressedOverlay;
+                stressOverlayImage.gameObject.SetActive(showStress);
+                if (showStress) stressOverlayImage.sprite = def.StressedOverlay;
             }
 
             // Affinity icon — SP-03.
-            if (_affinityIconImage != null)
+            if (affinityIconImage != null)
             {
                 Sprite icon = GetAffinityIcon(def?.Affinity ?? PanchaBhuta.None);
-                _affinityIconImage.gameObject.SetActive(icon != null);
-                if (icon != null) _affinityIconImage.sprite = icon;
+                affinityIconImage.gameObject.SetActive(icon != null);
+                if (icon != null) affinityIconImage.sprite = icon;
             }
-            if (_affinityLabelText != null && def != null)
+            if (affinityLabelText != null && def != null)
             {
-                _affinityLabelText.text = AffinityLabel(def.Affinity);
+                affinityLabelText.text = AffinityLabel(def.Affinity);
             }
 
             // Personality label — Allied NPC only (CC-01).
-            if (_personalityLabelText != null)
+            if (personalityLabelText != null)
             {
-                bool showPersonality = _unit.faction == Faction.Allied && def != null && def.Personality != Personality.None;
-                _personalityLabelText.gameObject.SetActive(showPersonality);
-                if (showPersonality) _personalityLabelText.text = "PERSONALITY: " + def.Personality.ToString().ToUpper();
+                bool showPersonality = unit.faction == Faction.Allied && def != null && def.Personality != Personality.None;
+                personalityLabelText.gameObject.SetActive(showPersonality);
+                if (showPersonality) personalityLabelText.text = "PERSONALITY: " + def.Personality.ToString().ToUpper();
             }
         }
 
@@ -580,9 +580,9 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         Sprite GetAffinityIcon(PanchaBhuta a)
         {
-            if (a == PanchaBhuta.None || _affinityIcons == null) return null;
+            if (a == PanchaBhuta.None || affinityIcons == null) return null;
             int idx = (int)a - 1; // skip None=0
-            return (idx >= 0 && idx < _affinityIcons.Length) ? _affinityIcons[idx] : null;
+            return (idx >= 0 && idx < affinityIcons.Length) ? affinityIcons[idx] : null;
         }
 
         static string AffinityLabel(PanchaBhuta a) => a switch
@@ -601,12 +601,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindStatsPage()
         {
-            if (_pages == null || _pages[0] == null) return;
-            var page = _pages[0].transform;
-            var inst = _unit.UnitInstance;
+            if (pages == null || pages[0] == null) return;
+            var page = pages[0].transform;
+            var inst = unit.UnitInstance;
             if (inst == null) return;
 
-            var modifiers = _modifierProvider != null ? _modifierProvider.GetModifiers(inst) : default;
+            var modifiers = modifierProvider != null ? modifierProvider.GetModifiers(inst) : default;
             var caps = inst.CurrentClass != null ? inst.CurrentClass.StatCaps : default;
             bool hasClass = inst.CurrentClass != null;
 
@@ -628,7 +628,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             BindStatRowWithModifier(page, "StatR_Mov", inst.EffectiveMovement, 0, false);
 
             // Dharmic Threshold banner — shown only for player when every non-HP stat is capped.
-            bool allCapped = hasClass && _unit.faction == Faction.Player
+            bool allCapped = hasClass && unit.faction == Faction.Player
                 && inst.Stats[StatIndex.Str] >= caps[StatIndex.Str]
                 && inst.Stats[StatIndex.Mag] >= caps[StatIndex.Mag]
                 && inst.Stats[StatIndex.Skl] >= caps[StatIndex.Skl]
@@ -637,10 +637,10 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 && inst.Stats[StatIndex.Def] >= caps[StatIndex.Def]
                 && inst.Stats[StatIndex.Res] >= caps[StatIndex.Res]
                 && inst.Stats[StatIndex.Con] >= caps[StatIndex.Con];
-            if (_dharmicThresholdBanner != null) _dharmicThresholdBanner.SetActive(allCapped);
+            if (dharmicThresholdBanner != null) dharmicThresholdBanner.SetActive(allCapped);
 
             // Derived combat stats
-            var wpn = _unit.equippedWeapon;
+            var wpn = unit.equippedWeapon;
             bool hasWeapon = !wpn.IsEmpty && !wpn.IsBroken;
 
             SetDerived(page, "Atk", hasWeapon
@@ -693,9 +693,9 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindWeaponRanks(Transform page)
         {
-            var tracker = _unit.WeaponRankTracker;
-            var cls = _unit.UnitInstance?.CurrentClass;
-            WeaponType[] whitelist = cls?.WeaponWhitelist ?? _unit.AllowedWeaponTypes;
+            var tracker = unit.WeaponRankTracker;
+            var cls = unit.UnitInstance?.CurrentClass;
+            WeaponType[] whitelist = cls?.WeaponWhitelist ?? unit.AllowedWeaponTypes;
             if (whitelist == null || tracker == null) return;
 
             var allTypes = new[] {
@@ -738,12 +738,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindInventoryPage()
         {
-            if (_pages == null || _pages[1] == null) return;
-            var page = _pages[1].transform;
-            var inv = _unit.Inventory;
+            if (pages == null || pages[1] == null) return;
+            var page = pages[1].transform;
+            var inv = unit.Inventory;
 
-            _visibleItemNameTMPs.Clear();
-            _visibleItemSlotIndices.Clear();
+            visibleItemNameTMPs.Clear();
+            visibleItemSlotIndices.Clear();
 
             // Bind item slots by finding child items in ItemsList
             var listT = FindDeep(page, "ItemsList");
@@ -764,8 +764,8 @@ namespace ProjectAstra.Core.UI.UnitInfo
                     if (usesT != null) usesT.text = item.CurrentUses + " / " + item.MaxUses;
                     if (nameT != null)
                     {
-                        _visibleItemNameTMPs.Add(nameT);
-                        _visibleItemSlotIndices.Add(slotIdx);
+                        visibleItemNameTMPs.Add(nameT);
+                        visibleItemSlotIndices.Add(slotIdx);
                     }
                 }
                 else
@@ -776,12 +776,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 slotIdx++;
             }
 
-            _selectedItemRow = Mathf.Clamp(_selectedItemRow, 0, Mathf.Max(0, _visibleItemNameTMPs.Count - 1));
+            selectedItemRow = Mathf.Clamp(selectedItemRow, 0, Mathf.Max(0, visibleItemNameTMPs.Count - 1));
             UpdateItemHighlight();
 
             // Bind equipment derived stats
-            var wpn = _unit.equippedWeapon;
-            var inst = _unit.UnitInstance;
+            var wpn = unit.equippedWeapon;
+            var inst = unit.UnitInstance;
             bool hasWeapon = !wpn.IsEmpty && !wpn.IsBroken && inst != null;
 
             var eBox = FindDeep(page, "EquipmentBox");
@@ -802,27 +802,27 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void BindSupportsPage()
         {
-            if (_pages == null || _pages.Length < 3 || _pages[2] == null) return;
-            if (_supportsList == null || _supportRowTemplate == null) return;
-            var inst = _unit.UnitInstance;
+            if (pages == null || pages.Length < 3 || pages[2] == null) return;
+            if (supportsList == null || supportRowTemplate == null) return;
+            var inst = unit.UnitInstance;
 
-            _visibleBondNameTMPs.Clear();
-            _visibleBondData.Clear();
+            visibleBondNameTMPs.Clear();
+            visibleBondData.Clear();
 
             // Clear existing rows (every cloned row except the template itself).
-            for (int i = _supportsList.childCount - 1; i >= 0; i--)
+            for (int i = supportsList.childCount - 1; i >= 0; i--)
             {
-                var c = _supportsList.GetChild(i);
-                if (c.gameObject == _supportRowTemplate) continue;
+                var c = supportsList.GetChild(i);
+                if (c.gameObject == supportRowTemplate) continue;
                 Object.Destroy(c.gameObject);
             }
 
-            var bonds = (_supportProvider != null && inst != null)
-                ? _supportProvider.GetBonds(inst)
+            var bonds = (supportProvider != null && inst != null)
+                ? supportProvider.GetBonds(inst)
                 : null;
 
             bool anyBonds = bonds != null && bonds.Count > 0;
-            if (_supportsEmptyText != null) _supportsEmptyText.gameObject.SetActive(!anyBonds);
+            if (supportsEmptyText != null) supportsEmptyText.gameObject.SetActive(!anyBonds);
             if (!anyBonds) return;
 
             // Sort: higher stage first, alphabetical within.
@@ -838,7 +838,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
             foreach (var bond in sorted)
             {
-                var row = Object.Instantiate(_supportRowTemplate, _supportsList);
+                var row = Object.Instantiate(supportRowTemplate, supportsList);
                 row.SetActive(true);
                 row.name = "Bond_" + (bond.Partner != null ? bond.Partner.UnitName : "?");
                 PopulateSupportRow(row.transform, bond);
@@ -846,12 +846,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 var nameT = FindTMP(row.transform, "Name");
                 if (nameT != null)
                 {
-                    _visibleBondNameTMPs.Add(nameT);
-                    _visibleBondData.Add(bond);
+                    visibleBondNameTMPs.Add(nameT);
+                    visibleBondData.Add(bond);
                 }
             }
 
-            _selectedBondRow = Mathf.Clamp(_selectedBondRow, 0, Mathf.Max(0, _visibleBondNameTMPs.Count - 1));
+            selectedBondRow = Mathf.Clamp(selectedBondRow, 0, Mathf.Max(0, visibleBondNameTMPs.Count - 1));
             UpdateBondHighlight();
         }
 
@@ -868,7 +868,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 {
                     img.sprite = bond.Partner.Portrait;
                     img.color = bond.IsDeceased ? new Color(0.55f, 0.55f, 0.55f, rowAlpha) : Color.white;
-                    img.material = bond.IsDeceased ? _desaturatedMaterial : null;
+                    img.material = bond.IsDeceased ? desaturatedMaterial : null;
                 }
             }
 
@@ -878,7 +878,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             {
                 diyaT.gameObject.SetActive(bond.IsDeceased);
                 var img = diyaT.GetComponent<Image>();
-                if (img != null && _diyaMemorial != null) img.sprite = _diyaMemorial;
+                if (img != null && diyaMemorial != null) img.sprite = diyaMemorial;
             }
 
             // Notif (conversation available)
@@ -887,7 +887,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             {
                 notifT.gameObject.SetActive(bond.ConversationAvailable && !bond.IsDeceased);
                 var img = notifT.GetComponent<Image>();
-                if (img != null && _notifBadge != null) img.sprite = _notifBadge;
+                if (img != null && notifBadge != null) img.sprite = notifBadge;
             }
 
             // Name (strike-through when deceased)
@@ -911,8 +911,8 @@ namespace ProjectAstra.Core.UI.UnitInfo
                     var pip = pipsT.GetChild(i).GetComponent<Image>();
                     if (pip == null) continue;
                     Sprite sprite = i < stageInt
-                        ? _bondPipLit
-                        : (stageInt == 0 && i == 0 ? _bondPipEncounter : _bondPipUnlit);
+                        ? bondPipLit
+                        : (stageInt == 0 && i == 0 ? bondPipEncounter : bondPipUnlit);
                     if (sprite != null) pip.sprite = sprite;
                     pip.color = bond.IsDeceased ? new Color(1, 1, 1, 0.35f) : Color.white;
                 }
@@ -924,7 +924,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             {
                 shapathT.gameObject.SetActive(bond.ShapathWitnessed);
                 var img = shapathT.GetComponent<Image>();
-                if (img != null && _shapathIcon != null) img.sprite = _shapathIcon;
+                if (img != null && shapathIcon != null) img.sprite = shapathIcon;
             }
 
             // Bonus teaser text — defer detail numbers to UnitInfoSupportDetailUI.
@@ -989,9 +989,9 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         Sprite HpSpriteForFraction(float frac)
         {
-            if (frac > 0.50f) return _hpFillGreen;
-            if (frac > 0.25f) return _hpFillYellow;
-            return _hpFillRed;
+            if (frac > 0.50f) return hpFillGreen;
+            if (frac > 0.25f) return hpFillYellow;
+            return hpFillRed;
         }
 
         void SetDerived(Transform root, string statName, string value)

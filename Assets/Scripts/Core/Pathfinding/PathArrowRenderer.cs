@@ -12,8 +12,8 @@ namespace ProjectAstra.Core.Pathfinding
         private static readonly Color DefaultArrowColor = new(0.5f, 0.95f, 1.0f, 0.85f);
         private static readonly Color32 SpritePixelColor = new(255, 255, 255, 255);
 
-        private Color _arrowColor = DefaultArrowColor;
-        private int _sortingOrder;
+        private Color arrowColor = DefaultArrowColor;
+        private int sortingOrder;
 
         const int SpriteSize = 16;
         const int BodyMin = 5;
@@ -23,29 +23,29 @@ namespace ProjectAstra.Core.Pathfinding
         const int ForwardBodyEnd = 7;
         const int ReverseBodyStart = 8;
 
-        private readonly List<GameObject> _activeSegments = new();
-        private readonly Queue<GameObject> _pool = new();
-        private Dictionary<SegmentType, Sprite> _sprites;
-        private Transform _container;
+        private readonly List<GameObject> activeSegments = new();
+        private readonly Queue<GameObject> pool = new();
+        private Dictionary<SegmentType, Sprite> sprites;
+        private Transform container;
 
         private void Awake()
         {
-            _container = new GameObject("PathArrows").transform;
-            _sprites = GenerateAllSprites();
+            container = new GameObject("PathArrows").transform;
+            sprites = GenerateAllSprites();
         }
 
         private void OnDestroy()
         {
-            if (_container != null)
-                Destroy(_container.gameObject);
+            if (container != null)
+                Destroy(container.gameObject);
         }
 
         // Secondary instances (e.g. an enemy-intent telegraph) re-tint and re-layer their
         // arrows; the player's arrow keeps the defaults.
         public void SetStyle(Color color, int sortingOrder)
         {
-            _arrowColor = color;
-            _sortingOrder = sortingOrder;
+            arrowColor = color;
+            this.sortingOrder = sortingOrder;
         }
 
         public void ShowPath(List<Vector2Int> path)
@@ -62,14 +62,14 @@ namespace ProjectAstra.Core.Pathfinding
 
         public void Clear()
         {
-            foreach (var obj in _activeSegments)
+            foreach (var obj in activeSegments)
             {
                 // Skip segments already destroyed during scene teardown — nothing to reset or reuse.
                 if (obj == null) continue;
                 obj.SetActive(false);
-                _pool.Enqueue(obj);
+                pool.Enqueue(obj);
             }
-            _activeSegments.Clear();
+            activeSegments.Clear();
         }
 
         // --- Segment classification ---
@@ -118,20 +118,20 @@ namespace ProjectAstra.Core.Pathfinding
             obj.SetActive(true);
 
             var sr = obj.GetComponent<SpriteRenderer>();
-            sr.sprite = _sprites[type];
-            sr.color = _arrowColor;
-            sr.sortingOrder = _sortingOrder;
+            sr.sprite = sprites[type];
+            sr.color = arrowColor;
+            sr.sortingOrder = sortingOrder;
 
-            _activeSegments.Add(obj);
+            activeSegments.Add(obj);
         }
 
         private GameObject GetOrCreateSegment()
         {
-            if (_pool.Count > 0)
-                return _pool.Dequeue();
+            if (pool.Count > 0)
+                return pool.Dequeue();
 
             var obj = new GameObject("PathArrow");
-            obj.transform.SetParent(_container);
+            obj.transform.SetParent(container);
 
             var sr = obj.AddComponent<SpriteRenderer>();
             sr.sortingLayerName = "UIOverlay";

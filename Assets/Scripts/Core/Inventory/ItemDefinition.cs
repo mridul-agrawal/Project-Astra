@@ -10,9 +10,9 @@ namespace ProjectAstra.Core
     public abstract class ItemDefinition : ScriptableObject
     {
         [Tooltip("Name shown in-game and copied onto the runtime item. Must be non-empty or the baked item reads as empty.")]
-        [SerializeField] private string _displayName;
+        [SerializeField] private string displayName;
 
-        public string DisplayName => _displayName;
+        public string DisplayName => displayName;
 
         // Builds the runtime slot value for this item, with uses reset to full.
         public abstract InventoryItem ToInventoryItem();

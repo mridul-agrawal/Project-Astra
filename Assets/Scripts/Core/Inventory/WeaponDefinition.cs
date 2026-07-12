@@ -11,57 +11,57 @@ namespace ProjectAstra.Core
     public class WeaponDefinition : ItemDefinition
     {
         [Header("Type")]
-        [SerializeField] private WeaponType _weaponType;
-        [SerializeField] private DamageType _damageType = DamageType.Physical;
-        [SerializeField] private MagicSchool _magicSchool = MagicSchool.None;
-        [SerializeField] private StaffEffect _staffEffect = StaffEffect.None;
-        [SerializeField] private WeaponTier _tier = WeaponTier.Iron;
-        [SerializeField] private WeaponRank _minRank = WeaponRank.E;
+        [SerializeField] private WeaponType weaponType;
+        [SerializeField] private DamageType damageType = DamageType.Physical;
+        [SerializeField] private MagicSchool magicSchool = MagicSchool.None;
+        [SerializeField] private StaffEffect staffEffect = StaffEffect.None;
+        [SerializeField] private WeaponTier tier = WeaponTier.Iron;
+        [SerializeField] private WeaponRank minRank = WeaponRank.E;
 
         [Header("Combat")]
-        [SerializeField] private int _might;
-        [SerializeField, Range(0, 100)] private int _hit = 80;
-        [SerializeField, Range(0, 100)] private int _crit;
-        [SerializeField] private int _weight;
-        [SerializeField, Min(1)] private int _minRange = 1;
-        [SerializeField, Min(1)] private int _maxRange = 1;
+        [SerializeField] private int might;
+        [SerializeField, Range(0, 100)] private int hit = 80;
+        [SerializeField, Range(0, 100)] private int crit;
+        [SerializeField] private int weight;
+        [SerializeField, Min(1)] private int minRange = 1;
+        [SerializeField, Min(1)] private int maxRange = 1;
 
         [Header("Durability")]
-        [SerializeField, Min(0)] private int _maxUses = 45;
+        [SerializeField, Min(0)] private int maxUses = 45;
         [Tooltip("Personal/legendary weapons that never break.")]
-        [SerializeField] private bool _indestructible;
+        [SerializeField] private bool indestructible;
 
         [Header("Special")]
         [Tooltip("Brave weapons attack twice per round.")]
-        [SerializeField] private bool _brave;
+        [SerializeField] private bool brave;
         [Tooltip("Classes this weapon deals tripled might against (e.g. Bow vs Flying).")]
-        [SerializeField] private ClassType[] _effectivenessTargets;
+        [SerializeField] private ClassType[] effectivenessTargets;
         [Tooltip("If set, only the unit with the matching id below may wield it.")]
-        [SerializeField] private bool _characterLocked;
-        [SerializeField] private string _ownerUnitId;
+        [SerializeField] private bool characterLocked;
+        [SerializeField] private string ownerUnitId;
 
         public WeaponData ToRuntime() => new()
         {
             name = DisplayName,
-            weaponType = _weaponType,
-            damageType = _damageType,
-            magicSchool = _magicSchool,
-            staffEffect = _staffEffect,
-            tier = _tier,
-            minRank = _minRank,
-            might = _might,
-            hit = _hit,
-            crit = _crit,
-            weight = _weight,
-            minRange = _minRange,
-            maxRange = _maxRange,
-            maxUses = _maxUses,
-            currentUses = _maxUses,
-            indestructible = _indestructible,
-            brave = _brave,
-            effectivenessTargets = _effectivenessTargets,
-            characterLocked = _characterLocked,
-            ownerUnitId = _ownerUnitId,
+            weaponType = weaponType,
+            damageType = damageType,
+            magicSchool = magicSchool,
+            staffEffect = staffEffect,
+            tier = tier,
+            minRank = minRank,
+            might = might,
+            hit = hit,
+            crit = crit,
+            weight = weight,
+            minRange = minRange,
+            maxRange = maxRange,
+            maxUses = maxUses,
+            currentUses = maxUses,
+            indestructible = indestructible,
+            brave = brave,
+            effectivenessTargets = effectivenessTargets,
+            characterLocked = characterLocked,
+            ownerUnitId = ownerUnitId,
         };
 
         public override InventoryItem ToInventoryItem() => InventoryItem.FromWeapon(ToRuntime());

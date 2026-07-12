@@ -10,43 +10,43 @@ namespace ProjectAstra.Core.Dialogue
     [Serializable]
     internal class DialogueTrigger
     {
-        [SerializeField] private BattleDialogueEventType _event;
+        [SerializeField] private BattleDialogueEventType @event;
 
         [Tooltip("Player-phase turn this fires on. 0 = any turn. Ignored by non-phase events.")]
-        [SerializeField] private int _turnFilter = 0;
+        [SerializeField] private int turnFilter = 0;
 
-        [SerializeField] private DialogueScript _script;
-        [SerializeField] private bool _fireOnce = true;
+        [SerializeField] private DialogueScript script;
+        [SerializeField] private bool fireOnce = true;
 
-        private bool _spent;
+        private bool spent;
 
-        public DialogueScript Script => _script;
+        public DialogueScript Script => script;
 
         public bool Matches(BattleDialogueEventType eventType, int turn)
         {
-            if (_spent || _script == null) return false;
-            if (_event != eventType) return false;
-            if (IsTurnFiltered(eventType) && _turnFilter != turn) return false;
+            if (spent || script == null) return false;
+            if (@event != eventType) return false;
+            if (IsTurnFiltered(eventType) && turnFilter != turn) return false;
             return true;
         }
 
         public void MarkFired()
         {
-            if (_fireOnce) _spent = true;
+            if (fireOnce) spent = true;
         }
 
         private bool IsTurnFiltered(BattleDialogueEventType eventType)
-            => eventType == BattleDialogueEventType.PlayerPhaseStarted && _turnFilter > 0;
+            => eventType == BattleDialogueEventType.PlayerPhaseStarted && turnFilter > 0;
 
         internal static DialogueTrigger CreateForTest(BattleDialogueEventType eventType,
             DialogueScript script, bool fireOnce = true, int turnFilter = 0)
         {
             return new DialogueTrigger
             {
-                _event = eventType,
-                _script = script,
-                _fireOnce = fireOnce,
-                _turnFilter = turnFilter
+                @event = eventType,
+                script = script,
+                fireOnce = fireOnce,
+                turnFilter = turnFilter
             };
         }
     }
@@ -55,13 +55,13 @@ namespace ProjectAstra.Core.Dialogue
     // Plain class so the matching rules unit-test without a scene.
     internal class DialogueTriggerSet
     {
-        private readonly IReadOnlyList<DialogueTrigger> _triggers;
+        private readonly IReadOnlyList<DialogueTrigger> triggers;
 
-        public DialogueTriggerSet(IReadOnlyList<DialogueTrigger> triggers) => _triggers = triggers;
+        public DialogueTriggerSet(IReadOnlyList<DialogueTrigger> triggers) => this.triggers = triggers;
 
         public DialogueScript Resolve(BattleDialogueEventType eventType, int turn)
         {
-            foreach (var trigger in _triggers)
+            foreach (var trigger in triggers)
             {
                 if (!trigger.Matches(eventType, turn)) continue;
                 trigger.MarkFired();

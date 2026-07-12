@@ -11,11 +11,11 @@ namespace ProjectAstra.Core.Events
         menuName = "Project Astra/Core/Unit Death Event Channel")]
     public class UnitDeathEventChannel : ScriptableObject
     {
-        private Action<UnitDeathEventArgs> _onUnitDied;
+        private Action<UnitDeathEventArgs> onUnitDied;
 
-        public void Register(Action<UnitDeathEventArgs> listener) => _onUnitDied += listener;
-        public void Unregister(Action<UnitDeathEventArgs> listener) => _onUnitDied -= listener;
+        public void Register(Action<UnitDeathEventArgs> listener) => onUnitDied += listener;
+        public void Unregister(Action<UnitDeathEventArgs> listener) => onUnitDied -= listener;
 
-        public void Raise(UnitDeathEventArgs args) => _onUnitDied?.Invoke(args);
+        public void Raise(UnitDeathEventArgs args) => onUnitDied?.Invoke(args);
     }
 }

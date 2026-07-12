@@ -13,11 +13,11 @@ namespace ProjectAstra.Core.UI.Progression
     // PreBattlePrepBuilder.ButtonLabels.
     public class PreBattlePrepUI : MonoBehaviour
     {
-        [SerializeField] private Color _normalTint   = new(0.8f, 0.8f, 0.8f, 1f);
-        [SerializeField] private Color _selectedTint = new(1f, 1f, 1f, 1f);
+        [SerializeField] private Color normalTint   = new(0.8f, 0.8f, 0.8f, 1f);
+        [SerializeField] private Color selectedTint = new(1f, 1f, 1f, 1f);
 
-        private Button[] _buttons;
-        private int _selectedIndex;
+        private Button[] buttons;
+        private int selectedIndex;
 
         private void OnEnable()
         {
@@ -31,7 +31,7 @@ namespace ProjectAstra.Core.UI.Progression
 
         private void OnDisable()
         {
-            if (_buttons == null) return;
+            if (buttons == null) return;
             UnwireClicks();
             UnwireInput();
         }
@@ -60,18 +60,18 @@ namespace ProjectAstra.Core.UI.Progression
                 return false;
             }
 
-            _buttons = list.ToArray();
+            buttons = list.ToArray();
             return true;
         }
 
         private void WireClicks()
         {
-            _buttons[0].onClick.AddListener(GoToBattleMap);
+            buttons[0].onClick.AddListener(GoToBattleMap);
         }
 
         private void UnwireClicks()
         {
-            _buttons[0].onClick.RemoveListener(GoToBattleMap);
+            buttons[0].onClick.RemoveListener(GoToBattleMap);
         }
 
         private void WireInput()
@@ -93,27 +93,27 @@ namespace ProjectAstra.Core.UI.Progression
         private void Navigate(Vector2Int dir)
         {
             // With a single button, up/down wrap back to the only index (0).
-            if (dir.y > 0)      SelectButtonByIndex(_selectedIndex <= 0 ? _buttons.Length - 1 : _selectedIndex - 1);
-            else if (dir.y < 0) SelectButtonByIndex(_selectedIndex >= _buttons.Length - 1 ? 0 : _selectedIndex + 1);
+            if (dir.y > 0)      SelectButtonByIndex(selectedIndex <= 0 ? buttons.Length - 1 : selectedIndex - 1);
+            else if (dir.y < 0) SelectButtonByIndex(selectedIndex >= buttons.Length - 1 ? 0 : selectedIndex + 1);
         }
 
         private void ConfirmSelection()
         {
             AudioManager.Instance?.Play(SoundId.ConfirmStartBattle);
-            _buttons[_selectedIndex].onClick.Invoke();
+            buttons[selectedIndex].onClick.Invoke();
         }
 
         private void InitializeButtonColors()
         {
-            foreach (var b in _buttons)
-                if (b.image != null) b.image.color = _normalTint;
+            foreach (var b in buttons)
+                if (b.image != null) b.image.color = normalTint;
         }
 
         private void SelectButtonByIndex(int i)
         {
-            if (_buttons[_selectedIndex].image != null) _buttons[_selectedIndex].image.color = _normalTint;
-            _selectedIndex = i;
-            if (_buttons[_selectedIndex].image != null) _buttons[_selectedIndex].image.color = _selectedTint;
+            if (buttons[selectedIndex].image != null) buttons[selectedIndex].image.color = normalTint;
+            selectedIndex = i;
+            if (buttons[selectedIndex].image != null) buttons[selectedIndex].image.color = selectedTint;
         }
     }
 }

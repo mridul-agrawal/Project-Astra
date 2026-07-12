@@ -484,11 +484,11 @@ namespace ProjectAstra.Core.Editor
         private void SaveTarget()
         {
             var so = new SerializedObject(target);
-            so.FindProperty("_mapName").stringValue = workName;
+            so.FindProperty("mapName").stringValue = workName;
             so.FindProperty("mapId").stringValue = workId;
             so.FindProperty("baseArt").objectReferenceValue = workArt;
-            so.FindProperty("_width").intValue = width;
-            so.FindProperty("_height").intValue = height;
+            so.FindProperty("width").intValue = width;
+            so.FindProperty("height").intValue = height;
             WriteTerrain(so);
             WriteUnits(so);
             WriteObjects(so);
@@ -509,7 +509,7 @@ namespace ProjectAstra.Core.Editor
 
         private void WriteUnits(SerializedObject so)
         {
-            var p = so.FindProperty("_unitStartPositions");
+            var p = so.FindProperty("unitStartPositions");
             p.arraySize = units.Count;
             for (int i = 0; i < units.Count; i++)
             {
@@ -542,7 +542,7 @@ namespace ProjectAstra.Core.Editor
             if (dirty) SaveTarget();
 
             var so = new SerializedObject(catalog);
-            var maps = so.FindProperty("_maps");
+            var maps = so.FindProperty("maps");
             maps.arraySize++;
             maps.GetArrayElementAtIndex(maps.arraySize - 1).objectReferenceValue = target;
             so.ApplyModifiedProperties();
@@ -554,7 +554,7 @@ namespace ProjectAstra.Core.Editor
         private bool ComputeRegistered()
         {
             if (catalog == null || target == null) return false;
-            var maps = new SerializedObject(catalog).FindProperty("_maps");
+            var maps = new SerializedObject(catalog).FindProperty("maps");
             for (int i = 0; i < maps.arraySize; i++)
                 if (maps.GetArrayElementAtIndex(i).objectReferenceValue == target) return true;
             return false;

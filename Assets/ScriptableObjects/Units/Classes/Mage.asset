@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Mage
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Mage
-  _classType: 4
-  _movementRange: 5
-  _movementType: 0
-  _weaponWhitelist: 04000000
-  _statGrowthModifiers:
-    _values: fbffffff000000000a0000000000000000000000fbffffff0a0000000000000000000000
-  _statCaps:
-    _values: 2c000000020000001a0000001600000016000000100000001a0000000a0000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 1
-  _isPromoted: 0
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 110000000100000008000000060000000700000002000000060000000400000005000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Mage
+  classType: 4
+  movementRange: 5
+  movementType: 0
+  weaponWhitelist: 04000000
+  statGrowthModifiers:
+    values: fbffffff000000000a0000000000000000000000fbffffff0a0000000000000000000000
+  statCaps:
+    values: 2c000000020000001a0000001600000016000000100000001a0000000a0000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 1
+  isPromoted: 0
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 110000000100000008000000060000000700000002000000060000000400000005000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

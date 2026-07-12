@@ -9,19 +9,19 @@ namespace ProjectAstra.Core
     public class InventoryLoadout : ScriptableObject
     {
         [Tooltip("Starting items in slot order (first 5 used). The first wieldable weapon becomes the equipped weapon.")]
-        [SerializeField] private ItemDefinition[] _items;
+        [SerializeField] private ItemDefinition[] items;
 
-        public ItemDefinition[] Items => _items;
+        public ItemDefinition[] Items => items;
 
         // Seeds a unit's inventory with fresh runtime copies of each item, so
         // durability ticks independently per unit. Null entries are skipped;
         // items past inventory capacity are ignored.
         public void Apply(UnitInventory inventory)
         {
-            if (inventory == null || _items == null) return;
+            if (inventory == null || items == null) return;
 
             int slot = 0;
-            foreach (ItemDefinition item in _items)
+            foreach (ItemDefinition item in items)
             {
                 if (slot >= UnitInventory.Capacity) break;
                 if (item == null) continue;

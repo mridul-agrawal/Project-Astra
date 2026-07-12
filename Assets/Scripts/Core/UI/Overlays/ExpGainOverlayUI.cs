@@ -15,62 +15,62 @@ namespace ProjectAstra.Core.UI.Overlays
     // state-transitioned screen; ExpGranter sequences the two.
     public class ExpGainOverlayUI : MonoBehaviour
     {
-        [SerializeField] private GameObject _overlayRoot;
-        [SerializeField] private CanvasGroup _canvasGroup;
-        [SerializeField] private TMP_Text _unitNameText;
-        [SerializeField] private TMP_Text _counterText;
-        [SerializeField] private TMP_Text _gainText;
+        [SerializeField] private GameObject overlayRoot;
+        [SerializeField] private CanvasGroup canvasGroup;
+        [SerializeField] private TMP_Text unitNameText;
+        [SerializeField] private TMP_Text counterText;
+        [SerializeField] private TMP_Text gainText;
 
         [Header("Timing")]
-        [SerializeField] private float _fadeInSeconds = 0.2f;
-        [SerializeField] private float _countSeconds = 0.6f;
-        [SerializeField] private float _holdSeconds = 0.3f;
-        [SerializeField] private float _fadeOutSeconds = 0.2f;
+        [SerializeField] private float fadeInSeconds = 0.2f;
+        [SerializeField] private float countSeconds = 0.6f;
+        [SerializeField] private float holdSeconds = 0.3f;
+        [SerializeField] private float fadeOutSeconds = 0.2f;
 
         public IEnumerator Play(TestUnit recipient, int preExp, int amount)
         {
-            if (_overlayRoot != null) _overlayRoot.SetActive(true);
-            if (_canvasGroup != null) _canvasGroup.alpha = 0f;
+            if (overlayRoot != null) overlayRoot.SetActive(true);
+            if (canvasGroup != null) canvasGroup.alpha = 0f;
 
-            if (_unitNameText != null)
-                _unitNameText.text = recipient != null ? recipient.name : "";
+            if (unitNameText != null)
+                unitNameText.text = recipient != null ? recipient.name : "";
 
-            if (_gainText != null)
-                _gainText.text = $"+{amount} EXP";
+            if (gainText != null)
+                gainText.text = $"+{amount} EXP";
 
             SetCounter(preExp);
 
-            yield return FadeTo(1f, _fadeInSeconds);
+            yield return FadeTo(1f, fadeInSeconds);
 
             yield return CountUp(preExp, preExp + amount);
 
-            yield return new WaitForSeconds(_holdSeconds);
-            yield return FadeTo(0f, _fadeOutSeconds);
+            yield return new WaitForSeconds(holdSeconds);
+            yield return FadeTo(0f, fadeOutSeconds);
 
-            if (_overlayRoot != null) _overlayRoot.SetActive(false);
+            if (overlayRoot != null) overlayRoot.SetActive(false);
         }
 
         private IEnumerator FadeTo(float target, float duration)
         {
-            if (_canvasGroup == null || duration <= 0f)
+            if (canvasGroup == null || duration <= 0f)
             {
-                if (_canvasGroup != null) _canvasGroup.alpha = target;
+                if (canvasGroup != null) canvasGroup.alpha = target;
                 yield break;
             }
-            float start = _canvasGroup.alpha;
+            float start = canvasGroup.alpha;
             float t = 0f;
             while (t < duration)
             {
                 t += Time.deltaTime;
-                _canvasGroup.alpha = Mathf.SmoothStep(start, target, Mathf.Clamp01(t / duration));
+                canvasGroup.alpha = Mathf.SmoothStep(start, target, Mathf.Clamp01(t / duration));
                 yield return null;
             }
-            _canvasGroup.alpha = target;
+            canvasGroup.alpha = target;
         }
 
         private IEnumerator CountUp(int from, int to)
         {
-            if (_counterText == null || _countSeconds <= 0f)
+            if (counterText == null || countSeconds <= 0f)
             {
                 SetCounter(to % UnitInstance.ExpPerLevel);
                 yield break;
@@ -79,11 +79,11 @@ namespace ProjectAstra.Core.UI.Overlays
             float t = 0f;
             float tickTimer = 0f;
             int lastShown = from;
-            while (t < _countSeconds)
+            while (t < countSeconds)
             {
                 t += Time.deltaTime;
                 tickTimer += Time.deltaTime;
-                float p = Mathf.Clamp01(t / _countSeconds);
+                float p = Mathf.Clamp01(t / countSeconds);
                 int shown = Mathf.RoundToInt(Mathf.Lerp(from, to, p));
                 SetCounter(shown % UnitInstance.ExpPerLevel);
                 if (shown != lastShown && tickTimer >= 0.05f)
@@ -99,8 +99,8 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void SetCounter(int value)
         {
-            if (_counterText != null)
-                _counterText.text = $"{value} / {UnitInstance.ExpPerLevel}";
+            if (counterText != null)
+                counterText.text = $"{value} / {UnitInstance.ExpPerLevel}";
         }
     }
 }

@@ -19,29 +19,29 @@ namespace ProjectAstra.Core.Cursor
     // public API rather than holding their own copies.
     public class UnitSelectionFlow
     {
-        private readonly PathfindingService _pathfindingService;
-        private readonly UnitMover _unitMover;
-        private readonly RangeHighlighter _rangeHighlighter;
-        private readonly PathArrowRenderer _pathArrowRenderer;
-        private readonly CombatForecastUI _combatForecastUI;
-        private readonly GridCursor _cursor;
-        private readonly CantoFlow _cantoFlow;
-        private readonly ActionMenuFlow _actionMenuFlow;
+        private readonly PathfindingService pathfindingService;
+        private readonly UnitMover unitMover;
+        private readonly RangeHighlighter rangeHighlighter;
+        private readonly PathArrowRenderer pathArrowRenderer;
+        private readonly CombatForecastUI combatForecastUI;
+        private readonly GridCursor cursor;
+        private readonly CantoFlow cantoFlow;
+        private readonly ActionMenuFlow actionMenuFlow;
 
-        private TestUnit _selectedUnit;
-        private Pathfinder.ReachabilityResult _currentReachability;
-        private Vector2Int _committedDestination;
-        private HashSet<Vector2Int> _validMoveTiles;
-        private Vector2Int? _memorizedPosition;
-        private Dictionary<Vector2Int, Pathfinder.OccupantType> _occupancySnapshot;
+        private TestUnit selectedUnit;
+        private Pathfinder.ReachabilityResult currentReachability;
+        private Vector2Int committedDestination;
+        private HashSet<Vector2Int> validMoveTiles;
+        private Vector2Int? memorizedPosition;
+        private Dictionary<Vector2Int, Pathfinder.OccupantType> occupancySnapshot;
 
         // --- Read-only accessors (consumed by GridCursor + other flows + tests) ---
 
-        public TestUnit SelectedUnit => _selectedUnit;
-        public Vector2Int CommittedDestination => _committedDestination;
-        public Pathfinder.ReachabilityResult CurrentReachability => _currentReachability;
-        public HashSet<Vector2Int> ValidMoveTiles => _validMoveTiles;
-        public bool IsMovementConstrained => _validMoveTiles != null;
+        public TestUnit SelectedUnit => selectedUnit;
+        public Vector2Int CommittedDestination => committedDestination;
+        public Pathfinder.ReachabilityResult CurrentReachability => currentReachability;
+        public HashSet<Vector2Int> ValidMoveTiles => validMoveTiles;
+        public bool IsMovementConstrained => validMoveTiles != null;
 
         public UnitSelectionFlow(
             PathfindingService pathfindingService,
@@ -53,14 +53,14 @@ namespace ProjectAstra.Core.Cursor
             CantoFlow cantoFlow,
             ActionMenuFlow actionMenuFlow)
         {
-            _pathfindingService = pathfindingService;
-            _unitMover = unitMover;
-            _rangeHighlighter = rangeHighlighter;
-            _pathArrowRenderer = pathArrowRenderer;
-            _combatForecastUI = combatForecastUI;
-            _cursor = cursor;
-            _cantoFlow = cantoFlow;
-            _actionMenuFlow = actionMenuFlow;
+            this.pathfindingService = pathfindingService;
+            this.unitMover = unitMover;
+            this.rangeHighlighter = rangeHighlighter;
+            this.pathArrowRenderer = pathArrowRenderer;
+            this.combatForecastUI = combatForecastUI;
+            this.cursor = cursor;
+            this.cantoFlow = cantoFlow;
+            this.actionMenuFlow = actionMenuFlow;
         }
 
         // --- Entry points (HandleConfirm dispatches here) ---
@@ -70,24 +70,24 @@ namespace ProjectAstra.Core.Cursor
             TestUnit unit = FindUnitAt(cursorPos);
             if (!IsUnitSelectable(unit)) return;
 
-            _selectedUnit = unit;
+            selectedUnit = unit;
             EnterUnitSelectedMode();
         }
 
         public void TryCommitMovement(Vector2Int destination)
         {
-            if (!_currentReachability.Destinations.Contains(destination)) return;
+            if (!currentReachability.Destinations.Contains(destination)) return;
 
-            _committedDestination = destination;
-            _selectedUnit.preMovementPosition = _selectedUnit.gridPosition;
+            committedDestination = destination;
+            selectedUnit.preMovementPosition = selectedUnit.gridPosition;
 
-            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, _committedDestination, _currentReachability);
+            var path = Pathfinder.ReconstructPath(selectedUnit.gridPosition, committedDestination, currentReachability);
 
             ClearOverlay();
-            _cursor.SetMode(CursorMode.Locked);
+            cursor.SetMode(CursorMode.Locked);
 
             if (PathExists(path))
-                _unitMover.MoveAlongPath(_selectedUnit, path, OnMovementComplete);
+                unitMover.MoveAlongPath(selectedUnit, path, OnMovementComplete);
             else
                 OnMovementComplete();
         }
@@ -96,28 +96,28 @@ namespace ProjectAstra.Core.Cursor
 
         public void UpdatePathArrow(Vector2Int cursorPos)
         {
-            if (_pathArrowRenderer == null || _selectedUnit == null) return;
+            if (pathArrowRenderer == null || selectedUnit == null) return;
 
-            if (!_currentReachability.Destinations.Contains(cursorPos))
+            if (!currentReachability.Destinations.Contains(cursorPos))
             {
-                _pathArrowRenderer.Clear();
+                pathArrowRenderer.Clear();
                 return;
             }
 
-            var path = Pathfinder.ReconstructPath(_selectedUnit.gridPosition, cursorPos, _currentReachability);
-            _pathArrowRenderer.ShowPath(path);
+            var path = Pathfinder.ReconstructPath(selectedUnit.gridPosition, cursorPos, currentReachability);
+            pathArrowRenderer.ShowPath(path);
         }
 
         // --- Mutation seams used by ActionMenuFlow + CantoFlow ---
 
-        public void SetValidMoveTiles(HashSet<Vector2Int> tiles) => _validMoveTiles = tiles;
+        public void SetValidMoveTiles(HashSet<Vector2Int> tiles) => validMoveTiles = tiles;
 
         // CantoFlow: ensures the unit's current tile counts as a legal
         // "stay put" exit even when reachability would exclude it.
         public void EnsureMoveTileAllowed(Vector2Int tile)
         {
-            if (_validMoveTiles != null && !_validMoveTiles.Contains(tile))
-                _validMoveTiles.Add(tile);
+            if (validMoveTiles != null && !validMoveTiles.Contains(tile))
+                validMoveTiles.Add(tile);
         }
 
         // Called by CantoFlow at canto entry and by TrySelectUnit on initial
@@ -125,21 +125,21 @@ namespace ProjectAstra.Core.Cursor
         // movement points (which canto has just reduced).
         public void EnterUnitSelectedMode()
         {
-            if (_pathfindingService == null || _selectedUnit == null) return;
+            if (pathfindingService == null || selectedUnit == null) return;
 
-            _occupancySnapshot = BuildOccupancySnapshot();
-            _currentReachability = _pathfindingService.ComputeReachability(
-                _selectedUnit.gridPosition, _selectedUnit.movementPoints,
-                _selectedUnit.movementType, GetOccupantType);
+            occupancySnapshot = BuildOccupancySnapshot();
+            currentReachability = pathfindingService.ComputeReachability(
+                selectedUnit.gridPosition, selectedUnit.movementPoints,
+                selectedUnit.movementType, GetOccupantType);
 
             RestoreMovementConstraintsAndOverlay();
-            _memorizedPosition = _cursor.GridPosition;
-            _cursor.SetPosition(_selectedUnit.gridPosition);
-            _cursor.SetMode(CursorMode.UnitSelected);
+            memorizedPosition = cursor.GridPosition;
+            cursor.SetPosition(selectedUnit.gridPosition);
+            cursor.SetMode(CursorMode.UnitSelected);
         }
 
         private Pathfinder.OccupantType GetOccupantType(Vector2Int pos) =>
-            _occupancySnapshot != null && _occupancySnapshot.TryGetValue(pos, out var occupant)
+            occupancySnapshot != null && occupancySnapshot.TryGetValue(pos, out var occupant)
                 ? occupant
                 : Pathfinder.OccupantType.None;
 
@@ -150,7 +150,7 @@ namespace ProjectAstra.Core.Cursor
             var snapshot = new Dictionary<Vector2Int, Pathfinder.OccupantType>();
             foreach (var unit in UnityEngine.Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
             {
-                if (unit == _selectedUnit) continue;
+                if (unit == selectedUnit) continue;
                 snapshot[unit.gridPosition] = FactionOf(unit) == Faction.Enemy
                     ? Pathfinder.OccupantType.Enemy
                     : Pathfinder.OccupantType.Ally;
@@ -163,9 +163,9 @@ namespace ProjectAstra.Core.Cursor
 
         public void RestoreMovementConstraintsAndOverlay()
         {
-            _validMoveTiles = new HashSet<Vector2Int>(_currentReachability.Destinations);
-            _validMoveTiles.UnionWith(_currentReachability.PassThrough);
-            _rangeHighlighter?.ShowMovementRange(_currentReachability.Destinations, _currentReachability.PassThrough);
+            validMoveTiles = new HashSet<Vector2Int>(currentReachability.Destinations);
+            validMoveTiles.UnionWith(currentReachability.PassThrough);
+            rangeHighlighter?.ShowMovementRange(currentReachability.Destinations, currentReachability.PassThrough);
         }
 
         // --- Cancel/cleanup paths ---
@@ -179,37 +179,37 @@ namespace ProjectAstra.Core.Cursor
         public void FinishCantoFromCancel()
         {
             ClearOverlay();
-            _cantoFlow.FinalizeCanto(_selectedUnit);
+            cantoFlow.FinalizeCanto(selectedUnit);
             FinishTurn();
         }
 
         public void RestoreFromActionCancel()
         {
-            _combatForecastUI?.Hide();
+            combatForecastUI?.Hide();
 
-            if (_unitMover != null)
-                _unitMover.UndoMove(_selectedUnit, _selectedUnit.preMovementPosition);
+            if (unitMover != null)
+                unitMover.UndoMove(selectedUnit, selectedUnit.preMovementPosition);
 
             RestoreMovementConstraintsAndOverlay();
-            _cursor.SetPosition(_selectedUnit.gridPosition);
-            _cursor.SetMode(CursorMode.UnitSelected);
+            cursor.SetPosition(selectedUnit.gridPosition);
+            cursor.SetMode(CursorMode.UnitSelected);
         }
 
         public void DeselectUnit()
         {
             ResetState();
-            _cursor.ReturnToMemorizedPosition();
+            cursor.ReturnToMemorizedPosition();
         }
 
         public void ResetState()
         {
-            _cantoFlow?.ResetState();
-            _actionMenuFlow?.ClearLastChoice();
-            _selectedUnit = null;
-            _validMoveTiles = null;
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
-            _cursor.SetMode(CursorMode.Free);
+            cantoFlow?.ResetState();
+            actionMenuFlow?.ClearLastChoice();
+            selectedUnit = null;
+            validMoveTiles = null;
+            rangeHighlighter?.ClearAll();
+            pathArrowRenderer?.Clear();
+            cursor.SetMode(CursorMode.Free);
         }
 
         // --- Action / turn dispatch ---
@@ -218,34 +218,34 @@ namespace ProjectAstra.Core.Cursor
         // applicable; otherwise finalizes the unit's turn.
         public void CompleteAction()
         {
-            if (_cantoFlow.TryEnterCanto(_selectedUnit, _currentReachability, _validMoveTiles)) return;
+            if (cantoFlow.TryEnterCanto(selectedUnit, currentReachability, validMoveTiles)) return;
             FinishTurn();
         }
 
         public void FinishTurn()
         {
-            if (_selectedUnit != null)
+            if (selectedUnit != null)
             {
                 if (TurnManager.Instance != null)
-                    TurnManager.Instance.UnitRegistry.MarkActed(_selectedUnit);
+                    TurnManager.Instance.UnitRegistry.MarkActed(selectedUnit);
                 else
-                    _selectedUnit.MarkActed();
+                    selectedUnit.MarkActed();
             }
 
-            _memorizedPosition = null;
+            memorizedPosition = null;
             ResetState();
             TurnManager.Instance?.CheckAutoEndPlayerPhase();
         }
 
         // Called by GridCursor.SetPositionWithMemory / ReturnToMemorizedPosition,
         // which stay on GridCursor as the public test surface.
-        public void RecordMemorizedPosition(Vector2Int position) => _memorizedPosition = position;
+        public void RecordMemorizedPosition(Vector2Int position) => memorizedPosition = position;
 
         public bool TryConsumeMemorizedPosition(out Vector2Int restored)
         {
-            if (!_memorizedPosition.HasValue) { restored = default; return false; }
-            restored = _memorizedPosition.Value;
-            _memorizedPosition = null;
+            if (!memorizedPosition.HasValue) { restored = default; return false; }
+            restored = memorizedPosition.Value;
+            memorizedPosition = null;
             return true;
         }
 
@@ -253,9 +253,9 @@ namespace ProjectAstra.Core.Cursor
 
         private void OnMovementComplete()
         {
-            if (_cantoFlow.IsCantoMode)
+            if (cantoFlow.IsCantoMode)
             {
-                _cantoFlow.FinalizeCanto(_selectedUnit);
+                cantoFlow.FinalizeCanto(selectedUnit);
                 FinishTurn();
                 return;
             }
@@ -264,15 +264,15 @@ namespace ProjectAstra.Core.Cursor
 
         public void ShowActionMenu()
         {
-            _actionMenuFlow.Show(_selectedUnit, _committedDestination,
+            actionMenuFlow.Show(selectedUnit, committedDestination,
                 onComplete: CompleteAction,
                 onCancelToUnitSelected: RestoreFromActionCancel);
         }
 
         private void ClearOverlay()
         {
-            _rangeHighlighter?.ClearAll();
-            _pathArrowRenderer?.Clear();
+            rangeHighlighter?.ClearAll();
+            pathArrowRenderer?.Clear();
         }
 
         private static bool PathExists(List<Vector2Int> path) =>

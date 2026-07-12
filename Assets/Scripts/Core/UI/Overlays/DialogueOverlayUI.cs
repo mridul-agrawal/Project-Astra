@@ -8,7 +8,7 @@ namespace ProjectAstra.Core.UI.Overlays
     // Dialogue overlay — confirm ends dialogue and returns to battle map.
     public class DialogueOverlayUI : MonoBehaviour
     {
-        [SerializeField] private Button _endDialogueButton;
+        [SerializeField] private Button endDialogueButton;
 
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
@@ -16,12 +16,12 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             AddListenersToMouseClicks();
             AddListenerToGameplayInputs();
-            _endDialogueButton.image.color = Selected;
+            endDialogueButton.image.color = Selected;
         }
 
         private void AddListenersToMouseClicks()
         {
-            _endDialogueButton.onClick.AddListener(EndDialogue);
+            endDialogueButton.onClick.AddListener(EndDialogue);
         }
 
         private void AddListenerToGameplayInputs()
@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void RemoveListenersToMouseClicks()
         {
-            _endDialogueButton.onClick.RemoveListener(EndDialogue);
+            endDialogueButton.onClick.RemoveListener(EndDialogue);
         }
 
         private void RemoveListenerToGameplayInputs()

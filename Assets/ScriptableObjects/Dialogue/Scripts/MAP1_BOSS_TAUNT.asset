@@ -12,39 +12,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
   m_Name: MAP1_BOSS_TAUNT
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
-  _scriptId: MAP1_BOSS_TAUNT
-  _segments:
+  scriptId: MAP1_BOSS_TAUNT
+  segments:
   - _background: {fileID: 0}
-    _textSpeed: -1
-    _autoAdvanceDelay: 0
-    _lines:
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
     - _speakerId: RAKSHASA_CHIEF
-      _expression: 0
-      _portraitPosition: 0
-      _portraitFacing: 1
-      _text: Come, little archer. Your bridge wont hold us for long.
+      expression: 0
+      portraitPosition: 0
+      portraitFacing: 1
+      text: Come, little archer. Your bridge wont hold us for long.
     - _speakerId: PROTAGONIST
-      _expression: 5
-      _portraitPosition: 1
-      _portraitFacing: 0
-      _text: "This village  is not yours to take. \nNot while I draw breath."
-  _nodes:
+      expression: 5
+      portraitPosition: 1
+      portraitFacing: 0
+      text: "This village  is not yours to take. \nNot while I draw breath."
+  nodes:
   - _nodeId: 0
-    _speakerId: RAKSHASA_CHIEF
-    _expression: 0
-    _portraitPosition: 1
-    _portraitFacing: 1
-    _text: So the whelp has teeth. Come, little archer. Your bridge bought them a
+    speakerId: RAKSHASA_CHIEF
+    expression: 0
+    portraitPosition: 1
+    portraitFacing: 1
+    text: So the whelp has teeth. Come, little archer. Your bridge bought them a
       night. Nothing buys them a dawn.
-    _textSpeedOverride: -1
-    _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    textSpeedOverride: -1
+    autoAdvanceDelay: 0
+    fullScreenImage: {fileID: 0}
   - _nodeId: 1
-    _speakerId: PROTAGONIST
-    _expression: 5
-    _portraitPosition: 0
-    _portraitFacing: 0
-    _text: Suvarnapur is not yours to take. Not while I draw breath.
-    _textSpeedOverride: -1
-    _autoAdvanceDelay: 0
-    _fullScreenImage: {fileID: 0}
+    speakerId: PROTAGONIST
+    expression: 5
+    portraitPosition: 0
+    portraitFacing: 0
+    text: Suvarnapur is not yours to take. Not while I draw breath.
+    textSpeedOverride: -1
+    autoAdvanceDelay: 0
+    fullScreenImage: {fileID: 0}

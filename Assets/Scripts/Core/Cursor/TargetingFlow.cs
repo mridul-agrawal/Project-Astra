@@ -20,19 +20,19 @@ namespace ProjectAstra.Core.Cursor
     // whether the action menu should even offer Attack / Heal.
     public class TargetingFlow
     {
-        private readonly PathfindingService _pathfindingService;
-        private readonly MapRenderer _mapRenderer;
-        private readonly RangeHighlighter _rangeHighlighter;
-        private readonly CombatForecastUI _combatForecastUI;
-        private readonly GridCursor _cursor;
+        private readonly PathfindingService pathfindingService;
+        private readonly MapRenderer mapRenderer;
+        private readonly RangeHighlighter rangeHighlighter;
+        private readonly CombatForecastUI combatForecastUI;
+        private readonly GridCursor cursor;
 
-        private TestUnit _selectedUnit;
-        private List<Vector2Int> _targetTiles;
-        private int _targetIndex;
-        private bool _isHealTargeting;
+        private TestUnit selectedUnit;
+        private List<Vector2Int> targetTiles;
+        private int targetIndex;
+        private bool isHealTargeting;
 
-        public bool IsHealTargeting => _isHealTargeting;
-        public List<Vector2Int> CurrentTargetTiles => _targetTiles;
+        public bool IsHealTargeting => isHealTargeting;
+        public List<Vector2Int> CurrentTargetTiles => targetTiles;
 
         public TargetingFlow(
             PathfindingService pathfindingService,
@@ -41,11 +41,11 @@ namespace ProjectAstra.Core.Cursor
             CombatForecastUI combatForecastUI,
             GridCursor cursor)
         {
-            _pathfindingService = pathfindingService;
-            _mapRenderer = mapRenderer;
-            _rangeHighlighter = rangeHighlighter;
-            _combatForecastUI = combatForecastUI;
-            _cursor = cursor;
+            this.pathfindingService = pathfindingService;
+            this.mapRenderer = mapRenderer;
+            this.rangeHighlighter = rangeHighlighter;
+            this.combatForecastUI = combatForecastUI;
+            this.cursor = cursor;
         }
 
         // --- Pure queries (no mode change) ---
@@ -54,7 +54,7 @@ namespace ProjectAstra.Core.Cursor
         // weapon range.
         public List<Vector2Int> GetEnemiesInAttackRange(TestUnit selectedUnit, Vector2Int committedDestination)
         {
-            var attackRange = _pathfindingService.ComputeAttackRange(
+            var attackRange = pathfindingService.ComputeAttackRange(
                 new HashSet<Vector2Int> { committedDestination },
                 selectedUnit.attackRangeMin, selectedUnit.attackRangeMax);
 
@@ -74,7 +74,7 @@ namespace ProjectAstra.Core.Cursor
         {
             var staff = selectedUnit.equippedWeapon;
             var healRange = new HashSet<Vector2Int>();
-            var map = _mapRenderer.CurrentMap;
+            var map = mapRenderer.CurrentMap;
             StaffRangeResolver.GetTargetTiles(staff, magStat, committedDestination, map.Width, map.Height, healRange);
 
             var allyTiles = new List<Vector2Int>();
@@ -96,30 +96,30 @@ namespace ProjectAstra.Core.Cursor
 
         public void EnterAttackTargeting(TestUnit selectedUnit, List<Vector2Int> enemyTiles)
         {
-            _selectedUnit = selectedUnit;
-            _isHealTargeting = false;
-            _targetTiles = SortedByGridPosition(enemyTiles);
-            _targetIndex = 0;
+            this.selectedUnit = selectedUnit;
+            isHealTargeting = false;
+            targetTiles = SortedByGridPosition(enemyTiles);
+            targetIndex = 0;
 
-            _rangeHighlighter?.ShowAttackRange(new HashSet<Vector2Int>(enemyTiles));
+            rangeHighlighter?.ShowAttackRange(new HashSet<Vector2Int>(enemyTiles));
 
-            _cursor.SetPosition(_targetTiles[0]);
-            _cursor.SetMode(CursorMode.Targeting);
+            cursor.SetPosition(targetTiles[0]);
+            cursor.SetMode(CursorMode.Targeting);
 
             UpdateForecastForCurrentTarget();
         }
 
         public void EnterHealTargeting(TestUnit selectedUnit, List<Vector2Int> healTiles)
         {
-            _selectedUnit = selectedUnit;
-            _isHealTargeting = true;
-            _targetTiles = SortedByGridPosition(healTiles);
-            _targetIndex = 0;
+            this.selectedUnit = selectedUnit;
+            isHealTargeting = true;
+            targetTiles = SortedByGridPosition(healTiles);
+            targetIndex = 0;
 
-            _rangeHighlighter?.ShowHealRange(new HashSet<Vector2Int>(healTiles));
+            rangeHighlighter?.ShowHealRange(new HashSet<Vector2Int>(healTiles));
 
-            _cursor.SetPosition(_targetTiles[0]);
-            _cursor.SetMode(CursorMode.Targeting);
+            cursor.SetPosition(targetTiles[0]);
+            cursor.SetMode(CursorMode.Targeting);
 
             UpdateForecastForCurrentTarget();
         }
@@ -130,12 +130,12 @@ namespace ProjectAstra.Core.Cursor
         // picks forward or backward; the magnitude doesn't matter.
         public void Cycle(Vector2Int direction)
         {
-            if (_targetTiles == null || _targetTiles.Count == 0) return;
+            if (targetTiles == null || targetTiles.Count == 0) return;
 
             int step = (direction.x > 0 || direction.y > 0) ? 1 : -1;
-            _targetIndex = (_targetIndex + step + _targetTiles.Count) % _targetTiles.Count;
+            targetIndex = (targetIndex + step + targetTiles.Count) % targetTiles.Count;
 
-            _cursor.SetPosition(_targetTiles[_targetIndex]);
+            cursor.SetPosition(targetTiles[targetIndex]);
             UpdateForecastForCurrentTarget();
         }
 
@@ -144,10 +144,10 @@ namespace ProjectAstra.Core.Cursor
         // menu at the committed destination).
         public void Cancel()
         {
-            _isHealTargeting = false;
-            _targetTiles = null;
-            _selectedUnit = null;
-            _rangeHighlighter?.ClearAll();
+            isHealTargeting = false;
+            targetTiles = null;
+            selectedUnit = null;
+            rangeHighlighter?.ClearAll();
         }
 
         // Used by Cancel/cleanup paths outside the targeting flow itself
@@ -156,28 +156,28 @@ namespace ProjectAstra.Core.Cursor
         // the highlighter can choose.
         public void ClearState()
         {
-            _isHealTargeting = false;
-            _targetTiles = null;
-            _selectedUnit = null;
+            isHealTargeting = false;
+            targetTiles = null;
+            selectedUnit = null;
         }
 
         // --- Forecast + helpers ---
 
         public void UpdateForecastForCurrentTarget()
         {
-            if (_combatForecastUI == null || _selectedUnit == null) return;
-            if (_cursor.CurrentMode != CursorMode.Targeting) { _combatForecastUI.Hide(); return; }
+            if (combatForecastUI == null || selectedUnit == null) return;
+            if (cursor.CurrentMode != CursorMode.Targeting) { combatForecastUI.Hide(); return; }
 
-            var target = FindUnitAt(_cursor.GridPosition);
-            if (target == null) { _combatForecastUI.Hide(); return; }
+            var target = FindUnitAt(cursor.GridPosition);
+            if (target == null) { combatForecastUI.Hide(); return; }
 
-            int distance = Mathf.Abs(_selectedUnit.gridPosition.x - target.gridPosition.x)
-                         + Mathf.Abs(_selectedUnit.gridPosition.y - target.gridPosition.y);
+            int distance = Mathf.Abs(selectedUnit.gridPosition.x - target.gridPosition.x)
+                         + Mathf.Abs(selectedUnit.gridPosition.y - target.gridPosition.y);
 
-            if (_isHealTargeting)
-                _combatForecastUI.ShowStaffHeal(_selectedUnit, target);
+            if (isHealTargeting)
+                combatForecastUI.ShowStaffHeal(selectedUnit, target);
             else
-                _combatForecastUI.ShowCombat(_selectedUnit, target, distance);
+                combatForecastUI.ShowCombat(selectedUnit, target, distance);
         }
 
         private static List<Vector2Int> SortedByGridPosition(List<Vector2Int> source)

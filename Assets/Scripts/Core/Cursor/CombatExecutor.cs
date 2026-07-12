@@ -21,11 +21,11 @@ namespace ProjectAstra.Core.Cursor
     // wants to fire a combat round.
     public class CombatExecutor
     {
-        private readonly MapRenderer _mapRenderer;
-        private readonly TerrainStatTable _terrainStatTable;
-        private readonly CombatForecastUI _combatForecastUI;
-        private readonly ToastNotificationUI _toastUI;
-        private readonly CombatPlaybackDispatcher _dispatcher;
+        private readonly MapRenderer mapRenderer;
+        private readonly TerrainStatTable terrainStatTable;
+        private readonly CombatForecastUI combatForecastUI;
+        private readonly ToastNotificationUI toastUI;
+        private readonly CombatPlaybackDispatcher dispatcher;
 
         public CombatExecutor(
             MapRenderer mapRenderer,
@@ -34,11 +34,11 @@ namespace ProjectAstra.Core.Cursor
             ToastNotificationUI toastUI,
             CombatPlaybackDispatcher dispatcher)
         {
-            _mapRenderer = mapRenderer;
-            _terrainStatTable = terrainStatTable;
-            _combatForecastUI = combatForecastUI;
-            _toastUI = toastUI;
-            _dispatcher = dispatcher;
+            this.mapRenderer = mapRenderer;
+            this.terrainStatTable = terrainStatTable;
+            this.combatForecastUI = combatForecastUI;
+            this.toastUI = toastUI;
+            this.dispatcher = dispatcher;
         }
 
         // Fires one combat round and dispatches the result for playback.
@@ -47,7 +47,7 @@ namespace ProjectAstra.Core.Cursor
         // never has to branch on the path taken.
         public void TryCommitAttack(TestUnit attacker, TestUnit defender, Action onComplete)
         {
-            _combatForecastUI?.Hide();
+            combatForecastUI?.Hide();
 
             if (defender == null) { onComplete?.Invoke(); return; }
 
@@ -66,17 +66,17 @@ namespace ProjectAstra.Core.Cursor
                 Attacker = attacker,
                 Defender = defender,
                 Result = result,
-                ToastUI = _toastUI,
+                ToastUI = toastUI,
                 OnComplete = onComplete,
                 PreStepHook = CombatScriptOverride.PreStepHook,
-                DefenderTerrain = _mapRenderer != null
-                    ? _mapRenderer.GetTerrainType(defender.gridPosition.x, defender.gridPosition.y)
+                DefenderTerrain = mapRenderer != null
+                    ? mapRenderer.GetTerrainType(defender.gridPosition.x, defender.gridPosition.y)
                     : default,
             };
 
-            if (_dispatcher != null)
+            if (dispatcher != null)
             {
-                _dispatcher.Dispatch(ctx);
+                dispatcher.Dispatch(ctx);
             }
             else
             {
@@ -126,10 +126,10 @@ namespace ProjectAstra.Core.Cursor
 
         private (int def, int avo) GetTerrainBonuses(TestUnit unit)
         {
-            if (_mapRenderer == null || _terrainStatTable == null) return (0, 0);
+            if (mapRenderer == null || terrainStatTable == null) return (0, 0);
 
-            var terrain = _mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
-            var stats = _terrainStatTable.GetStats(terrain);
+            var terrain = mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
+            var stats = terrainStatTable.GetStats(terrain);
             return TerrainStatTable.GetTerrainBonuses(stats, unit.movementType);
         }
 

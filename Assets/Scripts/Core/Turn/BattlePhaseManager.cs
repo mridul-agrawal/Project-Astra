@@ -5,33 +5,33 @@ namespace ProjectAstra.Core.Turn
     // no Unity dependency — so it can be unit-tested in isolation.
     public class BattlePhaseManager
     {
-        private BattlePhase _currentPhase;
-        private bool _hasAllies;
+        private BattlePhase currentPhase;
+        private bool hasAllies;
 
-        public BattlePhase CurrentPhase => _currentPhase;
+        public BattlePhase CurrentPhase => currentPhase;
 
         public BattlePhaseManager(bool hasAllies)
         {
             SetHasAllies(hasAllies);
-            _currentPhase = BattlePhase.PlayerPhase;
+            currentPhase = BattlePhase.PlayerPhase;
         }
 
-        public void SetHasAllies(bool value) => _hasAllies = value;
+        public void SetHasAllies(bool value) => hasAllies = value;
 
         public void AdvancePhase()
         {
-            _currentPhase = GetNextPhase(_currentPhase);
+            currentPhase = GetNextPhase(currentPhase);
         }
 
         public void Reset()
         {
-            _currentPhase = BattlePhase.PlayerPhase;
+            currentPhase = BattlePhase.PlayerPhase;
         }
 
         private BattlePhase GetNextPhase(BattlePhase current) => current switch
         {
             BattlePhase.PlayerPhase => BattlePhase.EnemyPhase,
-            BattlePhase.EnemyPhase  => _hasAllies ? BattlePhase.AlliedPhase : BattlePhase.PlayerPhase,
+            BattlePhase.EnemyPhase  => hasAllies ? BattlePhase.AlliedPhase : BattlePhase.PlayerPhase,
             BattlePhase.AlliedPhase => BattlePhase.PlayerPhase,
             _                       => BattlePhase.PlayerPhase
         };

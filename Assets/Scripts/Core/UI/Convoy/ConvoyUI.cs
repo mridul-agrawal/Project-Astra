@@ -24,7 +24,7 @@ namespace ProjectAstra.Core.UI.Convoy
     {
         public static bool HasInputFocus { get; private set; }
 
-        [SerializeField] private GameObject _popupInstance;
+        [SerializeField] private GameObject popupInstance;
 
         private enum Mode { Give, Take }
         private enum Zone { Submenu, UnitInv, ConvoyList }
@@ -38,33 +38,33 @@ namespace ProjectAstra.Core.UI.Convoy
         private static readonly Color ColVermillion   = new(0.69f, 0.22f, 0.16f, 1f);    // #b0382a
         private static readonly Color ColBrass        = new(0.79f, 0.60f, 0.23f, 1f);    // #c9993a
 
-        private SupplyConvoy _convoy;
-        private TestUnit _unit;
-        private ToastNotificationUI _toastUI;
-        private Action _onClose;
+        private SupplyConvoy convoy;
+        private TestUnit unit;
+        private ToastNotificationUI toastUI;
+        private Action onClose;
 
-        private SupplyConvoyRefs _refs;
-        private Mode _mode;
-        private Zone _zone;
-        private int _unitCursor;          // 0..4
-        private int _convoyCursor;        // 0..visible rows-1
-        private int _convoyScrollOffset;  // offset into filtered list
-        private int _tabIndex;            // 0..9 (All / Sword / Lance / Axe / Bow / Anima / Light / Dark / Staff / Consumable)
-        private readonly List<int> _filtered = new(); // indices into _convoy.ToArray() matching current tab
+        private SupplyConvoyRefs refs;
+        private Mode mode;
+        private Zone zone;
+        private int unitCursor;          // 0..4
+        private int convoyCursor;        // 0..visible rows-1
+        private int convoyScrollOffset;  // offset into filtered list
+        private int tabIndex;            // 0..9 (All / Sword / Lance / Axe / Bow / Anima / Light / Dark / Staff / Consumable)
+        private readonly List<int> filtered = new(); // indices into _convoy.ToArray() matching current tab
 
         public void Show(SupplyConvoy convoy, TestUnit lordUnit,
             ToastNotificationUI toastUI, Action onClose)
         {
-            _convoy = convoy;
-            _unit = lordUnit;
-            _toastUI = toastUI;
-            _onClose = onClose;
-            _mode = Mode.Take;
-            _zone = Zone.Submenu;
-            _unitCursor = 0;
-            _convoyCursor = 0;
-            _convoyScrollOffset = 0;
-            _tabIndex = 0;
+            this.convoy = convoy;
+            unit = lordUnit;
+            this.toastUI = toastUI;
+            this.onClose = onClose;
+            mode = Mode.Take;
+            zone = Zone.Submenu;
+            unitCursor = 0;
+            convoyCursor = 0;
+            convoyScrollOffset = 0;
+            tabIndex = 0;
 
             ActivateUI();
             RebuildFiltered();
@@ -93,8 +93,8 @@ namespace ProjectAstra.Core.UI.Convoy
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            bool wasOpen = _popupInstance != null && _popupInstance.activeSelf;
-            if (_popupInstance != null) _popupInstance.SetActive(false);
+            bool wasOpen = popupInstance != null && popupInstance.activeSelf;
+            if (popupInstance != null) popupInstance.SetActive(false);
             if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
@@ -107,20 +107,20 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void ActivateUI()
         {
-            if (_popupInstance == null)
+            if (popupInstance == null)
             {
                 Debug.LogError("ConvoyUI: _popupInstance not wired. Run the scene setup or " +
                     "'Project Astra/Build Supply Convoy (prefab)' + re-run CursorSceneSetup.");
                 return;
             }
-            if (_refs == null) _refs = _popupInstance.GetComponent<SupplyConvoyRefs>();
-            if (_refs == null)
+            if (refs == null) refs = popupInstance.GetComponent<SupplyConvoyRefs>();
+            if (refs == null)
             {
                 Debug.LogError("ConvoyUI: popup has no SupplyConvoyRefs — rebuild the prefab.");
                 return;
             }
-            _popupInstance.SetActive(true);
-            _popupInstance.transform.SetAsLastSibling();
+            popupInstance.SetActive(true);
+            popupInstance.transform.SetAsLastSibling();
         }
 
         #endregion
@@ -129,31 +129,31 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void Navigate(Vector2Int dir)
         {
-            if (_refs == null) return;
+            if (refs == null) return;
 
-            if (_zone == Zone.Submenu)
+            if (zone == Zone.Submenu)
             {
-                if (dir.x < 0) { _mode = Mode.Give; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
-                else if (dir.x > 0) { _mode = Mode.Take; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
+                if (dir.x < 0) { mode = Mode.Give; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
+                else if (dir.x > 0) { mode = Mode.Take; RefreshSubmenu(); RefreshBubble(); RefreshConvoy(); AudioManager.Instance?.Play(SoundId.UiTab); }
                 else if (dir.y < 0)
                 {
-                    _zone = _mode == Mode.Give ? Zone.UnitInv : Zone.ConvoyList;
+                    zone = mode == Mode.Give ? Zone.UnitInv : Zone.ConvoyList;
                     RefreshFocus();
                     AudioManager.Instance?.Play(SoundId.UiMove);
                 }
                 return;
             }
 
-            if (_zone == Zone.UnitInv)
+            if (zone == Zone.UnitInv)
             {
                 if (dir.y > 0)
                 {
-                    if (_unitCursor == 0) { _zone = Zone.Submenu; RefreshFocus(); return; }
-                    _unitCursor--;
+                    if (unitCursor == 0) { zone = Zone.Submenu; RefreshFocus(); return; }
+                    unitCursor--;
                 }
                 else if (dir.y < 0)
                 {
-                    _unitCursor = Mathf.Min(UnitInventory.Capacity - 1, _unitCursor + 1);
+                    unitCursor = Mathf.Min(UnitInventory.Capacity - 1, unitCursor + 1);
                 }
                 RefreshUnitInv();
                 AudioManager.Instance?.Play(SoundId.UiMove);
@@ -164,9 +164,9 @@ namespace ProjectAstra.Core.UI.Convoy
             if (dir.x != 0)
             {
                 int step = dir.x > 0 ? 1 : -1;
-                _tabIndex = (_tabIndex + step + 10) % 10;
-                _convoyCursor = 0;
-                _convoyScrollOffset = 0;
+                tabIndex = (tabIndex + step + 10) % 10;
+                convoyCursor = 0;
+                convoyScrollOffset = 0;
                 RebuildFiltered();
                 RefreshTabs();
                 RefreshConvoy();
@@ -175,50 +175,50 @@ namespace ProjectAstra.Core.UI.Convoy
             }
             if (dir.y == 0) return;
 
-            int visible = _refs.rows.Length;
-            int count = _filtered.Count;
+            int visible = refs.rows.Length;
+            int count = filtered.Count;
             if (count == 0)
             {
-                if (dir.y > 0) { _zone = Zone.Submenu; RefreshFocus(); }
+                if (dir.y > 0) { zone = Zone.Submenu; RefreshFocus(); }
                 return;
             }
 
-            int absIndex = _convoyScrollOffset + _convoyCursor + (dir.y > 0 ? -1 : 1);
+            int absIndex = convoyScrollOffset + convoyCursor + (dir.y > 0 ? -1 : 1);
 
             if (absIndex < 0)
             {
-                _zone = Zone.Submenu;
+                zone = Zone.Submenu;
                 RefreshFocus();
                 return;
             }
             if (absIndex >= count) absIndex = count - 1;
 
-            if (absIndex < _convoyScrollOffset)        _convoyScrollOffset = absIndex;
-            else if (absIndex >= _convoyScrollOffset + visible) _convoyScrollOffset = absIndex - visible + 1;
+            if (absIndex < convoyScrollOffset)        convoyScrollOffset = absIndex;
+            else if (absIndex >= convoyScrollOffset + visible) convoyScrollOffset = absIndex - visible + 1;
 
-            _convoyCursor = absIndex - _convoyScrollOffset;
+            convoyCursor = absIndex - convoyScrollOffset;
             RefreshConvoy();
             AudioManager.Instance?.Play(SoundId.UiMove);
         }
 
         private void Confirm()
         {
-            if (_refs == null) return;
+            if (refs == null) return;
 
-            if (_zone == Zone.Submenu)
+            if (zone == Zone.Submenu)
             {
-                _zone = _mode == Mode.Give ? Zone.UnitInv : Zone.ConvoyList;
+                zone = mode == Mode.Give ? Zone.UnitInv : Zone.ConvoyList;
                 RefreshFocus();
                 return;
             }
 
-            if (_zone == Zone.UnitInv) TryStore();
-            else if (_zone == Zone.ConvoyList) TryWithdraw();
+            if (zone == Zone.UnitInv) TryStore();
+            else if (zone == Zone.ConvoyList) TryWithdraw();
         }
 
         private void Cancel()
         {
-            var close = _onClose;
+            var close = onClose;
             Hide();
             close?.Invoke();
         }
@@ -229,13 +229,13 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void TryStore()
         {
-            var inv = _unit.Inventory;
-            var item = inv.GetSlot(_unitCursor);
+            var inv = unit.Inventory;
+            var item = inv.GetSlot(unitCursor);
             if (item.IsEmpty) return;
-            if (_convoy.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); _toastUI?.Show("Convoy full"); return; }
+            if (convoy.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); toastUI?.Show("Convoy full"); return; }
 
-            inv.DiscardSlot(_unitCursor);
-            _convoy.TryDeposit(item);
+            inv.DiscardSlot(unitCursor);
+            convoy.TryDeposit(item);
             AudioManager.Instance?.Play(SoundId.ItemMove);
 
             RebuildFiltered();
@@ -244,25 +244,25 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void TryWithdraw()
         {
-            int count = _filtered.Count;
+            int count = filtered.Count;
             if (count == 0) return;
-            int absIndex = _filtered[Mathf.Clamp(_convoyScrollOffset + _convoyCursor, 0, count - 1)];
+            int absIndex = filtered[Mathf.Clamp(convoyScrollOffset + convoyCursor, 0, count - 1)];
 
-            var item = _convoy.GetSlot(absIndex);
+            var item = convoy.GetSlot(absIndex);
             if (item.IsEmpty) return;
 
-            var inv = _unit.Inventory;
-            if (inv.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); _toastUI?.Show("Inventory full"); return; }
+            var inv = unit.Inventory;
+            if (inv.IsFull) { AudioManager.Instance?.Play(SoundId.UiInvalid); toastUI?.Show("Inventory full"); return; }
 
-            if (!_convoy.TryWithdraw(absIndex, out var withdrawn)) return;
+            if (!convoy.TryWithdraw(absIndex, out var withdrawn)) return;
             inv.TryAddItem(withdrawn, out _);
             AudioManager.Instance?.Play(SoundId.ItemMove);
 
             RebuildFiltered();
-            int newCount = _filtered.Count;
-            int maxScroll = Mathf.Max(0, newCount - _refs.rows.Length);
-            if (_convoyScrollOffset > maxScroll) _convoyScrollOffset = maxScroll;
-            _convoyCursor = Mathf.Clamp(_convoyCursor, 0, Mathf.Max(0, newCount - 1 - _convoyScrollOffset));
+            int newCount = filtered.Count;
+            int maxScroll = Mathf.Max(0, newCount - refs.rows.Length);
+            if (convoyScrollOffset > maxScroll) convoyScrollOffset = maxScroll;
+            convoyCursor = Mathf.Clamp(convoyCursor, 0, Mathf.Max(0, newCount - 1 - convoyScrollOffset));
             RefreshAll();
         }
 
@@ -272,12 +272,12 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void RebuildFiltered()
         {
-            _filtered.Clear();
-            if (_convoy == null) return;
-            var all = _convoy.ToArray();
+            filtered.Clear();
+            if (convoy == null) return;
+            var all = convoy.ToArray();
             for (int i = 0; i < all.Length; i++)
             {
-                if (MatchesTab(all[i], _tabIndex)) _filtered.Add(i);
+                if (MatchesTab(all[i], tabIndex)) filtered.Add(i);
             }
         }
 
@@ -318,49 +318,49 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void RefreshHeader()
         {
-            if (_refs.portraitName != null) _refs.portraitName.text = _unit != null ? _unit.name : "—";
-            if (_refs.stockNum != null)
-                _refs.stockNum.text = $"{_convoy.Count} / {SupplyConvoy.MaxCapacity}";
-            if (_refs.lordInvCap != null)
-                _refs.lordInvCap.text = $"{_unit.Inventory.OccupiedCount} / {UnitInventory.Capacity}";
+            if (refs.portraitName != null) refs.portraitName.text = unit != null ? unit.name : "—";
+            if (refs.stockNum != null)
+                refs.stockNum.text = $"{convoy.Count} / {SupplyConvoy.MaxCapacity}";
+            if (refs.lordInvCap != null)
+                refs.lordInvCap.text = $"{unit.Inventory.OccupiedCount} / {UnitInventory.Capacity}";
         }
 
         private void RefreshBubble()
         {
-            if (_refs.bubbleLine == null) return;
-            _refs.bubbleLine.text = _mode == Mode.Give
+            if (refs.bubbleLine == null) return;
+            refs.bubbleLine.text = mode == Mode.Give
                 ? "\u201CI can spare this one. Keep it with the convoy.\u201D"
                 : "\u201CThe convoy has what I need. Mark it to my side.\u201D";
         }
 
         private void RefreshSubmenu()
         {
-            if (_refs == null) return;
-            bool give = _mode == Mode.Give;
-            ApplySubmenuState(_refs.giveButtonBg, _refs.giveLabel, give, _zone == Zone.Submenu && give);
-            ApplySubmenuState(_refs.takeButtonBg, _refs.takeLabel, !give, _zone == Zone.Submenu && !give);
+            if (refs == null) return;
+            bool give = mode == Mode.Give;
+            ApplySubmenuState(refs.giveButtonBg, refs.giveLabel, give, zone == Zone.Submenu && give);
+            ApplySubmenuState(refs.takeButtonBg, refs.takeLabel, !give, zone == Zone.Submenu && !give);
         }
 
         private void ApplySubmenuState(Image bg, TextMeshProUGUI label, bool active, bool focused)
         {
             if (bg == null) return;
-            Sprite target = _refs.submenuDefault;
-            if (active) target = _refs.submenuActive;
-            else if (focused) target = _refs.submenuHover;
+            Sprite target = refs.submenuDefault;
+            if (active) target = refs.submenuActive;
+            else if (focused) target = refs.submenuHover;
             bg.sprite = target;
             if (label != null) label.color = active ? ColBrassGlow : (focused ? ColParchmentSel : ColParchment);
         }
 
         private void RefreshUnitInv()
         {
-            var inv = _unit.Inventory;
+            var inv = unit.Inventory;
             int equipped = inv.EquippedWeaponSlot;
-            for (int i = 0; i < _refs.slots.Length; i++)
+            for (int i = 0; i < refs.slots.Length; i++)
             {
-                var slot = _refs.slots[i];
+                var slot = refs.slots[i];
                 if (slot == null || slot.root == null) continue;
                 var item = inv.GetSlot(i);
-                ApplySlot(slot, item, i == equipped, _zone == Zone.UnitInv && i == _unitCursor);
+                ApplySlot(slot, item, i == equipped, zone == Zone.UnitInv && i == unitCursor);
             }
         }
 
@@ -404,21 +404,21 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void RefreshTabs()
         {
-            if (_refs.tabs == null) return;
+            if (refs.tabs == null) return;
             int[] counts = new int[10];
-            var arr = _convoy.ToArray();
+            var arr = convoy.ToArray();
             for (int i = 0; i < arr.Length; i++)
             {
                 counts[0]++;
                 for (int t = 1; t < 10; t++) if (MatchesTab(arr[i], t)) counts[t]++;
             }
 
-            for (int i = 0; i < _refs.tabs.Length; i++)
+            for (int i = 0; i < refs.tabs.Length; i++)
             {
-                var tab = _refs.tabs[i];
+                var tab = refs.tabs[i];
                 if (tab == null || tab.root == null) continue;
-                bool active = i == _tabIndex;
-                bool focused = _zone == Zone.ConvoyList && i == _tabIndex;
+                bool active = i == tabIndex;
+                bool focused = zone == Zone.ConvoyList && i == tabIndex;
                 tab.background.sprite = active ? tab.sprActive
                                       : focused ? tab.sprFocused
                                       : tab.sprDefault;
@@ -432,26 +432,26 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private void RefreshConvoy()
         {
-            var arr = _convoy.ToArray();
-            int visible = _refs.rows.Length;
+            var arr = convoy.ToArray();
+            int visible = refs.rows.Length;
 
             for (int i = 0; i < visible; i++)
             {
-                var row = _refs.rows[i];
+                var row = refs.rows[i];
                 if (row == null || row.root == null) continue;
 
-                int filteredIdx = _convoyScrollOffset + i;
-                if (filteredIdx >= _filtered.Count)
+                int filteredIdx = convoyScrollOffset + i;
+                if (filteredIdx >= filtered.Count)
                 {
                     row.root.SetActive(false);
                     continue;
                 }
                 row.root.SetActive(true);
-                int absIdx = _filtered[filteredIdx];
+                int absIdx = filtered[filteredIdx];
                 var item = arr[absIdx];
-                bool focused = _zone == Zone.ConvoyList && i == _convoyCursor;
+                bool focused = zone == Zone.ConvoyList && i == convoyCursor;
                 bool depleted = item.IsDepleted;
-                bool disabled = _mode == Mode.Take && _unit.Inventory.IsFull;
+                bool disabled = mode == Mode.Take && unit.Inventory.IsFull;
 
                 row.background.sprite = focused ? row.sprFocused
                                       : disabled ? row.sprDisabled
@@ -480,10 +480,10 @@ namespace ProjectAstra.Core.UI.Convoy
             }
 
             // Scroll thumb
-            if (_refs.scrollThumb != null && _filtered.Count > 0)
+            if (refs.scrollThumb != null && filtered.Count > 0)
             {
-                float ratio = (float)_convoyScrollOffset / Mathf.Max(1, _filtered.Count);
-                var thumbRt = _refs.scrollThumb;
+                float ratio = (float)convoyScrollOffset / Mathf.Max(1, filtered.Count);
+                var thumbRt = refs.scrollThumb;
                 var trackH = ((RectTransform)thumbRt.parent).rect.height;
                 thumbRt.anchoredPosition = new Vector2(thumbRt.anchoredPosition.x, -ratio * trackH);
             }
@@ -503,16 +503,16 @@ namespace ProjectAstra.Core.UI.Convoy
 
         private Sprite SigilFor(InventoryItem item)
         {
-            if (item.kind == ItemKind.Consumable) return _refs.sigilConsumable;
+            if (item.kind == ItemKind.Consumable) return refs.sigilConsumable;
             if (item.kind != ItemKind.Weapon) return null;
             return item.weapon.weaponType switch
             {
-                WeaponType.Sword => _refs.sigilSword,
-                WeaponType.Lance => _refs.sigilLance,
-                WeaponType.Axe   => _refs.sigilAxe,
-                WeaponType.Bow   => _refs.sigilBow,
-                WeaponType.Staff => _refs.sigilStaff,
-                _                => _refs.sigilSword,
+                WeaponType.Sword => refs.sigilSword,
+                WeaponType.Lance => refs.sigilLance,
+                WeaponType.Axe   => refs.sigilAxe,
+                WeaponType.Bow   => refs.sigilBow,
+                WeaponType.Staff => refs.sigilStaff,
+                _                => refs.sigilSword,
             };
         }
 

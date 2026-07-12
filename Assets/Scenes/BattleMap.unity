@@ -4472,19 +4472,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102df106fca12ac42ae5dd71efd666c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueTriggerDriver
-  _triggers:
+  triggers:
   - _event: 0
-    _turnFilter: 1
-    _script: {fileID: 11400000, guid: 61401fd2e8939ad4cb7f554665e61a84, type: 2}
-    _fireOnce: 1
+    turnFilter: 1
+    script: {fileID: 11400000, guid: 61401fd2e8939ad4cb7f554665e61a84, type: 2}
+    fireOnce: 1
   - _event: 0
-    _turnFilter: 2
-    _script: {fileID: 11400000, guid: 5be61f76b3344d0aa6830455722865aa, type: 2}
-    _fireOnce: 1
+    turnFilter: 2
+    script: {fileID: 11400000, guid: 5be61f76b3344d0aa6830455722865aa, type: 2}
+    fireOnce: 1
   - _event: 0
-    _turnFilter: 3
-    _script: {fileID: 11400000, guid: d345497c738e4622bb32da8c9bdfd5ae, type: 2}
-    _fireOnce: 1
+    turnFilter: 3
+    script: {fileID: 11400000, guid: d345497c738e4622bb32da8c9bdfd5ae, type: 2}
+    fireOnce: 1
 --- !u!4 &113097127
 Transform:
   m_ObjectHideFlags: 0
@@ -12158,7 +12158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e85a940327fb694b857b2ce71952973, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.InventoryMenuUI
-  _popupInstance: {fileID: 90599857}
+  popupInstance: {fileID: 90599857}
 --- !u!1 &394472189
 GameObject:
   m_ObjectHideFlags: 0
@@ -13980,7 +13980,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7989ad4921fca441a8993f1c5b44ccf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.WarLedgerUI
-  _popupInstance: {fileID: 1552249863}
+  popupInstance: {fileID: 1552249863}
 --- !u!1 &486394018
 GameObject:
   m_ObjectHideFlags: 0
@@ -14283,25 +14283,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebe9596f7d305fb48862a1369d8f74e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.PhaseBannerUI
-  _bannerRoot: {fileID: 2003072389}
-  _borderTop: {fileID: 1544134053}
-  _borderBottom: {fileID: 408700418}
-  _innerBorderTop: {fileID: 2019966387}
-  _innerBorderBottom: {fileID: 1924276211}
-  _orbImages:
+  bannerRoot: {fileID: 2003072389}
+  borderTop: {fileID: 1544134053}
+  borderBottom: {fileID: 408700418}
+  innerBorderTop: {fileID: 2019966387}
+  innerBorderBottom: {fileID: 1924276211}
+  orbImages:
   - {fileID: 916341219}
   - {fileID: 904570373}
   - {fileID: 1086931702}
   - {fileID: 497756277}
-  _phaseText: {fileID: 763743835}
-  _turnText: {fileID: 1895865046}
-  _dimOverlay: {fileID: 233984304}
-  _playerGlowMat: {fileID: 2100000, guid: c8d250a578bfe1d4baa8106c468be1bd, type: 2}
-  _enemyGlowMat: {fileID: 2100000, guid: 9a5f09996aac2e149951d5300f64fd26, type: 2}
-  _alliedGlowMat: {fileID: 2100000, guid: 75b8223c493c625459659985836d24d0, type: 2}
-  _slideDuration: 0.3
-  _holdDuration: 1.2
-  _dimAlpha: 0.8
+  phaseText: {fileID: 763743835}
+  turnText: {fileID: 1895865046}
+  dimOverlay: {fileID: 233984304}
+  playerGlowMat: {fileID: 2100000, guid: c8d250a578bfe1d4baa8106c468be1bd, type: 2}
+  enemyGlowMat: {fileID: 2100000, guid: 9a5f09996aac2e149951d5300f64fd26, type: 2}
+  alliedGlowMat: {fileID: 2100000, guid: 75b8223c493c625459659985836d24d0, type: 2}
+  slideDuration: 0.3
+  holdDuration: 1.2
+  dimAlpha: 0.8
 --- !u!1 &497756275
 GameObject:
   m_ObjectHideFlags: 0
@@ -14574,8 +14574,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a07556e342a4d7d40909e78446741e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitSpawner
-  _unitDatabase: {fileID: 11400000, guid: 8cf1ddc7cbb7fa34f944d8b6a8e3f53b, type: 2}
-  _fallbackSprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
+  unitDatabase: {fileID: 11400000, guid: 8cf1ddc7cbb7fa34f944d8b6a8e3f53b, type: 2}
+  fallbackSprite: {fileID: 21300000, guid: 59c3750f17933d3428ba5ba579cd3339, type: 3}
 --- !u!1 &513047623
 GameObject:
   m_ObjectHideFlags: 0
@@ -17353,7 +17353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cfe5889e49d50343a15e148d5d98b39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Battle.Prologue.Map1RaidPrologue
-  _aranyaArrivalScript: {fileID: 11400000, guid: 98b8667b91db48d4c816ce4bbb47fe34, type: 2}
+  aranyaArrivalScript: {fileID: 11400000, guid: 98b8667b91db48d4c816ce4bbb47fe34, type: 2}
 --- !u!4 &648357904
 Transform:
   m_ObjectHideFlags: 0
@@ -19076,29 +19076,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e193b6e8c8fc7ff41871f152de9e432b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GridCursor
-  _mapRenderer: {fileID: 268787981}
-  _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
-  _rangeHighlighter: {fileID: 694383137}
-  _pathArrowRenderer: {fileID: 694383136}
-  _unitMover: {fileID: 694383135}
-  _actionMenuUI: {fileID: 694383134}
-  _inventoryMenuUI: {fileID: 394328760}
-  _confirmDialogUI: {fileID: 1963929594}
-  _toastUI: {fileID: 40113046}
-  _tradeUI: {fileID: 2038906738}
-  _convoyUI: {fileID: 848863361}
-  _unitInfoPanelUI: {fileID: 934369861}
-  _combatForecastUI: {fileID: 1467876469}
-  _skipModeController: {fileID: 1745841787}
-  _spriteRenderer: {fileID: 2111737127}
-  _idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
-  _selectedSprite: {fileID: 21300000, guid: a989ce4cdbdf47d0a3c2cb441d3982ab, type: 3}
-  _targetingSprite: {fileID: 21300000, guid: 88733e74e2324f7086dd761e8ba38e2e, type: 3}
-  _pulseSpeed: 1
-  _alphaMin: 1
-  _alphaMax: 2
-  _scaleMin: 1
-  _scaleMax: 1.2
+  mapRenderer: {fileID: 268787981}
+  terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
+  rangeHighlighter: {fileID: 694383137}
+  pathArrowRenderer: {fileID: 694383136}
+  unitMover: {fileID: 694383135}
+  actionMenuUI: {fileID: 694383134}
+  inventoryMenuUI: {fileID: 394328760}
+  confirmDialogUI: {fileID: 1963929594}
+  toastUI: {fileID: 40113046}
+  tradeUI: {fileID: 2038906738}
+  convoyUI: {fileID: 848863361}
+  unitInfoPanelUI: {fileID: 934369861}
+  combatForecastUI: {fileID: 1467876469}
+  skipModeController: {fileID: 1745841787}
+  spriteRenderer: {fileID: 2111737127}
+  idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
+  selectedSprite: {fileID: 21300000, guid: a989ce4cdbdf47d0a3c2cb441d3982ab, type: 3}
+  targetingSprite: {fileID: 21300000, guid: 88733e74e2324f7086dd761e8ba38e2e, type: 3}
+  pulseSpeed: 1
+  alphaMin: 1
+  alphaMax: 2
+  scaleMin: 1
+  scaleMax: 1.2
 --- !u!114 &694383134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19111,11 +19111,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef349d2dec188ea45aaba7f631591f27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitActionMenuUI
-  _bgSprite: {fileID: 21300000, guid: 820255b439ce5ef40aa4eb3f4852d7d0, type: 3}
-  _cursorSprite: {fileID: 21300000, guid: aa90213e55899e140914c131e3f423f9, type: 3}
-  _dividerSprite: {fileID: 21300000, guid: 1fa7cdb41c3435a4299b840213f0eedc, type: 3}
-  _optionFont: {fileID: 11400000, guid: 73e3b5e80998ecc459722bbc44cb9c06, type: 2}
-  _selectedGlowMat: {fileID: 2100000, guid: a2c4c91fe71daec4f9539bc70184adc8, type: 2}
+  bgSprite: {fileID: 21300000, guid: 820255b439ce5ef40aa4eb3f4852d7d0, type: 3}
+  cursorSprite: {fileID: 21300000, guid: aa90213e55899e140914c131e3f423f9, type: 3}
+  dividerSprite: {fileID: 21300000, guid: 1fa7cdb41c3435a4299b840213f0eedc, type: 3}
+  optionFont: {fileID: 11400000, guid: 73e3b5e80998ecc459722bbc44cb9c06, type: 2}
+  selectedGlowMat: {fileID: 2100000, guid: a2c4c91fe71daec4f9539bc70184adc8, type: 2}
 --- !u!114 &694383135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19128,7 +19128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16f0f1406f19fc74d8f7164c3285a063, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitMover
-  _tilesPerSecond: 8
+  tilesPerSecond: 8
 --- !u!114 &694383136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22825,17 +22825,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1013a6913a002f4bacd1658e4b3ec6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitInfoItemDetailUI
-  _nameText: {fileID: 166849569}
-  _typeText: {fileID: 57047573}
-  _mightText: {fileID: 1015464829}
-  _hitText: {fileID: 2010568630}
-  _critText: {fileID: 2021979643}
-  _weightText: {fileID: 1836680433}
-  _rangeText: {fileID: 1921406905}
-  _rankReqText: {fileID: 1697854579}
-  _effectivenessText: {fileID: 2017510206}
-  _specialText: {fileID: 41952248}
-  _descriptionText: {fileID: 210558230}
+  nameText: {fileID: 166849569}
+  typeText: {fileID: 57047573}
+  mightText: {fileID: 1015464829}
+  hitText: {fileID: 2010568630}
+  critText: {fileID: 2021979643}
+  weightText: {fileID: 1836680433}
+  rangeText: {fileID: 1921406905}
+  rankReqText: {fileID: 1697854579}
+  effectivenessText: {fileID: 2017510206}
+  specialText: {fileID: 41952248}
+  descriptionText: {fileID: 210558230}
 --- !u!1 &831709361
 GameObject:
   m_ObjectHideFlags: 0
@@ -23741,7 +23741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26265667a80f2ae4794fbecd2dff5d06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.ConvoyUI
-  _popupInstance: {fileID: 1413368344}
+  popupInstance: {fileID: 1413368344}
 --- !u!4 &848863362
 Transform:
   m_ObjectHideFlags: 0
@@ -25590,27 +25590,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b16a51c5c866cda4bb466a1f468f8fce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitInfoPanelUI
-  _hpFillGreen: {fileID: 21300000, guid: cf54924f84505b04f9d992f55bf82a41, type: 3}
-  _hpFillYellow: {fileID: 21300000, guid: 542ad8f5bdc0b544da54790c3d4e6c4b, type: 3}
-  _hpFillRed: {fileID: 21300000, guid: d8cf5e5c5a1f5804baab67a63176f751, type: 3}
-  _pageDotActive: {fileID: 21300000, guid: c539feb44c02be44bbf0b8608e4ea8da, type: 3}
-  _pageDotInactive: {fileID: 0}
-  _bondPipLit: {fileID: 21300000, guid: 55e0fe8eb3f25174fa39fbeaaa41d79f, type: 3}
-  _bondPipUnlit: {fileID: 21300000, guid: 77dc156ab27d7e34fb8bf1df42600042, type: 3}
-  _bondPipEncounter: {fileID: 21300000, guid: b03abed805e9c2a4dbba0e6f95b99ca4, type: 3}
-  _notifBadge: {fileID: 21300000, guid: f3b769a3ba7971c43897d3004af8766d, type: 3}
-  _diyaMemorial: {fileID: 21300000, guid: ddf9f07a5958a4b499796f47a1c44591, type: 3}
-  _shapathIcon: {fileID: 21300000, guid: da73bf94776e5ea4b9f2664a968627c2, type: 3}
-  _thresholdMark: {fileID: 21300000, guid: 1b36b12ed7145834da0906781c76ac79, type: 3}
-  _affinityIcons:
+  hpFillGreen: {fileID: 21300000, guid: cf54924f84505b04f9d992f55bf82a41, type: 3}
+  hpFillYellow: {fileID: 21300000, guid: 542ad8f5bdc0b544da54790c3d4e6c4b, type: 3}
+  hpFillRed: {fileID: 21300000, guid: d8cf5e5c5a1f5804baab67a63176f751, type: 3}
+  pageDotActive: {fileID: 21300000, guid: c539feb44c02be44bbf0b8608e4ea8da, type: 3}
+  pageDotInactive: {fileID: 0}
+  bondPipLit: {fileID: 21300000, guid: 55e0fe8eb3f25174fa39fbeaaa41d79f, type: 3}
+  bondPipUnlit: {fileID: 21300000, guid: 77dc156ab27d7e34fb8bf1df42600042, type: 3}
+  bondPipEncounter: {fileID: 21300000, guid: b03abed805e9c2a4dbba0e6f95b99ca4, type: 3}
+  notifBadge: {fileID: 21300000, guid: f3b769a3ba7971c43897d3004af8766d, type: 3}
+  diyaMemorial: {fileID: 21300000, guid: ddf9f07a5958a4b499796f47a1c44591, type: 3}
+  shapathIcon: {fileID: 21300000, guid: da73bf94776e5ea4b9f2664a968627c2, type: 3}
+  thresholdMark: {fileID: 21300000, guid: 1b36b12ed7145834da0906781c76ac79, type: 3}
+  affinityIcons:
   - {fileID: 21300000, guid: bb21a41d85366fc4b9f9e5203d9ebfda, type: 3}
   - {fileID: 21300000, guid: 4af448663586fda42bd2b7b73e120a56, type: 3}
   - {fileID: 21300000, guid: 7c9cd31845b6a9144918c28c586704b7, type: 3}
   - {fileID: 21300000, guid: 600c4a0d5260609449a63763cb493ca5, type: 3}
   - {fileID: 21300000, guid: 7bf4c6e3d7f62594eab02873ad1aef34, type: 3}
-  _desaturatedMaterial: {fileID: 2100000, guid: 5974368e23f119a42bdeacd96e1bea9f, type: 2}
-  _itemDetail: {fileID: 828159139}
-  _supportDetail: {fileID: 1997430535}
+  desaturatedMaterial: {fileID: 2100000, guid: 5974368e23f119a42bdeacd96e1bea9f, type: 2}
+  itemDetail: {fileID: 828159139}
+  supportDetail: {fileID: 1997430535}
 --- !u!224 &934369862
 RectTransform:
   m_ObjectHideFlags: 0
@@ -26828,14 +26828,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d0aa79fb870f34c8a75d9545bb5683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMapUI
-  _phaseLabel: {fileID: 0}
-  _advancePhaseButton: {fileID: 0}
-  _hasAlliesToggle: {fileID: 0}
-  _cutsceneButton: {fileID: 0}
-  _combatAnimationButton: {fileID: 0}
-  _dialogueButton: {fileID: 0}
-  _chapterClearButton: {fileID: 0}
-  _gameOverButton: {fileID: 0}
+  phaseLabel: {fileID: 0}
+  advancePhaseButton: {fileID: 0}
+  hasAlliesToggle: {fileID: 0}
+  cutsceneButton: {fileID: 0}
+  combatAnimationButton: {fileID: 0}
+  dialogueButton: {fileID: 0}
+  chapterClearButton: {fileID: 0}
+  gameOverButton: {fileID: 0}
   Normal: {r: 0.2, g: 0.2, b: 0.2, a: 0.9}
   Selected: {r: 0.4, g: 0.4, b: 0.6, a: 1}
 --- !u!114 &992180730
@@ -28095,13 +28095,13 @@ MonoBehaviour:
   movementType: 2
   attackRangeMin: 1
   attackRangeMax: 1
-  _allowedWeaponTypes: 
+  allowedWeaponTypes: 
   maxHP: 20
   currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 0}
-  _classOverride: {fileID: 0}
+  unitDefinition: {fileID: 0}
+  classOverride: {fileID: 0}
 --- !u!114 &1057541517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28114,7 +28114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
-  _slots:
+  slots:
   - kind: 1
     weapon:
       name: Loha Shula
@@ -30127,8 +30127,8 @@ MonoBehaviour:
   m_Script: {fileID: 733682076}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Progression.ChapterMeta
-  _chapterNumber: 1
-  _chapterTitle: The Burning of Suvarnapur
+  chapterNumber: 1
+  chapterTitle: The Burning of Suvarnapur
 --- !u!4 &1130846240
 Transform:
   m_ObjectHideFlags: 0
@@ -31861,8 +31861,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 164e58a5b3cb1334eb9cb3de260be06f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.LordDeathWatcher
-  _fadeDurationSeconds: 1
-  _fallbackLine: The hero has fallen.
+  fadeDurationSeconds: 1
+  fallbackLine: The hero has fallen.
 --- !u!114 &1202195124
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31875,8 +31875,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3afb5e0c9d65ab4cbdebc4338d040b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ExpGranter
-  _expGainOverlay: {fileID: 1995867636}
-  _levelUpScreen: {fileID: 843855194}
+  expGainOverlay: {fileID: 1995867636}
+  levelUpScreen: {fileID: 843855194}
 --- !u!114 &1202195125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31889,9 +31889,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40b5441400db8014e85487c59d291054, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.HealingTileSystem
-  _terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
-  _mapRenderer: {fileID: 268787981}
-  _healFloatSpawner: {fileID: 1202195126}
+  terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
+  mapRenderer: {fileID: 268787981}
+  healFloatSpawner: {fileID: 1202195126}
 --- !u!114 &1202195126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31904,16 +31904,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b321bb501852d24381416c337389a71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.HealFloatSpawner
-  _floatUpSeconds: 1.2
-  _holdSeconds: 0.3
-  _riseDistance: 0.6
-  _spawnOffset: {x: 0, y: 0.6, z: 0}
-  _fontSize: 48
-  _textColor: {r: 0.486, g: 0.827, b: 0.416, a: 1}
-  _outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  _canvasScale: 0.025
-  _sortingLayerName: UIOverlay
-  _sortingOrder: 100
+  floatUpSeconds: 1.2
+  holdSeconds: 0.3
+  riseDistance: 0.6
+  spawnOffset: {x: 0, y: 0.6, z: 0}
+  fontSize: 48
+  textColor: {r: 0.486, g: 0.827, b: 0.416, a: 1}
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  canvasScale: 0.025
+  sortingLayerName: UIOverlay
+  sortingOrder: 100
 --- !u!1 &1210866893
 GameObject:
   m_ObjectHideFlags: 0
@@ -32279,8 +32279,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f502f59d90130a4c89a6347fab34680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TurnManager
-  _hasAllies: 0
-  _aiPhaseDelaySeconds: 1
+  hasAllies: 0
+  aiPhaseDelaySeconds: 1
 --- !u!4 &1225757592
 Transform:
   m_ObjectHideFlags: 0
@@ -37624,7 +37624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f7e11f0219510a4f8b6cd1275c508f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatForecastUI
-  _popupInstance: {fileID: 754182141}
+  popupInstance: {fileID: 754182141}
 --- !u!4 &1467876470
 Transform:
   m_ObjectHideFlags: 0
@@ -40631,10 +40631,10 @@ MonoBehaviour:
   m_Script: {fileID: 595254844}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Progression.CommitmentSet
-  _commitments:
+  commitments:
   - {fileID: 11400000, guid: 7c14db2e0c7289744a3c020ea5dff47b, type: 2}
   - {fileID: 11400000, guid: 7766c185008fbf24fb24a7cf91596b3a, type: 2}
-  _evaluators:
+  evaluators:
   - {fileID: 1559972106}
 --- !u!4 &1559972108
 Transform:
@@ -42316,13 +42316,13 @@ MonoBehaviour:
   movementType: 1
   attackRangeMin: 1
   attackRangeMax: 1
-  _allowedWeaponTypes: 
+  allowedWeaponTypes: 
   maxHP: 20
   currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 11400000, guid: 77b0b5ce412237347a8e81f50d27e400, type: 2}
-  _classOverride: {fileID: 11400000, guid: f08d9f780209b1541bf1e8ed3b42e553, type: 2}
+  unitDefinition: {fileID: 11400000, guid: 77b0b5ce412237347a8e81f50d27e400, type: 2}
+  classOverride: {fileID: 11400000, guid: f08d9f780209b1541bf1e8ed3b42e553, type: 2}
 --- !u!114 &1646132338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42335,7 +42335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
-  _slots:
+  slots:
   - kind: 1
     weapon:
       name: Chikitsa
@@ -45358,7 +45358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 551dbfdcc4ad9034c8f02630f946dd59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Combat.Playback.CombatAnimationSettingsRef
-  _asset: {fileID: 11400000, guid: 9a3bb83a7be03d74fac4d3be9242edd9, type: 2}
+  asset: {fileID: 11400000, guid: 9a3bb83a7be03d74fac4d3be9242edd9, type: 2}
 --- !u!114 &1745841786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45371,18 +45371,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24a8763de17782b49a7320ff3e86af6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.MapDamageFloat
-  _floatUpSeconds: 0.8
-  _holdSeconds: 0.18
-  _riseDistance: 0.65
-  _spawnOffset: {x: 0, y: 0.6, z: 0}
-  _fontSize: 56
-  _damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
-  _critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
-  _missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
-  _outlineColor: {r: 0, g: 0, b: 0, a: 1}
-  _canvasScale: 0.025
-  _sortingLayerName: UIOverlay
-  _sortingOrder: 100
+  floatUpSeconds: 0.8
+  holdSeconds: 0.18
+  riseDistance: 0.65
+  spawnOffset: {x: 0, y: 0.6, z: 0}
+  fontSize: 56
+  damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
+  critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
+  missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
+  outlineColor: {r: 0, g: 0, b: 0, a: 1}
+  canvasScale: 0.025
+  sortingLayerName: UIOverlay
+  sortingOrder: 100
 --- !u!114 &1745841787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45395,13 +45395,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d4dc7fd5ad64514ca7c17a3f11f838f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatAnimation.SkipModePlaybackController
-  _damageFloat: {fileID: 1745841786}
-  _interHitGap: 0.15
-  _hpDrainDuration: 0.1
-  _deathFadeDuration: 0.3
-  _hpBarHideDelay: 0.3
-  _hitFlashDuration: 0.1
-  _hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  damageFloat: {fileID: 1745841786}
+  interHitGap: 0.15
+  hpDrainDuration: 0.1
+  deathFadeDuration: 0.3
+  hpBarHideDelay: 0.3
+  hitFlashDuration: 0.1
+  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1745841788
 Transform:
   m_ObjectHideFlags: 0
@@ -46511,13 +46511,13 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
-  _allowedWeaponTypes: 
+  allowedWeaponTypes: 
   maxHP: 20
   currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 11400000, guid: d3f1b7fa0391d7a4f8c3707b94986492, type: 2}
-  _classOverride: {fileID: 0}
+  unitDefinition: {fileID: 11400000, guid: d3f1b7fa0391d7a4f8c3707b94986492, type: 2}
+  classOverride: {fileID: 0}
 --- !u!114 &1805699397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46530,7 +46530,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
-  _slots:
+  slots:
   - kind: 1
     weapon:
       name: Loha Khadga
@@ -47604,9 +47604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf71b0f4d4e469545acd17f1cf70c641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapCamera
-  _assetsPPU: 32
-  _referenceResolutionX: 480
-  _referenceResolutionY: 270
+  assetsPPU: 32
+  referenceResolutionX: 480
+  referenceResolutionY: 270
 --- !u!114 &1830605496
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -47619,9 +47619,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197244d5864fb684dbe618aab83ca8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.CameraController
-  _gridCursor: {fileID: 694383133}
-  _mapRenderer: {fileID: 268787981}
-  _deadzoneMarginTiles: 3
+  gridCursor: {fileID: 694383133}
+  mapRenderer: {fileID: 268787981}
+  deadzoneMarginTiles: 3
 --- !u!1 &1836680431
 GameObject:
   m_ObjectHideFlags: 0
@@ -51132,13 +51132,13 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
-  _allowedWeaponTypes: 
+  allowedWeaponTypes: 
   maxHP: 20
   currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 11400000, guid: 21dbed90cf67e094db83f36e66765ddd, type: 2}
-  _classOverride: {fileID: 0}
+  unitDefinition: {fileID: 11400000, guid: 21dbed90cf67e094db83f36e66765ddd, type: 2}
+  classOverride: {fileID: 0}
 --- !u!114 &1965340244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -51151,7 +51151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
-  _slots:
+  slots:
   - kind: 1
     weapon:
       name: Loha Shula
@@ -52603,17 +52603,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2f34e01cd9ba144be09a033d405ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitInfoSupportDetailUI
-  _portraitImage: {fileID: 236571866}
-  _nameText: {fileID: 492807130}
-  _atkText: {fileID: 26259226}
-  _defText: {fileID: 243427510}
-  _hitText: {fileID: 2115877125}
-  _avoText: {fileID: 1307191104}
-  _critText: {fileID: 780411698}
-  _critAvoText: {fileID: 1503996230}
-  _promiseText: {fileID: 1696259028}
-  _promiseContainer: {fileID: 388957999}
-  _shapathIcon: {fileID: 1021893184}
+  portraitImage: {fileID: 236571866}
+  nameText: {fileID: 492807130}
+  atkText: {fileID: 26259226}
+  defText: {fileID: 243427510}
+  hitText: {fileID: 2115877125}
+  avoText: {fileID: 1307191104}
+  critText: {fileID: 780411698}
+  critAvoText: {fileID: 1503996230}
+  promiseText: {fileID: 1696259028}
+  promiseContainer: {fileID: 388957999}
+  shapathIcon: {fileID: 1021893184}
 --- !u!224 &1997430536
 RectTransform:
   m_ObjectHideFlags: 0
@@ -56074,13 +56074,13 @@ MonoBehaviour:
   movementType: 0
   attackRangeMin: 1
   attackRangeMax: 1
-  _allowedWeaponTypes: 
+  allowedWeaponTypes: 
   maxHP: 20
   currentHP: 20
   hasActed: 0
   preMovementPosition: {x: 0, y: 0}
-  _unitDefinition: {fileID: 11400000, guid: 4f29fa27463b3854a928a52f29fe3663, type: 2}
-  _classOverride: {fileID: 0}
+  unitDefinition: {fileID: 11400000, guid: 4f29fa27463b3854a928a52f29fe3663, type: 2}
+  classOverride: {fileID: 0}
 --- !u!114 &2100872772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56093,7 +56093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3decae2bc901f39458a0c2f899b4131a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitInventory
-  _slots:
+  slots:
   - kind: 1
     weapon:
       name: Loha Khadga

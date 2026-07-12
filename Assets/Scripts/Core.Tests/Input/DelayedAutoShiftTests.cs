@@ -12,111 +12,111 @@ namespace ProjectAstra.Core.Tests.Input
         private const float RepeatRate = 0.1f;
         private const float FastRepeatRate = 0.05f;
 
-        private DelayedAutoShift _das;
-        private List<Vector2Int> _moves;
+        private DelayedAutoShift das;
+        private List<Vector2Int> moves;
 
         [SetUp]
         public void SetUp()
         {
-            _das = new DelayedAutoShift(InitialDelay, RepeatRate, FastRepeatRate);
-            _moves = new List<Vector2Int>();
-            _das.CursorMoveTriggered += dir => _moves.Add(dir);
+            das = new DelayedAutoShift(InitialDelay, RepeatRate, FastRepeatRate);
+            moves = new List<Vector2Int>();
+            das.CursorMoveTriggered += dir => moves.Add(dir);
         }
 
         [Test]
         public void Press_FiresOneMoveImmediately()
         {
-            _das.Press(CursorDirection.Up);
-            Assert.AreEqual(new[] { Vector2Int.up }, _moves.ToArray());
+            das.Press(CursorDirection.Up);
+            Assert.AreEqual(new[] { Vector2Int.up }, moves.ToArray());
         }
 
         [Test]
         public void EachDirection_MapsToCorrectVector()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Press(CursorDirection.Down);
-            _das.Press(CursorDirection.Left);
-            _das.Press(CursorDirection.Right);
+            das.Press(CursorDirection.Up);
+            das.Press(CursorDirection.Down);
+            das.Press(CursorDirection.Left);
+            das.Press(CursorDirection.Right);
 
             Assert.AreEqual(
                 new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right },
-                _moves.ToArray());
+                moves.ToArray());
         }
 
         [Test]
         public void HeldDirection_DoesNotRepeatBeforeInitialDelay()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Tick(InitialDelay - 0.01f, false);
-            Assert.AreEqual(1, _moves.Count);
+            das.Press(CursorDirection.Up);
+            das.Tick(InitialDelay - 0.01f, false);
+            Assert.AreEqual(1, moves.Count);
         }
 
         [Test]
         public void HeldDirection_RepeatsAfterInitialDelayThenAtRepeatRate()
         {
-            _das.Press(CursorDirection.Up);
+            das.Press(CursorDirection.Up);
 
-            _das.Tick(InitialDelay, false);
-            Assert.AreEqual(2, _moves.Count, "should fire once when initial delay elapses");
+            das.Tick(InitialDelay, false);
+            Assert.AreEqual(2, moves.Count, "should fire once when initial delay elapses");
 
-            _das.Tick(RepeatRate, false);
-            Assert.AreEqual(3, _moves.Count, "should fire again one repeat-rate later");
+            das.Tick(RepeatRate, false);
+            Assert.AreEqual(3, moves.Count, "should fire again one repeat-rate later");
         }
 
         [Test]
         public void FastCursorHeld_UsesFastRepeatRate()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Tick(InitialDelay, true);
+            das.Press(CursorDirection.Up);
+            das.Tick(InitialDelay, true);
 
-            _das.Tick(FastRepeatRate, true);
-            Assert.AreEqual(3, _moves.Count);
+            das.Tick(FastRepeatRate, true);
+            Assert.AreEqual(3, moves.Count);
         }
 
         [Test]
         public void Release_StopsRepeats()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Tick(InitialDelay, false);
-            _das.Release(CursorDirection.Up);
+            das.Press(CursorDirection.Up);
+            das.Tick(InitialDelay, false);
+            das.Release(CursorDirection.Up);
 
-            _das.Tick(10f, false);
-            Assert.AreEqual(2, _moves.Count, "no further moves after release");
+            das.Tick(10f, false);
+            Assert.AreEqual(2, moves.Count, "no further moves after release");
         }
 
         [Test]
         public void Reset_ClearsHeldState()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Reset();
+            das.Press(CursorDirection.Up);
+            das.Reset();
 
-            _das.Tick(10f, false);
-            Assert.AreEqual(1, _moves.Count, "only the initial press move survives a reset");
+            das.Tick(10f, false);
+            Assert.AreEqual(1, moves.Count, "only the initial press move survives a reset");
         }
 
         [Test]
         public void RePress_RestartsInitialDelay()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Tick(InitialDelay, false);
-            _das.Press(CursorDirection.Up);
+            das.Press(CursorDirection.Up);
+            das.Tick(InitialDelay, false);
+            das.Press(CursorDirection.Up);
 
-            _das.Tick(RepeatRate, false);
-            Assert.AreEqual(3, _moves.Count,
+            das.Tick(RepeatRate, false);
+            Assert.AreEqual(3, moves.Count,
                 "re-press fires immediately then waits the full initial delay again");
         }
 
         [Test]
         public void Advance_CarriesOvershootIntoNextTick()
         {
-            _das.Press(CursorDirection.Up);
-            _das.Tick(InitialDelay, false);
+            das.Press(CursorDirection.Up);
+            das.Tick(InitialDelay, false);
 
-            _das.Tick(RepeatRate + RepeatRate * 0.5f, false);
-            Assert.AreEqual(3, _moves.Count, "one repeat fires; remainder is carried");
+            das.Tick(RepeatRate + RepeatRate * 0.5f, false);
+            Assert.AreEqual(3, moves.Count, "one repeat fires; remainder is carried");
 
-            _das.Tick(RepeatRate * 0.5f, false);
-            Assert.AreEqual(4, _moves.Count, "carried remainder completes the next repeat");
+            das.Tick(RepeatRate * 0.5f, false);
+            Assert.AreEqual(4, moves.Count, "carried remainder completes the next repeat");
         }
     }
 }

@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.UI.Overlays
     {
         const string OverlayResourceFolder = "Overlays";
 
-        private GameObject _activeOverlay;
+        private GameObject activeOverlay;
         private bool subscribed;
 
         // Dialogue is intentionally not here: DialogueService owns one persistent
@@ -53,16 +53,16 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             var prefab = Resources.Load<GameObject>($"{OverlayResourceFolder}/{state}");
             if (prefab != null)
-                _activeOverlay = Instantiate(prefab);
+                activeOverlay = Instantiate(prefab);
             else
                 Debug.LogError($"[OverlayManager] Overlay prefab not found: Resources/{OverlayResourceFolder}/{state}");
         }
 
         private void DestroyActiveOverlay()
         {
-            if (_activeOverlay == null) return;
-            Destroy(_activeOverlay);
-            _activeOverlay = null;
+            if (activeOverlay == null) return;
+            Destroy(activeOverlay);
+            activeOverlay = null;
         }
     }
 }

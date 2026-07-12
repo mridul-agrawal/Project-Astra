@@ -18,24 +18,24 @@ namespace ProjectAstra.Core.Cursor
         const float ShimmerFrequency = 1.5f;
         const float ShimmerAmplitude = 0.15f;
 
-        private readonly List<GameObject> _activeOverlays = new();
-        private readonly List<Color> _baseColors = new();
-        private readonly Queue<GameObject> _pool = new();
-        private Sprite _overlaySprite;
-        private Transform _overlayContainer;
-        private Coroutine _shimmerCoroutine;
-        private float _shimmerPhase;
+        private readonly List<GameObject> activeOverlays = new();
+        private readonly List<Color> baseColors = new();
+        private readonly Queue<GameObject> pool = new();
+        private Sprite overlaySprite;
+        private Transform overlayContainer;
+        private Coroutine shimmerCoroutine;
+        private float shimmerPhase;
 
         private void Awake()
         {
-            _overlaySprite = OverlaySpriteFactory.GetOverlaySprite();
-            _overlayContainer = new GameObject("RangeOverlays").transform;
+            overlaySprite = OverlaySpriteFactory.GetOverlaySprite();
+            overlayContainer = new GameObject("RangeOverlays").transform;
         }
 
         private void OnDestroy()
         {
-            if (_overlayContainer != null)
-                Destroy(_overlayContainer.gameObject);
+            if (overlayContainer != null)
+                Destroy(overlayContainer.gameObject);
         }
 
         public void ShowMovementRange(HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough)
@@ -62,13 +62,13 @@ namespace ProjectAstra.Core.Cursor
         {
             StopShimmer();
 
-            foreach (var overlay in _activeOverlays)
+            foreach (var overlay in activeOverlays)
             {
                 overlay.SetActive(false);
-                _pool.Enqueue(overlay);
+                pool.Enqueue(overlay);
             }
-            _activeOverlays.Clear();
-            _baseColors.Clear();
+            activeOverlays.Clear();
+            baseColors.Clear();
         }
 
         private void ShowSingleColorRange(HashSet<Vector2Int> tiles, Color color)
@@ -90,20 +90,20 @@ namespace ProjectAstra.Core.Cursor
             var sr = overlay.GetComponent<SpriteRenderer>();
             sr.color = color;
 
-            _activeOverlays.Add(overlay);
-            _baseColors.Add(color);
+            activeOverlays.Add(overlay);
+            baseColors.Add(color);
         }
 
         private GameObject GetOrCreateOverlay()
         {
-            if (_pool.Count > 0)
-                return _pool.Dequeue();
+            if (pool.Count > 0)
+                return pool.Dequeue();
 
             var overlay = new GameObject("RangeOverlay");
-            overlay.transform.SetParent(_overlayContainer);
+            overlay.transform.SetParent(overlayContainer);
 
             var sr = overlay.AddComponent<SpriteRenderer>();
-            sr.sprite = _overlaySprite;
+            sr.sprite = overlaySprite;
             sr.sortingLayerName = "UIOverlay";
             sr.sortingOrder = -1;
 
@@ -114,16 +114,16 @@ namespace ProjectAstra.Core.Cursor
 
         private void StartShimmer()
         {
-            if (_shimmerCoroutine == null)
-                _shimmerCoroutine = StartCoroutine(ShimmerLoop());
+            if (shimmerCoroutine == null)
+                shimmerCoroutine = StartCoroutine(ShimmerLoop());
         }
 
         private void StopShimmer()
         {
-            if (_shimmerCoroutine != null)
+            if (shimmerCoroutine != null)
             {
-                StopCoroutine(_shimmerCoroutine);
-                _shimmerCoroutine = null;
+                StopCoroutine(shimmerCoroutine);
+                shimmerCoroutine = null;
             }
         }
 
@@ -131,14 +131,14 @@ namespace ProjectAstra.Core.Cursor
         {
             while (true)
             {
-                _shimmerPhase += Time.deltaTime * ShimmerFrequency;
-                float alphaMultiplier = 1.0f + ShimmerAmplitude * Mathf.Sin(_shimmerPhase * Mathf.PI * 2f);
+                shimmerPhase += Time.deltaTime * ShimmerFrequency;
+                float alphaMultiplier = 1.0f + ShimmerAmplitude * Mathf.Sin(shimmerPhase * Mathf.PI * 2f);
 
-                for (int i = 0; i < _activeOverlays.Count; i++)
+                for (int i = 0; i < activeOverlays.Count; i++)
                 {
-                    if (!_activeOverlays[i].activeSelf) continue;
-                    var sr = _activeOverlays[i].GetComponent<SpriteRenderer>();
-                    Color c = _baseColors[i];
+                    if (!activeOverlays[i].activeSelf) continue;
+                    var sr = activeOverlays[i].GetComponent<SpriteRenderer>();
+                    Color c = baseColors[i];
                     c.a *= alphaMultiplier;
                     sr.color = c;
                 }

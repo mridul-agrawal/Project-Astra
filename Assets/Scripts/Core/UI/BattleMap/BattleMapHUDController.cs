@@ -59,11 +59,11 @@ namespace ProjectAstra.Core.UI.BattleMap
         [TextArea] public string ObjectiveText = "Slay the Asura Lord";
 
         // --- Cached at Awake (corner bosses for faction tint, TileInfo rect for side-swap) ---
-        private GridCursor _cursor;
-        private MapRenderer _map;
-        private Image[] _unitCardBosses;
-        private RectTransform _tileInfoRect;
-        private bool _tileInfoOnLeft;
+        private GridCursor cursor;
+        private MapRenderer map;
+        private Image[] unitCardBosses;
+        private RectTransform tileInfoRect;
+        private bool tileInfoOnLeft;
 
         // HP threshold colours (CSS source: mockup gradient #2e7a3a → #8de078)
         private static readonly Color HpGreen  = new Color32(0x8d, 0xe0, 0x78, 0xff);
@@ -78,15 +78,15 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void Awake()
         {
-            _cursor = FindFirstObjectByType<GridCursor>();
-            _map    = FindFirstObjectByType<MapRenderer>();
+            cursor = FindFirstObjectByType<GridCursor>();
+            map    = FindFirstObjectByType<MapRenderer>();
 
             CacheUnitCardBosses();
-            if (TileInfoRoot != null) _tileInfoRect = TileInfoRoot.GetComponent<RectTransform>();
+            if (TileInfoRoot != null) tileInfoRect = TileInfoRoot.GetComponent<RectTransform>();
             // Assume the build-time default matches bottom-right so the first swap check fires cleanly.
-            _tileInfoOnLeft = false;
+            tileInfoOnLeft = false;
 
-            if (_cursor != null) _cursor.OnCursorMoved += HandleCursorMoved;
+            if (cursor != null) cursor.OnCursorMoved += HandleCursorMoved;
             EventService.Instance.SubscribePhaseStarted(HandlePhaseStarted);
             EventService.Instance.SubscribeTurnAdvanced(HandleTurnAdvanced);
 
@@ -101,12 +101,12 @@ namespace ProjectAstra.Core.UI.BattleMap
             ApplyPhaseVisibility(tm != null ? tm.CurrentPhase : BattlePhase.PlayerPhase);
             SetTurn(tm != null ? tm.TurnCounter : 1);
 
-            if (_cursor != null) HandleCursorMoved(_cursor.GridPosition);
+            if (cursor != null) HandleCursorMoved(cursor.GridPosition);
         }
 
         private void OnDestroy()
         {
-            if (_cursor != null) _cursor.OnCursorMoved -= HandleCursorMoved;
+            if (cursor != null) cursor.OnCursorMoved -= HandleCursorMoved;
             if (EventService.Instance != null)
             {
                 EventService.Instance.UnsubscribePhaseStarted(HandlePhaseStarted);
@@ -122,7 +122,7 @@ namespace ProjectAstra.Core.UI.BattleMap
             var tm = TurnManager.Instance;
             if (tm != null && tm.CurrentPhase != BattlePhase.PlayerPhase) return;
 
-            var terrain = _map != null ? _map.GetTerrainType(pos.x, pos.y) : TerrainType.Plain;
+            var terrain = map != null ? map.GetTerrainType(pos.x, pos.y) : TerrainType.Plain;
             var unit    = FindUnitAt(pos);
             var moveType = unit != null ? unit.movementType : MovementType.Foot;
 
@@ -154,26 +154,26 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void UpdateTileInfoSide(Vector2Int cursorGridPos)
         {
-            if (_tileInfoRect == null) return;
+            if (tileInfoRect == null) return;
 
-            int mapWidth = (_map != null && _map.CurrentMap != null) ? _map.CurrentMap.Width : 20;
+            int mapWidth = (map != null && map.CurrentMap != null) ? map.CurrentMap.Width : 20;
             bool cursorOnLeft = cursorGridPos.x < mapWidth / 2;
             bool panelOnLeft  = !cursorOnLeft;
 
-            if (panelOnLeft == _tileInfoOnLeft) return;
-            _tileInfoOnLeft = panelOnLeft;
+            if (panelOnLeft == tileInfoOnLeft) return;
+            tileInfoOnLeft = panelOnLeft;
 
             if (panelOnLeft)
             {
-                _tileInfoRect.anchorMin = _tileInfoRect.anchorMax = new Vector2(0, 0);
-                _tileInfoRect.pivot     = new Vector2(0, 0);
-                _tileInfoRect.anchoredPosition = TileInfoLeftPos;
+                tileInfoRect.anchorMin = tileInfoRect.anchorMax = new Vector2(0, 0);
+                tileInfoRect.pivot     = new Vector2(0, 0);
+                tileInfoRect.anchoredPosition = TileInfoLeftPos;
             }
             else
             {
-                _tileInfoRect.anchorMin = _tileInfoRect.anchorMax = new Vector2(1, 0);
-                _tileInfoRect.pivot     = new Vector2(1, 0);
-                _tileInfoRect.anchoredPosition = TileInfoRightPos;
+                tileInfoRect.anchorMin = tileInfoRect.anchorMax = new Vector2(1, 0);
+                tileInfoRect.pivot     = new Vector2(1, 0);
+                tileInfoRect.anchoredPosition = TileInfoRightPos;
             }
         }
 
@@ -295,19 +295,19 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void TintCornerBosses(Color tint)
         {
-            if (_unitCardBosses == null) return;
-            for (int i = 0; i < _unitCardBosses.Length; i++)
-                if (_unitCardBosses[i] != null) _unitCardBosses[i].color = tint;
+            if (unitCardBosses == null) return;
+            for (int i = 0; i < unitCardBosses.Length; i++)
+                if (unitCardBosses[i] != null) unitCardBosses[i].color = tint;
         }
 
         private void CacheUnitCardBosses()
         {
-            if (UnitCardRoot == null) { _unitCardBosses = System.Array.Empty<Image>(); return; }
+            if (UnitCardRoot == null) { unitCardBosses = System.Array.Empty<Image>(); return; }
             var all = UnitCardRoot.GetComponentsInChildren<Image>(true);
             var result = new System.Collections.Generic.List<Image>(4);
             for (int i = 0; i < all.Length; i++)
                 if (all[i].gameObject.name == "CornerBoss") result.Add(all[i]);
-            _unitCardBosses = result.ToArray();
+            unitCardBosses = result.ToArray();
         }
 
         private static string FormatStat(int v) => v >= 0 ? "+" + v : v.ToString();

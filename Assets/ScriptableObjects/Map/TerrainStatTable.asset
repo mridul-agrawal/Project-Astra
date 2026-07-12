@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c9a86df688c8b54dbd75a87ae099a2f, type: 3}
   m_Name: TerrainStatTable
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.TerrainStatTable
-  _stats:
+  stats:
   - moveCostFoot: 1
     moveCostMounted: 1
     moveCostArmoured: 1

@@ -15,9 +15,9 @@ namespace ProjectAstra.Core.UI.Forecast
     {
         public static bool IsVisible { get; private set; }
 
-        [SerializeField] private GameObject _popupInstance;
+        [SerializeField] private GameObject popupInstance;
 
-        private CombatForecastRefs _refs;
+        private CombatForecastRefs refs;
 
         public void ShowCombat(TestUnit attacker, TestUnit defender, int distance)
         {
@@ -26,8 +26,8 @@ namespace ProjectAstra.Core.UI.Forecast
 
             var forecast = BuildForecast(attacker, defender, distance, out _, out _, out _);
 
-            DriveSide(_refs.left, attacker, forecast.AttackerDamage, forecast.AttackerHit, forecast.AttackerCritRate, true, true);
-            DriveSide(_refs.right, defender, forecast.DefenderDamage, forecast.DefenderHit, forecast.DefenderCritRate,
+            DriveSide(refs.left, attacker, forecast.AttackerDamage, forecast.AttackerHit, forecast.AttackerCritRate, true, true);
+            DriveSide(refs.right, defender, forecast.DefenderDamage, forecast.DefenderHit, forecast.DefenderCritRate,
                 forecast.DefenderCanCounter, false);
 
             IsVisible = true;
@@ -36,7 +36,7 @@ namespace ProjectAstra.Core.UI.Forecast
         public void Hide()
         {
             bool wasVisible = IsVisible;
-            if (_popupInstance != null) _popupInstance.SetActive(false);
+            if (popupInstance != null) popupInstance.SetActive(false);
             IsVisible = false;
             if (wasVisible) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
@@ -53,8 +53,8 @@ namespace ProjectAstra.Core.UI.Forecast
             int maxHp = target.UnitInstance?.MaxHP ?? target.maxHP;
             int heal = StaffEffects.ComputeHealAmount(staff, mag, curHp, maxHp);
 
-            DriveSide(_refs.left, healer, heal, 100, 0, true, true);
-            DriveSide(_refs.right, target, 0, 0, 0, false, false);
+            DriveSide(refs.left, healer, heal, 100, 0, true, true);
+            DriveSide(refs.right, target, 0, 0, 0, false, false);
 
             IsVisible = true;
         }
@@ -70,8 +70,8 @@ namespace ProjectAstra.Core.UI.Forecast
             int res = target.UnitInstance?.Stats[StatIndex.Res] ?? 0;
             int hit = StaffEffects.ComputeStaffHit(mag, skl, res);
 
-            DriveSide(_refs.left, caster, 0, hit, 0, true, true);
-            DriveSide(_refs.right, target, 0, 0, 0, false, false);
+            DriveSide(refs.left, caster, 0, hit, 0, true, true);
+            DriveSide(refs.right, target, 0, 0, 0, false, false);
 
             IsVisible = true;
         }
@@ -130,15 +130,15 @@ namespace ProjectAstra.Core.UI.Forecast
             if (w.IsEmpty) return null;
             switch (w.weaponType)
             {
-                case WeaponType.Sword:     return _refs.sigilSword;
-                case WeaponType.Lance:     return _refs.sigilLance;
-                case WeaponType.Axe:       return _refs.sigilAxe;
-                case WeaponType.Bow:       return _refs.sigilBow;
-                case WeaponType.Staff:     return _refs.sigilStaff;
-                case WeaponType.AnimaTome: return _refs.sigilAnima;
-                case WeaponType.LightTome: return _refs.sigilLight;
-                case WeaponType.DarkTome:  return _refs.sigilDark;
-                default:                   return _refs.sigilSword;
+                case WeaponType.Sword:     return refs.sigilSword;
+                case WeaponType.Lance:     return refs.sigilLance;
+                case WeaponType.Axe:       return refs.sigilAxe;
+                case WeaponType.Bow:       return refs.sigilBow;
+                case WeaponType.Staff:     return refs.sigilStaff;
+                case WeaponType.AnimaTome: return refs.sigilAnima;
+                case WeaponType.LightTome: return refs.sigilLight;
+                case WeaponType.DarkTome:  return refs.sigilDark;
+                default:                   return refs.sigilSword;
             }
         }
 
@@ -211,21 +211,21 @@ namespace ProjectAstra.Core.UI.Forecast
 
         private bool ActivateUI()
         {
-            if (_popupInstance == null)
+            if (popupInstance == null)
             {
                 Debug.LogError("CombatForecastUI: _popupInstance not wired. Run scene setup or rebuild the prefab.");
                 return false;
             }
-            if (_refs == null) _refs = _popupInstance.GetComponent<CombatForecastRefs>();
-            if (_refs == null)
+            if (refs == null) refs = popupInstance.GetComponent<CombatForecastRefs>();
+            if (refs == null)
             {
                 Debug.LogError("CombatForecastUI: prefab missing CombatForecastRefs.");
                 return false;
             }
 
-            bool wasActive = _popupInstance.activeSelf;
-            _popupInstance.SetActive(true);
-            _popupInstance.transform.SetAsLastSibling();
+            bool wasActive = popupInstance.activeSelf;
+            popupInstance.SetActive(true);
+            popupInstance.transform.SetAsLastSibling();
             if (!wasActive) AudioManager.Instance?.Play(SoundId.UiPanelOpen);
             return true;
         }

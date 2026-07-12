@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0834278dafc65489d8308d158632b1, type: 3}
   m_Name: DialogueSettings
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueSettings
-  _charsPerSecond: 40
+  charsPerSecond: 40

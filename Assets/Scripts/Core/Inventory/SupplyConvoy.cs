@@ -10,53 +10,53 @@ namespace ProjectAstra.Core
     {
         public const int MaxCapacity = 100;
 
-        private readonly List<InventoryItem> _items = new();
-        private readonly ItemSortComparer _comparer = new();
+        private readonly List<InventoryItem> items = new();
+        private readonly ItemSortComparer comparer = new();
 
         public event Action OnConvoyChanged;
 
         public bool IsAvailable => true;
-        public int Count => _items.Count;
+        public int Count => items.Count;
         public int Capacity => MaxCapacity;
-        public bool IsFull => _items.Count >= MaxCapacity;
+        public bool IsFull => items.Count >= MaxCapacity;
 
         public bool TryDeposit(InventoryItem item)
         {
             if (item.IsEmpty || IsFull) return false;
-            _items.Add(item);
-            _items.Sort(_comparer);
+            items.Add(item);
+            items.Sort(comparer);
             OnConvoyChanged?.Invoke();
             return true;
         }
 
         public bool TryWithdraw(int index, out InventoryItem item)
         {
-            if (index < 0 || index >= _items.Count)
+            if (index < 0 || index >= items.Count)
             {
                 item = InventoryItem.None;
                 return false;
             }
-            item = _items[index];
-            _items.RemoveAt(index);
+            item = items[index];
+            items.RemoveAt(index);
             OnConvoyChanged?.Invoke();
             return true;
         }
 
         public InventoryItem GetSlot(int index)
         {
-            if (index < 0 || index >= _items.Count) return InventoryItem.None;
-            return _items[index];
+            if (index < 0 || index >= items.Count) return InventoryItem.None;
+            return items[index];
         }
 
-        public InventoryItem[] ToArray() => _items.ToArray();
+        public InventoryItem[] ToArray() => items.ToArray();
 
         public void LoadFrom(InventoryItem[] saved)
         {
-            _items.Clear();
+            items.Clear();
             if (saved == null) return;
             foreach (var item in saved)
-                if (!item.IsEmpty) _items.Add(item);
-            _items.Sort(_comparer);
+                if (!item.IsEmpty) items.Add(item);
+            items.Sort(comparer);
             OnConvoyChanged?.Invoke();
         }
     }

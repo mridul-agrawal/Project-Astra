@@ -11,17 +11,17 @@ namespace ProjectAstra.Core.Camera
     {
         // 480 / 32 PPU = 15 tiles wide. 480×270 is 16:9, upscaled 4× to 1920×1080.
         [Header("Pixel Perfect Settings")]
-        [SerializeField] private int _assetsPPU = 32;
-        [SerializeField] private int _referenceResolutionX = 480;
-        [SerializeField] private int _referenceResolutionY = 270;
+        [SerializeField] private int assetsPPU = 32;
+        [SerializeField] private int referenceResolutionX = 480;
+        [SerializeField] private int referenceResolutionY = 270;
 
-        private PixelPerfectCamera _pixelPerfect;
-        private UnityEngine.Camera _camera;
+        private PixelPerfectCamera pixelPerfect;
+        private UnityEngine.Camera cam;
 
         private void Awake()
         {
-            _camera = GetComponent<UnityEngine.Camera>();
-            _camera.orthographic = true;
+            cam = GetComponent<UnityEngine.Camera>();
+            cam.orthographic = true;
 
             EnsurePixelPerfectComponent();
             ConfigurePixelPerfect();
@@ -29,24 +29,24 @@ namespace ProjectAstra.Core.Camera
 
         private void OnValidate()
         {
-            if (_pixelPerfect != null)
+            if (pixelPerfect != null)
                 ConfigurePixelPerfect();
         }
 
         private void EnsurePixelPerfectComponent()
         {
-            _pixelPerfect = GetComponent<PixelPerfectCamera>();
-            if (_pixelPerfect == null)
-                _pixelPerfect = gameObject.AddComponent<PixelPerfectCamera>();
+            pixelPerfect = GetComponent<PixelPerfectCamera>();
+            if (pixelPerfect == null)
+                pixelPerfect = gameObject.AddComponent<PixelPerfectCamera>();
         }
 
         private void ConfigurePixelPerfect()
         {
-            _pixelPerfect.assetsPPU = _assetsPPU;
-            _pixelPerfect.refResolutionX = _referenceResolutionX;
-            _pixelPerfect.refResolutionY = _referenceResolutionY;
-            _pixelPerfect.upscaleRT = true;       // Render at ref resolution, then upscale to window.
-            _pixelPerfect.pixelSnapping = true;   // Snap sprites to the pixel grid — prevents blur.
+            pixelPerfect.assetsPPU = assetsPPU;
+            pixelPerfect.refResolutionX = referenceResolutionX;
+            pixelPerfect.refResolutionY = referenceResolutionY;
+            pixelPerfect.upscaleRT = true;       // Render at ref resolution, then upscale to window.
+            pixelPerfect.pixelSnapping = true;   // Snap sprites to the pixel grid — prevents blur.
         }
     }
 }

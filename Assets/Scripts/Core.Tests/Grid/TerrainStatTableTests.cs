@@ -10,15 +10,15 @@ namespace ProjectAstra.Core.Tests.Grid
     [TestFixture]
     public class TerrainStatTableTests
     {
-        private TerrainStatTable _table;
+        private TerrainStatTable table;
 
         [SetUp]
         public void SetUp()
         {
-            _table = ScriptableObject.CreateInstance<TerrainStatTable>();
+            table = ScriptableObject.CreateInstance<TerrainStatTable>();
 
-            var so = new UnityEditor.SerializedObject(_table);
-            var statsProp = so.FindProperty("_stats");
+            var so = new UnityEditor.SerializedObject(table);
+            var statsProp = so.FindProperty("stats");
             statsProp.arraySize = TerrainStatTable.ExpectedTerrainCount;
 
             var plain = statsProp.GetArrayElementAtIndex((int)TerrainType.Plain);
@@ -58,13 +58,13 @@ namespace ProjectAstra.Core.Tests.Grid
         [TearDown]
         public void TearDown()
         {
-            UnityEngine.Object.DestroyImmediate(_table);
+            UnityEngine.Object.DestroyImmediate(table);
         }
 
         [Test]
         public void GetStats_Plain_ReturnsCorrectValues()
         {
-            var stats = _table.GetStats(TerrainType.Plain);
+            var stats = table.GetStats(TerrainType.Plain);
             Assert.AreEqual(1, stats.moveCostFoot);
             Assert.AreEqual(0, stats.defenceBonus);
             Assert.AreEqual(0, stats.avoidBonus);
@@ -73,7 +73,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetStats_Forest_ReturnsCorrectBonuses()
         {
-            var stats = _table.GetStats(TerrainType.Forest);
+            var stats = table.GetStats(TerrainType.Forest);
             Assert.AreEqual(2, stats.moveCostFoot);
             Assert.AreEqual(3, stats.moveCostMounted);
             Assert.AreEqual(1, stats.moveCostFlying);
@@ -84,7 +84,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetStats_Fort_HasHealPerTurn()
         {
-            var stats = _table.GetStats(TerrainType.Fort);
+            var stats = table.GetStats(TerrainType.Fort);
             Assert.AreEqual(10, stats.healPerTurn);
             Assert.AreEqual(2, stats.defenceBonus);
             Assert.AreEqual(20, stats.avoidBonus);
@@ -93,7 +93,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetStats_InvalidTerrain_ReturnsDefault()
         {
-            var stats = _table.GetStats((TerrainType)99);
+            var stats = table.GetStats((TerrainType)99);
             Assert.AreEqual(TerrainStats.Default.moveCostFoot, stats.moveCostFoot);
         }
 
@@ -101,7 +101,7 @@ namespace ProjectAstra.Core.Tests.Grid
         public void TerrainCount_MatchesTerrainTypeEnum()
         {
             int enumLength = Enum.GetValues(typeof(TerrainType)).Length;
-            Assert.AreEqual(enumLength, _table.TerrainCount);
+            Assert.AreEqual(enumLength, table.TerrainCount);
             Assert.AreEqual(enumLength, TerrainStatTable.ExpectedTerrainCount,
                 "TerrainStatTable.ExpectedTerrainCount drifted from the TerrainType enum — update one or the other.");
         }
@@ -112,7 +112,7 @@ namespace ProjectAstra.Core.Tests.Grid
             int enumLength = Enum.GetValues(typeof(TerrainType)).Length;
             for (int i = 0; i < enumLength; i++)
             {
-                Assert.DoesNotThrow(() => _table.GetStats((TerrainType)i));
+                Assert.DoesNotThrow(() => table.GetStats((TerrainType)i));
             }
         }
 
@@ -121,7 +121,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetTerrainBonuses_Forest_ReturnsDef1Avo20()
         {
-            var stats = _table.GetStats(TerrainType.Forest);
+            var stats = table.GetStats(TerrainType.Forest);
             var (def, avo) = TerrainStatTable.GetTerrainBonuses(stats, MovementType.Foot);
             Assert.AreEqual(1, def);
             Assert.AreEqual(20, avo);
@@ -132,12 +132,12 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetTerrainBonuses_AppliesUniformlyAcrossMovementTypes()
         {
-            var forest = _table.GetStats(TerrainType.Forest);
+            var forest = table.GetStats(TerrainType.Forest);
             var foot = TerrainStatTable.GetTerrainBonuses(forest, MovementType.Foot);
             var flying = TerrainStatTable.GetTerrainBonuses(forest, MovementType.Flying);
             Assert.AreEqual(foot, flying, "Flying must get the same terrain bonuses as foot.");
 
-            var fort = _table.GetStats(TerrainType.Fort);
+            var fort = table.GetStats(TerrainType.Fort);
             var footFort = TerrainStatTable.GetTerrainBonuses(fort, MovementType.Foot);
             var flyingFort = TerrainStatTable.GetTerrainBonuses(fort, MovementType.Flying);
             Assert.AreEqual(footFort, flyingFort);
@@ -146,7 +146,7 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void GetTerrainBonuses_Plain_ReturnsZeroes()
         {
-            var stats = _table.GetStats(TerrainType.Plain);
+            var stats = table.GetStats(TerrainType.Plain);
             var (def, avo) = TerrainStatTable.GetTerrainBonuses(stats, MovementType.Foot);
             Assert.AreEqual(0, def);
             Assert.AreEqual(0, avo);
@@ -157,21 +157,21 @@ namespace ProjectAstra.Core.Tests.Grid
         [Test]
         public void IsPassable_FootOnPlain_True()
         {
-            var stats = _table.GetStats(TerrainType.Plain);
+            var stats = table.GetStats(TerrainType.Plain);
             Assert.IsTrue(TerrainStatTable.IsPassable(stats, MovementType.Foot));
         }
 
         [Test]
         public void IsPassable_FootOnWall_False()
         {
-            var stats = _table.GetStats(TerrainType.Wall);
+            var stats = table.GetStats(TerrainType.Wall);
             Assert.IsFalse(TerrainStatTable.IsPassable(stats, MovementType.Foot));
         }
 
         [Test]
         public void IsPassable_FlyingOnForest_True()
         {
-            var stats = _table.GetStats(TerrainType.Forest);
+            var stats = table.GetStats(TerrainType.Forest);
             Assert.IsTrue(TerrainStatTable.IsPassable(stats, MovementType.Flying));
         }
     }

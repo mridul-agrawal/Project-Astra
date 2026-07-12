@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
   m_Name: Arjun
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
-  _unitName: Arjun
-  _unitId: arjun
-  _defaultClass: {fileID: 11400000, guid: 712d738c1fb0e0943b6a1f3b4f389058, type: 2}
-  _baseStats:
-    _values: 140000000700000002000000060000000800000005000000030000000700000006000000
-  _baseLevel: 1
-  _personalGrowths:
-    _values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
-  _isLord: 1
-  _lastWordsLines:
+  unitName: Arjun
+  unitId: arjun
+  defaultClass: {fileID: 11400000, guid: 712d738c1fb0e0943b6a1f3b4f389058, type: 2}
+  baseStats:
+    values: 140000000700000002000000060000000800000005000000030000000700000006000000
+  baseLevel: 1
+  personalGrowths:
+    values: 460000003200000014000000280000002d0000001e000000190000000000000023000000
+  isLord: 1
+  lastWordsLines:
   - Gandiva... slips from my grasp.
   - Krishna... was this the path you saw?
   - The story... ends here...

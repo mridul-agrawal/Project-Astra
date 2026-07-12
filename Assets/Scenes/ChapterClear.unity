@@ -772,8 +772,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 423b40bd6cadbfd46a487bbc0fd332f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.ChapterClearUI
-  _normalTint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  _selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  normalTint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  selectedTint: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &902726849
 GameObject:
   m_ObjectHideFlags: 0

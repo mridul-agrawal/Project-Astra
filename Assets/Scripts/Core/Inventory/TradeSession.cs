@@ -13,35 +13,35 @@ namespace ProjectAstra.Core
         public TestUnit LeftUnit { get; }
         public TestUnit RightUnit { get; }
 
-        private readonly InventoryItem[] _leftSlots;
-        private readonly InventoryItem[] _rightSlots;
-        private readonly InventoryItem[] _leftOriginal;
-        private readonly InventoryItem[] _rightOriginal;
+        private readonly InventoryItem[] leftSlots;
+        private readonly InventoryItem[] rightSlots;
+        private readonly InventoryItem[] leftOriginal;
+        private readonly InventoryItem[] rightOriginal;
 
         public TradeSession(TestUnit initiator, TestUnit target)
         {
             LeftUnit = initiator;
             RightUnit = target;
 
-            _leftSlots = new InventoryItem[Capacity];
-            _rightSlots = new InventoryItem[Capacity];
-            _leftOriginal = new InventoryItem[Capacity];
-            _rightOriginal = new InventoryItem[Capacity];
+            leftSlots = new InventoryItem[Capacity];
+            rightSlots = new InventoryItem[Capacity];
+            leftOriginal = new InventoryItem[Capacity];
+            rightOriginal = new InventoryItem[Capacity];
 
             for (int i = 0; i < Capacity; i++)
             {
-                _leftSlots[i] = initiator.Inventory.GetSlot(i);
-                _rightSlots[i] = target.Inventory.GetSlot(i);
-                _leftOriginal[i] = _leftSlots[i];
-                _rightOriginal[i] = _rightSlots[i];
+                leftSlots[i] = initiator.Inventory.GetSlot(i);
+                rightSlots[i] = target.Inventory.GetSlot(i);
+                leftOriginal[i] = leftSlots[i];
+                rightOriginal[i] = rightSlots[i];
             }
         }
 
         public InventoryItem GetLeftSlot(int index) =>
-            index >= 0 && index < Capacity ? _leftSlots[index] : InventoryItem.None;
+            index >= 0 && index < Capacity ? leftSlots[index] : InventoryItem.None;
 
         public InventoryItem GetRightSlot(int index) =>
-            index >= 0 && index < Capacity ? _rightSlots[index] : InventoryItem.None;
+            index >= 0 && index < Capacity ? rightSlots[index] : InventoryItem.None;
 
         public bool HasChanges
         {
@@ -49,8 +49,8 @@ namespace ProjectAstra.Core
             {
                 for (int i = 0; i < Capacity; i++)
                 {
-                    if (SlotDiffers(_leftSlots[i], _leftOriginal[i])) return true;
-                    if (SlotDiffers(_rightSlots[i], _rightOriginal[i])) return true;
+                    if (SlotDiffers(leftSlots[i], leftOriginal[i])) return true;
+                    if (SlotDiffers(rightSlots[i], rightOriginal[i])) return true;
                 }
                 return false;
             }
@@ -61,45 +61,45 @@ namespace ProjectAstra.Core
         public bool CanSwap(int leftSlot, int rightSlot)
         {
             if (!ValidSlot(leftSlot) || !ValidSlot(rightSlot)) return false;
-            return !_leftSlots[leftSlot].IsEmpty && !_rightSlots[rightSlot].IsEmpty;
+            return !leftSlots[leftSlot].IsEmpty && !rightSlots[rightSlot].IsEmpty;
         }
 
         public bool TrySwap(int leftSlot, int rightSlot)
         {
             if (!CanSwap(leftSlot, rightSlot)) return false;
-            (_leftSlots[leftSlot], _rightSlots[rightSlot]) = (_rightSlots[rightSlot], _leftSlots[leftSlot]);
+            (leftSlots[leftSlot], rightSlots[rightSlot]) = (rightSlots[rightSlot], leftSlots[leftSlot]);
             return true;
         }
 
         public bool CanGive(int leftSlot)
         {
             if (!ValidSlot(leftSlot)) return false;
-            if (_leftSlots[leftSlot].IsEmpty) return false;
-            return FirstEmpty(_rightSlots) >= 0;
+            if (leftSlots[leftSlot].IsEmpty) return false;
+            return FirstEmpty(rightSlots) >= 0;
         }
 
         public bool TryGive(int leftSlot)
         {
             if (!CanGive(leftSlot)) return false;
-            int emptyRight = FirstEmpty(_rightSlots);
-            _rightSlots[emptyRight] = _leftSlots[leftSlot];
-            _leftSlots[leftSlot] = InventoryItem.None;
+            int emptyRight = FirstEmpty(rightSlots);
+            rightSlots[emptyRight] = leftSlots[leftSlot];
+            leftSlots[leftSlot] = InventoryItem.None;
             return true;
         }
 
         public bool CanTake(int rightSlot)
         {
             if (!ValidSlot(rightSlot)) return false;
-            if (_rightSlots[rightSlot].IsEmpty) return false;
-            return FirstEmpty(_leftSlots) >= 0;
+            if (rightSlots[rightSlot].IsEmpty) return false;
+            return FirstEmpty(leftSlots) >= 0;
         }
 
         public bool TryTake(int rightSlot)
         {
             if (!CanTake(rightSlot)) return false;
-            int emptyLeft = FirstEmpty(_leftSlots);
-            _leftSlots[emptyLeft] = _rightSlots[rightSlot];
-            _rightSlots[rightSlot] = InventoryItem.None;
+            int emptyLeft = FirstEmpty(leftSlots);
+            leftSlots[emptyLeft] = rightSlots[rightSlot];
+            rightSlots[rightSlot] = InventoryItem.None;
             return true;
         }
 
@@ -109,8 +109,8 @@ namespace ProjectAstra.Core
             var rightInv = RightUnit.Inventory;
             for (int i = 0; i < Capacity; i++)
             {
-                leftInv.SetSlot(i, _leftSlots[i]);
-                rightInv.SetSlot(i, _rightSlots[i]);
+                leftInv.SetSlot(i, leftSlots[i]);
+                rightInv.SetSlot(i, rightSlots[i]);
             }
         }
 

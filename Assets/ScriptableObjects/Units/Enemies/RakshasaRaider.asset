@@ -12,24 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
   m_Name: RakshasaRaider
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
-  _unitName: Rakshasa Raider
-  _unitId: rakshasa_raider
-  _defaultClass: {fileID: 11400000, guid: 9d0103cce8d303e42ad4fac689a27e5f, type: 2}
-  _defaultLoadout: {fileID: 11400000, guid: b60422b9cf97451aa2ed97e34e3cf539, type: 2}
-  _baseStats:
-    _values: 0c0000000700000000000000050000000600000006000000010000000900000004000000
-  _baseLevel: 1
-  _personalGrowths:
-    _values: 410000002d000000050000002300000028000000230000000f000000000000001e000000
-  _mapSprite: {fileID: 21300000, guid: 5c951e84a9805c247aee5d674f15af62, type: 3}
-  _portrait: {fileID: 21300000, guid: 2b6392d2491586646801df49de61bb15, type: 3}
-  _woundedPortrait: {fileID: 0}
-  _criticalPortrait: {fileID: 0}
-  _deceasedPortrait: {fileID: 0}
-  _stressedOverlay: {fileID: 0}
-  _affinity: 0
-  _personality: 0
-  _isNamedCommander: 0
-  _oneLineIdentity: 
-  _isLord: 0
-  _lastWordsLines: []
+  unitName: Rakshasa Raider
+  unitId: rakshasa_raider
+  defaultClass: {fileID: 11400000, guid: 9d0103cce8d303e42ad4fac689a27e5f, type: 2}
+  defaultLoadout: {fileID: 11400000, guid: b60422b9cf97451aa2ed97e34e3cf539, type: 2}
+  baseStats:
+    values: 0c0000000700000000000000050000000600000006000000010000000900000004000000
+  baseLevel: 1
+  personalGrowths:
+    values: 410000002d000000050000002300000028000000230000000f000000000000001e000000
+  mapSprite: {fileID: 21300000, guid: 5c951e84a9805c247aee5d674f15af62, type: 3}
+  portrait: {fileID: 21300000, guid: 2b6392d2491586646801df49de61bb15, type: 3}
+  woundedPortrait: {fileID: 0}
+  criticalPortrait: {fileID: 0}
+  deceasedPortrait: {fileID: 0}
+  stressedOverlay: {fileID: 0}
+  affinity: 0
+  personality: 0
+  isNamedCommander: 0
+  oneLineIdentity: 
+  isLord: 0
+  lastWordsLines: []

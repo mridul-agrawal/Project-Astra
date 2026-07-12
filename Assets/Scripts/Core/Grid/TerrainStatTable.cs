@@ -13,16 +13,16 @@ namespace ProjectAstra.Core.Grid
         // Must equal the number of TerrainType enum entries. A test asserts the drift.
         public const int ExpectedTerrainCount = 19;
 
-        [SerializeField] private TerrainStats[] _stats = new TerrainStats[ExpectedTerrainCount];
+        [SerializeField] private TerrainStats[] stats = new TerrainStats[ExpectedTerrainCount];
 
-        public int TerrainCount => _stats.Length;
+        public int TerrainCount => stats.Length;
 
         public TerrainStats GetStats(TerrainType terrain)
         {
             int index = (int)terrain;
-            if (index < 0 || index >= _stats.Length)
+            if (index < 0 || index >= stats.Length)
                 return TerrainStats.Default;
-            return _stats[index];
+            return stats[index];
         }
 
         // Terrain DEF/AVO bonuses apply uniformly across movement types — flying units are
@@ -40,8 +40,8 @@ namespace ProjectAstra.Core.Grid
 
         private void OnValidate()
         {
-            if (_stats.Length != ExpectedTerrainCount)
-                Array.Resize(ref _stats, ExpectedTerrainCount);
+            if (stats.Length != ExpectedTerrainCount)
+                Array.Resize(ref stats, ExpectedTerrainCount);
         }
     }
 

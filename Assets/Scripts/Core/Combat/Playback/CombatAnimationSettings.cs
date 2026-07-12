@@ -16,20 +16,20 @@ namespace ProjectAstra.Core.Combat.Playback
         private const string PrefsKey = "combat.anim.speed";
 
         [Tooltip("Speed used when no preference is persisted yet.")]
-        [SerializeField] private CombatAnimationSpeed _default = CombatAnimationSpeed.Skip;
+        [SerializeField] private CombatAnimationSpeed @default = CombatAnimationSpeed.Skip;
 
         // NOT serialized — purely runtime, cleared at the end of each combat.
-        private CombatAnimationSpeed? _runtimeOverride;
+        private CombatAnimationSpeed? runtimeOverride;
 
         public CombatAnimationSpeed Persisted
         {
-            get => (CombatAnimationSpeed)PlayerPrefs.GetInt(PrefsKey, (int)_default);
+            get => (CombatAnimationSpeed)PlayerPrefs.GetInt(PrefsKey, (int)@default);
             set { PlayerPrefs.SetInt(PrefsKey, (int)value); PlayerPrefs.Save(); }
         }
 
-        public CombatAnimationSpeed EffectiveSpeed => _runtimeOverride ?? Persisted;
+        public CombatAnimationSpeed EffectiveSpeed => runtimeOverride ?? Persisted;
 
-        public void SetOneShotOverride(CombatAnimationSpeed speed) => _runtimeOverride = speed;
-        public void ClearOneShotOverride() => _runtimeOverride = null;
+        public void SetOneShotOverride(CombatAnimationSpeed speed) => runtimeOverride = speed;
+        public void ClearOneShotOverride() => runtimeOverride = null;
     }
 }

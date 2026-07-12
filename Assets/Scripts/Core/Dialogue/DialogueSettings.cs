@@ -10,8 +10,8 @@ namespace ProjectAstra.Core.Dialogue
         private const float MinCharsPerSecond = 1f;
 
         [Tooltip("Default text-crawl speed in characters per second, when a line doesn't override it.")]
-        [SerializeField] private float _charsPerSecond = 40f;
+        [SerializeField] private float charsPerSecond = 40f;
 
-        public float CharsPerSecond => Mathf.Max(MinCharsPerSecond, _charsPerSecond);
+        public float CharsPerSecond => Mathf.Max(MinCharsPerSecond, charsPerSecond);
     }
 }

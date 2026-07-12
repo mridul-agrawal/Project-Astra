@@ -12,30 +12,30 @@ namespace ProjectAstra.Core.Dialogue
     public class DialogueSegment
     {
         [Tooltip("Scene shown behind every line in this segment. Start a new segment when it changes.")]
-        [SerializeField] private Sprite _background;
+        [SerializeField] private Sprite background;
 
         [Tooltip("Characters per second for this segment's lines. Leave below 0 to use the global text speed.")]
-        [SerializeField] private float _textSpeed = -1f;
+        [SerializeField] private float textSpeed = -1f;
 
         [Tooltip("Seconds before lines auto-advance. Leave at 0 to wait for the player.")]
-        [SerializeField] private float _autoAdvanceDelay = 0f;
+        [SerializeField] private float autoAdvanceDelay = 0f;
 
-        [SerializeField] private List<DialogueLine> _lines = new();
+        [SerializeField] private List<DialogueLine> lines = new();
 
-        public Sprite Background => _background;
-        public float TextSpeed => _textSpeed;
-        public float AutoAdvanceDelay => _autoAdvanceDelay;
-        public IReadOnlyList<DialogueLine> Lines => _lines;
+        public Sprite Background => background;
+        public float TextSpeed => textSpeed;
+        public float AutoAdvanceDelay => autoAdvanceDelay;
+        public IReadOnlyList<DialogueLine> Lines => lines;
 
         internal static DialogueSegment Create(Sprite background, float textSpeed,
             float autoAdvanceDelay, params DialogueLine[] lines)
         {
             return new DialogueSegment
             {
-                _background = background,
-                _textSpeed = textSpeed,
-                _autoAdvanceDelay = autoAdvanceDelay,
-                _lines = new List<DialogueLine>(lines)
+                background = background,
+                textSpeed = textSpeed,
+                autoAdvanceDelay = autoAdvanceDelay,
+                lines = new List<DialogueLine>(lines)
             };
         }
     }

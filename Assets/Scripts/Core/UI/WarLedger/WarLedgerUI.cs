@@ -28,23 +28,23 @@ namespace ProjectAstra.Core.UI.WarLedger
     {
         public static bool HasInputFocus { get; private set; }
 
-        [SerializeField] private GameObject _popupInstance;
+        [SerializeField] private GameObject popupInstance;
 
-        private WarLedgerRefs _refs;
-        private bool _subscribed;
+        private WarLedgerRefs refs;
+        private bool subscribed;
 
         private void Awake()
         {
             if (EventService.Instance != null)
             {
                 EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
-                _subscribed = true;
+                subscribed = true;
             }
         }
 
         private void OnDestroy()
         {
-            if (_subscribed && EventService.Instance != null)
+            if (subscribed && EventService.Instance != null)
                 EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
             if (HasInputFocus) Hide();
         }
@@ -74,7 +74,7 @@ namespace ProjectAstra.Core.UI.WarLedger
             HasInputFocus = false;
             if (InputManager.Instance != null)
                 InputManager.Instance.OnConfirm -= OnConfirm;
-            if (_popupInstance != null) _popupInstance.SetActive(false);
+            if (popupInstance != null) popupInstance.SetActive(false);
         }
 
         // ============================================================
@@ -83,39 +83,39 @@ namespace ProjectAstra.Core.UI.WarLedger
 
         private bool ActivateUI()
         {
-            if (_popupInstance == null)
+            if (popupInstance == null)
             {
                 Debug.LogError("WarLedgerUI: _popupInstance not wired. Run scene setup or rebuild the prefab.");
                 return false;
             }
-            if (_refs == null) _refs = _popupInstance.GetComponent<WarLedgerRefs>();
-            if (_refs == null)
+            if (refs == null) refs = popupInstance.GetComponent<WarLedgerRefs>();
+            if (refs == null)
             {
                 Debug.LogError("WarLedgerUI: prefab missing WarLedgerRefs.");
                 return false;
             }
-            _popupInstance.SetActive(true);
-            _popupInstance.transform.SetAsLastSibling();
+            popupInstance.SetActive(true);
+            popupInstance.transform.SetAsLastSibling();
             return true;
         }
 
         private void PopulateChapterMeta()
         {
-            if (_refs.chapterEyebrow != null) _refs.chapterEyebrow.text = "CHAPTER";
-            if (_refs.chapterNumber != null)  _refs.chapterNumber.text  = ChapterContext.CurrentChapterNumber.ToString("D2");
-            if (_refs.chapterTitle != null)
+            if (refs.chapterEyebrow != null) refs.chapterEyebrow.text = "CHAPTER";
+            if (refs.chapterNumber != null)  refs.chapterNumber.text  = ChapterContext.CurrentChapterNumber.ToString("D2");
+            if (refs.chapterTitle != null)
             {
                 var title = ChapterContext.CurrentChapterTitle;
-                _refs.chapterTitle.gameObject.SetActive(!string.IsNullOrEmpty(title));
-                _refs.chapterTitle.text = title ?? "";
+                refs.chapterTitle.gameObject.SetActive(!string.IsNullOrEmpty(title));
+                refs.chapterTitle.text = title ?? "";
             }
         }
 
         private void PopulateLeftColumn()
         {
-            if (_refs.leftEntriesContainer == null || _refs.leftEntryTemplate == null) return;
+            if (refs.leftEntriesContainer == null || refs.leftEntryTemplate == null) return;
 
-            ClearDynamicChildren(_refs.leftEntriesContainer, _refs.leftEntryTemplate);
+            ClearDynamicChildren(refs.leftEntriesContainer, refs.leftEntryTemplate);
 
             var registry = DeathRegistry.Instance;
             if (registry != null)
@@ -131,17 +131,17 @@ namespace ProjectAstra.Core.UI.WarLedger
 
             // Unnamed tail
             int unnamed = registry?.UnnamedEnemyDeathCountForCurrentChapter() ?? 0;
-            if (_refs.leftUnnamedTail != null)
+            if (refs.leftUnnamedTail != null)
             {
                 if (unnamed > 0)
                 {
-                    _refs.leftUnnamedTail.text =
+                    refs.leftUnnamedTail.text =
                         $"And {unnamed} other{(unnamed == 1 ? "" : "s")} whose names are not recorded.";
-                    _refs.leftUnnamedTail.gameObject.SetActive(true);
+                    refs.leftUnnamedTail.gameObject.SetActive(true);
                 }
                 else
                 {
-                    _refs.leftUnnamedTail.gameObject.SetActive(false);
+                    refs.leftUnnamedTail.gameObject.SetActive(false);
                 }
             }
         }
@@ -156,7 +156,7 @@ namespace ProjectAstra.Core.UI.WarLedger
 
         private void AddLeftEntry(DeathEntry entry)
         {
-            var go = Instantiate(_refs.leftEntryTemplate, _refs.leftEntriesContainer);
+            var go = Instantiate(refs.leftEntryTemplate, refs.leftEntriesContainer);
             go.name = "LeftEntry_" + (entry.unitName ?? entry.unitId);
             go.SetActive(true);
 
@@ -175,8 +175,8 @@ namespace ProjectAstra.Core.UI.WarLedger
 
         private void PopulateMiddleColumn()
         {
-            if (_refs.middleEntriesContainer == null || _refs.middleEntryTemplate == null) return;
-            ClearDynamicChildren(_refs.middleEntriesContainer, _refs.middleEntryTemplate);
+            if (refs.middleEntriesContainer == null || refs.middleEntryTemplate == null) return;
+            ClearDynamicChildren(refs.middleEntriesContainer, refs.middleEntryTemplate);
 
             var tracker = CommitmentTracker.Instance;
             if (tracker == null) return;
@@ -184,7 +184,7 @@ namespace ProjectAstra.Core.UI.WarLedger
             for (int i = 0; i < resolved.Count; i++)
             {
                 var r = resolved[i];
-                var go = Instantiate(_refs.middleEntryTemplate, _refs.middleEntriesContainer);
+                var go = Instantiate(refs.middleEntryTemplate, refs.middleEntriesContainer);
                 go.name = "MiddleEntry_" + r.commitmentId;
                 go.SetActive(true);
 
@@ -204,15 +204,15 @@ namespace ProjectAstra.Core.UI.WarLedger
 
         private void PopulateRightColumn()
         {
-            if (_refs.rightEntriesContainer == null || _refs.rightEntryTemplate == null) return;
-            ClearDynamicChildren(_refs.rightEntriesContainer, _refs.rightEntryTemplate);
+            if (refs.rightEntriesContainer == null || refs.rightEntryTemplate == null) return;
+            ClearDynamicChildren(refs.rightEntriesContainer, refs.rightEntryTemplate);
 
             var civilian = WarLedgerServices.CivilianThreadService ?? NullCivilianThreadService.Instance;
             var entries = civilian.ForCurrentChapter();
 
             foreach (var e in entries)
             {
-                var go = Instantiate(_refs.rightEntryTemplate, _refs.rightEntriesContainer);
+                var go = Instantiate(refs.rightEntryTemplate, refs.rightEntriesContainer);
                 go.name = "RightEntry_" + e.civilianName;
                 go.SetActive(true);
 

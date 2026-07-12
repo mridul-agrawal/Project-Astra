@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Combat
     {
         public event Action<BattleConclusion> OnBattleConcluded;
 
-        private bool _concluded;
+        private bool concluded;
 
         private void Awake()
         {
@@ -43,12 +43,12 @@ namespace ProjectAstra.Core.Combat
 
         private void OnUnitDied(UnitDeathEventArgs args)
         {
-            if (_concluded) return;
+            if (concluded) return;
 
             // UM-02: Lord death pre-empts the faction-wipe path. LordDeathWatcher
             // owns the conclusion (fade → last-words dialogue → GameOver);
             // step aside so both handlers don't race to RequestTransition.
-            if (args.isLord) { _concluded = true; return; }
+            if (args.isLord) { concluded = true; return; }
 
             if (TurnManager.Instance == null) return;
 
@@ -61,11 +61,11 @@ namespace ProjectAstra.Core.Combat
                 Conclude(new BattleConclusion(BattleWinner.Enemy, BattleEndCause.AllPlayerUnitsDead));
         }
 
-        private BattleConclusion? _pendingConclusion;
+        private BattleConclusion? pendingConclusion;
 
         private void Conclude(BattleConclusion conclusion)
         {
-            _concluded = true;
+            concluded = true;
             OnBattleConcluded?.Invoke(conclusion);
 
             // Run any CommitmentSet evaluators against the conclusion (e.g.
@@ -77,25 +77,25 @@ namespace ProjectAstra.Core.Combat
             // The killing blow usually lands mid-CombatAnimation, where the end-of-chapter
             // transition is illegal — and the EXP/level-up payoff still owes the player a
             // screen. Update pumps the conclusion until the moment is right.
-            _pendingConclusion = conclusion;
+            pendingConclusion = conclusion;
         }
 
         private void Update()
         {
-            if (_pendingConclusion == null) return;
+            if (pendingConclusion == null) return;
 
             var gsm = GameStateManager.Instance;
-            if (gsm == null) { _pendingConclusion = null; return; }   // direct-play: nowhere to go
+            if (gsm == null) { pendingConclusion = null; return; }   // direct-play: nowhere to go
             if (gsm.CurrentState != GameState.BattleMap) return;
             if (ExpGranter.Instance != null && ExpGranter.Instance.IsBusy) return;
 
-            var conclusion = _pendingConclusion.Value;
+            var conclusion = pendingConclusion.Value;
             var target = conclusion.Winner == BattleWinner.Enemy
                 ? GameState.GameOver
                 : ShouldShowLedger() ? GameState.WarLedger : GameState.ChapterClear;
 
             if (gsm.RequestTransition(target, nameof(BattleVictoryWatcher)))
-                _pendingConclusion = null;
+                pendingConclusion = null;
         }
 
         // Spec: show the Ledger only when at least one of these is true.

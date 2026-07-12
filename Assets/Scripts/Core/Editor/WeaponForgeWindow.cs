@@ -17,13 +17,13 @@ namespace ProjectAstra.Core.Editor
 
         private enum NewItemKind { Weapon, Consumable }
 
-        private Vector2 _listScroll;
-        private Vector2 _detailScroll;
-        private ItemDefinition _selected;
-        private UnityEditor.Editor _embeddedEditor;
-        private NewItemKind _newKind = NewItemKind.Weapon;
-        private string _newName = "New Weapon";
-        private string _filter = "";
+        private Vector2 listScroll;
+        private Vector2 detailScroll;
+        private ItemDefinition selected;
+        private UnityEditor.Editor embeddedEditor;
+        private NewItemKind newKind = NewItemKind.Weapon;
+        private string newName = "New Weapon";
+        private string filter = "";
 
         [MenuItem("Project Astra/Items/Weapon Forge")]
         public static void Open()
@@ -44,9 +44,9 @@ namespace ProjectAstra.Core.Editor
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(260));
             EditorGUILayout.LabelField("Item Catalog", EditorStyles.boldLabel);
-            _filter = EditorGUILayout.TextField("Filter", _filter);
+            filter = EditorGUILayout.TextField("Filter", filter);
 
-            _listScroll = EditorGUILayout.BeginScrollView(_listScroll);
+            listScroll = EditorGUILayout.BeginScrollView(listScroll);
             DrawCatalogGroup<WeaponDefinition>("Weapons");
             DrawCatalogGroup<ConsumableDefinition>("Consumables");
             EditorGUILayout.EndScrollView();
@@ -60,15 +60,15 @@ namespace ProjectAstra.Core.Editor
             foreach (T item in LoadAll<T>())
             {
                 if (!Matches(item)) continue;
-                bool wasSelected = _selected == item;
+                bool wasSelected = selected == item;
                 if (GUILayout.Toggle(wasSelected, item.name, "Button") && !wasSelected)
                     Select(item);
             }
         }
 
         private bool Matches(ItemDefinition item) =>
-            string.IsNullOrEmpty(_filter) ||
-            item.name.IndexOf(_filter, StringComparison.OrdinalIgnoreCase) >= 0;
+            string.IsNullOrEmpty(filter) ||
+            item.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
 
         private void DrawDetailPane()
         {
@@ -82,37 +82,37 @@ namespace ProjectAstra.Core.Editor
         private void DrawForgeSection()
         {
             EditorGUILayout.LabelField("Forge New Item", EditorStyles.boldLabel);
-            _newKind = (NewItemKind)EditorGUILayout.EnumPopup("Kind", _newKind);
-            _newName = EditorGUILayout.TextField("Name", _newName);
+            newKind = (NewItemKind)EditorGUILayout.EnumPopup("Kind", newKind);
+            newName = EditorGUILayout.TextField("Name", newName);
             if (GUILayout.Button("Forge", GUILayout.Width(120)))
                 Select(ForgeNew());
         }
 
         private void DrawSelectedEditor()
         {
-            if (_selected == null)
+            if (selected == null)
             {
                 EditorGUILayout.HelpBox("Select an item on the left, or forge a new one above.", MessageType.Info);
                 return;
             }
 
-            EditorGUILayout.LabelField($"Editing: {_selected.name}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Editing: {selected.name}", EditorStyles.boldLabel);
             if (GUILayout.Button("Reveal in Project", GUILayout.Width(140)))
-                EditorGUIUtility.PingObject(_selected);
+                EditorGUIUtility.PingObject(selected);
 
-            _detailScroll = EditorGUILayout.BeginScrollView(_detailScroll);
-            if (_embeddedEditor != null) _embeddedEditor.OnInspectorGUI();
+            detailScroll = EditorGUILayout.BeginScrollView(detailScroll);
+            if (embeddedEditor != null) embeddedEditor.OnInspectorGUI();
             EditorGUILayout.EndScrollView();
         }
 
-        private ItemDefinition ForgeNew() => _newKind == NewItemKind.Weapon
+        private ItemDefinition ForgeNew() => newKind == NewItemKind.Weapon
             ? CreateAsset<WeaponDefinition>(WeaponsFolder)
             : CreateAsset<ConsumableDefinition>(ConsumablesFolder);
 
         private T CreateAsset<T>(string folder) where T : ItemDefinition
         {
             EnsureFolder(folder);
-            string safeName = string.IsNullOrWhiteSpace(_newName) ? typeof(T).Name : _newName.Trim();
+            string safeName = string.IsNullOrWhiteSpace(newName) ? typeof(T).Name : newName.Trim();
             string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/{safeName}.asset");
 
             var asset = CreateInstance<T>();
@@ -127,15 +127,15 @@ namespace ProjectAstra.Core.Editor
         private static void SetDisplayName(ItemDefinition asset, string displayName)
         {
             var so = new SerializedObject(asset);
-            so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("displayName").stringValue = displayName;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private void Select(ItemDefinition item)
         {
-            _selected = item;
-            if (_embeddedEditor != null) DestroyImmediate(_embeddedEditor);
-            _embeddedEditor = item != null ? UnityEditor.Editor.CreateEditor(item) : null;
+            selected = item;
+            if (embeddedEditor != null) DestroyImmediate(embeddedEditor);
+            embeddedEditor = item != null ? UnityEditor.Editor.CreateEditor(item) : null;
             Repaint();
         }
 
@@ -159,7 +159,7 @@ namespace ProjectAstra.Core.Editor
 
         private void OnDisable()
         {
-            if (_embeddedEditor != null) DestroyImmediate(_embeddedEditor);
+            if (embeddedEditor != null) DestroyImmediate(embeddedEditor);
         }
     }
 }

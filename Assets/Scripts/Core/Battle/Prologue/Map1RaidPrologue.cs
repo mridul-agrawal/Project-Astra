@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Battle.Prologue
     public class Map1RaidPrologue : MonoBehaviour, IBattlePrologue
     {
         [Tooltip("Aranya's arrival vow, played through the shared dialogue view when she reaches the south bank.")]
-        [SerializeField] private DialogueScript _aranyaArrivalScript;
+        [SerializeField] private DialogueScript aranyaArrivalScript;
 
         // North bank (high y); the only crossing is the footbridge at (7,5).
         private static readonly Vector2Int RaiderHome = new(7, 7);   // raider's Turn-1 tile (holds the line)
@@ -175,8 +175,8 @@ namespace ProjectAstra.Core.Battle.Prologue
 
             // Her vow, before control passes — Confirm advances (the cursor is Locked, so
             // nothing else consumes it).
-            if (_aranyaArrivalScript != null && DialogueService.Instance != null)
-                yield return DialogueService.Instance.PlayRoutine(_aranyaArrivalScript, DialogueTriggeringContext.Cutscene);
+            if (aranyaArrivalScript != null && DialogueService.Instance != null)
+                yield return DialogueService.Instance.PlayRoutine(aranyaArrivalScript, DialogueTriggeringContext.Cutscene);
 
             yield return AnimateBars(topBar, bottomBar, LetterboxBarHeight, 0f, LetterboxFadeSeconds);
             choreographyDone = true;

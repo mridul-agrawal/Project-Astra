@@ -216,17 +216,17 @@ namespace ProjectAstra.EditorTools
         {
             var view = rootGo.AddComponent<DialogueView>();
             var so = new SerializedObject(view);
-            so.FindProperty("_root").objectReferenceValue = content;
-            so.FindProperty("_fullScreenImage").objectReferenceValue = fullScreen;
-            so.FindProperty("_leftPortrait").objectReferenceValue = left;
-            so.FindProperty("_rightPortrait").objectReferenceValue = right;
-            so.FindProperty("_centerPortrait").objectReferenceValue = center;
-            so.FindProperty("_namePlateLeft").objectReferenceValue = namePlateLeft;
-            so.FindProperty("_nameLabelLeft").objectReferenceValue = nameLabelLeft;
-            so.FindProperty("_namePlateRight").objectReferenceValue = namePlateRight;
-            so.FindProperty("_nameLabelRight").objectReferenceValue = nameLabelRight;
-            so.FindProperty("_bodyText").objectReferenceValue = bodyText;
-            so.FindProperty("_continueHint").objectReferenceValue = continueHint;
+            so.FindProperty("root").objectReferenceValue = content;
+            so.FindProperty("fullScreenImage").objectReferenceValue = fullScreen;
+            so.FindProperty("leftPortrait").objectReferenceValue = left;
+            so.FindProperty("rightPortrait").objectReferenceValue = right;
+            so.FindProperty("centerPortrait").objectReferenceValue = center;
+            so.FindProperty("namePlateLeft").objectReferenceValue = namePlateLeft;
+            so.FindProperty("nameLabelLeft").objectReferenceValue = nameLabelLeft;
+            so.FindProperty("namePlateRight").objectReferenceValue = namePlateRight;
+            so.FindProperty("nameLabelRight").objectReferenceValue = nameLabelRight;
+            so.FindProperty("bodyText").objectReferenceValue = bodyText;
+            so.FindProperty("continueHint").objectReferenceValue = continueHint;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

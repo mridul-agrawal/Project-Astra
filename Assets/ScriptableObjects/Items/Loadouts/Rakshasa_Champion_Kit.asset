@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 941744dc249d09749a23b48fc097bcf5, type: 3}
   m_Name: Rakshasa_Champion_Kit
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.InventoryLoadout
-  _items:
+  items:
   - {fileID: 11400000, guid: 0529a2ae6dee4b7cbfd0c3a992e3f149, type: 2}

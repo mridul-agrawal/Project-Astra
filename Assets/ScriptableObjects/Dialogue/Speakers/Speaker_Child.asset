@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 947ed8b06f54ef04a8955a7b635272b3, type: 3}
   m_Name: Speaker_Child
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueSpeaker
-  _speakerId: CHILD
-  _displayName: Village Child
-  _portraits:
+  speakerId: CHILD
+  displayName: Village Child
+  portraits:
   - Expression: 0
     Sprite: {fileID: 21300000, guid: 14f248a6c80f0a9478fd5cf532006364, type: 3}

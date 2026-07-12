@@ -12,24 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Lord
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Lord
-  _classType: 0
-  _movementRange: 5
-  _movementType: 0
-  _weaponWhitelist: 0000000002000000
-  _statGrowthModifiers:
-    _values: 000000000500000000000000050000000000000000000000000000000000000005000000
-  _statCaps:
-    _values: 3c0000001900000014000000190000001900000019000000160000000f0000001e000000
-  _hpGainOnLevelUp: 2
-  _critBonus: 0
-  _canPromote: 1
-  _isPromoted: 0
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 140000000700000002000000060000000800000005000000030000000700000006000000
-  _expPowerFactor: 1
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Lord
+  classType: 0
+  movementRange: 5
+  movementType: 0
+  weaponWhitelist: 0000000002000000
+  statGrowthModifiers:
+    values: 000000000500000000000000050000000000000000000000000000000000000005000000
+  statCaps:
+    values: 3c0000001900000014000000190000001900000019000000160000000f0000001e000000
+  hpGainOnLevelUp: 2
+  critBonus: 0
+  canPromote: 1
+  isPromoted: 0
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 140000000700000002000000060000000800000005000000030000000700000006000000
+  expPowerFactor: 1
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

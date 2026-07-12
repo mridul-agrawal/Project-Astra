@@ -168,21 +168,21 @@ namespace ProjectAstra.EditorTools
         static void WireControllerSprites(Core.UI.UnitInfo.UnitInfoPanelUI controller)
         {
             var so = new SerializedObject(controller);
-            AssignSprite(so, "_hpFillGreen",     sprHpFillGreen);
-            AssignSprite(so, "_hpFillYellow",    sprHpFillYellow);
-            AssignSprite(so, "_hpFillRed",       sprHpFillRed);
-            AssignSprite(so, "_pageDotActive",   sprPageDotActive);
-            AssignSprite(so, "_pageDotInactive", sprPageDotInactive);
-            AssignSprite(so, "_bondPipLit",      sprBondPipLit);
-            AssignSprite(so, "_bondPipUnlit",    sprBondPipUnlit);
-            AssignSprite(so, "_bondPipEncounter",sprBondPipEncounter);
-            AssignSprite(so, "_notifBadge",      sprNotifBadge);
-            AssignSprite(so, "_diyaMemorial",    sprDiyaMemorial);
-            AssignSprite(so, "_shapathIcon",     sprShapathIcon);
-            AssignSprite(so, "_thresholdMark",   sprThresholdMark);
+            AssignSprite(so, "hpFillGreen",     sprHpFillGreen);
+            AssignSprite(so, "hpFillYellow",    sprHpFillYellow);
+            AssignSprite(so, "hpFillRed",       sprHpFillRed);
+            AssignSprite(so, "pageDotActive",   sprPageDotActive);
+            AssignSprite(so, "pageDotInactive", sprPageDotInactive);
+            AssignSprite(so, "bondPipLit",      sprBondPipLit);
+            AssignSprite(so, "bondPipUnlit",    sprBondPipUnlit);
+            AssignSprite(so, "bondPipEncounter",sprBondPipEncounter);
+            AssignSprite(so, "notifBadge",      sprNotifBadge);
+            AssignSprite(so, "diyaMemorial",    sprDiyaMemorial);
+            AssignSprite(so, "shapathIcon",     sprShapathIcon);
+            AssignSprite(so, "thresholdMark",   sprThresholdMark);
 
             // Affinity icons indexed by PanchaBhuta enum (1..5; 0 = None unused).
-            var affProp = so.FindProperty("_affinityIcons");
+            var affProp = so.FindProperty("affinityIcons");
             if (affProp != null)
             {
                 affProp.arraySize = 5;
@@ -193,7 +193,7 @@ namespace ProjectAstra.EditorTools
                 affProp.GetArrayElementAtIndex(4).objectReferenceValue = sprAffinityAkasha;
             }
 
-            var matProp = so.FindProperty("_desaturatedMaterial");
+            var matProp = so.FindProperty("desaturatedMaterial");
             if (matProp != null) matProp.objectReferenceValue = matDesaturated;
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -298,17 +298,17 @@ namespace ProjectAstra.EditorTools
 
             var comp = root.AddComponent<Core.UI.Inventory.UnitInfoItemDetailUI>();
             var so = new SerializedObject(comp);
-            so.FindProperty("_nameText").objectReferenceValue = title;
-            so.FindProperty("_typeText").objectReferenceValue = type;
-            so.FindProperty("_mightText").objectReferenceValue  = statTmps[0];
-            so.FindProperty("_hitText").objectReferenceValue    = statTmps[1];
-            so.FindProperty("_critText").objectReferenceValue   = statTmps[2];
-            so.FindProperty("_weightText").objectReferenceValue = statTmps[3];
-            so.FindProperty("_rangeText").objectReferenceValue  = statTmps[4];
-            so.FindProperty("_rankReqText").objectReferenceValue= statTmps[5];
-            so.FindProperty("_effectivenessText").objectReferenceValue = eff;
-            so.FindProperty("_specialText").objectReferenceValue = spec;
-            so.FindProperty("_descriptionText").objectReferenceValue = desc;
+            so.FindProperty("nameText").objectReferenceValue = title;
+            so.FindProperty("typeText").objectReferenceValue = type;
+            so.FindProperty("mightText").objectReferenceValue  = statTmps[0];
+            so.FindProperty("hitText").objectReferenceValue    = statTmps[1];
+            so.FindProperty("critText").objectReferenceValue   = statTmps[2];
+            so.FindProperty("weightText").objectReferenceValue = statTmps[3];
+            so.FindProperty("rangeText").objectReferenceValue  = statTmps[4];
+            so.FindProperty("rankReqText").objectReferenceValue= statTmps[5];
+            so.FindProperty("effectivenessText").objectReferenceValue = eff;
+            so.FindProperty("specialText").objectReferenceValue = spec;
+            so.FindProperty("descriptionText").objectReferenceValue = desc;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             root.SetActive(false);
@@ -391,17 +391,17 @@ namespace ProjectAstra.EditorTools
 
             var comp = root.AddComponent<Core.UI.UnitInfo.UnitInfoSupportDetailUI>();
             var so = new SerializedObject(comp);
-            so.FindProperty("_portraitImage").objectReferenceValue = portrait.GetComponent<Image>();
-            so.FindProperty("_nameText").objectReferenceValue = name;
-            so.FindProperty("_atkText").objectReferenceValue     = bonusTmps[0];
-            so.FindProperty("_defText").objectReferenceValue     = bonusTmps[1];
-            so.FindProperty("_hitText").objectReferenceValue     = bonusTmps[2];
-            so.FindProperty("_avoText").objectReferenceValue     = bonusTmps[3];
-            so.FindProperty("_critText").objectReferenceValue    = bonusTmps[4];
-            so.FindProperty("_critAvoText").objectReferenceValue = bonusTmps[5];
-            so.FindProperty("_promiseContainer").objectReferenceValue = promiseContainer;
-            so.FindProperty("_promiseText").objectReferenceValue = promise;
-            so.FindProperty("_shapathIcon").objectReferenceValue = shapath;
+            so.FindProperty("portraitImage").objectReferenceValue = portrait.GetComponent<Image>();
+            so.FindProperty("nameText").objectReferenceValue = name;
+            so.FindProperty("atkText").objectReferenceValue     = bonusTmps[0];
+            so.FindProperty("defText").objectReferenceValue     = bonusTmps[1];
+            so.FindProperty("hitText").objectReferenceValue     = bonusTmps[2];
+            so.FindProperty("avoText").objectReferenceValue     = bonusTmps[3];
+            so.FindProperty("critText").objectReferenceValue    = bonusTmps[4];
+            so.FindProperty("critAvoText").objectReferenceValue = bonusTmps[5];
+            so.FindProperty("promiseContainer").objectReferenceValue = promiseContainer;
+            so.FindProperty("promiseText").objectReferenceValue = promise;
+            so.FindProperty("shapathIcon").objectReferenceValue = shapath;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             root.SetActive(false);
@@ -412,9 +412,9 @@ namespace ProjectAstra.EditorTools
             Core.UI.Inventory.UnitInfoItemDetailUI itemDetail, Core.UI.UnitInfo.UnitInfoSupportDetailUI supportDetail)
         {
             var so = new SerializedObject(controller);
-            var itemProp = so.FindProperty("_itemDetail");
+            var itemProp = so.FindProperty("itemDetail");
             if (itemProp != null) itemProp.objectReferenceValue = itemDetail;
-            var supProp = so.FindProperty("_supportDetail");
+            var supProp = so.FindProperty("supportDetail");
             if (supProp != null) supProp.objectReferenceValue = supportDetail;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -424,7 +424,7 @@ namespace ProjectAstra.EditorTools
             var cursor = Object.FindObjectOfType<ProjectAstra.Core.Cursor.GridCursor>();
             if (cursor == null) { Debug.LogWarning("No GridCursor in scene — UnitInfoPanel opened-by-cursor wiring skipped."); return; }
             var so = new SerializedObject(cursor);
-            var prop = so.FindProperty("_unitInfoPanelUI");
+            var prop = so.FindProperty("unitInfoPanelUI");
             if (prop == null) { Debug.LogWarning("GridCursor._unitInfoPanelUI field not found."); return; }
             prop.objectReferenceValue = controller;
             so.ApplyModifiedPropertiesWithoutUndo();

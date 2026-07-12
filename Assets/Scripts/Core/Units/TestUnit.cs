@@ -33,7 +33,7 @@ namespace ProjectAstra.Core.Units
         public int attackRangeMax = 1;
 
         [Header("Equippability fallback")]
-        [SerializeField] private WeaponType[] _allowedWeaponTypes;
+        [SerializeField] private WeaponType[] allowedWeaponTypes;
 
         [Header("HP")]
         public int maxHP = 20;
@@ -44,29 +44,29 @@ namespace ProjectAstra.Core.Units
         public Vector2Int preMovementPosition;
 
         [Header("Unit System (optional)")]
-        [SerializeField] private UnitDefinition _unitDefinition;
+        [SerializeField] private UnitDefinition unitDefinition;
         [Tooltip("Optional class override — when set, the unit is spawned in this class instead of the definition's DefaultClass. Useful for scene-level overrides (e.g. promoting a test unit to a Flying class without editing the character asset).")]
-        [SerializeField] private ClassDefinition _classOverride;
+        [SerializeField] private ClassDefinition classOverride;
 
-        private UnitInstance _unitInstance;
-        private UnitInventory _inventory;
-        private SpriteRenderer _spriteRenderer;
-        private Color _normalColor;
+        private UnitInstance unitInstance;
+        private UnitInventory inventory;
+        private SpriteRenderer spriteRenderer;
+        private Color normalColor;
 
-        public UnitInstance UnitInstance => _unitInstance;
+        public UnitInstance UnitInstance => unitInstance;
         // Serialized UnitDefinition reference, accessible before Start binds a UnitInstance.
-        public UnitDefinition UnitDefinition => _unitDefinition;
+        public UnitDefinition UnitDefinition => unitDefinition;
         public WeaponRankTracker WeaponRankTracker { get; set; }
-        public WeaponType[] AllowedWeaponTypes => _allowedWeaponTypes;
+        public WeaponType[] AllowedWeaponTypes => allowedWeaponTypes;
 
         public UnitInventory Inventory
         {
             get
             {
-                if (_inventory != null) return _inventory;
-                _inventory = GetComponent<UnitInventory>();
-                if (_inventory == null) _inventory = gameObject.AddComponent<UnitInventory>();
-                return _inventory;
+                if (inventory != null) return inventory;
+                inventory = GetComponent<UnitInventory>();
+                if (inventory == null) inventory = gameObject.AddComponent<UnitInventory>();
+                return inventory;
             }
         }
 
@@ -81,7 +81,7 @@ namespace ProjectAstra.Core.Units
 
         private void Awake()
         {
-            _inventory = GetComponent<UnitInventory>();
+            inventory = GetComponent<UnitInventory>();
         }
 
         private void Start()
@@ -100,7 +100,7 @@ namespace ProjectAstra.Core.Units
 
         public void BindUnitInstance(UnitInstance instance)
         {
-            _unitInstance = instance;
+            unitInstance = instance;
             movementPoints = instance.EffectiveMovement;
             movementType = instance.MovementType;
             maxHP = instance.MaxHP;
@@ -111,8 +111,8 @@ namespace ProjectAstra.Core.Units
         // TestUnit's own binding step builds the UnitInstance from it.
         public void InitializeFromDefinition(UnitDefinition definition, ClassDefinition classOverride = null)
         {
-            _unitDefinition = definition;
-            if (classOverride != null) _classOverride = classOverride;
+            unitDefinition = definition;
+            if (classOverride != null) this.classOverride = classOverride;
         }
 
         public void MarkActed()
@@ -124,7 +124,7 @@ namespace ProjectAstra.Core.Units
         public void ResetActed()
         {
             hasActed = false;
-            SetSpriteColor(_normalColor);
+            SetSpriteColor(normalColor);
         }
 
         public void SnapToGridPosition()
@@ -134,39 +134,39 @@ namespace ProjectAstra.Core.Units
 
         private void CacheSpriteRenderer()
         {
-            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-            if (_spriteRenderer != null)
-                _normalColor = _spriteRenderer.color;
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            if (spriteRenderer != null)
+                normalColor = spriteRenderer.color;
         }
 
         private void BindUnitInstanceFromDefinitionIfNeeded()
         {
-            if (_unitDefinition == null || _unitInstance != null) return;
+            if (unitDefinition == null || unitInstance != null) return;
 
-            var instance = _classOverride != null
-                ? new UnitInstance(_unitDefinition, _classOverride, _unitDefinition.BaseLevel, _unitDefinition.BaseStats)
-                : new UnitInstance(_unitDefinition);
+            var instance = classOverride != null
+                ? new UnitInstance(unitDefinition, classOverride, unitDefinition.BaseLevel, unitDefinition.BaseStats)
+                : new UnitInstance(unitDefinition);
             BindUnitInstance(instance);
         }
 
         private void SyncLordFlagFromDefinition()
         {
-            if (_unitDefinition != null && _unitDefinition.IsLord)
+            if (unitDefinition != null && unitDefinition.IsLord)
                 isLord = true;
         }
 
         private void EnsureFlyingHoverAnimator()
         {
-            if (movementType != MovementType.Flying || _spriteRenderer == null) return;
-            if (_spriteRenderer.GetComponent<FlyingHoverAnimator>() != null) return;
+            if (movementType != MovementType.Flying || spriteRenderer == null) return;
+            if (spriteRenderer.GetComponent<FlyingHoverAnimator>() != null) return;
 
-            _spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
+            spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
         }
 
         private void SetSpriteColor(Color color)
         {
-            if (_spriteRenderer != null)
-                _spriteRenderer.color = color;
+            if (spriteRenderer != null)
+                spriteRenderer.color = color;
         }
     }
 }

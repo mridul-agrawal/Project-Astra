@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 941744dc249d09749a23b48fc097bcf5, type: 3}
   m_Name: Aranya_Kit
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.InventoryLoadout
-  _items:
+  items:
   - {fileID: 11400000, guid: 24752dcd2a01c74499a2f3bee64d2335, type: 2}

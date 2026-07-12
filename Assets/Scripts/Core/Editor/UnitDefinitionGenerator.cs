@@ -41,12 +41,12 @@ namespace ProjectAstra.Core.Editor
 
             var asset = ScriptableObject.CreateInstance<UnitDefinition>();
             var so = new SerializedObject(asset);
-            so.FindProperty("_unitName").stringValue = unitName;
-            so.FindProperty("_unitId").stringValue = unitId;
-            so.FindProperty("_defaultClass").objectReferenceValue = classDef;
-            so.FindProperty("_baseLevel").intValue = level;
-            SetStatArray(so, "_baseStats", baseStats);
-            SetStatArray(so, "_personalGrowths", growths);
+            so.FindProperty("unitName").stringValue = unitName;
+            so.FindProperty("unitId").stringValue = unitId;
+            so.FindProperty("defaultClass").objectReferenceValue = classDef;
+            so.FindProperty("baseLevel").intValue = level;
+            SetStatArray(so, "baseStats", baseStats);
+            SetStatArray(so, "personalGrowths", growths);
             so.ApplyModifiedPropertiesWithoutUndo();
 
             AssetDatabase.CreateAsset(asset, path);
@@ -55,7 +55,7 @@ namespace ProjectAstra.Core.Editor
         private static void SetStatArray(SerializedObject so, string propName, StatArray values)
         {
             var prop = so.FindProperty(propName);
-            var arr = prop.FindPropertyRelative("_values");
+            var arr = prop.FindPropertyRelative("values");
             arr.arraySize = StatArray.Length;
             for (int i = 0; i < StatArray.Length; i++)
                 arr.GetArrayElementAtIndex(i).intValue = values[(StatIndex)i];

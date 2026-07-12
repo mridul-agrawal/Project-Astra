@@ -24,12 +24,12 @@ namespace ProjectAstra.Core.Combat
     {
 
         [Tooltip("How long the Lord's sprite fades out before the last-words dialogue begins.")]
-        [SerializeField] private float _fadeDurationSeconds = 1.0f;
+        [SerializeField] private float fadeDurationSeconds = 1.0f;
 
         [Tooltip("Shown if the Lord's UnitDefinition has no authored last-words lines.")]
-        [SerializeField] private string _fallbackLine = "The hero has fallen.";
+        [SerializeField] private string fallbackLine = "The hero has fallen.";
 
-        private bool _concluded;
+        private bool concluded;
 
         private void Awake()
         {
@@ -43,10 +43,10 @@ namespace ProjectAstra.Core.Combat
 
         private void OnUnitDied(UnitDeathEventArgs args)
         {
-            if (_concluded) return;
+            if (concluded) return;
             if (!args.isLord) return;
 
-            _concluded = true;
+            concluded = true;
             StartCoroutine(LordDeathSequence(args));
         }
 
@@ -70,17 +70,17 @@ namespace ProjectAstra.Core.Combat
 
         private IEnumerator FadeVictim(TestUnit victim)
         {
-            if (victim == null || _fadeDurationSeconds <= 0f) yield break;
+            if (victim == null || fadeDurationSeconds <= 0f) yield break;
 
             var sprite = victim.GetComponentInChildren<SpriteRenderer>();
             if (sprite == null) yield break;
 
             var startColor = sprite.color;
             float elapsed = 0f;
-            while (elapsed < _fadeDurationSeconds)
+            while (elapsed < fadeDurationSeconds)
             {
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / _fadeDurationSeconds);
+                float t = Mathf.Clamp01(elapsed / fadeDurationSeconds);
                 var c = startColor;
                 c.a = Mathf.Lerp(startColor.a, 0f, t);
                 sprite.color = c;
@@ -93,7 +93,7 @@ namespace ProjectAstra.Core.Combat
             var authored = victim?.UnitDefinition?.LastWordsLines;
             if (authored != null && authored.Length > 0)
                 return authored;
-            return new[] { _fallbackLine };
+            return new[] { fallbackLine };
         }
     }
 }

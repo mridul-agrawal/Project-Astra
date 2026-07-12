@@ -28,23 +28,23 @@ namespace ProjectAstra.Core.UI.Overlays
         const float BorderWidth = 3f;
         const float PanelWidth = 360f;
 
-        private GameObject _root;
-        private readonly List<TextMeshProUGUI> _slotTexts = new();
-        private TextMeshProUGUI _cursorIndicator;
-        private int _selectedIndex;
-        private TestUnit _unit;
-        private InventoryItem _incoming;
-        private Action<int> _onChooseDiscard;
-        private Action _onCancel;
+        private GameObject root;
+        private readonly List<TextMeshProUGUI> slotTexts = new();
+        private TextMeshProUGUI cursorIndicator;
+        private int selectedIndex;
+        private TestUnit unit;
+        private InventoryItem incoming;
+        private Action<int> onChooseDiscard;
+        private Action onCancel;
 
         public void Prompt(TestUnit unit, InventoryItem incoming,
             Action<int> onChooseDiscardSlot, Action onCancel)
         {
-            _unit = unit;
-            _incoming = incoming;
-            _onChooseDiscard = onChooseDiscardSlot;
-            _onCancel = onCancel;
-            _selectedIndex = 0;
+            this.unit = unit;
+            this.incoming = incoming;
+            onChooseDiscard = onChooseDiscardSlot;
+            this.onCancel = onCancel;
+            selectedIndex = 0;
 
             BuildUI();
             UpdateSelection();
@@ -70,8 +70,8 @@ namespace ProjectAstra.Core.UI.Overlays
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            if (_root != null) Destroy(_root);
-            _slotTexts.Clear();
+            if (root != null) Destroy(root);
+            slotTexts.Clear();
         }
 
         private void OnDestroy()
@@ -82,9 +82,9 @@ namespace ProjectAstra.Core.UI.Overlays
         private void Navigate(Vector2Int dir)
         {
             if (dir.y > 0)
-                _selectedIndex = _selectedIndex <= 0 ? UnitInventory.Capacity - 1 : _selectedIndex - 1;
+                selectedIndex = selectedIndex <= 0 ? UnitInventory.Capacity - 1 : selectedIndex - 1;
             else if (dir.y < 0)
-                _selectedIndex = _selectedIndex >= UnitInventory.Capacity - 1 ? 0 : _selectedIndex + 1;
+                selectedIndex = selectedIndex >= UnitInventory.Capacity - 1 ? 0 : selectedIndex + 1;
             else
                 return;
 
@@ -93,23 +93,23 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void Confirm()
         {
-            int index = _selectedIndex;
-            var cb = _onChooseDiscard;
+            int index = selectedIndex;
+            var cb = onChooseDiscard;
             Hide();
             cb?.Invoke(index);
         }
 
         private void Cancel()
         {
-            var cb = _onCancel;
+            var cb = onCancel;
             Hide();
             cb?.Invoke();
         }
 
         private void BuildUI()
         {
-            if (_root != null) Destroy(_root);
-            _slotTexts.Clear();
+            if (root != null) Destroy(root);
+            slotTexts.Clear();
 
             var canvas = GetComponentInParent<Canvas>();
             if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
@@ -117,19 +117,19 @@ namespace ProjectAstra.Core.UI.Overlays
 
             float panelHeight = (UnitInventory.Capacity + 3) * OptionHeight + PanelPadding * 2;
 
-            _root = new GameObject("InventoryFullPrompt");
-            _root.transform.SetParent(canvas.transform, false);
-            var rootRect = _root.AddComponent<RectTransform>();
+            root = new GameObject("InventoryFullPrompt");
+            root.transform.SetParent(canvas.transform, false);
+            var rootRect = root.AddComponent<RectTransform>();
             rootRect.anchorMin = new Vector2(0.5f, 0.5f);
             rootRect.anchorMax = new Vector2(0.5f, 0.5f);
             rootRect.pivot = new Vector2(0.5f, 0.5f);
             rootRect.anchoredPosition = Vector2.zero;
             rootRect.sizeDelta = new Vector2(PanelWidth + BorderWidth * 2, panelHeight + BorderWidth * 2);
 
-            _root.AddComponent<Image>().color = BorderColor;
+            root.AddComponent<Image>().color = BorderColor;
 
             var panel = new GameObject("Panel");
-            panel.transform.SetParent(_root.transform, false);
+            panel.transform.SetParent(root.transform, false);
             var panelRect = panel.AddComponent<RectTransform>();
             panelRect.anchorMin = Vector2.zero;
             panelRect.anchorMax = Vector2.one;
@@ -139,12 +139,12 @@ namespace ProjectAstra.Core.UI.Overlays
 
             float y = -PanelPadding;
             y -= AddRow(panel, y, "Inventory Full — Choose item to discard:", TextHighlight);
-            y -= AddRow(panel, y, $"Incoming: {FormatItem(_incoming)}", TextHighlight);
+            y -= AddRow(panel, y, $"Incoming: {FormatItem(incoming)}", TextHighlight);
             y -= AddRow(panel, y, "─────────────────────", TextNormal);
 
             for (int i = 0; i < UnitInventory.Capacity; i++)
             {
-                var slot = _unit.Inventory.GetSlot(i);
+                var slot = unit.Inventory.GetSlot(i);
                 var rowGo = new GameObject($"Slot{i}");
                 rowGo.transform.SetParent(panel.transform, false);
                 var rowRect = rowGo.AddComponent<RectTransform>();
@@ -161,7 +161,7 @@ namespace ProjectAstra.Core.UI.Overlays
                 tmp.alignment = TextAlignmentOptions.MidlineLeft;
                 tmp.color = TextNormal;
                 tmp.enableWordWrapping = false;
-                _slotTexts.Add(tmp);
+                slotTexts.Add(tmp);
 
                 y -= OptionHeight;
             }
@@ -176,14 +176,14 @@ namespace ProjectAstra.Core.UI.Overlays
             cursorRect.sizeDelta = new Vector2(20f, OptionHeight);
             cursorRect.anchoredPosition = new Vector2(PanelPadding, -PanelPadding - 3 * OptionHeight - OptionHeight * 0.5f);
 
-            _cursorIndicator = cursorGo.AddComponent<TextMeshProUGUI>();
-            _cursorIndicator.text = "\u25B6";
-            _cursorIndicator.fontSize = 16;
-            _cursorIndicator.alignment = TextAlignmentOptions.Center;
-            _cursorIndicator.color = TextSelected;
-            _cursorIndicator.enableWordWrapping = false;
+            cursorIndicator = cursorGo.AddComponent<TextMeshProUGUI>();
+            cursorIndicator.text = "\u25B6";
+            cursorIndicator.fontSize = 16;
+            cursorIndicator.alignment = TextAlignmentOptions.Center;
+            cursorIndicator.color = TextSelected;
+            cursorIndicator.enableWordWrapping = false;
 
-            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            root.AddComponent<CanvasGroup>().blocksRaycasts = false;
         }
 
         private float AddRow(GameObject parent, float y, string text, Color color)
@@ -229,15 +229,15 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void UpdateSelection()
         {
-            for (int i = 0; i < _slotTexts.Count; i++)
-                _slotTexts[i].color = i == _selectedIndex ? TextSelected : TextNormal;
+            for (int i = 0; i < slotTexts.Count; i++)
+                slotTexts[i].color = i == selectedIndex ? TextSelected : TextNormal;
 
-            if (_cursorIndicator != null)
+            if (cursorIndicator != null)
             {
-                var rect = _cursorIndicator.GetComponent<RectTransform>();
+                var rect = cursorIndicator.GetComponent<RectTransform>();
                 rect.anchoredPosition = new Vector2(
                     PanelPadding,
-                    -PanelPadding - 3 * OptionHeight - _selectedIndex * OptionHeight - OptionHeight * 0.5f);
+                    -PanelPadding - 3 * OptionHeight - selectedIndex * OptionHeight - OptionHeight * 0.5f);
             }
         }
     }

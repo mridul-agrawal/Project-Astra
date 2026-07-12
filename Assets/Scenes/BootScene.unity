@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b310aef04ee44f044bc9f73857b70861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueService
-  _speakerRegistry: {fileID: 11400000, guid: fcc57e8a12375ef40abf01ca30a9ae08, type: 2}
-  _settings: {fileID: 11400000, guid: a6ca273ff4a4daf44bf05abf28c73a12, type: 2}
+  speakerRegistry: {fileID: 11400000, guid: fcc57e8a12375ef40abf01ca30a9ae08, type: 2}
+  settings: {fileID: 11400000, guid: a6ca273ff4a4daf44bf05abf28c73a12, type: 2}
 --- !u!4 &97060539
 Transform:
   m_ObjectHideFlags: 0
@@ -725,11 +725,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dff01b0af3e347a4aa0c6fb870ce6ecf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.InputManager
-  _inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  _inputContextTable: {fileID: 11400000, guid: 09f3226e087c0f24a8ee95c6c77cffb5, type: 2}
-  _dasInitialDelay: 0.4
-  _dasRepeatRate: 0.1
-  _dasFastRepeatRate: 0.05
+  inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  inputContextTable: {fileID: 11400000, guid: 09f3226e087c0f24a8ee95c6c77cffb5, type: 2}
+  dasInitialDelay: 0.4
+  dasRepeatRate: 0.1
+  dasFastRepeatRate: 0.05
 --- !u!4 &1664336122
 Transform:
   m_ObjectHideFlags: 0

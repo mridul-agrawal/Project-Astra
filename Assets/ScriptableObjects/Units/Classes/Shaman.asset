@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Shaman
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Shaman
-  _classType: 4
-  _movementRange: 5
-  _movementType: 0
-  _weaponWhitelist: 06000000
-  _statGrowthModifiers:
-    _values: 00000000000000000a00000000000000fbffffff000000000500000000000000fbffffff
-  _statCaps:
-    _values: 2e000000020000001a000000160000001400000012000000180000000c0000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 1
-  _isPromoted: 0
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 120000000100000008000000050000000500000003000000060000000500000003000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Shaman
+  classType: 4
+  movementRange: 5
+  movementType: 0
+  weaponWhitelist: 06000000
+  statGrowthModifiers:
+    values: 00000000000000000a00000000000000fbffffff000000000500000000000000fbffffff
+  statCaps:
+    values: 2e000000020000001a000000160000001400000012000000180000000c0000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 1
+  isPromoted: 0
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 120000000100000008000000050000000500000003000000060000000500000003000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

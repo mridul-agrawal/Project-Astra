@@ -15,14 +15,14 @@ namespace ProjectAstra.Core
     {
         public const int Capacity = 5;
 
-        [SerializeField] private InventoryItem[] _slots = new InventoryItem[Capacity];
+        [SerializeField] private InventoryItem[] slots = new InventoryItem[Capacity];
 
-        private TestUnit _ownerCache;
+        private TestUnit ownerCache;
 
         public event Action OnInventoryChanged;
         public event Action<InventoryItem> OnItemDestroyed;
 
-        public TestUnit Owner => _ownerCache ??= GetComponent<TestUnit>();
+        public TestUnit Owner => ownerCache ??= GetComponent<TestUnit>();
 
         private void Awake() => EnsureSlotsAllocated();
 
@@ -30,8 +30,8 @@ namespace ProjectAstra.Core
 
         private void EnsureSlotsAllocated()
         {
-            if (_slots == null || _slots.Length != Capacity)
-                _slots = new InventoryItem[Capacity];
+            if (slots == null || slots.Length != Capacity)
+                slots = new InventoryItem[Capacity];
         }
 
         // --- Read API ---
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core
         public InventoryItem GetSlot(int index)
         {
             if (index < 0 || index >= Capacity) return InventoryItem.None;
-            return _slots[index];
+            return slots[index];
         }
 
         public int OccupiedCount
@@ -48,7 +48,7 @@ namespace ProjectAstra.Core
             {
                 int count = 0;
                 for (int i = 0; i < Capacity; i++)
-                    if (!_slots[i].IsEmpty) count++;
+                    if (!slots[i].IsEmpty) count++;
                 return count;
             }
         }
@@ -59,7 +59,7 @@ namespace ProjectAstra.Core
         public int FirstEmptySlot()
         {
             for (int i = 0; i < Capacity; i++)
-                if (_slots[i].IsEmpty) return i;
+                if (slots[i].IsEmpty) return i;
             return -1;
         }
 
@@ -70,7 +70,7 @@ namespace ProjectAstra.Core
                 var owner = Owner;
                 for (int i = 0; i < Capacity; i++)
                 {
-                    var slot = _slots[i];
+                    var slot = slots[i];
                     if (slot.kind != ItemKind.Weapon) continue;
                     if (EquipResolver.CanEquip(owner, slot.weapon)) return i;
                 }
@@ -81,7 +81,7 @@ namespace ProjectAstra.Core
         public WeaponData GetEquippedWeapon()
         {
             int slot = EquippedWeaponSlot;
-            return slot >= 0 ? _slots[slot].weapon : WeaponData.None;
+            return slot >= 0 ? slots[slot].weapon : WeaponData.None;
         }
 
         public bool IsUnarmed => EquippedWeaponSlot < 0;
@@ -96,7 +96,7 @@ namespace ProjectAstra.Core
             int empty = FirstEmptySlot();
             if (empty < 0) return false;
 
-            _slots[empty] = item;
+            slots[empty] = item;
             slotIndex = empty;
             RaiseChanged();
             return true;
@@ -105,8 +105,8 @@ namespace ProjectAstra.Core
         public void DiscardSlot(int index)
         {
             if (index < 0 || index >= Capacity) return;
-            if (_slots[index].IsEmpty) return;
-            _slots[index] = InventoryItem.None;
+            if (slots[index].IsEmpty) return;
+            slots[index] = InventoryItem.None;
             RaiseChanged();
         }
 
@@ -116,14 +116,14 @@ namespace ProjectAstra.Core
         // empty.
         public void Clear()
         {
-            for (int i = 0; i < Capacity; i++) _slots[i] = InventoryItem.None;
+            for (int i = 0; i < Capacity; i++) slots[i] = InventoryItem.None;
             RaiseChanged();
         }
 
         public void SetSlot(int index, InventoryItem item)
         {
             if (index < 0 || index >= Capacity) return;
-            _slots[index] = item;
+            slots[index] = item;
             RaiseChanged();
         }
 
@@ -131,15 +131,15 @@ namespace ProjectAstra.Core
         {
             if (a == b) return;
             if (a < 0 || a >= Capacity || b < 0 || b >= Capacity) return;
-            (_slots[a], _slots[b]) = (_slots[b], _slots[a]);
+            (slots[a], slots[b]) = (slots[b], slots[a]);
             RaiseChanged();
         }
 
         public void EquipFromSlot(int slot)
         {
             if (slot <= 0 || slot >= Capacity) return;
-            if (_slots[slot].kind != ItemKind.Weapon) return;
-            if (!EquipResolver.CanEquip(Owner, _slots[slot].weapon)) return;
+            if (slots[slot].kind != ItemKind.Weapon) return;
+            if (!EquipResolver.CanEquip(Owner, slots[slot].weapon)) return;
             SwapSlots(0, slot);
         }
 
@@ -151,7 +151,7 @@ namespace ProjectAstra.Core
             int slot = EquippedWeaponSlot;
             if (slot < 0) return;
 
-            var item = _slots[slot];
+            var item = slots[slot];
             for (int i = 0; i < rounds; i++) item.weapon.ConsumeDurability();
             FinalizeSlotAfterUse(slot, item);
         }
@@ -166,7 +166,7 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            var item = _slots[slot];
+            var item = slots[slot];
             if (item.weapon.weaponType != WeaponType.Staff || item.weapon.staffEffect == StaffEffect.None)
             {
                 failReason = "Equipped weapon is not a healing staff.";
@@ -194,7 +194,7 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            var item = _slots[slot];
+            var item = slots[slot];
             if (item.weapon.staffEffect != StaffEffect.AreaOfEffect)
             {
                 failReason = "Equipped weapon is not a Fortify staff.";
@@ -219,7 +219,7 @@ namespace ProjectAstra.Core
                 return false;
             }
 
-            var item = _slots[slot];
+            var item = slots[slot];
             if (item.kind != ItemKind.Consumable)
             {
                 failReason = "Not a consumable.";
@@ -248,12 +248,12 @@ namespace ProjectAstra.Core
         {
             if (item.IsDepleted)
             {
-                _slots[slot] = InventoryItem.None;
+                slots[slot] = InventoryItem.None;
                 RaiseDestroyed(item);
             }
             else
             {
-                _slots[slot] = item;
+                slots[slot] = item;
             }
             RaiseChanged();
         }

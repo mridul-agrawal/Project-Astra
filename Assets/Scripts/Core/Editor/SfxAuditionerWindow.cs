@@ -73,12 +73,12 @@ namespace ProjectAstra.EditorTools
             { "SplashSting",       "Breathy Startup, achievement_unlocked, dramatic, Achievement" },
         };
 
-        SoundSO[] _sounds;
-        string[] _names;
-        int _selected;
-        string _search = "";
-        readonly List<AudioClip> _results = new();
-        Vector2 _scrollList, _scrollResults;
+        SoundSO[] sounds;
+        string[] names;
+        int selected;
+        string search = "";
+        readonly List<AudioClip> results = new();
+        Vector2 scrollList, scrollResults;
 
         [MenuItem("Tools/Audio/SFX Auditioner")]
         static void Open()
@@ -91,27 +91,27 @@ namespace ProjectAstra.EditorTools
 
         void Reload()
         {
-            _sounds = AssetDatabase.FindAssets("t:SoundSO", new[] { SoundSODir })
+            sounds = AssetDatabase.FindAssets("t:SoundSO", new[] { SoundSODir })
                 .Select(g => AssetDatabase.LoadAssetAtPath<SoundSO>(AssetDatabase.GUIDToAssetPath(g)))
                 .Where(s => s != null)
                 .OrderBy(s => s.name)
                 .ToArray();
-            _names = _sounds.Select(s => s.name).ToArray();
-            if (_sounds.Length > 0) Select(Mathf.Clamp(_selected, 0, _sounds.Length - 1));
+            names = sounds.Select(s => s.name).ToArray();
+            if (sounds.Length > 0) Select(Mathf.Clamp(selected, 0, sounds.Length - 1));
         }
 
         void Select(int i)
         {
-            _selected = i;
-            _search = DefaultKeywords.TryGetValue(_names[i], out var kw) ? kw : "";
+            selected = i;
+            search = DefaultKeywords.TryGetValue(names[i], out var kw) ? kw : "";
             RunSearch();
         }
 
         void RunSearch()
         {
-            _results.Clear();
+            results.Clear();
             var seen = new HashSet<string>();
-            foreach (var raw in _search.Split(','))
+            foreach (var raw in search.Split(','))
             {
                 var term = raw.Trim();
                 if (term.Length == 0) continue;
@@ -120,14 +120,14 @@ namespace ProjectAstra.EditorTools
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     if (!seen.Add(path)) continue;
                     var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-                    if (clip != null) _results.Add(clip);
+                    if (clip != null) results.Add(clip);
                 }
             }
         }
 
         void OnGUI()
         {
-            if (_sounds == null || _sounds.Length == 0)
+            if (sounds == null || sounds.Length == 0)
             {
                 EditorGUILayout.HelpBox($"No SoundSO assets found under {SoundSODir}.", MessageType.Info);
                 if (GUILayout.Button("Reload")) Reload();
@@ -144,14 +144,14 @@ namespace ProjectAstra.EditorTools
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(210));
             EditorGUILayout.LabelField("Sounds  (assigned)", EditorStyles.boldLabel);
-            _scrollList = EditorGUILayout.BeginScrollView(_scrollList);
-            for (int i = 0; i < _sounds.Length; i++)
+            scrollList = EditorGUILayout.BeginScrollView(scrollList);
+            for (int i = 0; i < sounds.Length; i++)
             {
-                int count = ClipCount(_sounds[i]);
+                int count = ClipCount(sounds[i]);
                 var prev = GUI.backgroundColor;
-                if (i == _selected) GUI.backgroundColor = new Color(0.45f, 0.65f, 1f);
+                if (i == selected) GUI.backgroundColor = new Color(0.45f, 0.65f, 1f);
                 else if (count == 0) GUI.backgroundColor = new Color(1f, 0.85f, 0.6f);
-                if (GUILayout.Button($"{_names[i]}  ({count})", EditorStyles.miniButton)) Select(i);
+                if (GUILayout.Button($"{names[i]}  ({count})", EditorStyles.miniButton)) Select(i);
                 GUI.backgroundColor = prev;
             }
             EditorGUILayout.EndScrollView();
@@ -163,7 +163,7 @@ namespace ProjectAstra.EditorTools
 
         void DrawDetailPane()
         {
-            var so = _sounds[_selected];
+            var so = sounds[selected];
             EditorGUILayout.BeginVertical();
 
             EditorGUILayout.LabelField($"Assigned to  {so.name}:", EditorStyles.boldLabel);
@@ -172,15 +172,15 @@ namespace ProjectAstra.EditorTools
 
             EditorGUILayout.LabelField("Search keywords (comma-separated filename matches):", EditorStyles.miniBoldLabel);
             EditorGUILayout.BeginHorizontal();
-            var newSearch = EditorGUILayout.TextField(_search);
-            if (newSearch != _search) { _search = newSearch; }
+            var newSearch = EditorGUILayout.TextField(search);
+            if (newSearch != search) { search = newSearch; }
             if (GUILayout.Button("Search", GUILayout.Width(70))) RunSearch();
             if (GUILayout.Button("◼ Stop", GUILayout.Width(60))) AudioClipPreview.StopAll();
             EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.LabelField($"{_results.Count} candidates — ▶ hear, + add to {so.name}:", EditorStyles.miniLabel);
-            _scrollResults = EditorGUILayout.BeginScrollView(_scrollResults);
-            foreach (var clip in _results)
+            EditorGUILayout.LabelField($"{results.Count} candidates — ▶ hear, + add to {so.name}:", EditorStyles.miniLabel);
+            scrollResults = EditorGUILayout.BeginScrollView(scrollResults);
+            foreach (var clip in results)
             {
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("▶", GUILayout.Width(26))) AudioClipPreview.Preview(clip);
@@ -250,7 +250,7 @@ namespace ProjectAstra.EditorTools
         {
             EnsureFolder(HarvestDir);
             int copied = 0;
-            foreach (var so in _sounds)
+            foreach (var so in sounds)
             {
                 var s = new SerializedObject(so);
                 var clips = s.FindProperty("clips");

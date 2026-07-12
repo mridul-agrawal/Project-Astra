@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Paladin
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Paladin
-  _classType: 1
-  _movementRange: 8
-  _movementType: 1
-  _weaponWhitelist: 000000000100000002000000
-  _statGrowthModifiers:
-    _values: 050000000500000000000000050000000000000005000000050000000000000000000000
-  _statCaps:
-    _values: 480000001c000000060000001a0000001a0000001c00000018000000100000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 0
-  _isPromoted: 1
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 040000000200000001000000010000000100000002000000020000000100000000000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Paladin
+  classType: 1
+  movementRange: 8
+  movementType: 1
+  weaponWhitelist: 000000000100000002000000
+  statGrowthModifiers:
+    values: 050000000500000000000000050000000000000005000000050000000000000000000000
+  statCaps:
+    values: 480000001c000000060000001a0000001a0000001c00000018000000100000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 0
+  isPromoted: 1
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 040000000200000001000000010000000100000002000000020000000100000000000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

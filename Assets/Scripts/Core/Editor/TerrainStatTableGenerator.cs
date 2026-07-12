@@ -23,7 +23,7 @@ namespace ProjectAstra.Core.Editor
             }
 
             var so = new SerializedObject(table);
-            var stats = so.FindProperty("_stats");
+            var stats = so.FindProperty("stats");
             stats.arraySize = 18;
 
             // 0 = impassable for that movement type

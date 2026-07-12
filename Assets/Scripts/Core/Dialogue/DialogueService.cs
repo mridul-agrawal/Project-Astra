@@ -19,15 +19,15 @@ namespace ProjectAstra.Core.Dialogue
         // A frame hitch shouldn't fast-forward the crawl in one jump; cap the step.
         private const float MaxFrameStep = 1f / 30f;
 
-        [SerializeField] private DialogueSpeakerRegistry _speakerRegistry;
-        [SerializeField] private DialogueSettings _settings;
+        [SerializeField] private DialogueSpeakerRegistry speakerRegistry;
+        [SerializeField] private DialogueSettings settings;
 
-        private readonly Queue<Pending> _queue = new();
-        private IDialogueView _view;
-        private DialogueRunner _runner;
-        private Action _currentCallback;
-        private bool _holdsBattleMapState;
-        private bool _inputBound;
+        private readonly Queue<Pending> queue = new();
+        private IDialogueView view;
+        private DialogueRunner runner;
+        private Action currentCallback;
+        private bool holdsBattleMapState;
+        private bool inputBound;
 
         private struct Pending
         {
@@ -40,8 +40,8 @@ namespace ProjectAstra.Core.Dialogue
         {
             if (script == null) { Debug.LogError("[DialogueService] Play called with null script."); return; }
 
-            _queue.Enqueue(new Pending { Script = script, Context = context, OnComplete = onComplete });
-            if (_runner == null) StartNext();
+            queue.Enqueue(new Pending { Script = script, Context = context, OnComplete = onComplete });
+            if (runner == null) StartNext();
         }
 
         // Coroutine form for scripted cinematics: yield return this to block until the
@@ -57,7 +57,7 @@ namespace ProjectAstra.Core.Dialogue
 
         // Force-stops the running script from code, so a cinematic that's cut short can
         // end its dialogue too (the input-driven skip path lives in OnSkip).
-        public void Skip() => _runner?.Skip();
+        public void Skip() => runner?.Skip();
 
         private void Awake()
         {
@@ -69,8 +69,8 @@ namespace ProjectAstra.Core.Dialogue
 
         private void Update()
         {
-            if (_runner != null && _runner.IsRunning)
-                _runner.Tick(Mathf.Min(Time.unscaledDeltaTime, MaxFrameStep));
+            if (runner != null && runner.IsRunning)
+                runner.Tick(Mathf.Min(Time.unscaledDeltaTime, MaxFrameStep));
         }
 
         private void InstantiateView()
@@ -84,75 +84,75 @@ namespace ProjectAstra.Core.Dialogue
 
             var viewInstance = Instantiate(prefab);
             DontDestroyOnLoad(viewInstance);
-            _view = viewInstance.GetComponent<IDialogueView>();
-            if (_view == null)
+            view = viewInstance.GetComponent<IDialogueView>();
+            if (view == null)
             {
                 Debug.LogError($"[DialogueService] Prefab at Resources/{ViewResourcePath} has no IDialogueView component.");
                 return;
             }
-            _view.Hide();
+            view.Hide();
         }
 
         private void StartNext()
         {
-            var pending = _queue.Dequeue();
-            _currentCallback = pending.OnComplete;
+            var pending = queue.Dequeue();
+            currentCallback = pending.OnComplete;
 
             ExitBattleMapStateIfNeeded(pending.Context);
 
-            _runner = new DialogueRunner(pending.Script, _speakerRegistry, _view, pending.Context, _settings.CharsPerSecond);
-            _runner.OnComplete += HandleRunnerComplete;
+            runner = new DialogueRunner(pending.Script, speakerRegistry, view, pending.Context, settings.CharsPerSecond);
+            runner.OnComplete += HandleRunnerComplete;
             BindInput();
-            _runner.Start();
+            runner.Start();
         }
 
         private void HandleRunnerComplete()
         {
-            var callback = _currentCallback;
-            _currentCallback = null;
-            _runner = null;
+            var callback = currentCallback;
+            currentCallback = null;
+            runner = null;
             UnbindInput();
 
             // Hand control back to the map only once nothing else is queued.
-            if (_queue.Count == 0) EnterBattleMapStateIfHeld();
+            if (queue.Count == 0) EnterBattleMapStateIfHeld();
 
             callback?.Invoke();
 
-            if (_queue.Count > 0) StartNext();
+            if (queue.Count > 0) StartNext();
         }
 
         private void ExitBattleMapStateIfNeeded(DialogueTriggeringContext context)
         {
-            if (context != DialogueTriggeringContext.BattleMap || _holdsBattleMapState) return;
+            if (context != DialogueTriggeringContext.BattleMap || holdsBattleMapState) return;
             GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(DialogueService));
-            _holdsBattleMapState = true;
+            holdsBattleMapState = true;
         }
 
         private void EnterBattleMapStateIfHeld()
         {
-            if (!_holdsBattleMapState) return;
+            if (!holdsBattleMapState) return;
             GameStateManager.Instance?.RequestTransition(GameState.BattleMap, nameof(DialogueService));
-            _holdsBattleMapState = false;
+            holdsBattleMapState = false;
         }
 
         private void BindInput()
         {
-            if (_inputBound || InputManager.Instance == null) return;
+            if (inputBound || InputManager.Instance == null) return;
             InputManager.Instance.OnConfirm += OnConfirm;
             InputManager.Instance.OnSkipDialogue += OnSkip;
-            _inputBound = true;
+            inputBound = true;
         }
 
         private void UnbindInput()
         {
-            if (!_inputBound || InputManager.Instance == null) { _inputBound = false; return; }
+            if (!inputBound || InputManager.Instance == null) { inputBound = false; return; }
             InputManager.Instance.OnConfirm -= OnConfirm;
             InputManager.Instance.OnSkipDialogue -= OnSkip;
-            _inputBound = false;
+            inputBound = false;
         }
 
-        private void OnConfirm() => _runner?.Confirm();
-        private void OnSkip() => _runner?.Skip();
+        private void OnConfirm() => runner?.Confirm();
+        private void OnSkip() => runner?.Skip();
 
         private void OnDestroy()
         {

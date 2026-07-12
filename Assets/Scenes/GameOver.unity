@@ -2025,8 +2025,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c28af002bffb3c4b973950f11e4ac68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.GameOverUI
-  _normalTint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  _selectedTint: {r: 1, g: 1, b: 1, a: 1}
+  normalTint: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  selectedTint: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &1683607288
 GameObject:
   m_ObjectHideFlags: 0

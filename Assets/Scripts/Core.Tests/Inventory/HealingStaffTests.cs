@@ -12,81 +12,81 @@ namespace ProjectAstra.Core.Tests.Inventory
     [TestFixture]
     public class HealingStaffTests
     {
-        private UnitDefinition _healerDef;
-        private UnitDefinition _targetDef;
-        private ClassDefinition _healerClass;
-        private ClassDefinition _targetClass;
-        private TestUnit _healer;
-        private TestUnit _target;
+        private UnitDefinition healerDef;
+        private UnitDefinition targetDef;
+        private ClassDefinition healerClass;
+        private ClassDefinition targetClass;
+        private TestUnit healer;
+        private TestUnit target;
 
         [SetUp]
         public void SetUp()
         {
-            _healerClass = ScriptableObject.CreateInstance<ClassDefinition>();
-            var hcSO = new SerializedObject(_healerClass);
-            hcSO.FindProperty("_className").stringValue = "Cleric";
-            hcSO.FindProperty("_movementRange").intValue = 5;
-            SetStatArray(hcSO, "_statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
-            SetStatArray(hcSO, "_statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SetStatArray(hcSO, "_promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            hcSO.FindProperty("_hpGainOnLevelUp").intValue = 2;
-            var whitelist = hcSO.FindProperty("_weaponWhitelist");
+            healerClass = ScriptableObject.CreateInstance<ClassDefinition>();
+            var hcSO = new SerializedObject(healerClass);
+            hcSO.FindProperty("className").stringValue = "Cleric";
+            hcSO.FindProperty("movementRange").intValue = 5;
+            SetStatArray(hcSO, "statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
+            SetStatArray(hcSO, "statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            SetStatArray(hcSO, "promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            hcSO.FindProperty("hpGainOnLevelUp").intValue = 2;
+            var whitelist = hcSO.FindProperty("weaponWhitelist");
             whitelist.arraySize = 1;
             whitelist.GetArrayElementAtIndex(0).enumValueIndex = (int)WeaponType.Staff;
             hcSO.ApplyModifiedPropertiesWithoutUndo();
 
-            _targetClass = ScriptableObject.CreateInstance<ClassDefinition>();
-            var tcSO = new SerializedObject(_targetClass);
-            tcSO.FindProperty("_className").stringValue = "Fighter";
-            tcSO.FindProperty("_movementRange").intValue = 5;
-            SetStatArray(tcSO, "_statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
-            SetStatArray(tcSO, "_statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SetStatArray(tcSO, "_promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            tcSO.FindProperty("_hpGainOnLevelUp").intValue = 2;
+            targetClass = ScriptableObject.CreateInstance<ClassDefinition>();
+            var tcSO = new SerializedObject(targetClass);
+            tcSO.FindProperty("className").stringValue = "Fighter";
+            tcSO.FindProperty("movementRange").intValue = 5;
+            SetStatArray(tcSO, "statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
+            SetStatArray(tcSO, "statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            SetStatArray(tcSO, "promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            tcSO.FindProperty("hpGainOnLevelUp").intValue = 2;
             tcSO.ApplyModifiedPropertiesWithoutUndo();
 
             // Healer: HP=20, Mag=6
-            _healerDef = ScriptableObject.CreateInstance<UnitDefinition>();
-            var hdSO = new SerializedObject(_healerDef);
-            hdSO.FindProperty("_unitName").stringValue = "Priya";
-            hdSO.FindProperty("_unitId").stringValue = "priya";
-            hdSO.FindProperty("_defaultClass").objectReferenceValue = _healerClass;
-            hdSO.FindProperty("_baseLevel").intValue = 1;
-            SetStatArray(hdSO, "_baseStats", 20, 3, 6, 5, 5, 3, 7, 4, 5);
-            SetStatArray(hdSO, "_personalGrowths", 50, 20, 60, 40, 40, 20, 50, 0, 35);
+            healerDef = ScriptableObject.CreateInstance<UnitDefinition>();
+            var hdSO = new SerializedObject(healerDef);
+            hdSO.FindProperty("unitName").stringValue = "Priya";
+            hdSO.FindProperty("unitId").stringValue = "priya";
+            hdSO.FindProperty("defaultClass").objectReferenceValue = healerClass;
+            hdSO.FindProperty("baseLevel").intValue = 1;
+            SetStatArray(hdSO, "baseStats", 20, 3, 6, 5, 5, 3, 7, 4, 5);
+            SetStatArray(hdSO, "personalGrowths", 50, 20, 60, 40, 40, 20, 50, 0, 35);
             hdSO.ApplyModifiedPropertiesWithoutUndo();
 
             // Target: HP=25
-            _targetDef = ScriptableObject.CreateInstance<UnitDefinition>();
-            var tdSO = new SerializedObject(_targetDef);
-            tdSO.FindProperty("_unitName").stringValue = "Arjun";
-            tdSO.FindProperty("_unitId").stringValue = "arjun";
-            tdSO.FindProperty("_defaultClass").objectReferenceValue = _targetClass;
-            tdSO.FindProperty("_baseLevel").intValue = 1;
-            SetStatArray(tdSO, "_baseStats", 25, 8, 2, 7, 9, 5, 2, 6, 5);
-            SetStatArray(tdSO, "_personalGrowths", 70, 50, 20, 40, 45, 30, 25, 0, 35);
+            targetDef = ScriptableObject.CreateInstance<UnitDefinition>();
+            var tdSO = new SerializedObject(targetDef);
+            tdSO.FindProperty("unitName").stringValue = "Arjun";
+            tdSO.FindProperty("unitId").stringValue = "arjun";
+            tdSO.FindProperty("defaultClass").objectReferenceValue = targetClass;
+            tdSO.FindProperty("baseLevel").intValue = 1;
+            SetStatArray(tdSO, "baseStats", 25, 8, 2, 7, 9, 5, 2, 6, 5);
+            SetStatArray(tdSO, "personalGrowths", 70, 50, 20, 40, 45, 30, 25, 0, 35);
             tdSO.ApplyModifiedPropertiesWithoutUndo();
 
-            _healer = new GameObject("Healer").AddComponent<TestUnit>();
-            _healer.BindUnitInstance(new UnitInstance(_healerDef));
-            _healer.faction = Faction.Player;
-            _healer.gridPosition = new Vector2Int(3, 3);
+            healer = new GameObject("Healer").AddComponent<TestUnit>();
+            healer.BindUnitInstance(new UnitInstance(healerDef));
+            healer.faction = Faction.Player;
+            healer.gridPosition = new Vector2Int(3, 3);
 
-            _target = new GameObject("Target").AddComponent<TestUnit>();
-            _target.BindUnitInstance(new UnitInstance(_targetDef));
-            _target.faction = Faction.Player;
-            _target.gridPosition = new Vector2Int(3, 4);
+            target = new GameObject("Target").AddComponent<TestUnit>();
+            target.BindUnitInstance(new UnitInstance(targetDef));
+            target.faction = Faction.Player;
+            target.gridPosition = new Vector2Int(3, 4);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_healer != null) Object.DestroyImmediate(_healer.gameObject);
-            if (_target != null) Object.DestroyImmediate(_target.gameObject);
-            Object.DestroyImmediate(_healerDef);
-            Object.DestroyImmediate(_targetDef);
-            Object.DestroyImmediate(_healerClass);
-            Object.DestroyImmediate(_targetClass);
+            if (healer != null) Object.DestroyImmediate(healer.gameObject);
+            if (target != null) Object.DestroyImmediate(target.gameObject);
+            Object.DestroyImmediate(healerDef);
+            Object.DestroyImmediate(targetDef);
+            Object.DestroyImmediate(healerClass);
+            Object.DestroyImmediate(targetClass);
         }
 
         #region ComputeHealAmount
@@ -159,7 +159,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             var staff = WeaponData.Heal;
             staff.currentUses = 0;
-            bool ok = StaffEffects.CanUseStaff(_healer, staff, out string fail);
+            bool ok = StaffEffects.CanUseStaff(healer, staff, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("broken"));
         }
@@ -168,7 +168,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void CanUseStaff_NotStaff_Fails()
         {
             var sword = WeaponData.IronSword;
-            bool ok = StaffEffects.CanUseStaff(_healer, sword, out string fail);
+            bool ok = StaffEffects.CanUseStaff(healer, sword, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("Not a healing staff"));
         }
@@ -177,7 +177,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void CanUseStaff_ValidStaff_Succeeds()
         {
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanUseStaff(_healer, staff, out _);
+            bool ok = StaffEffects.CanUseStaff(healer, staff, out _);
             Assert.IsTrue(ok);
         }
 
@@ -188,9 +188,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanHealTarget_SelfTarget_Fails()
         {
-            _healer.UnitInstance.ApplyDamage(5);
+            healer.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanHealTarget(_healer, _healer, staff, 6, out string fail);
+            bool ok = StaffEffects.CanHealTarget(healer, healer, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("self-heal"));
         }
@@ -199,7 +199,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void CanHealTarget_FullHP_Fails()
         {
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanHealTarget(_healer, _target, staff, 6, out string fail);
+            bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("full HP"));
         }
@@ -207,10 +207,10 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanHealTarget_EnemyFaction_Fails()
         {
-            _target.faction = Faction.Enemy;
-            _target.UnitInstance.ApplyDamage(5);
+            target.faction = Faction.Enemy;
+            target.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanHealTarget(_healer, _target, staff, 6, out string fail);
+            bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("allied"));
         }
@@ -218,10 +218,10 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanHealTarget_OutOfRange_Fails()
         {
-            _target.UnitInstance.ApplyDamage(5);
-            _target.gridPosition = new Vector2Int(10, 10); // far away
+            target.UnitInstance.ApplyDamage(5);
+            target.gridPosition = new Vector2Int(10, 10); // far away
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanHealTarget(_healer, _target, staff, 6, out string fail);
+            bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("out of range"));
         }
@@ -229,10 +229,10 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanHealTarget_AlliedFaction_Succeeds()
         {
-            _target.faction = Faction.Allied;
-            _target.UnitInstance.ApplyDamage(5);
+            target.faction = Faction.Allied;
+            target.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Heal;
-            bool ok = StaffEffects.CanHealTarget(_healer, _target, staff, 6, out _);
+            bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out _);
             Assert.IsTrue(ok);
         }
 
@@ -243,55 +243,55 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyHeal_RestoresHP_ConsumesDurability()
         {
-            _target.UnitInstance.ApplyDamage(20);
-            int hpBefore = _target.UnitInstance.CurrentHP;
+            target.UnitInstance.ApplyDamage(20);
+            int hpBefore = target.UnitInstance.CurrentHP;
             var staff = WeaponData.Heal;
             int usesBefore = staff.currentUses;
 
-            bool ok = StaffEffects.ApplyHeal(_healer, _target, ref staff, out int healed, out _);
+            bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(16, healed); // might(10) + mag(6), missing 20 so no clamping
-            Assert.AreEqual(hpBefore + 16, _target.UnitInstance.CurrentHP);
+            Assert.AreEqual(hpBefore + 16, target.UnitInstance.CurrentHP);
             Assert.AreEqual(usesBefore - 1, staff.currentUses);
         }
 
         [Test]
         public void ApplyHeal_LastUse_HealsFullyThenStaffBroken()
         {
-            _target.UnitInstance.ApplyDamage(5);
+            target.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Heal;
             staff.currentUses = 1;
 
-            bool ok = StaffEffects.ApplyHeal(_healer, _target, ref staff, out int healed, out _);
+            bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(5, healed); // clamped to missing HP
-            Assert.AreEqual(_target.UnitInstance.MaxHP, _target.UnitInstance.CurrentHP);
+            Assert.AreEqual(target.UnitInstance.MaxHP, target.UnitInstance.CurrentHP);
             Assert.IsTrue(staff.IsBroken);
         }
 
         [Test]
         public void ApplyHeal_Recover_FullyRestores()
         {
-            _target.UnitInstance.ApplyDamage(20);
+            target.UnitInstance.ApplyDamage(20);
             var staff = WeaponData.Recover;
 
-            bool ok = StaffEffects.ApplyHeal(_healer, _target, ref staff, out int healed, out _);
+            bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(20, healed);
-            Assert.AreEqual(_target.UnitInstance.MaxHP, _target.UnitInstance.CurrentHP);
+            Assert.AreEqual(target.UnitInstance.MaxHP, target.UnitInstance.CurrentHP);
         }
 
         [Test]
         public void ApplyHeal_Physic_HalvedPowerAtRange()
         {
-            _target.UnitInstance.ApplyDamage(20);
-            _target.gridPosition = new Vector2Int(6, 3); // distance 3, within Mag/2=3
+            target.UnitInstance.ApplyDamage(20);
+            target.gridPosition = new Vector2Int(6, 3); // distance 3, within Mag/2=3
             var staff = WeaponData.Physic;
 
-            bool ok = StaffEffects.ApplyHeal(_healer, _target, ref staff, out int healed, out _);
+            bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(11, healed); // 10/2 + 6 = 11
@@ -305,17 +305,17 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ApplyFortify_HealsAllDamagedAlliesInRadius()
         {
             var ally2 = new GameObject("Ally2").AddComponent<TestUnit>();
-            ally2.BindUnitInstance(new UnitInstance(_targetDef));
+            ally2.BindUnitInstance(new UnitInstance(targetDef));
             ally2.faction = Faction.Player;
             ally2.gridPosition = new Vector2Int(4, 3);
 
-            _target.UnitInstance.ApplyDamage(10);
+            target.UnitInstance.ApplyDamage(10);
             ally2.UnitInstance.ApplyDamage(8);
 
             var staff = WeaponData.Fortify;
-            var allUnits = new List<TestUnit> { _healer, _target, ally2 };
+            var allUnits = new List<TestUnit> { healer, target, ally2 };
 
-            bool ok = StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out var healed, out _);
+            bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(2, healed.Count);
@@ -326,20 +326,20 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyFortify_SkipsFullHPAllies()
         {
-            _target.UnitInstance.ApplyDamage(10);
+            target.UnitInstance.ApplyDamage(10);
             var fullHPAlly = new GameObject("FullHP").AddComponent<TestUnit>();
-            fullHPAlly.BindUnitInstance(new UnitInstance(_targetDef));
+            fullHPAlly.BindUnitInstance(new UnitInstance(targetDef));
             fullHPAlly.faction = Faction.Player;
             fullHPAlly.gridPosition = new Vector2Int(4, 3);
 
             var staff = WeaponData.Fortify;
-            var allUnits = new List<TestUnit> { _target, fullHPAlly };
+            var allUnits = new List<TestUnit> { target, fullHPAlly };
 
-            bool ok = StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out var healed, out _);
+            bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
 
             Assert.IsTrue(ok);
             Assert.AreEqual(1, healed.Count);
-            Assert.AreEqual(_target, healed[0].unit);
+            Assert.AreEqual(target, healed[0].unit);
 
             Object.DestroyImmediate(fullHPAlly.gameObject);
         }
@@ -347,47 +347,47 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyFortify_IncludesCasterIfDamaged()
         {
-            _healer.UnitInstance.ApplyDamage(5);
-            _target.UnitInstance.ApplyDamage(5);
+            healer.UnitInstance.ApplyDamage(5);
+            target.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Fortify;
-            var allUnits = new List<TestUnit> { _healer, _target };
+            var allUnits = new List<TestUnit> { healer, target };
 
-            bool ok = StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out var healed, out _);
+            bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
 
             Assert.IsTrue(ok);
-            bool healerWasHealed = healed.Exists(h => h.unit == _healer);
+            bool healerWasHealed = healed.Exists(h => h.unit == healer);
             Assert.IsTrue(healerWasHealed);
         }
 
         [Test]
         public void ApplyFortify_ExcludesCasterIfFullHP()
         {
-            _target.UnitInstance.ApplyDamage(5);
+            target.UnitInstance.ApplyDamage(5);
             var staff = WeaponData.Fortify;
-            var allUnits = new List<TestUnit> { _healer, _target };
+            var allUnits = new List<TestUnit> { healer, target };
 
-            bool ok = StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out var healed, out _);
+            bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
 
             Assert.IsTrue(ok);
-            bool healerWasHealed = healed.Exists(h => h.unit == _healer);
+            bool healerWasHealed = healed.Exists(h => h.unit == healer);
             Assert.IsFalse(healerWasHealed);
         }
 
         [Test]
         public void ApplyFortify_ConsumesDurabilityOnce()
         {
-            _target.UnitInstance.ApplyDamage(5);
+            target.UnitInstance.ApplyDamage(5);
             var ally2 = new GameObject("Ally2").AddComponent<TestUnit>();
-            ally2.BindUnitInstance(new UnitInstance(_targetDef));
+            ally2.BindUnitInstance(new UnitInstance(targetDef));
             ally2.faction = Faction.Player;
             ally2.gridPosition = new Vector2Int(4, 3);
             ally2.UnitInstance.ApplyDamage(5);
 
             var staff = WeaponData.Fortify;
             int usesBefore = staff.currentUses;
-            var allUnits = new List<TestUnit> { _target, ally2 };
+            var allUnits = new List<TestUnit> { target, ally2 };
 
-            StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out _, out _);
+            StaffEffects.ApplyFortify(healer, allUnits, ref staff, out _, out _);
 
             Assert.AreEqual(usesBefore - 1, staff.currentUses);
 
@@ -398,9 +398,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ApplyFortify_NoValidTargets_Fails()
         {
             var staff = WeaponData.Fortify;
-            var allUnits = new List<TestUnit> { _target }; // target at full HP
+            var allUnits = new List<TestUnit> { target }; // target at full HP
 
-            bool ok = StaffEffects.ApplyFortify(_healer, allUnits, ref staff, out _, out string fail);
+            bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out _, out string fail);
 
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("No valid targets"));
@@ -526,15 +526,15 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryUseStaff_HealsAndUpdatesInventory()
         {
-            _healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.Heal), out _);
-            _target.UnitInstance.ApplyDamage(15);
+            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.Heal), out _);
+            target.UnitInstance.ApplyDamage(15);
 
-            bool ok = _healer.Inventory.TryUseStaff(_target, out int healed, out string fail);
+            bool ok = healer.Inventory.TryUseStaff(target, out int healed, out string fail);
 
             Assert.IsTrue(ok, fail);
             Assert.AreEqual(15, healed); // clamped: missing 15, formula gives 16
-            Assert.AreEqual(_target.UnitInstance.MaxHP, _target.UnitInstance.CurrentHP);
-            Assert.AreEqual(29, _healer.Inventory.GetSlot(0).weapon.currentUses);
+            Assert.AreEqual(target.UnitInstance.MaxHP, target.UnitInstance.CurrentHP);
+            Assert.AreEqual(29, healer.Inventory.GetSlot(0).weapon.currentUses);
         }
 
         [Test]
@@ -542,22 +542,22 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             var staff = WeaponData.Heal;
             staff.currentUses = 1;
-            _healer.Inventory.TryAddItem(InventoryItem.FromWeapon(staff), out int slot);
-            _target.UnitInstance.ApplyDamage(5);
+            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(staff), out int slot);
+            target.UnitInstance.ApplyDamage(5);
 
-            bool ok = _healer.Inventory.TryUseStaff(_target, out _, out _);
+            bool ok = healer.Inventory.TryUseStaff(target, out _, out _);
 
             Assert.IsTrue(ok);
-            Assert.IsTrue(_healer.Inventory.GetSlot(slot).IsEmpty);
+            Assert.IsTrue(healer.Inventory.GetSlot(slot).IsEmpty);
         }
 
         [Test]
         public void TryUseStaff_NonStaffEquipped_Fails()
         {
-            _healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            _target.UnitInstance.ApplyDamage(5);
+            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            target.UnitInstance.ApplyDamage(5);
 
-            bool ok = _healer.Inventory.TryUseStaff(_target, out _, out string fail);
+            bool ok = healer.Inventory.TryUseStaff(target, out _, out string fail);
 
             Assert.IsFalse(ok);
             Assert.IsNotNull(fail);
@@ -568,7 +568,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         private static void SetStatArray(SerializedObject so, string propName, params int[] values)
         {
             var prop = so.FindProperty(propName);
-            var arr = prop.FindPropertyRelative("_values");
+            var arr = prop.FindPropertyRelative("values");
             arr.arraySize = StatArray.Length;
             for (int i = 0; i < StatArray.Length && i < values.Length; i++)
                 arr.GetArrayElementAtIndex(i).intValue = values[i];

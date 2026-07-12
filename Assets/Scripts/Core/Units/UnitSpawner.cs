@@ -8,14 +8,14 @@ namespace ProjectAstra.Core.Units
     // units. Invoked by MapBootstrapper right after the map is loaded.
     public class UnitSpawner : MonoBehaviour
     {
-        [SerializeField] private UnitDatabase _unitDatabase;
+        [SerializeField] private UnitDatabase unitDatabase;
         [Tooltip("Drawn when a unit's UnitDefinition has no MapSprite assigned.")]
-        [SerializeField] private Sprite _fallbackSprite;
+        [SerializeField] private Sprite fallbackSprite;
 
         public void SpawnUnits(MapData map)
         {
             if (map == null || map.UnitStartPositions.Length == 0) return;
-            if (_unitDatabase == null)
+            if (unitDatabase == null)
             {
                 Debug.LogError("[UnitSpawner] No UnitDatabase assigned — cannot spawn units.");
                 return;
@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.Units
 
         private void SpawnUnit(UnitStartPosition start)
         {
-            if (!_unitDatabase.TryResolve(start.unitId, out UnitDefinition definition))
+            if (!unitDatabase.TryResolve(start.unitId, out UnitDefinition definition))
             {
                 Debug.LogError($"[UnitSpawner] No UnitDefinition for id '{start.unitId}' — skipping.");
                 return;
@@ -50,7 +50,7 @@ namespace ProjectAstra.Core.Units
             unit.InitializeFromDefinition(definition);
             SeedInventory(unit, start, definition);
 
-            AttachSprite(unitGO, definition.MapSprite != null ? definition.MapSprite : _fallbackSprite);
+            AttachSprite(unitGO, definition.MapSprite != null ? definition.MapSprite : fallbackSprite);
             unit.SnapToGridPosition();
         }
 

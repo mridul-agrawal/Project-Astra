@@ -14,23 +14,23 @@ namespace ProjectAstra.Core.UI.UnitInfo
     {
         public static bool HasInputFocus { get; private set; }
 
-        [SerializeField] Image _portraitImage;
-        [SerializeField] TextMeshProUGUI _nameText;
-        [SerializeField] TextMeshProUGUI _atkText;
-        [SerializeField] TextMeshProUGUI _defText;
-        [SerializeField] TextMeshProUGUI _hitText;
-        [SerializeField] TextMeshProUGUI _avoText;
-        [SerializeField] TextMeshProUGUI _critText;
-        [SerializeField] TextMeshProUGUI _critAvoText;
-        [SerializeField] TextMeshProUGUI _promiseText;
-        [SerializeField] GameObject _promiseContainer;
-        [SerializeField] GameObject _shapathIcon;
+        [SerializeField] Image portraitImage;
+        [SerializeField] TextMeshProUGUI nameText;
+        [SerializeField] TextMeshProUGUI atkText;
+        [SerializeField] TextMeshProUGUI defText;
+        [SerializeField] TextMeshProUGUI hitText;
+        [SerializeField] TextMeshProUGUI avoText;
+        [SerializeField] TextMeshProUGUI critText;
+        [SerializeField] TextMeshProUGUI critAvoText;
+        [SerializeField] TextMeshProUGUI promiseText;
+        [SerializeField] GameObject promiseContainer;
+        [SerializeField] GameObject shapathIcon;
 
-        System.Action _onClose;
+        System.Action onClose;
 
         public void Show(UnitInstance unit, SupportBond bond, ISupportBonusProvider provider, System.Action onClose)
         {
-            _onClose = onClose;
+            this.onClose = onClose;
             Populate(unit, bond, provider);
             gameObject.SetActive(true);
             HasInputFocus = true;
@@ -42,7 +42,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             HasInputFocus = false;
             Unsubscribe();
             gameObject.SetActive(false);
-            var cb = _onClose; _onClose = null;
+            var cb = onClose; onClose = null;
             cb?.Invoke();
         }
 
@@ -60,23 +60,23 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         void Populate(UnitInstance unit, SupportBond bond, ISupportBonusProvider provider)
         {
-            if (_portraitImage != null && bond.Partner != null && bond.Partner.Portrait != null)
-                _portraitImage.sprite = bond.Partner.Portrait;
-            if (_nameText != null) _nameText.text = bond.Partner != null ? bond.Partner.UnitName : "";
+            if (portraitImage != null && bond.Partner != null && bond.Partner.Portrait != null)
+                portraitImage.sprite = bond.Partner.Portrait;
+            if (nameText != null) nameText.text = bond.Partner != null ? bond.Partner.UnitName : "";
 
             var bonus = provider != null ? provider.GetPairBonus(unit, bond.Partner, bond.Stage) : default;
-            SetBonus(_atkText,     "Atk",     bonus.Atk);
-            SetBonus(_defText,     "Def",     bonus.Def);
-            SetBonus(_hitText,     "Hit",     bonus.Hit);
-            SetBonus(_avoText,     "Avo",     bonus.Avo);
-            SetBonus(_critText,    "Crit",    bonus.Crit);
-            SetBonus(_critAvoText, "CritAvo", bonus.CritAvo);
+            SetBonus(atkText,     "Atk",     bonus.Atk);
+            SetBonus(defText,     "Def",     bonus.Def);
+            SetBonus(hitText,     "Hit",     bonus.Hit);
+            SetBonus(avoText,     "Avo",     bonus.Avo);
+            SetBonus(critText,    "Crit",    bonus.Crit);
+            SetBonus(critAvoText, "CritAvo", bonus.CritAvo);
 
             bool showPromise = !string.IsNullOrEmpty(bond.PromiseText);
-            if (_promiseContainer != null) _promiseContainer.SetActive(showPromise);
-            if (_promiseText != null && showPromise) _promiseText.text = bond.PromiseText;
+            if (promiseContainer != null) promiseContainer.SetActive(showPromise);
+            if (promiseText != null && showPromise) promiseText.text = bond.PromiseText;
 
-            if (_shapathIcon != null) _shapathIcon.SetActive(bond.ShapathWitnessed);
+            if (shapathIcon != null) shapathIcon.SetActive(bond.ShapathWitnessed);
         }
 
         static void SetBonus(TextMeshProUGUI t, string label, int value)

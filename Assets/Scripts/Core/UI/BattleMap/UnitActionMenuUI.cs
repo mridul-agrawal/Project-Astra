@@ -21,22 +21,22 @@ namespace ProjectAstra.Core.UI.BattleMap
         public static bool HasInputFocus { get; private set; }
 
         [Header("Visual Assets")]
-        [SerializeField] private Sprite _bgSprite;
-        [SerializeField] private Sprite _cursorSprite;
-        [SerializeField] private Sprite _dividerSprite;
-        [SerializeField] private TMP_FontAsset _optionFont;
-        [SerializeField] private Material _selectedGlowMat;
+        [SerializeField] private Sprite bgSprite;
+        [SerializeField] private Sprite cursorSprite;
+        [SerializeField] private Sprite dividerSprite;
+        [SerializeField] private TMP_FontAsset optionFont;
+        [SerializeField] private Material selectedGlowMat;
 
         // Runtime asset transfer — used when a consumer (e.g. InventoryMenuUI) spawns a
         // sub-menu at runtime and needs it to look identical to the scene-wired template.
         public void CopyAssetsFrom(UnitActionMenuUI template)
         {
             if (template == null) return;
-            _bgSprite        = template._bgSprite;
-            _cursorSprite    = template._cursorSprite;
-            _dividerSprite   = template._dividerSprite;
-            _optionFont      = template._optionFont;
-            _selectedGlowMat = template._selectedGlowMat;
+            bgSprite        = template.bgSprite;
+            cursorSprite    = template.cursorSprite;
+            dividerSprite   = template.dividerSprite;
+            optionFont      = template.optionFont;
+            selectedGlowMat = template.selectedGlowMat;
         }
 
         // Warrior's Command palette (default). ApplyPalette overrides these per-instance
@@ -46,17 +46,17 @@ namespace ProjectAstra.Core.UI.BattleMap
         static readonly Color ColTextDisabled     = new Color32(0x4a, 0x2a, 0x1a, 0xff);
         static readonly Color DefaultEmberBar     = new Color32(0xd4, 0x6a, 0x2c, 0xff);
 
-        Color _colTextDefault  = DefaultTextDefault;
-        Color _colTextSelected = DefaultTextSelected;
-        Color _colAccentBar    = DefaultEmberBar;
-        Color _colBgTint       = Color.white;
+        Color colTextDefault  = DefaultTextDefault;
+        Color colTextSelected = DefaultTextSelected;
+        Color colAccentBar    = DefaultEmberBar;
+        Color colBgTint       = Color.white;
 
         public void ApplyPalette(Color bgTint, Color textDefault, Color textSelected, Color accentBar)
         {
-            _colBgTint       = bgTint;
-            _colTextDefault  = textDefault;
-            _colTextSelected = textSelected;
-            _colAccentBar    = accentBar;
+            colBgTint       = bgTint;
+            colTextDefault  = textDefault;
+            colTextSelected = textSelected;
+            colAccentBar    = accentBar;
         }
 
         const float OptionHeight = 52f;
@@ -66,24 +66,24 @@ namespace ProjectAstra.Core.UI.BattleMap
         const float TrishulSize = 20f;
         const float TextLeftOffset = 48f;
 
-        private GameObject _root;
-        private readonly List<TextMeshProUGUI> _optionTexts = new();
-        private readonly List<GameObject> _accentBars = new();
-        private readonly List<GameObject> _trishulIcons = new();
-        private int _selectedIndex;
-        private List<string> _options;
-        private List<bool> _enabledFlags;
-        private Action<int> _onSelect;
-        private Action _onCancel;
+        private GameObject root;
+        private readonly List<TextMeshProUGUI> optionTexts = new();
+        private readonly List<GameObject> accentBars = new();
+        private readonly List<GameObject> trishulIcons = new();
+        private int selectedIndex;
+        private List<string> options;
+        private List<bool> enabledFlags;
+        private Action<int> onSelect;
+        private Action onCancel;
 
         public void Show(List<string> options, Action<int> onSelect, Action onCancel,
             List<bool> enabledFlags = null)
         {
-            _options = options;
-            _onSelect = onSelect;
-            _onCancel = onCancel;
-            _enabledFlags = enabledFlags;
-            _selectedIndex = FindFirstEnabled(0, 1);
+            this.options = options;
+            this.onSelect = onSelect;
+            this.onCancel = onCancel;
+            this.enabledFlags = enabledFlags;
+            selectedIndex = FindFirstEnabled(0, 1);
 
             BuildUI();
             UpdateSelection();
@@ -111,14 +111,14 @@ namespace ProjectAstra.Core.UI.BattleMap
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            if (_root != null)
-                Destroy(_root);
+            if (root != null)
+                Destroy(root);
 
-            _optionTexts.Clear();
-            _accentBars.Clear();
-            _trishulIcons.Clear();
-            _onSelect = null;
-            _onCancel = null;
+            optionTexts.Clear();
+            accentBars.Clear();
+            trishulIcons.Clear();
+            onSelect = null;
+            onCancel = null;
         }
 
         private void OnDestroy()
@@ -132,10 +132,10 @@ namespace ProjectAstra.Core.UI.BattleMap
         {
             if (dir.y == 0) return;
             int step = dir.y > 0 ? -1 : 1;
-            int next = FindFirstEnabled(_selectedIndex + step, step);
+            int next = FindFirstEnabled(selectedIndex + step, step);
             if (next >= 0)
             {
-                _selectedIndex = next;
+                selectedIndex = next;
                 UpdateSelection();
                 AudioManager.Instance?.Play(SoundId.UiMove);
             }
@@ -143,10 +143,10 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void Confirm()
         {
-            if (IsDisabled(_selectedIndex)) { AudioManager.Instance?.Play(SoundId.UiInvalid); return; }
+            if (IsDisabled(selectedIndex)) { AudioManager.Instance?.Play(SoundId.UiInvalid); return; }
             AudioManager.Instance?.Play(SoundId.ConfirmAction);
-            int index = _selectedIndex;
-            var callback = _onSelect;
+            int index = selectedIndex;
+            var callback = onSelect;
             Hide();
             callback?.Invoke(index);
         }
@@ -154,18 +154,18 @@ namespace ProjectAstra.Core.UI.BattleMap
         private void Cancel()
         {
             AudioManager.Instance?.Play(SoundId.CancelGrid);
-            var callback = _onCancel;
+            var callback = onCancel;
             Hide();
             callback?.Invoke();
         }
 
         private bool IsDisabled(int index) =>
-            _enabledFlags != null && index < _enabledFlags.Count && !_enabledFlags[index];
+            enabledFlags != null && index < enabledFlags.Count && !enabledFlags[index];
 
         private int FindFirstEnabled(int start, int step)
         {
-            if (_options == null || _options.Count == 0) return 0;
-            int count = _options.Count;
+            if (options == null || options.Count == 0) return 0;
+            int count = options.Count;
             int idx = ((start % count) + count) % count;
             for (int i = 0; i < count; i++)
             {
@@ -179,23 +179,23 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void BuildUI()
         {
-            if (_root != null) Destroy(_root);
-            _optionTexts.Clear();
-            _accentBars.Clear();
-            _trishulIcons.Clear();
+            if (root != null) Destroy(root);
+            optionTexts.Clear();
+            accentBars.Clear();
+            trishulIcons.Clear();
 
             var canvas = GetComponentInParent<Canvas>();
             if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
             if (canvas == null) return;
 
-            int optCount = _options.Count;
+            int optCount = options.Count;
             int dividerCount = Mathf.Max(0, optCount - 1);
             float panelHeight = optCount * OptionHeight + dividerCount * DividerHeight + PanelPaddingY * 2;
 
             // Root — anchored right-center of canvas, offset left to clear HUD
-            _root = new GameObject("ActionMenu");
-            _root.transform.SetParent(canvas.transform, false);
-            var rootRect = _root.AddComponent<RectTransform>();
+            root = new GameObject("ActionMenu");
+            root.transform.SetParent(canvas.transform, false);
+            var rootRect = root.AddComponent<RectTransform>();
             rootRect.anchorMin = new Vector2(1f, 0.5f);
             rootRect.anchorMax = new Vector2(1f, 0.5f);
             rootRect.pivot = new Vector2(1f, 0.5f);
@@ -203,17 +203,17 @@ namespace ProjectAstra.Core.UI.BattleMap
             rootRect.sizeDelta = new Vector2(PanelWidth, panelHeight);
 
             // Octagonal background (9-sliced sprite with shape baked in)
-            var bgImg = _root.AddComponent<Image>();
-            bgImg.sprite = _bgSprite;
-            bgImg.type = _bgSprite != null ? Image.Type.Sliced : Image.Type.Simple;
-            bgImg.color = _colBgTint;
+            var bgImg = root.AddComponent<Image>();
+            bgImg.sprite = bgSprite;
+            bgImg.type = bgSprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            bgImg.color = colBgTint;
             bgImg.pixelsPerUnitMultiplier = 1f;
 
-            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            root.AddComponent<CanvasGroup>().blocksRaycasts = false;
 
             // Options container inside the panel
             var container = new GameObject("Options");
-            container.transform.SetParent(_root.transform, false);
+            container.transform.SetParent(root.transform, false);
             var containerRect = container.AddComponent<RectTransform>();
             containerRect.anchorMin = Vector2.zero;
             containerRect.anchorMax = Vector2.one;
@@ -237,7 +237,7 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void BuildOptionRow(Transform parent, int index, float yOffset, bool disabled)
         {
-            var row = new GameObject(_options[index]);
+            var row = new GameObject(options[index]);
             row.transform.SetParent(parent, false);
             var rowRect = row.AddComponent<RectTransform>();
             rowRect.anchorMin = new Vector2(0f, 1f);
@@ -256,9 +256,9 @@ namespace ProjectAstra.Core.UI.BattleMap
             barRect.anchoredPosition = Vector2.zero;
             barRect.sizeDelta = new Vector2(3f, 0f);
             var barImg = bar.AddComponent<Image>();
-            barImg.color = _colAccentBar;
+            barImg.color = colAccentBar;
             bar.SetActive(false);
-            _accentBars.Add(bar);
+            accentBars.Add(bar);
 
             // Trishul cursor icon (hidden by default)
             var trishul = new GameObject("Trishul");
@@ -270,10 +270,10 @@ namespace ProjectAstra.Core.UI.BattleMap
             tRt.anchoredPosition = new Vector2(16f, 0f);
             tRt.sizeDelta = new Vector2(TrishulSize, TrishulSize);
             var tImg = trishul.AddComponent<Image>();
-            tImg.sprite = _cursorSprite;
+            tImg.sprite = cursorSprite;
             tImg.preserveAspect = true;
             trishul.SetActive(false);
-            _trishulIcons.Add(trishul);
+            trishulIcons.Add(trishul);
 
             // Option text
             var textGo = new GameObject("Text");
@@ -285,17 +285,17 @@ namespace ProjectAstra.Core.UI.BattleMap
             textRect.offsetMax = new Vector2(-8f, 0f);
 
             var tmp = textGo.AddComponent<TextMeshProUGUI>();
-            tmp.text = _options[index];
+            tmp.text = options[index];
             tmp.fontSize = 26;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.MidlineLeft;
-            tmp.color = disabled ? ColTextDisabled : _colTextDefault;
+            tmp.color = disabled ? ColTextDisabled : colTextDefault;
             tmp.enableWordWrapping = false;
             tmp.overflowMode = TextOverflowModes.Overflow;
             tmp.characterSpacing = 4f;
-            if (_optionFont != null) tmp.font = _optionFont;
+            if (optionFont != null) tmp.font = optionFont;
 
-            _optionTexts.Add(tmp);
+            optionTexts.Add(tmp);
         }
 
         private void BuildDivider(Transform parent, float yOffset)
@@ -310,31 +310,31 @@ namespace ProjectAstra.Core.UI.BattleMap
             divRect.sizeDelta = new Vector2(-32f, DividerHeight);
 
             var img = div.AddComponent<Image>();
-            img.sprite = _dividerSprite;
-            img.type = _dividerSprite != null ? Image.Type.Sliced : Image.Type.Simple;
+            img.sprite = dividerSprite;
+            img.type = dividerSprite != null ? Image.Type.Sliced : Image.Type.Simple;
             img.color = Color.white;
         }
 
         private void UpdateSelection()
         {
-            for (int i = 0; i < _optionTexts.Count; i++)
+            for (int i = 0; i < optionTexts.Count; i++)
             {
-                bool selected = i == _selectedIndex;
+                bool selected = i == selectedIndex;
                 bool disabled = IsDisabled(i);
 
-                _optionTexts[i].color = disabled ? ColTextDisabled
-                    : selected ? _colTextSelected : _colTextDefault;
+                optionTexts[i].color = disabled ? ColTextDisabled
+                    : selected ? colTextSelected : colTextDefault;
 
-                if (selected && !disabled && _selectedGlowMat != null)
-                    _optionTexts[i].fontMaterial = _selectedGlowMat;
-                else if (_optionFont != null)
-                    _optionTexts[i].fontMaterial = _optionFont.material;
+                if (selected && !disabled && selectedGlowMat != null)
+                    optionTexts[i].fontMaterial = selectedGlowMat;
+                else if (optionFont != null)
+                    optionTexts[i].fontMaterial = optionFont.material;
                 // else: leave material as-is; assigning null to TMP.fontMaterial throws NRE.
 
-                if (i < _accentBars.Count)
-                    _accentBars[i].SetActive(selected && !disabled);
-                if (i < _trishulIcons.Count)
-                    _trishulIcons[i].SetActive(selected && !disabled);
+                if (i < accentBars.Count)
+                    accentBars[i].SetActive(selected && !disabled);
+                if (i < trishulIcons.Count)
+                    trishulIcons[i].SetActive(selected && !disabled);
             }
         }
     }

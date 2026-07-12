@@ -24,7 +24,7 @@ namespace ProjectAstra.Core.UI.Inventory
     {
         public static bool HasInputFocus { get; private set; }
 
-        [SerializeField] private GameObject _popupInstance;
+        [SerializeField] private GameObject popupInstance;
 
         // Row-state text colors — empty/depleted cases use distinct palette entries
         // matching the mockup JSX so rows in the same list feel visually coherent.
@@ -40,27 +40,27 @@ namespace ProjectAstra.Core.UI.Inventory
         private static readonly Color BarBrass     = new(0.79f, 0.60f, 0.23f, 1f);   // brass
         private static readonly Color BarVermillion = new(0.69f, 0.22f, 0.16f, 1f);
 
-        private UnitInventory _inventory;
-        private TestUnit _unit;
-        private ConfirmDialogUI _confirmDialog;
-        private UnitActionMenuUI _slotSubMenu;
-        private Action _onConsumableUsed;
-        private Action _onClose;
+        private UnitInventory inventory;
+        private TestUnit unit;
+        private ConfirmDialogUI confirmDialog;
+        private UnitActionMenuUI slotSubMenu;
+        private Action onConsumableUsed;
+        private Action onClose;
 
-        private InventoryPopupRefs _refs;
-        private int _selectedIndex;
-        private bool _slotSubMenuOpen;
+        private InventoryPopupRefs refs;
+        private int selectedIndex;
+        private bool slotSubMenuOpen;
 
         public void Show(TestUnit unit, ConfirmDialogUI confirmDialog,
             Action onConsumableUsed, Action onClose)
         {
-            _unit = unit;
-            _inventory = unit?.Inventory;
-            _confirmDialog = confirmDialog;
-            _onConsumableUsed = onConsumableUsed;
-            _onClose = onClose;
-            _selectedIndex = 0;
-            _slotSubMenuOpen = false;
+            this.unit = unit;
+            inventory = unit?.Inventory;
+            this.confirmDialog = confirmDialog;
+            this.onConsumableUsed = onConsumableUsed;
+            this.onClose = onClose;
+            selectedIndex = 0;
+            slotSubMenuOpen = false;
 
             EnsureSlotSubMenu();
             ActivateUI();
@@ -89,23 +89,23 @@ namespace ProjectAstra.Core.UI.Inventory
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            bool wasOpen = _popupInstance != null && _popupInstance.activeSelf;
-            if (_popupInstance != null) _popupInstance.SetActive(false);
+            bool wasOpen = popupInstance != null && popupInstance.activeSelf;
+            if (popupInstance != null) popupInstance.SetActive(false);
             if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         private void OnDestroy()
         {
             if (HasInputFocus) Hide();
-            if (_slotSubMenu != null) Destroy(_slotSubMenu.gameObject);
+            if (slotSubMenu != null) Destroy(slotSubMenu.gameObject);
         }
 
         private void EnsureSlotSubMenu()
         {
-            if (_slotSubMenu != null) return;
+            if (slotSubMenu != null) return;
             var go = new GameObject("InventorySlotSubMenu");
             go.transform.SetParent(transform, false);
-            _slotSubMenu = go.AddComponent<UnitActionMenuUI>();
+            slotSubMenu = go.AddComponent<UnitActionMenuUI>();
 
             // Borrow the cursor/divider/font/glow material from the scene-wired
             // Warrior's Command action menu — without a font the sub-menu's TMP
@@ -113,10 +113,10 @@ namespace ProjectAstra.Core.UI.Inventory
             // parchment so the sub-menu matches the popup that spawned it, instead
             // of inheriting Warrior's Command ember chrome.
             var template = FindAnyObjectByType<UnitActionMenuUI>(FindObjectsInactive.Include);
-            if (template != null && template != _slotSubMenu)
-                _slotSubMenu.CopyAssetsFrom(template);
+            if (template != null && template != slotSubMenu)
+                slotSubMenu.CopyAssetsFrom(template);
 
-            _slotSubMenu.ApplyPalette(
+            slotSubMenu.ApplyPalette(
                 bgTint:       new Color(0.95f, 0.90f, 0.77f, 1f),  // parchment #f2e6c4
                 textDefault:  new Color(0.24f, 0.16f, 0.10f, 1f),  // inkDeep #3d2a1a
                 textSelected: new Color(0.69f, 0.22f, 0.16f, 1f),  // vermillion #b0382a
@@ -127,11 +127,11 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void Navigate(Vector2Int dir)
         {
-            if (_slotSubMenuOpen) return;
+            if (slotSubMenuOpen) return;
             if (dir.y > 0)
-                _selectedIndex = _selectedIndex <= 0 ? UnitInventory.Capacity - 1 : _selectedIndex - 1;
+                selectedIndex = selectedIndex <= 0 ? UnitInventory.Capacity - 1 : selectedIndex - 1;
             else if (dir.y < 0)
-                _selectedIndex = _selectedIndex >= UnitInventory.Capacity - 1 ? 0 : _selectedIndex + 1;
+                selectedIndex = selectedIndex >= UnitInventory.Capacity - 1 ? 0 : selectedIndex + 1;
             else
                 return;
 
@@ -141,17 +141,17 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void Confirm()
         {
-            if (_slotSubMenuOpen) return;
-            var slot = _inventory.GetSlot(_selectedIndex);
+            if (slotSubMenuOpen) return;
+            var slot = inventory.GetSlot(selectedIndex);
             if (slot.IsEmpty) return;
             AudioManager.Instance?.Play(SoundId.ConfirmItem);
-            OpenSlotSubMenu(_selectedIndex, slot);
+            OpenSlotSubMenu(selectedIndex, slot);
         }
 
         private void Cancel()
         {
-            if (_slotSubMenuOpen) return;
-            var close = _onClose;
+            if (slotSubMenuOpen) return;
+            var close = onClose;
             Hide();
             close?.Invoke();
         }
@@ -160,7 +160,7 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void OpenSlotSubMenu(int slotIndex, InventoryItem item)
         {
-            _slotSubMenuOpen = true;
+            slotSubMenuOpen = true;
 
             // Release main menu input so the sub-menu owns Up/Down/Confirm/Cancel.
             if (InputManager.Instance != null)
@@ -176,12 +176,12 @@ namespace ProjectAstra.Core.UI.Inventory
 
             if (item.kind == ItemKind.Weapon)
             {
-                if (slotIndex != 0 && EquipResolver.CanEquip(_unit, item.weapon))
+                if (slotIndex != 0 && EquipResolver.CanEquip(unit, item.weapon))
                 {
                     actions.Add("Equip");
                     handlers.Add(() =>
                     {
-                        _inventory.EquipFromSlot(slotIndex);
+                        inventory.EquipFromSlot(slotIndex);
                         AudioManager.Instance?.Play(SoundId.ItemEquip);
                         ReturnToMainMenu();
                     });
@@ -192,16 +192,16 @@ namespace ProjectAstra.Core.UI.Inventory
                 actions.Add("Use");
                 handlers.Add(() =>
                 {
-                    if (item.consumable.type == ConsumableType.StatBooster && _confirmDialog != null)
+                    if (item.consumable.type == ConsumableType.StatBooster && confirmDialog != null)
                     {
                         ConfirmStatBoosterUse(slotIndex, item);
                         return;
                     }
 
-                    if (_inventory.TryUseConsumable(slotIndex, out _))
+                    if (inventory.TryUseConsumable(slotIndex, out _))
                     {
                         AudioManager.Instance?.Play(SoundId.Heal);
-                        var used = _onConsumableUsed;
+                        var used = onConsumableUsed;
                         Hide();
                         used?.Invoke();
                     }
@@ -218,7 +218,7 @@ namespace ProjectAstra.Core.UI.Inventory
             actions.Add("Cancel");
             handlers.Add(ReturnToMainMenu);
 
-            _slotSubMenu.Show(actions,
+            slotSubMenu.Show(actions,
                 onSelect: index =>
                 {
                     if (index >= 0 && index < handlers.Count) handlers[index]();
@@ -229,18 +229,18 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void ConfirmDiscard(int slotIndex, InventoryItem item)
         {
-            if (_confirmDialog == null)
+            if (confirmDialog == null)
             {
-                _inventory.DiscardSlot(slotIndex);
+                inventory.DiscardSlot(slotIndex);
                 ReturnToMainMenu();
                 return;
             }
 
-            _confirmDialog.Show(
+            confirmDialog.Show(
                 $"Discard {item.DisplayName}? This cannot be undone.",
                 onYes: () =>
                 {
-                    _inventory.DiscardSlot(slotIndex);
+                    inventory.DiscardSlot(slotIndex);
                     ReturnToMainMenu();
                 },
                 onNo: ReturnToMainMenu);
@@ -248,14 +248,14 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void ConfirmStatBoosterUse(int slotIndex, InventoryItem item)
         {
-            var (message, _) = ConsumableEffects.DescribeStatBoost(item.consumable, _unit);
-            _confirmDialog.Show(message,
+            var (message, _) = ConsumableEffects.DescribeStatBoost(item.consumable, unit);
+            confirmDialog.Show(message,
                 onYes: () =>
                 {
-                    if (_inventory.TryUseConsumable(slotIndex, out string failReason))
+                    if (inventory.TryUseConsumable(slotIndex, out string failReason))
                     {
                         AudioManager.Instance?.Play(SoundId.BuffApplied);
-                        var used = _onConsumableUsed;
+                        var used = onConsumableUsed;
                         Hide();
                         used?.Invoke();
                     }
@@ -270,7 +270,7 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void ReturnToMainMenu()
         {
-            _slotSubMenuOpen = false;
+            slotSubMenuOpen = false;
             HasInputFocus = true;
 
             if (InputManager.Instance != null)
@@ -288,23 +288,23 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void ActivateUI()
         {
-            if (_popupInstance == null)
+            if (popupInstance == null)
             {
                 Debug.LogError("InventoryMenuUI: _popupInstance not wired. Run the scene setup " +
                     "menu or re-run 'Project Astra/Build Inventory Popup (prefab)'.");
                 return;
             }
 
-            if (_refs == null) _refs = _popupInstance.GetComponent<InventoryPopupRefs>();
-            if (_refs == null)
+            if (refs == null) refs = popupInstance.GetComponent<InventoryPopupRefs>();
+            if (refs == null)
             {
                 Debug.LogError("InventoryMenuUI: popup instance has no InventoryPopupRefs — rebuild the prefab.");
                 return;
             }
 
-            _popupInstance.SetActive(true);
+            popupInstance.SetActive(true);
             // Ensure the popup sits on top of anything else added to the canvas after setup.
-            _popupInstance.transform.SetAsLastSibling();
+            popupInstance.transform.SetAsLastSibling();
 
             BindUnitInfo();
             UpdateSlotLabels();
@@ -312,23 +312,23 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void BindUnitInfo()
         {
-            if (_refs.unitName != null) _refs.unitName.text = _unit != null ? _unit.name : "—";
-            if (_refs.unitClass != null) _refs.unitClass.text = ClassLabel(_unit);
+            if (refs.unitName != null) refs.unitName.text = unit != null ? unit.name : "—";
+            if (refs.unitClass != null) refs.unitClass.text = ClassLabel(unit);
 
-            int hp = _unit != null ? _unit.currentHP : 0;
-            int maxHp = _unit != null ? _unit.maxHP : 1;
-            if (_refs.hpNumbers != null) _refs.hpNumbers.text = $"{hp} / {maxHp}";
-            if (_refs.hpFill != null)
+            int hp = unit != null ? unit.currentHP : 0;
+            int maxHp = unit != null ? unit.maxHP : 1;
+            if (refs.hpNumbers != null) refs.hpNumbers.text = $"{hp} / {maxHp}";
+            if (refs.hpFill != null)
             {
                 float frac = maxHp > 0 ? Mathf.Clamp01((float)hp / maxHp) : 0f;
-                var rt = _refs.hpFill.rectTransform;
+                var rt = refs.hpFill.rectTransform;
                 rt.sizeDelta = new Vector2(288f * frac, rt.sizeDelta.y);
             }
 
-            if (_refs.inventoryCount != null)
+            if (refs.inventoryCount != null)
             {
-                int occupied = _inventory != null ? _inventory.OccupiedCount : 0;
-                _refs.inventoryCount.text = $"{occupied} / {UnitInventory.Capacity}";
+                int occupied = inventory != null ? inventory.OccupiedCount : 0;
+                refs.inventoryCount.text = $"{occupied} / {UnitInventory.Capacity}";
             }
         }
 
@@ -342,13 +342,13 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private void UpdateSlotLabels()
         {
-            if (_refs == null) return;
-            int equippedSlot = _inventory != null ? _inventory.EquippedWeaponSlot : -1;
+            if (refs == null) return;
+            int equippedSlot = inventory != null ? inventory.EquippedWeaponSlot : -1;
 
-            for (int i = 0; i < _refs.rows.Length; i++)
+            for (int i = 0; i < refs.rows.Length; i++)
             {
-                var rowRefs = _refs.rows[i];
-                var slot = _inventory != null ? _inventory.GetSlot(i) : InventoryItem.None;
+                var rowRefs = refs.rows[i];
+                var slot = inventory != null ? inventory.GetSlot(i) : InventoryItem.None;
                 ApplySlotToRow(rowRefs, i, slot, i == equippedSlot);
             }
         }
@@ -419,30 +419,30 @@ namespace ProjectAstra.Core.UI.Inventory
 
         private Sprite SigilFor(InventoryItem item)
         {
-            if (item.kind == ItemKind.Consumable) return _refs.sigilConsumable;
+            if (item.kind == ItemKind.Consumable) return refs.sigilConsumable;
             if (item.kind != ItemKind.Weapon) return null;
             return item.weapon.weaponType switch
             {
-                WeaponType.Sword => _refs.sigilSword,
-                WeaponType.Lance => _refs.sigilLance,
-                WeaponType.Axe   => _refs.sigilAxe,
-                WeaponType.Bow   => _refs.sigilBow,
-                WeaponType.Staff => _refs.sigilStaff,
-                _                => _refs.sigilSword, // tomes fall back to sword sigil for now
+                WeaponType.Sword => refs.sigilSword,
+                WeaponType.Lance => refs.sigilLance,
+                WeaponType.Axe   => refs.sigilAxe,
+                WeaponType.Bow   => refs.sigilBow,
+                WeaponType.Staff => refs.sigilStaff,
+                _                => refs.sigilSword, // tomes fall back to sword sigil for now
             };
         }
 
         private void UpdateSelection()
         {
-            if (_refs == null) return;
+            if (refs == null) return;
 
-            for (int i = 0; i < _refs.rows.Length; i++)
+            for (int i = 0; i < refs.rows.Length; i++)
             {
-                var row = _refs.rows[i];
+                var row = refs.rows[i];
                 if (row == null || row.root == null) continue;
 
-                bool selected = i == _selectedIndex;
-                var slot = _inventory != null ? _inventory.GetSlot(i) : InventoryItem.None;
+                bool selected = i == selectedIndex;
+                var slot = inventory != null ? inventory.GetSlot(i) : InventoryItem.None;
                 bool empty = slot.IsEmpty;
                 bool depleted = !empty && slot.IsDepleted;
 
@@ -470,55 +470,55 @@ namespace ProjectAstra.Core.UI.Inventory
                 }
             }
 
-            BindStatsPanel(_inventory != null ? _inventory.GetSlot(_selectedIndex) : InventoryItem.None);
+            BindStatsPanel(inventory != null ? inventory.GetSlot(selectedIndex) : InventoryItem.None);
         }
 
         private void BindStatsPanel(InventoryItem item)
         {
-            if (_refs == null) return;
+            if (refs == null) return;
 
             if (item.IsEmpty)
             {
-                if (_refs.statsGroup != null) _refs.statsGroup.alpha = 0.45f;
-                _refs.selectedItemName.text = "— select an item —";
-                _refs.selectedItemKind.text = "";
-                SetStat(_refs.statAtk, null);
-                SetStat(_refs.statHit, null);
-                SetStat(_refs.statRng, null);
-                SetStat(_refs.statWt,  null);
-                _refs.itemDescription.text = "";
-                _refs.provText.text = "";
+                if (refs.statsGroup != null) refs.statsGroup.alpha = 0.45f;
+                refs.selectedItemName.text = "— select an item —";
+                refs.selectedItemKind.text = "";
+                SetStat(refs.statAtk, null);
+                SetStat(refs.statHit, null);
+                SetStat(refs.statRng, null);
+                SetStat(refs.statWt,  null);
+                refs.itemDescription.text = "";
+                refs.provText.text = "";
                 return;
             }
 
-            if (_refs.statsGroup != null) _refs.statsGroup.alpha = 1f;
-            _refs.selectedItemName.text = item.DisplayName;
+            if (refs.statsGroup != null) refs.statsGroup.alpha = 1f;
+            refs.selectedItemName.text = item.DisplayName;
 
             if (item.kind == ItemKind.Weapon)
             {
                 var w = item.weapon;
-                _refs.selectedItemKind.text = $"{w.weaponType.ToString().ToUpperInvariant()} · {w.tier.ToString().ToUpperInvariant()}";
-                SetStat(_refs.statAtk, w.might);
-                SetStat(_refs.statHit, w.hit);
-                SetStat(_refs.statRng, FormatRange(w.minRange, w.maxRange));
-                SetStat(_refs.statWt,  w.weight);
-                _refs.itemDescription.text = DescribeWeapon(w);
-                _refs.provText.text = w.characterLocked && !string.IsNullOrEmpty(w.ownerUnitId)
+                refs.selectedItemKind.text = $"{w.weaponType.ToString().ToUpperInvariant()} · {w.tier.ToString().ToUpperInvariant()}";
+                SetStat(refs.statAtk, w.might);
+                SetStat(refs.statHit, w.hit);
+                SetStat(refs.statRng, FormatRange(w.minRange, w.maxRange));
+                SetStat(refs.statWt,  w.weight);
+                refs.itemDescription.text = DescribeWeapon(w);
+                refs.provText.text = w.characterLocked && !string.IsNullOrEmpty(w.ownerUnitId)
                     ? $"Bound to {w.ownerUnitId}"
                     : $"{w.minRank} rank required";
             }
             else // Consumable
             {
                 var c = item.consumable;
-                _refs.selectedItemKind.text = c.type == ConsumableType.Vulnerary
+                refs.selectedItemKind.text = c.type == ConsumableType.Vulnerary
                     ? "ELIXIR · RESTORATIVE"
                     : "STAT BOOST";
-                SetStat(_refs.statAtk, null);
-                SetStat(_refs.statHit, null);
-                SetStat(_refs.statRng, null);
-                SetStat(_refs.statWt,  null);
-                _refs.itemDescription.text = DescribeConsumable(c);
-                _refs.provText.text = $"{c.currentUses} / {c.maxUses} uses remaining";
+                SetStat(refs.statAtk, null);
+                SetStat(refs.statHit, null);
+                SetStat(refs.statRng, null);
+                SetStat(refs.statWt,  null);
+                refs.itemDescription.text = DescribeConsumable(c);
+                refs.provText.text = $"{c.currentUses} / {c.maxUses} uses remaining";
             }
         }
 

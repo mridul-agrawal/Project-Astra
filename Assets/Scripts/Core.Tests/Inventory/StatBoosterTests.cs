@@ -10,43 +10,43 @@ namespace ProjectAstra.Core.Tests.Inventory
     [TestFixture]
     public class StatBoosterTests
     {
-        private UnitDefinition _testDef;
-        private ClassDefinition _testClass;
-        private TestUnit _unit;
+        private UnitDefinition testDef;
+        private ClassDefinition testClass;
+        private TestUnit unit;
 
         [SetUp]
         public void SetUp()
         {
-            _testClass = ScriptableObject.CreateInstance<ClassDefinition>();
-            var classSO = new SerializedObject(_testClass);
-            classSO.FindProperty("_className").stringValue = "TestClass";
-            classSO.FindProperty("_movementRange").intValue = 5;
-            SetStatArray(classSO, "_statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
-            SetStatArray(classSO, "_statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            SetStatArray(classSO, "_promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
-            classSO.FindProperty("_hpGainOnLevelUp").intValue = 2;
+            testClass = ScriptableObject.CreateInstance<ClassDefinition>();
+            var classSO = new SerializedObject(testClass);
+            classSO.FindProperty("className").stringValue = "TestClass";
+            classSO.FindProperty("movementRange").intValue = 5;
+            SetStatArray(classSO, "statCaps", 60, 30, 30, 30, 30, 30, 30, 20, 30);
+            SetStatArray(classSO, "statGrowthModifiers", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            SetStatArray(classSO, "promotionBonuses", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            classSO.FindProperty("hpGainOnLevelUp").intValue = 2;
             classSO.ApplyModifiedPropertiesWithoutUndo();
 
-            _testDef = ScriptableObject.CreateInstance<UnitDefinition>();
-            var unitSO = new SerializedObject(_testDef);
-            unitSO.FindProperty("_unitName").stringValue = "Arjun";
-            unitSO.FindProperty("_unitId").stringValue = "arjun";
-            unitSO.FindProperty("_defaultClass").objectReferenceValue = _testClass;
-            unitSO.FindProperty("_baseLevel").intValue = 1;
-            SetStatArray(unitSO, "_baseStats", 20, 8, 3, 7, 9, 5, 2, 6, 5);
-            SetStatArray(unitSO, "_personalGrowths", 70, 50, 20, 40, 45, 30, 25, 0, 35);
+            testDef = ScriptableObject.CreateInstance<UnitDefinition>();
+            var unitSO = new SerializedObject(testDef);
+            unitSO.FindProperty("unitName").stringValue = "Arjun";
+            unitSO.FindProperty("unitId").stringValue = "arjun";
+            unitSO.FindProperty("defaultClass").objectReferenceValue = testClass;
+            unitSO.FindProperty("baseLevel").intValue = 1;
+            SetStatArray(unitSO, "baseStats", 20, 8, 3, 7, 9, 5, 2, 6, 5);
+            SetStatArray(unitSO, "personalGrowths", 70, 50, 20, 40, 45, 30, 25, 0, 35);
             unitSO.ApplyModifiedPropertiesWithoutUndo();
 
-            _unit = new GameObject("BoosterTestUnit").AddComponent<TestUnit>();
-            _unit.BindUnitInstance(new UnitInstance(_testDef));
+            unit = new GameObject("BoosterTestUnit").AddComponent<TestUnit>();
+            unit.BindUnitInstance(new UnitInstance(testDef));
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_unit != null) Object.DestroyImmediate(_unit.gameObject);
-            Object.DestroyImmediate(_testDef);
-            Object.DestroyImmediate(_testClass);
+            if (unit != null) Object.DestroyImmediate(unit.gameObject);
+            Object.DestroyImmediate(testDef);
+            Object.DestroyImmediate(testClass);
         }
 
         #region UnitInstance.ApplyStatBoost
@@ -54,19 +54,19 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyStatBoost_IncreasesStatByAmount()
         {
-            int before = _unit.UnitInstance.Stats[StatIndex.Str];
-            _unit.UnitInstance.ApplyStatBoost(StatIndex.Str, 2);
-            Assert.AreEqual(before + 2, _unit.UnitInstance.Stats[StatIndex.Str]);
+            int before = unit.UnitInstance.Stats[StatIndex.Str];
+            unit.UnitInstance.ApplyStatBoost(StatIndex.Str, 2);
+            Assert.AreEqual(before + 2, unit.UnitInstance.Stats[StatIndex.Str]);
         }
 
         [Test]
         public void ApplyStatBoost_ClampsToClassCap()
         {
             // Str cap is 30, set to 29 then boost by 2 → should be 30
-            var updated = _unit.UnitInstance.Stats;
+            var updated = unit.UnitInstance.Stats;
             updated[StatIndex.Str] = 29;
             // Use the 4-param constructor to set stats directly
-            var inst = new UnitInstance(_testDef, _testClass, 1, updated);
+            var inst = new UnitInstance(testDef, testClass, 1, updated);
             inst.ApplyStatBoost(StatIndex.Str, 2);
             Assert.AreEqual(30, inst.Stats[StatIndex.Str]);
         }
@@ -74,9 +74,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyStatBoost_AtCap_NoChange()
         {
-            var updated = _unit.UnitInstance.Stats;
+            var updated = unit.UnitInstance.Stats;
             updated[StatIndex.Str] = 30;
-            var inst = new UnitInstance(_testDef, _testClass, 1, updated);
+            var inst = new UnitInstance(testDef, testClass, 1, updated);
             inst.ApplyStatBoost(StatIndex.Str, 2);
             Assert.AreEqual(30, inst.Stats[StatIndex.Str]);
         }
@@ -84,11 +84,11 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyStatBoost_HP_IncreasesMaxHP_CurrentHPUnchanged()
         {
-            int maxBefore = _unit.UnitInstance.MaxHP;
-            int currentBefore = _unit.UnitInstance.CurrentHP;
-            _unit.UnitInstance.ApplyStatBoost(StatIndex.HP, 7);
-            Assert.AreEqual(maxBefore + 7, _unit.UnitInstance.MaxHP);
-            Assert.AreEqual(currentBefore, _unit.UnitInstance.CurrentHP);
+            int maxBefore = unit.UnitInstance.MaxHP;
+            int currentBefore = unit.UnitInstance.CurrentHP;
+            unit.UnitInstance.ApplyStatBoost(StatIndex.HP, 7);
+            Assert.AreEqual(maxBefore + 7, unit.UnitInstance.MaxHP);
+            Assert.AreEqual(currentBefore, unit.UnitInstance.CurrentHP);
         }
 
         #endregion
@@ -99,7 +99,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ConsumableEffects_StatBooster_ReturnsTrue()
         {
             var booster = ConsumableData.ShaktiMudrika;
-            bool ok = ConsumableEffects.Apply(booster, _unit, out string fail);
+            bool ok = ConsumableEffects.Apply(booster, unit, out string fail);
             Assert.IsTrue(ok, fail);
         }
 
@@ -122,7 +122,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void DescribeStatBoost_NormalCase_NoReducedEffect()
         {
             var booster = ConsumableData.ShaktiMudrika;
-            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, _unit);
+            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsFalse(reduced);
             Assert.IsTrue(msg.Contains("Strength"));
             Assert.IsTrue(msg.Contains("2"));
@@ -131,12 +131,12 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DescribeStatBoost_NearCap_ReducedEffectWarning()
         {
-            var updated = _unit.UnitInstance.Stats;
+            var updated = unit.UnitInstance.Stats;
             updated[StatIndex.Str] = 29;
-            _unit.BindUnitInstance(new UnitInstance(_testDef, _testClass, 1, updated));
+            unit.BindUnitInstance(new UnitInstance(testDef, testClass, 1, updated));
 
             var booster = ConsumableData.ShaktiMudrika;
-            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, _unit);
+            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsTrue(reduced);
             Assert.IsTrue(msg.Contains("reduced"));
         }
@@ -144,12 +144,12 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DescribeStatBoost_AtCap_NoEffectWarning()
         {
-            var updated = _unit.UnitInstance.Stats;
+            var updated = unit.UnitInstance.Stats;
             updated[StatIndex.Str] = 30;
-            _unit.BindUnitInstance(new UnitInstance(_testDef, _testClass, 1, updated));
+            unit.BindUnitInstance(new UnitInstance(testDef, testClass, 1, updated));
 
             var booster = ConsumableData.ShaktiMudrika;
-            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, _unit);
+            var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsTrue(reduced);
             Assert.IsTrue(msg.Contains("no effect"));
         }
@@ -189,14 +189,14 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryUseConsumable_StatBooster_AppliesAndRemovesSlot()
         {
-            int strBefore = _unit.UnitInstance.Stats[StatIndex.Str];
-            _unit.Inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.ShaktiMudrika), out int slot);
+            int strBefore = unit.UnitInstance.Stats[StatIndex.Str];
+            unit.Inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.ShaktiMudrika), out int slot);
 
-            bool ok = _unit.Inventory.TryUseConsumable(slot, out string fail);
+            bool ok = unit.Inventory.TryUseConsumable(slot, out string fail);
 
             Assert.IsTrue(ok, fail);
-            Assert.AreEqual(strBefore + 2, _unit.UnitInstance.Stats[StatIndex.Str]);
-            Assert.IsTrue(_unit.Inventory.GetSlot(slot).IsEmpty);
+            Assert.AreEqual(strBefore + 2, unit.UnitInstance.Stats[StatIndex.Str]);
+            Assert.IsTrue(unit.Inventory.GetSlot(slot).IsEmpty);
         }
 
         #endregion
@@ -204,7 +204,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         private static void SetStatArray(SerializedObject so, string propName, params int[] values)
         {
             var prop = so.FindProperty(propName);
-            var arr = prop.FindPropertyRelative("_values");
+            var arr = prop.FindPropertyRelative("values");
             arr.arraySize = StatArray.Length;
             for (int i = 0; i < StatArray.Length && i < values.Length; i++)
                 arr.GetArrayElementAtIndex(i).intValue = values[i];

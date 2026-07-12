@@ -18,11 +18,11 @@ namespace ProjectAstra.Core.Combat.Playback
     // CombatResultApplicator.Finalize + OnComplete so combat never hangs.
     public class CombatPlaybackDispatcher
     {
-        private readonly SkipModePlaybackController _skipController;
+        private readonly SkipModePlaybackController skipController;
 
         public CombatPlaybackDispatcher(SkipModePlaybackController skipController)
         {
-            _skipController = skipController;
+            this.skipController = skipController;
         }
 
         public void Dispatch(CombatPlaybackContext ctx)
@@ -52,9 +52,9 @@ namespace ProjectAstra.Core.Combat.Playback
 
             if (speed == CombatAnimationSpeed.Skip)
             {
-                if (_skipController != null)
+                if (skipController != null)
                 {
-                    _skipController.StartCoroutine(_skipController.Play(ctx));
+                    skipController.StartCoroutine(skipController.Play(ctx));
                     return;
                 }
                 FallbackInstant(ctx, "Skip controller not wired");

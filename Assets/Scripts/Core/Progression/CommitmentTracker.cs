@@ -28,8 +28,8 @@ namespace ProjectAstra.Core.Progression
     {
         public static CommitmentTracker Instance { get; private set; }
 
-        private readonly Dictionary<string, LiveCommitment> _active = new();
-        private readonly List<ResolvedCommitment> _resolutionLog = new();
+        private readonly Dictionary<string, LiveCommitment> active = new();
+        private readonly List<ResolvedCommitment> resolutionLog = new();
 
         private void Awake()
         {
@@ -49,20 +49,20 @@ namespace ProjectAstra.Core.Progression
             foreach (var c in commitments)
             {
                 if (c == null || string.IsNullOrEmpty(c.Id)) continue;
-                if (_active.ContainsKey(c.Id)) continue;
-                _active[c.Id] = new LiveCommitment { Asset = c, State = CommitmentResolution.Pending };
+                if (active.ContainsKey(c.Id)) continue;
+                active[c.Id] = new LiveCommitment { Asset = c, State = CommitmentResolution.Pending };
             }
         }
 
         public void Resolve(string commitmentId, CommitmentResolution outcome)
         {
             if (outcome == CommitmentResolution.Pending) return;
-            if (!_active.TryGetValue(commitmentId, out var live)) return;
+            if (!active.TryGetValue(commitmentId, out var live)) return;
             if (live.State != CommitmentResolution.Pending) return; // resolution is write-once
 
             live.State = outcome;
             live.ChapterResolved = ChapterContext.CurrentChapterNumber;
-            _resolutionLog.Add(new ResolvedCommitment
+            resolutionLog.Add(new ResolvedCommitment
             {
                 commitmentId    = live.Asset.Id,
                 commitmentText  = live.Asset.Text,
@@ -75,34 +75,34 @@ namespace ProjectAstra.Core.Progression
         {
             int ch = ChapterContext.CurrentChapterNumber;
             var filtered = new List<ResolvedCommitment>();
-            foreach (var r in _resolutionLog)
+            foreach (var r in resolutionLog)
                 if (r.chapterResolved == ch) filtered.Add(r);
             return filtered;
         }
 
-        public IReadOnlyList<ResolvedCommitment> AllResolved() => _resolutionLog;
+        public IReadOnlyList<ResolvedCommitment> AllResolved() => resolutionLog;
 
         public bool AnyPendingActive()
         {
-            foreach (var kv in _active)
+            foreach (var kv in active)
                 if (kv.Value.State == CommitmentResolution.Pending) return true;
             return false;
         }
 
         public CommitmentTrackerDto Serialize()
         {
-            var ids = new List<string>(_active.Keys);
+            var ids = new List<string>(active.Keys);
             return new CommitmentTrackerDto
             {
                 activeIds = ids.ToArray(),
-                resolutionLog = _resolutionLog.ToArray(),
+                resolutionLog = resolutionLog.ToArray(),
             };
         }
 
         public void Restore(CommitmentTrackerDto dto)
         {
-            _resolutionLog.Clear();
-            if (dto.resolutionLog != null) _resolutionLog.AddRange(dto.resolutionLog);
+            resolutionLog.Clear();
+            if (dto.resolutionLog != null) resolutionLog.AddRange(dto.resolutionLog);
             // activeIds need the Commitment assets to be re-resolved by the
             // caller since dictionary values hold ScriptableObject refs.
             // Out of scope today.
@@ -120,20 +120,20 @@ namespace ProjectAstra.Core.Progression
     // On Start it pushes its commitments into the CommitmentTracker.
     public class CommitmentSet : MonoBehaviour
     {
-        [SerializeField] private Commitment[] _commitments;
+        [SerializeField] private Commitment[] commitments;
         [Tooltip("Each entry must implement IChapterOutcomeEvaluator.")]
-        [SerializeField] private MonoBehaviour[] _evaluators;
+        [SerializeField] private MonoBehaviour[] evaluators;
 
         private void Start()
         {
             if (CommitmentTracker.Instance == null) return;
-            CommitmentTracker.Instance.Register(_commitments);
+            CommitmentTracker.Instance.Register(commitments);
         }
 
         public void RunEvaluators(BattleConclusion conclusion)
         {
-            if (_evaluators == null) return;
-            foreach (var raw in _evaluators)
+            if (evaluators == null) return;
+            foreach (var raw in evaluators)
             {
                 if (raw is IChapterOutcomeEvaluator evaluator)
                     evaluator.Evaluate(conclusion, CommitmentTracker.Instance);

@@ -12,23 +12,23 @@ namespace ProjectAstra.Core.UI.Inventory
     {
         public static bool HasInputFocus { get; private set; }
 
-        [SerializeField] TextMeshProUGUI _nameText;
-        [SerializeField] TextMeshProUGUI _typeText;
-        [SerializeField] TextMeshProUGUI _mightText;
-        [SerializeField] TextMeshProUGUI _hitText;
-        [SerializeField] TextMeshProUGUI _critText;
-        [SerializeField] TextMeshProUGUI _weightText;
-        [SerializeField] TextMeshProUGUI _rangeText;
-        [SerializeField] TextMeshProUGUI _rankReqText;
-        [SerializeField] TextMeshProUGUI _effectivenessText;
-        [SerializeField] TextMeshProUGUI _specialText;
-        [SerializeField] TextMeshProUGUI _descriptionText;
+        [SerializeField] TextMeshProUGUI nameText;
+        [SerializeField] TextMeshProUGUI typeText;
+        [SerializeField] TextMeshProUGUI mightText;
+        [SerializeField] TextMeshProUGUI hitText;
+        [SerializeField] TextMeshProUGUI critText;
+        [SerializeField] TextMeshProUGUI weightText;
+        [SerializeField] TextMeshProUGUI rangeText;
+        [SerializeField] TextMeshProUGUI rankReqText;
+        [SerializeField] TextMeshProUGUI effectivenessText;
+        [SerializeField] TextMeshProUGUI specialText;
+        [SerializeField] TextMeshProUGUI descriptionText;
 
-        System.Action _onClose;
+        System.Action onClose;
 
         public void Show(InventoryItem item, System.Action onClose)
         {
-            _onClose = onClose;
+            this.onClose = onClose;
             Populate(item);
             gameObject.SetActive(true);
             HasInputFocus = true;
@@ -40,7 +40,7 @@ namespace ProjectAstra.Core.UI.Inventory
             HasInputFocus = false;
             Unsubscribe();
             gameObject.SetActive(false);
-            var cb = _onClose; _onClose = null;
+            var cb = onClose; onClose = null;
             cb?.Invoke();
         }
 
@@ -61,35 +61,35 @@ namespace ProjectAstra.Core.UI.Inventory
             bool isWeapon = item.kind == ItemKind.Weapon;
             bool isConsumable = item.kind == ItemKind.Consumable;
 
-            if (_nameText != null) _nameText.text = string.IsNullOrEmpty(item.DisplayName) ? "—" : item.DisplayName;
-            if (_typeText != null)
+            if (nameText != null) nameText.text = string.IsNullOrEmpty(item.DisplayName) ? "—" : item.DisplayName;
+            if (typeText != null)
             {
                 string typeStr = isWeapon ? item.weapon.weaponType.ToString()
                     : isConsumable ? "Consumable"
                     : "Item";
-                _typeText.text = typeStr.ToUpper();
+                typeText.text = typeStr.ToUpper();
             }
 
             // Weapon / staff stats (staves are weapons with weaponType==Staff)
             if (isWeapon)
             {
                 var w = item.weapon;
-                SetText(_mightText,  "Mt " + w.might);
-                SetText(_hitText,    "Hit " + w.hit);
-                SetText(_critText,   "Crit " + w.crit);
-                SetText(_weightText, "Wt " + w.weight);
+                SetText(mightText,  "Mt " + w.might);
+                SetText(hitText,    "Hit " + w.hit);
+                SetText(critText,   "Crit " + w.crit);
+                SetText(weightText, "Wt " + w.weight);
                 string range = w.minRange == w.maxRange ? w.minRange.ToString() : (w.minRange + "\u2013" + w.maxRange);
-                SetText(_rangeText,  "Rng " + range);
-                SetText(_rankReqText, "Rank " + w.minRank);
+                SetText(rangeText,  "Rng " + range);
+                SetText(rankReqText, "Rank " + w.minRank);
             }
             else
             {
-                SetText(_mightText, "\u2014"); SetText(_hitText, "\u2014"); SetText(_critText, "\u2014");
-                SetText(_weightText, "\u2014"); SetText(_rangeText, "\u2014"); SetText(_rankReqText, "\u2014");
+                SetText(mightText, "\u2014"); SetText(hitText, "\u2014"); SetText(critText, "\u2014");
+                SetText(weightText, "\u2014"); SetText(rangeText, "\u2014"); SetText(rankReqText, "\u2014");
             }
 
             // Effectiveness tags
-            if (_effectivenessText != null)
+            if (effectivenessText != null)
             {
                 if (isWeapon && item.weapon.effectivenessTargets != null && item.weapon.effectivenessTargets.Length > 0)
                 {
@@ -99,25 +99,25 @@ namespace ProjectAstra.Core.UI.Inventory
                         if (sb.Length > 0) sb.Append(", ");
                         sb.Append("Effective vs. ").Append(t);
                     }
-                    _effectivenessText.text = sb.ToString();
-                    _effectivenessText.gameObject.SetActive(true);
+                    effectivenessText.text = sb.ToString();
+                    effectivenessText.gameObject.SetActive(true);
                 }
-                else _effectivenessText.gameObject.SetActive(false);
+                else effectivenessText.gameObject.SetActive(false);
             }
 
             // Special props
-            if (_specialText != null)
+            if (specialText != null)
             {
                 var sb = new StringBuilder();
                 if (isWeapon && item.weapon.brave) sb.AppendLine("Brave — attacks twice");
                 if (isWeapon && item.weapon.minRange != item.weapon.maxRange)
                     sb.Append(item.weapon.minRange).Append("\u2013").Append(item.weapon.maxRange).AppendLine(" Range");
-                _specialText.text = sb.ToString().TrimEnd();
-                _specialText.gameObject.SetActive(sb.Length > 0);
+                specialText.text = sb.ToString().TrimEnd();
+                specialText.gameObject.SetActive(sb.Length > 0);
             }
 
             // Consumable description
-            if (_descriptionText != null)
+            if (descriptionText != null)
             {
                 if (isConsumable)
                 {
@@ -128,10 +128,10 @@ namespace ProjectAstra.Core.UI.Inventory
                         ConsumableType.StatBooster => "+" + c.magnitude + " " + c.targetStat + " permanently",
                         _ => ""
                     };
-                    _descriptionText.text = desc;
-                    _descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(desc));
+                    descriptionText.text = desc;
+                    descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(desc));
                 }
-                else _descriptionText.gameObject.SetActive(false);
+                else descriptionText.gameObject.SetActive(false);
             }
         }
 

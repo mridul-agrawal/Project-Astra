@@ -10,16 +10,16 @@ namespace ProjectAstra.Core.Tests.Inventory
     [TestFixture]
     public class InventoryAcquisitionTests
     {
-        private TestUnit _unit;
-        private IInventoryFullPromptHandler _previousHandler;
-        private IConvoy _previousConvoy;
+        private TestUnit unit;
+        private IInventoryFullPromptHandler previousHandler;
+        private IConvoy previousConvoy;
 
         [SetUp]
         public void SetUp()
         {
-            _unit = new GameObject("AcquisitionTestUnit").AddComponent<TestUnit>();
-            _previousHandler = InventoryAcquisition.PromptHandler;
-            _previousConvoy = Convoy.Current;
+            unit = new GameObject("AcquisitionTestUnit").AddComponent<TestUnit>();
+            previousHandler = InventoryAcquisition.PromptHandler;
+            previousConvoy = Convoy.Current;
             // Default to no-convoy so each test exercises the prompt path unless it opts in.
             Convoy.Current = NullConvoy.Instance;
         }
@@ -27,9 +27,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [TearDown]
         public void TearDown()
         {
-            InventoryAcquisition.PromptHandler = _previousHandler;
-            Convoy.Current = _previousConvoy;
-            if (_unit != null) UnityEngine.Object.DestroyImmediate(_unit.gameObject);
+            InventoryAcquisition.PromptHandler = previousHandler;
+            Convoy.Current = previousConvoy;
+            if (unit != null) UnityEngine.Object.DestroyImmediate(unit.gameObject);
         }
 
         [Test]
@@ -37,14 +37,14 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.IronSword),
                 r => captured = r);
 
             Assert.IsTrue(captured.HasValue);
             Assert.AreEqual(AcquisitionOutcome.Added, captured.Value.Outcome);
             Assert.AreEqual(0, captured.Value.SlotIndex);
-            Assert.AreEqual(1, _unit.Inventory.OccupiedCount);
+            Assert.AreEqual(1, unit.Inventory.OccupiedCount);
         }
 
         [Test]
@@ -55,12 +55,12 @@ namespace ProjectAstra.Core.Tests.Inventory
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
-            Assert.AreEqual(5, _unit.Inventory.OccupiedCount);
+            Assert.AreEqual(5, unit.Inventory.OccupiedCount);
         }
 
         [Test]
@@ -72,29 +72,29 @@ namespace ProjectAstra.Core.Tests.Inventory
 
             var incoming = InventoryItem.FromWeapon(WeaponData.SteelSword);
             AcquisitionResult? captured = null;
-            InventoryAcquisition.TryAcquireItem(_unit, incoming, r => captured = r);
+            InventoryAcquisition.TryAcquireItem(unit, incoming, r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Swapped, captured.Value.Outcome);
             Assert.AreEqual(2, captured.Value.SlotIndex);
-            Assert.AreEqual(WeaponTier.Steel, _unit.Inventory.GetSlot(2).weapon.tier);
+            Assert.AreEqual(WeaponTier.Steel, unit.Inventory.GetSlot(2).weapon.tier);
         }
 
         [Test]
         public void FullInventory_HandlerCancels_StateUnchanged()
         {
             FillInventory();
-            var snapshot = _unit.Inventory.GetSlot(0).weapon.name;
+            var snapshot = unit.Inventory.GetSlot(0).weapon.name;
             var handler = new TestPromptHandler { ShouldCancel = true };
             InventoryAcquisition.PromptHandler = handler;
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
-            Assert.AreEqual(snapshot, _unit.Inventory.GetSlot(0).weapon.name);
+            Assert.AreEqual(snapshot, unit.Inventory.GetSlot(0).weapon.name);
         }
 
         [Test]
@@ -113,7 +113,7 @@ namespace ProjectAstra.Core.Tests.Inventory
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.SteelSword),
                 r => captured = r);
 
@@ -133,7 +133,7 @@ namespace ProjectAstra.Core.Tests.Inventory
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.SteelSword),
                 r => captured = r);
 
@@ -151,7 +151,7 @@ namespace ProjectAstra.Core.Tests.Inventory
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
-                _unit,
+                unit,
                 InventoryItem.FromWeapon(WeaponData.SteelSword),
                 r => captured = r);
 
@@ -162,7 +162,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         private void FillInventory()
         {
             for (int i = 0; i < UnitInventory.Capacity; i++)
-                _unit.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+                unit.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
         }
 
         private class TestPromptHandler : IInventoryFullPromptHandler

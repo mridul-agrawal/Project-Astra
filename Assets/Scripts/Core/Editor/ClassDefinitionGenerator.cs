@@ -62,18 +62,18 @@ namespace ProjectAstra.Core.Editor
 
             var asset = ScriptableObject.CreateInstance<ClassDefinition>();
             var so = new SerializedObject(asset);
-            so.FindProperty("_className").stringValue = className;
-            so.FindProperty("_classType").enumValueIndex = (int)classType;
-            so.FindProperty("_movementRange").intValue = moveRange;
-            so.FindProperty("_movementType").enumValueIndex = (int)moveType;
-            so.FindProperty("_canPromote").boolValue = canPromote;
-            so.FindProperty("_isPromoted").boolValue = isPromoted;
-            so.FindProperty("_hpGainOnLevelUp").intValue = hpGain;
+            so.FindProperty("className").stringValue = className;
+            so.FindProperty("classType").enumValueIndex = (int)classType;
+            so.FindProperty("movementRange").intValue = moveRange;
+            so.FindProperty("movementType").enumValueIndex = (int)moveType;
+            so.FindProperty("canPromote").boolValue = canPromote;
+            so.FindProperty("isPromoted").boolValue = isPromoted;
+            so.FindProperty("hpGainOnLevelUp").intValue = hpGain;
 
             SetWeaponWhitelist(so, weapons);
-            SetStatArray(so, "_statCaps", caps);
-            SetStatArray(so, "_statGrowthModifiers", growthMods);
-            SetStatArray(so, "_promotionBonuses", promoBonuses);
+            SetStatArray(so, "statCaps", caps);
+            SetStatArray(so, "statGrowthModifiers", growthMods);
+            SetStatArray(so, "promotionBonuses", promoBonuses);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             AssetDatabase.CreateAsset(asset, path);
@@ -81,7 +81,7 @@ namespace ProjectAstra.Core.Editor
 
         private static void SetWeaponWhitelist(SerializedObject so, WeaponType[] weapons)
         {
-            var prop = so.FindProperty("_weaponWhitelist");
+            var prop = so.FindProperty("weaponWhitelist");
             prop.arraySize = weapons.Length;
             for (int i = 0; i < weapons.Length; i++)
                 prop.GetArrayElementAtIndex(i).enumValueIndex = (int)weapons[i];
@@ -90,7 +90,7 @@ namespace ProjectAstra.Core.Editor
         private static void SetStatArray(SerializedObject so, string propName, StatArray values)
         {
             var prop = so.FindProperty(propName);
-            var arr = prop.FindPropertyRelative("_values");
+            var arr = prop.FindPropertyRelative("values");
             arr.arraySize = StatArray.Length;
             for (int i = 0; i < StatArray.Length; i++)
                 arr.GetArrayElementAtIndex(i).intValue = values[(StatIndex)i];

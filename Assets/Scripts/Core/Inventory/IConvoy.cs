@@ -24,12 +24,12 @@ namespace ProjectAstra.Core
     // so call sites never have to null-check.
     public static class Convoy
     {
-        private static IConvoy _current = NullConvoy.Instance;
+        private static IConvoy current = NullConvoy.Instance;
 
         public static IConvoy Current
         {
-            get => _current;
-            set => _current = value ?? NullConvoy.Instance;
+            get => current;
+            set => current = value ?? NullConvoy.Instance;
         }
     }
 }

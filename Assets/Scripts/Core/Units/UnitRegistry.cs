@@ -9,32 +9,32 @@ namespace ProjectAstra.Core.Units
     // the scene's TestUnits.
     public class UnitRegistry
     {
-        private readonly List<UnitTurnState> _units = new();
+        private readonly List<UnitTurnState> units = new();
 
         public event Action<TestUnit> OnUnitActed;
 
-        public int UnitCount => _units.Count;
+        public int UnitCount => units.Count;
 
         public void Register(TestUnit unit, Faction faction)
         {
             if (Find(unit) != null) return;
-            _units.Add(new UnitTurnState(unit, faction));
+            units.Add(new UnitTurnState(unit, faction));
         }
 
         public void Unregister(TestUnit unit)
         {
-            _units.RemoveAll(u => u.Unit == unit);
+            units.RemoveAll(u => u.Unit == unit);
         }
 
         public void Clear()
         {
-            _units.Clear();
+            units.Clear();
         }
 
         public List<TestUnit> GetUnitsForFaction(Faction faction)
         {
             var result = new List<TestUnit>();
-            foreach (var entry in _units)
+            foreach (var entry in units)
                 if (entry.Faction == faction)
                     result.Add(entry.Unit);
             return result;
@@ -43,7 +43,7 @@ namespace ProjectAstra.Core.Units
         public List<TestUnit> GetActableUnits(Faction faction)
         {
             var result = new List<TestUnit>();
-            foreach (var entry in _units)
+            foreach (var entry in units)
                 if (entry.Faction == faction && entry.CanAct)
                     result.Add(entry.Unit);
             return result;
@@ -62,7 +62,7 @@ namespace ProjectAstra.Core.Units
 
         public bool HasUnitsOfFaction(Faction faction)
         {
-            foreach (var entry in _units)
+            foreach (var entry in units)
                 if (entry.Faction == faction)
                     return true;
             return false;
@@ -70,7 +70,7 @@ namespace ProjectAstra.Core.Units
 
         public bool AllDone(Faction faction)
         {
-            foreach (var entry in _units)
+            foreach (var entry in units)
                 if (entry.Faction == faction && entry.CanAct)
                     return false;
             return true;
@@ -98,7 +98,7 @@ namespace ProjectAstra.Core.Units
         // Same as MarkActed unit by unit, just without allocating a throwaway list.
         public void MarkAllActed(Faction faction)
         {
-            foreach (var entry in _units)
+            foreach (var entry in units)
             {
                 if (entry.Faction != faction || !entry.CanAct) continue;
                 DoMarkActed(entry);
@@ -107,7 +107,7 @@ namespace ProjectAstra.Core.Units
 
         public void ResetPhaseFlags(Faction faction)
         {
-            foreach (var entry in _units)
+            foreach (var entry in units)
             {
                 if (entry.Faction != faction) continue;
                 entry.CanAct = true;
@@ -142,7 +142,7 @@ namespace ProjectAstra.Core.Units
 
         private UnitTurnState Find(TestUnit unit)
         {
-            foreach (var entry in _units)
+            foreach (var entry in units)
                 if (entry.Unit == unit)
                     return entry;
             return null;

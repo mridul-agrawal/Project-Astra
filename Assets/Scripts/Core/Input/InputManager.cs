@@ -20,13 +20,13 @@ namespace ProjectAstra.Core.Input
     {
         public static InputManager Instance { get; private set; }
 
-        [SerializeField] private InputActionAsset _inputActions;
-        [SerializeField] private InputContextTable _inputContextTable;
+        [SerializeField] private InputActionAsset inputActions;
+        [SerializeField] private InputContextTable inputContextTable;
 
         [Header("DAS Settings")]
-        [SerializeField] private float _dasInitialDelay = 0.4f;
-        [SerializeField] private float _dasRepeatRate = 0.1f;
-        [SerializeField] private float _dasFastRepeatRate = 0.05f;
+        [SerializeField] private float dasInitialDelay = 0.4f;
+        [SerializeField] private float dasRepeatRate = 0.1f;
+        [SerializeField] private float dasFastRepeatRate = 0.05f;
 
         public event Action<Vector2Int> OnCursorMove;
         public event Action OnConfirm;
@@ -46,18 +46,18 @@ namespace ProjectAstra.Core.Input
         public InputDeviceType ActiveDevice { get; private set; } = InputDeviceType.Keyboard;
         public bool IsFastCursorHeld { get; private set; }
 
-        private InputActionMap _gameplayMap;
-        private GameState _currentState;
-        private DelayedAutoShift _das;
+        private InputActionMap gameplayMap;
+        private GameState currentState;
+        private DelayedAutoShift das;
 
         // Removers for every action callback we bind, so we can detach them on destroy.
         // Without this, the InputActionAsset (a persistent project asset) keeps our
         // callbacks alive across editor play sessions when Domain Reload is disabled,
         // firing stale handlers into already-destroyed objects.
-        private readonly List<Action> _actionUnbinders = new();
+        private readonly List<Action> actionUnbinders = new();
 
-        private bool _confirmPendingThisFrame;
-        private bool _cancelPendingThisFrame;
+        private bool confirmPendingThisFrame;
+        private bool cancelPendingThisFrame;
         private bool stateSubscribed;
 
         private void Awake()
@@ -69,8 +69,8 @@ namespace ProjectAstra.Core.Input
 
         private void CreateDelayedAutoShift()
         {
-            _das = new DelayedAutoShift(_dasInitialDelay, _dasRepeatRate, _dasFastRepeatRate);
-            _das.CursorMoveTriggered += direction => OnCursorMove?.Invoke(direction);
+            das = new DelayedAutoShift(dasInitialDelay, dasRepeatRate, dasFastRepeatRate);
+            das.CursorMoveTriggered += direction => OnCursorMove?.Invoke(direction);
         }
 
         private void OnEnable()
@@ -85,8 +85,8 @@ namespace ProjectAstra.Core.Input
             EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
             stateSubscribed = true;
 
-            _currentState = GameStateManager.Instance.CurrentState;
-            ApplyContextFilter(_currentState);
+            currentState = GameStateManager.Instance.CurrentState;
+            ApplyContextFilter(currentState);
         }
 
         private void OnDisable()
@@ -103,19 +103,19 @@ namespace ProjectAstra.Core.Input
                 EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
 
             UnbindActions();
-            _gameplayMap?.Disable();
+            gameplayMap?.Disable();
         }
 
         private void Update()
         {
-            _das.Tick(Time.deltaTime, IsFastCursorHeld);
+            das.Tick(Time.deltaTime, IsFastCursorHeld);
             ResolveSameFramePriority();
         }
 
         private void LateUpdate()
         {
-            _confirmPendingThisFrame = false;
-            _cancelPendingThisFrame = false;
+            confirmPendingThisFrame = false;
+            cancelPendingThisFrame = false;
         }
 
         private void CreateSingleton()
@@ -131,37 +131,37 @@ namespace ProjectAstra.Core.Input
 
         private void InitializeInputActionMap()
         {
-            _gameplayMap = _inputActions.FindActionMap("Gameplay");
-            if (_gameplayMap == null)
+            gameplayMap = inputActions.FindActionMap("Gameplay");
+            if (gameplayMap == null)
             {
                 Debug.LogError("[InputManager] 'Gameplay' action map not found in InputActionAsset");
                 return;
             }
 
-            _gameplayMap.Enable();
+            gameplayMap.Enable();
             BindActions();
         }
 
         private void OnStateChanged(StateChangeArgs args)
         {
-            _currentState = args.NewState;
-            ApplyContextFilter(_currentState);
-            _das.Reset();
+            currentState = args.NewState;
+            ApplyContextFilter(currentState);
+            das.Reset();
             // Fast-cursor is an InputManager input, not DAS state — clear it here, not inside Reset.
             IsFastCursorHeld = false;
         }
 
         private void ApplyContextFilter(GameState state)
         {
-            if (_inputContextTable == null)
+            if (inputContextTable == null)
             {
                 Debug.LogError("[InputManager] Input Context Table is not wired — cannot filter input by state.");
                 return;
             }
 
-            var allowed = _inputContextTable.GetAllowedActionNames(state);
+            var allowed = inputContextTable.GetAllowedActionNames(state);
 
-            foreach (var action in _gameplayMap.actions)
+            foreach (var action in gameplayMap.actions)
             {
                 if (allowed.Contains(action.name))
                     action.Enable();
@@ -195,18 +195,18 @@ namespace ProjectAstra.Core.Input
 
         private void BindActions()
         {
-            Bind("CursorUp",    _ => _das.Press(CursorDirection.Up));
-            Bind("CursorDown",  _ => _das.Press(CursorDirection.Down));
-            Bind("CursorLeft",  _ => _das.Press(CursorDirection.Left));
-            Bind("CursorRight", _ => _das.Press(CursorDirection.Right));
+            Bind("CursorUp",    _ => das.Press(CursorDirection.Up));
+            Bind("CursorDown",  _ => das.Press(CursorDirection.Down));
+            Bind("CursorLeft",  _ => das.Press(CursorDirection.Left));
+            Bind("CursorRight", _ => das.Press(CursorDirection.Right));
 
-            BindCancel("CursorUp",    _ => _das.Release(CursorDirection.Up));
-            BindCancel("CursorDown",  _ => _das.Release(CursorDirection.Down));
-            BindCancel("CursorLeft",  _ => _das.Release(CursorDirection.Left));
-            BindCancel("CursorRight", _ => _das.Release(CursorDirection.Right));
+            BindCancel("CursorUp",    _ => das.Release(CursorDirection.Up));
+            BindCancel("CursorDown",  _ => das.Release(CursorDirection.Down));
+            BindCancel("CursorLeft",  _ => das.Release(CursorDirection.Left));
+            BindCancel("CursorRight", _ => das.Release(CursorDirection.Right));
 
-            Bind("Confirm", _ => _confirmPendingThisFrame = true);
-            Bind("Cancel",  _ => _cancelPendingThisFrame = true);
+            Bind("Confirm", _ => confirmPendingThisFrame = true);
+            Bind("Cancel",  _ => cancelPendingThisFrame = true);
 
             Bind("FastCursor", _ => IsFastCursorHeld = true);
             BindCancel("FastCursor", _ => IsFastCursorHeld = false);
@@ -227,29 +227,29 @@ namespace ProjectAstra.Core.Input
 
         private void Bind(string actionName, Action<InputAction.CallbackContext> callback)
         {
-            var action = _gameplayMap.FindAction(actionName);
+            var action = gameplayMap.FindAction(actionName);
             if (action == null)
             {
                 Debug.LogWarning($"[InputManager] Action '{actionName}' not found in Gameplay map");
                 return;
             }
             action.performed += callback;
-            _actionUnbinders.Add(() => action.performed -= callback);
+            actionUnbinders.Add(() => action.performed -= callback);
         }
 
         private void BindCancel(string actionName, Action<InputAction.CallbackContext> callback)
         {
-            var action = _gameplayMap.FindAction(actionName);
+            var action = gameplayMap.FindAction(actionName);
             if (action == null) return;
             action.canceled += callback;
-            _actionUnbinders.Add(() => action.canceled -= callback);
+            actionUnbinders.Add(() => action.canceled -= callback);
         }
 
         private void UnbindActions()
         {
-            foreach (var unbind in _actionUnbinders)
+            foreach (var unbind in actionUnbinders)
                 unbind();
-            _actionUnbinders.Clear();
+            actionUnbinders.Clear();
         }
 
         // Whether an action is currently being held down. Used by callers that
@@ -260,7 +260,7 @@ namespace ProjectAstra.Core.Input
 
         public bool IsActionHeld(string actionName)
         {
-            var action = _gameplayMap?.FindAction(actionName);
+            var action = gameplayMap?.FindAction(actionName);
             return action != null && action.IsPressed();
         }
 
@@ -270,12 +270,12 @@ namespace ProjectAstra.Core.Input
         // protects against accidental confirmations when the player meant to back out.
         private void ResolveSameFramePriority()
         {
-            if (_cancelPendingThisFrame)
+            if (cancelPendingThisFrame)
             {
                 OnCancel?.Invoke();
-                _confirmPendingThisFrame = false;
+                confirmPendingThisFrame = false;
             }
-            else if (_confirmPendingThisFrame)
+            else if (confirmPendingThisFrame)
             {
                 OnConfirm?.Invoke();
             }

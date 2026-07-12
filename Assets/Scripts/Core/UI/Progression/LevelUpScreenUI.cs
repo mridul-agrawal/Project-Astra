@@ -28,69 +28,69 @@ namespace ProjectAstra.Core.UI.Progression
             public TMP_Text afterValueText;
         }
 
-        [SerializeField] private GameObject _overlayRoot;
-        [SerializeField] private Image _portraitImage;
-        [SerializeField] private TMP_Text _unitNameText;
-        [SerializeField] private TMP_Text _levelTransitionText;
-        [SerializeField] private TMP_Text _confirmHintText;
-        [SerializeField] private StatRow[] _statRows;
+        [SerializeField] private GameObject overlayRoot;
+        [SerializeField] private Image portraitImage;
+        [SerializeField] private TMP_Text unitNameText;
+        [SerializeField] private TMP_Text levelTransitionText;
+        [SerializeField] private TMP_Text confirmHintText;
+        [SerializeField] private StatRow[] statRows;
 
         [Header("Timing")]
-        [SerializeField] private float _rowStaggerSeconds = 0.1f;
-        [SerializeField] private float _rowFadeSeconds = 0.15f;
+        [SerializeField] private float rowStaggerSeconds = 0.1f;
+        [SerializeField] private float rowFadeSeconds = 0.15f;
 
         [Header("Colors")]
-        [SerializeField] private Color _gainAccentColor = new Color(0.486f, 0.827f, 0.416f, 1f);
-        [SerializeField] private Color _noGainColor = new Color(0.541f, 0.478f, 0.345f, 1f);
+        [SerializeField] private Color gainAccentColor = new Color(0.486f, 0.827f, 0.416f, 1f);
+        [SerializeField] private Color noGainColor = new Color(0.541f, 0.478f, 0.345f, 1f);
 
-        private bool _confirmReceived;
-        private bool _confirmBound;
+        private bool confirmReceived;
+        private bool confirmBound;
 
         public IEnumerator Play(TestUnit unit, StatArray preStats, StatArray gains, int preLevel, Sprite portrait)
         {
-            if (_overlayRoot != null) _overlayRoot.SetActive(true);
+            if (overlayRoot != null) overlayRoot.SetActive(true);
             AudioManager.Instance?.Play(SoundId.LevelUp);
 
-            if (_unitNameText != null)
-                _unitNameText.text = unit != null ? unit.name : "";
-            if (_portraitImage != null)
+            if (unitNameText != null)
+                unitNameText.text = unit != null ? unit.name : "";
+            if (portraitImage != null)
             {
-                _portraitImage.sprite = portrait;
-                _portraitImage.enabled = portrait != null;
+                portraitImage.sprite = portrait;
+                portraitImage.enabled = portrait != null;
             }
-            if (_levelTransitionText != null)
-                _levelTransitionText.text = $"Level {preLevel}  →  {preLevel + 1}";
+            if (levelTransitionText != null)
+                levelTransitionText.text = $"Level {preLevel}  →  {preLevel + 1}";
 
-            if (_confirmHintText != null)
+            if (confirmHintText != null)
             {
-                _confirmHintText.gameObject.SetActive(false);
-                _confirmHintText.text = "▼  Press Confirm to continue";
+                confirmHintText.gameObject.SetActive(false);
+                confirmHintText.text = "▼  Press Confirm to continue";
             }
 
-            if (_statRows != null)
+            if (statRows != null)
             {
-                foreach (var row in _statRows)
+                foreach (var row in statRows)
                     InitializeRow(row);
             }
 
-            if (_statRows != null)
+            if (statRows != null)
             {
-                foreach (var row in _statRows)
+                foreach (var row in statRows)
                 {
                     PopulateRow(row, preStats, gains);
                     yield return FadeRowIn(row);
-                    yield return new WaitForSeconds(_rowStaggerSeconds);
+                    yield return new WaitForSeconds(rowStaggerSeconds);
                 }
             }
 
-            if (_confirmHintText != null) _confirmHintText.gameObject.SetActive(true);
+            if (confirmHintText != null) confirmHintText.gameObject.SetActive(true);
 
-            _confirmReceived = false;
+            confirmReceived = false;
             BindConfirm();
-            while (!_confirmReceived) yield return null;
+            while (!confirmReceived) yield return null;
             UnbindConfirm();
 
-            if (_overlayRoot != null) _overlayRoot.SetActive(false);
+            if (overlayRoot != null) overlayRoot.SetActive(false);
         }
 
         private void InitializeRow(StatRow row)
@@ -110,22 +110,22 @@ namespace ProjectAstra.Core.UI.Progression
             if (row.gainText != null)
             {
                 row.gainText.text = gain > 0 ? $"+{gain}" : "—";
-                row.gainText.color = gain > 0 ? _gainAccentColor : _noGainColor;
+                row.gainText.color = gain > 0 ? gainAccentColor : noGainColor;
             }
         }
 
         private IEnumerator FadeRowIn(StatRow row)
         {
-            if (row.rowCanvasGroup == null || _rowFadeSeconds <= 0f)
+            if (row.rowCanvasGroup == null || rowFadeSeconds <= 0f)
             {
                 if (row.rowCanvasGroup != null) row.rowCanvasGroup.alpha = 1f;
                 yield break;
             }
             float t = 0f;
-            while (t < _rowFadeSeconds)
+            while (t < rowFadeSeconds)
             {
                 t += Time.deltaTime;
-                row.rowCanvasGroup.alpha = Mathf.Clamp01(t / _rowFadeSeconds);
+                row.rowCanvasGroup.alpha = Mathf.Clamp01(t / rowFadeSeconds);
                 yield return null;
             }
             row.rowCanvasGroup.alpha = 1f;
@@ -151,22 +151,22 @@ namespace ProjectAstra.Core.UI.Progression
         private void Confirm()
         {
             AudioManager.Instance?.Play(SoundId.UiConfirm);
-            _confirmReceived = true;
+            confirmReceived = true;
         }
 
         private void BindConfirm()
         {
-            if (_confirmBound || InputManager.Instance == null) return;
+            if (confirmBound || InputManager.Instance == null) return;
             InputManager.Instance.OnConfirm += Confirm;
-            _confirmBound = true;
+            confirmBound = true;
         }
 
         private void UnbindConfirm()
         {
-            if (!_confirmBound) return;
+            if (!confirmBound) return;
             if (InputManager.Instance != null)
                 InputManager.Instance.OnConfirm -= Confirm;
-            _confirmBound = false;
+            confirmBound = false;
         }
 
         private void OnDisable() => UnbindConfirm();

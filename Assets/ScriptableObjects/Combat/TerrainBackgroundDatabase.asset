@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 243dc9e55ad042e48b1b663d4376957c, type: 3}
   m_Name: TerrainBackgroundDatabase
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Combat.TerrainBackgroundDatabase
-  _fallback: {fileID: 0}
-  _entries: []
+  fallback: {fileID: 0}
+  entries: []

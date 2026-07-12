@@ -24,27 +24,27 @@ namespace ProjectAstra.Core.Input
             Vector2Int.right  // CursorDirection.Right
         };
 
-        private readonly float _initialDelay;
-        private readonly float _repeatRate;
-        private readonly float _fastRepeatRate;
+        private readonly float initialDelay;
+        private readonly float repeatRate;
+        private readonly float fastRepeatRate;
 
-        private readonly float[] _timers = new float[DirectionCount];
-        private readonly bool[] _inInitialDelay = new bool[DirectionCount];
-        private readonly bool[] _held = new bool[DirectionCount];
+        private readonly float[] timers = new float[DirectionCount];
+        private readonly bool[] inInitialDelay = new bool[DirectionCount];
+        private readonly bool[] held = new bool[DirectionCount];
 
         public DelayedAutoShift(float initialDelay, float repeatRate, float fastRepeatRate)
         {
-            _initialDelay = initialDelay;
-            _repeatRate = repeatRate;
-            _fastRepeatRate = fastRepeatRate;
+            this.initialDelay = initialDelay;
+            this.repeatRate = repeatRate;
+            this.fastRepeatRate = fastRepeatRate;
         }
 
         public void Press(CursorDirection direction)
         {
             int directionIndex = (int)direction;
-            _held[directionIndex] = true;
-            _timers[directionIndex] = 0f;
-            _inInitialDelay[directionIndex] = true;
+            held[directionIndex] = true;
+            timers[directionIndex] = 0f;
+            inInitialDelay[directionIndex] = true;
             CursorMoveTriggered?.Invoke(DirectionVectors[directionIndex]);
         }
 
@@ -55,10 +55,10 @@ namespace ProjectAstra.Core.Input
 
         public void Tick(float deltaTime, bool fastCursorHeld)
         {
-            float repeatRate = fastCursorHeld ? _fastRepeatRate : _repeatRate;
+            float repeatRate = fastCursorHeld ? fastRepeatRate : this.repeatRate;
             for (int directionIndex = 0; directionIndex < DirectionCount; directionIndex++)
             {
-                if (_held[directionIndex])
+                if (held[directionIndex])
                     Advance(directionIndex, deltaTime, repeatRate);
             }
         }
@@ -66,14 +66,14 @@ namespace ProjectAstra.Core.Input
         // Carries fractional overshoot into the next tick so repeats stay on rate when frame time jitters.
         private void Advance(int directionIndex, float deltaTime, float repeatRate)
         {
-            _timers[directionIndex] += deltaTime;
+            timers[directionIndex] += deltaTime;
 
-            bool inInitialDelay = _inInitialDelay[directionIndex];
-            float threshold = inInitialDelay ? _initialDelay : repeatRate;
-            if (_timers[directionIndex] < threshold) return;
+            bool inInitialDelay = this.inInitialDelay[directionIndex];
+            float threshold = inInitialDelay ? initialDelay : repeatRate;
+            if (timers[directionIndex] < threshold) return;
 
-            _timers[directionIndex] = inInitialDelay ? 0f : _timers[directionIndex] - repeatRate;
-            _inInitialDelay[directionIndex] = false;
+            timers[directionIndex] = inInitialDelay ? 0f : timers[directionIndex] - repeatRate;
+            this.inInitialDelay[directionIndex] = false;
             CursorMoveTriggered?.Invoke(DirectionVectors[directionIndex]);
         }
 
@@ -85,9 +85,9 @@ namespace ProjectAstra.Core.Input
 
         private void ClearSlot(int directionIndex)
         {
-            _held[directionIndex] = false;
-            _timers[directionIndex] = 0f;
-            _inInitialDelay[directionIndex] = false;
+            held[directionIndex] = false;
+            timers[directionIndex] = 0f;
+            inInitialDelay[directionIndex] = false;
         }
     }
 }

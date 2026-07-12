@@ -16,30 +16,30 @@ namespace ProjectAstra.Core.UI.BattleMap
         public static bool HasInputFocus { get; private set; }
 
         [Header("Phase Controls")]
-        [SerializeField] private TextMeshProUGUI _phaseLabel;
-        [SerializeField] private Button _advancePhaseButton;
-        [SerializeField] private Toggle _hasAlliesToggle;
+        [SerializeField] private TextMeshProUGUI phaseLabel;
+        [SerializeField] private Button advancePhaseButton;
+        [SerializeField] private Toggle hasAlliesToggle;
 
         [Header("Transition Buttons")]
-        [SerializeField] private Button _cutsceneButton;
-        [SerializeField] private Button _combatAnimationButton;
-        [SerializeField] private Button _dialogueButton;
-        [SerializeField] private Button _chapterClearButton;
-        [SerializeField] private Button _gameOverButton;
+        [SerializeField] private Button cutsceneButton;
+        [SerializeField] private Button combatAnimationButton;
+        [SerializeField] private Button dialogueButton;
+        [SerializeField] private Button chapterClearButton;
+        [SerializeField] private Button gameOverButton;
 
         [Header("Colors")]
         [SerializeField] private Color Normal = new(0.2f, 0.2f, 0.2f, 0.9f);
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
-        private BattlePhaseManager _phaseManager;
-        private bool _hasAllies = true;
-        private Button[] _buttons;
-        private int _selected;
+        private BattlePhaseManager phaseManager;
+        private bool hasAllies = true;
+        private Button[] buttons;
+        private int selected;
 
         // The four loose Canvas children that together make up the left-side
         // debug nav panel. Cached in Awake so we can toggle visibility atomically
         // when the user presses Tab.
-        private GameObject[] _navPanelRoots;
+        private GameObject[] navPanelRoots;
 
         private void Awake()
         {
@@ -50,14 +50,14 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void OnEnable()
         {
-            _phaseManager = new BattlePhaseManager(_hasAllies);
+            phaseManager = new BattlePhaseManager(hasAllies);
             UpdatePhaseLabel();
 
-            _buttons = new[]
+            buttons = new[]
             {
-                _advancePhaseButton,
-                _cutsceneButton, _combatAnimationButton, _dialogueButton,
-                _chapterClearButton, _gameOverButton
+                advancePhaseButton,
+                cutsceneButton, combatAnimationButton, dialogueButton,
+                chapterClearButton, gameOverButton
             };
 
             AddListenersToMouseClicks();
@@ -65,18 +65,18 @@ namespace ProjectAstra.Core.UI.BattleMap
             InitializeButtonColors();
             SelectButtonByIndex(0);
 
-            _hasAlliesToggle.isOn = _hasAllies;
-            _hasAlliesToggle.onValueChanged.AddListener(OnHasAlliesChanged);
+            hasAlliesToggle.isOn = hasAllies;
+            hasAlliesToggle.onValueChanged.AddListener(OnHasAlliesChanged);
         }
 
         private void AddListenersToMouseClicks()
         {
-            _advancePhaseButton.onClick.AddListener(AdvancePhase);
-            _cutsceneButton.onClick.AddListener(GoToCutscene);
-            _combatAnimationButton.onClick.AddListener(GoToCombatAnimation);
-            _dialogueButton.onClick.AddListener(GoToDialogue);
-            _chapterClearButton.onClick.AddListener(GoToChapterClear);
-            _gameOverButton.onClick.AddListener(GoToGameOver);
+            advancePhaseButton.onClick.AddListener(AdvancePhase);
+            cutsceneButton.onClick.AddListener(GoToCutscene);
+            combatAnimationButton.onClick.AddListener(GoToCombatAnimation);
+            dialogueButton.onClick.AddListener(GoToDialogue);
+            chapterClearButton.onClick.AddListener(GoToChapterClear);
+            gameOverButton.onClick.AddListener(GoToGameOver);
         }
 
         private void AddListenerToGameplayInputs()
@@ -90,17 +90,17 @@ namespace ProjectAstra.Core.UI.BattleMap
         {
             RemoveListenersToMouseClicks();
             RemoveListenerToGameplayInputs();
-            _hasAlliesToggle.onValueChanged.RemoveListener(OnHasAlliesChanged);
+            hasAlliesToggle.onValueChanged.RemoveListener(OnHasAlliesChanged);
         }
 
         private void RemoveListenersToMouseClicks()
         {
-            _advancePhaseButton.onClick.RemoveListener(AdvancePhase);
-            _cutsceneButton.onClick.RemoveListener(GoToCutscene);
-            _combatAnimationButton.onClick.RemoveListener(GoToCombatAnimation);
-            _dialogueButton.onClick.RemoveListener(GoToDialogue);
-            _chapterClearButton.onClick.RemoveListener(GoToChapterClear);
-            _gameOverButton.onClick.RemoveListener(GoToGameOver);
+            advancePhaseButton.onClick.RemoveListener(AdvancePhase);
+            cutsceneButton.onClick.RemoveListener(GoToCutscene);
+            combatAnimationButton.onClick.RemoveListener(GoToCombatAnimation);
+            dialogueButton.onClick.RemoveListener(GoToDialogue);
+            chapterClearButton.onClick.RemoveListener(GoToChapterClear);
+            gameOverButton.onClick.RemoveListener(GoToGameOver);
         }
 
         private void RemoveListenerToGameplayInputs()
@@ -110,23 +110,23 @@ namespace ProjectAstra.Core.UI.BattleMap
             InputManager.Instance.OnPause -= Pause;
         }
 
-        private void InitializeButtonColors() { foreach (var button in _buttons) button.image.color = Normal; }
+        private void InitializeButtonColors() { foreach (var button in buttons) button.image.color = Normal; }
 
         private void AdvancePhase()
         {
-            _phaseManager.AdvancePhase();
+            phaseManager.AdvancePhase();
             UpdatePhaseLabel();
         }
 
         private void OnHasAlliesChanged(bool value)
         {
-            _hasAllies = value;
-            _phaseManager.SetHasAllies(value);
+            hasAllies = value;
+            phaseManager.SetHasAllies(value);
         }
 
         private void UpdatePhaseLabel()
         {
-            _phaseLabel.text = $"Phase: {_phaseManager.CurrentPhase}";
+            phaseLabel.text = $"Phase: {phaseManager.CurrentPhase}";
         }
 
         private void Update()
@@ -140,7 +140,7 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void CacheNavPanelRoots()
         {
-            _navPanelRoots = new[]
+            navPanelRoots = new[]
             {
                 transform.Find("Background")?.gameObject,
                 transform.Find("Title")?.gameObject,
@@ -151,8 +151,8 @@ namespace ProjectAstra.Core.UI.BattleMap
 
         private void SetNavPanelVisible(bool visible)
         {
-            if (_navPanelRoots == null) return;
-            foreach (var go in _navPanelRoots)
+            if (navPanelRoots == null) return;
+            foreach (var go in navPanelRoots)
                 if (go != null) go.SetActive(visible);
         }
 
@@ -172,21 +172,21 @@ namespace ProjectAstra.Core.UI.BattleMap
         private void Navigate(Vector2Int dir)
         {
             if (IsNotActiveState || !HasInputFocus) return;
-            if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
-            else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
+            if (dir.y > 0) SelectButtonByIndex(selected <= 0 ? buttons.Length - 1 : selected - 1);
+            else if (dir.y < 0) SelectButtonByIndex(selected >= buttons.Length - 1 ? 0 : selected + 1);
         }
 
         private void ConfirmSelection()
         {
             if (IsNotActiveState || !HasInputFocus) return;
-            _buttons[_selected].onClick.Invoke();
+            buttons[selected].onClick.Invoke();
         }
 
         private void SelectButtonByIndex(int i)
         {
-            _buttons[_selected].image.color = Normal;
-            _selected = i;
-            _buttons[_selected].image.color = Selected;
+            buttons[selected].image.color = Normal;
+            selected = i;
+            buttons[selected].image.color = Selected;
         }
     }
 }

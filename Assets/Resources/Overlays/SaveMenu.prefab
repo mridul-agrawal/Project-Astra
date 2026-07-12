@@ -117,9 +117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af7232cdf73c0ae4f88bd0172178372d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.SaveMenuOverlayUI
-  _navigationButtons:
+  navigationButtons:
   - {fileID: 3558269110036597775}
-  _returnButton: {fileID: 3558269110036597775}
+  returnButton: {fileID: 3558269110036597775}
 --- !u!1 &4921710569128593832
 GameObject:
   m_ObjectHideFlags: 0

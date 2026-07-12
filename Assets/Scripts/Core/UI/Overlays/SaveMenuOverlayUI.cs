@@ -8,7 +8,7 @@ namespace ProjectAstra.Core.UI.Overlays
     // Save menu overlay — return or cancel goes back to previous state.
     public class SaveMenuOverlayUI : MonoBehaviour
     {
-        [SerializeField] private Button _returnButton;
+        [SerializeField] private Button returnButton;
 
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
@@ -16,12 +16,12 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             AddListenersToMouseClicks();
             AddListenerToGameplayInputs();
-            _returnButton.image.color = Selected;
+            returnButton.image.color = Selected;
         }
 
         private void AddListenersToMouseClicks()
         {
-            _returnButton.onClick.AddListener(Return);
+            returnButton.onClick.AddListener(Return);
         }
 
         private void AddListenerToGameplayInputs()
@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void RemoveListenersToMouseClicks()
         {
-            _returnButton.onClick.RemoveListener(Return);
+            returnButton.onClick.RemoveListener(Return);
         }
 
         private void RemoveListenerToGameplayInputs()

@@ -9,41 +9,41 @@ namespace ProjectAstra.Core.Dialogue
     [Serializable]
     public class DialogueNode
     {
-        [HideInInspector, SerializeField] private int _nodeId;
-        [SpeakerId, SerializeField] private string _speakerId;
-        [SerializeField] private DialogueExpression _expression = DialogueExpression.Neutral;
-        [SerializeField] private PortraitPosition _portraitPosition = PortraitPosition.Left;
+        [HideInInspector, SerializeField] private int nodeId;
+        [SpeakerId, SerializeField] private string speakerId;
+        [SerializeField] private DialogueExpression expression = DialogueExpression.Neutral;
+        [SerializeField] private PortraitPosition portraitPosition = PortraitPosition.Left;
 
         [Tooltip("Which way the portrait looks. Art faces Left by default; Right flips it horizontally (scale.x × −1).")]
-        [SerializeField] private PortraitFacing _portraitFacing = PortraitFacing.Left;
+        [SerializeField] private PortraitFacing portraitFacing = PortraitFacing.Left;
 
-        [SerializeField, TextArea(2, 5)] private string _text;
+        [SerializeField, TextArea(2, 5)] private string text;
 
         [Tooltip("Characters per second for this line. Leave below 0 to use the global text speed.")]
-        [SerializeField] private float _textSpeedOverride = -1f;
+        [SerializeField] private float textSpeedOverride = -1f;
 
         [Tooltip("Seconds to wait, then advance on its own. Leave at 0 to wait for the player.")]
-        [SerializeField] private float _autoAdvanceDelay = 0f;
+        [SerializeField] private float autoAdvanceDelay = 0f;
 
         [Tooltip("Optional full-screen still shown behind this line (high-intensity 'bespoke still' moments).")]
-        [SerializeField] private Sprite _fullScreenImage;
+        [SerializeField] private Sprite fullScreenImage;
 
-        public int NodeId => _nodeId;
-        public string SpeakerId => _speakerId;
-        public DialogueExpression Expression => _expression;
-        public PortraitPosition PortraitPosition => _portraitPosition;
-        public PortraitFacing PortraitFacing => _portraitFacing;
-        public string Text => _text;
-        public Sprite FullScreenImage => _fullScreenImage;
+        public int NodeId => nodeId;
+        public string SpeakerId => speakerId;
+        public DialogueExpression Expression => expression;
+        public PortraitPosition PortraitPosition => portraitPosition;
+        public PortraitFacing PortraitFacing => portraitFacing;
+        public string Text => text;
+        public Sprite FullScreenImage => fullScreenImage;
 
-        public bool HasTextSpeedOverride => _textSpeedOverride > 0f;
-        public float TextSpeedOverride => _textSpeedOverride;
+        public bool HasTextSpeedOverride => textSpeedOverride > 0f;
+        public float TextSpeedOverride => textSpeedOverride;
 
-        public bool AutoAdvances => _autoAdvanceDelay > 0f;
-        public float AutoAdvanceDelay => _autoAdvanceDelay;
+        public bool AutoAdvances => autoAdvanceDelay > 0f;
+        public float AutoAdvanceDelay => autoAdvanceDelay;
 
         // Kept in sync with list position by DialogueScript.OnValidate — never hand-set.
-        internal void SetNodeId(int id) => _nodeId = id;
+        internal void SetNodeId(int id) => nodeId = id;
 
         // Builds the runtime node the runner consumes by flattening a segment + line:
         // the line supplies speaker/expression/portrait/text, the segment supplies the
@@ -52,15 +52,15 @@ namespace ProjectAstra.Core.Dialogue
         {
             return new DialogueNode
             {
-                _nodeId = nodeId,
-                _speakerId = line.SpeakerId,
-                _expression = line.Expression,
-                _portraitPosition = line.PortraitPosition,
-                _portraitFacing = line.PortraitFacing,
-                _text = line.Text,
-                _fullScreenImage = segment.Background,
-                _textSpeedOverride = segment.TextSpeed,
-                _autoAdvanceDelay = segment.AutoAdvanceDelay
+                nodeId = nodeId,
+                speakerId = line.SpeakerId,
+                expression = line.Expression,
+                portraitPosition = line.PortraitPosition,
+                portraitFacing = line.PortraitFacing,
+                text = line.Text,
+                fullScreenImage = segment.Background,
+                textSpeedOverride = segment.TextSpeed,
+                autoAdvanceDelay = segment.AutoAdvanceDelay
             };
         }
 
@@ -73,14 +73,14 @@ namespace ProjectAstra.Core.Dialogue
         {
             return new DialogueNode
             {
-                _nodeId = nodeId,
-                _speakerId = speakerId,
-                _text = text,
-                _expression = expression,
-                _portraitPosition = position,
-                _portraitFacing = facing,
-                _textSpeedOverride = textSpeedOverride,
-                _autoAdvanceDelay = autoAdvanceDelay
+                nodeId = nodeId,
+                speakerId = speakerId,
+                text = text,
+                expression = expression,
+                portraitPosition = position,
+                portraitFacing = facing,
+                textSpeedOverride = textSpeedOverride,
+                autoAdvanceDelay = autoAdvanceDelay
             };
         }
     }

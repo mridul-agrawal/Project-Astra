@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Soldier
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Soldier
-  _classType: 0
-  _movementRange: 5
-  _movementType: 0
-  _weaponWhitelist: 01000000
-  _statGrowthModifiers:
-    _values: 050000000500000000000000000000000000000005000000000000000000000000000000
-  _statCaps:
-    _values: 340000001800000002000000160000001600000016000000120000000e0000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 1
-  _isPromoted: 0
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 140000000600000000000000050000000500000005000000010000000800000004000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Soldier
+  classType: 0
+  movementRange: 5
+  movementType: 0
+  weaponWhitelist: 01000000
+  statGrowthModifiers:
+    values: 050000000500000000000000000000000000000005000000000000000000000000000000
+  statCaps:
+    values: 340000001800000002000000160000001600000016000000120000000e0000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 1
+  isPromoted: 0
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 140000000600000000000000050000000500000005000000010000000800000004000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

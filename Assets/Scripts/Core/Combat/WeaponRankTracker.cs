@@ -11,28 +11,28 @@ namespace ProjectAstra.Core.Combat
         // FE GBA WEXP needed to reach the next rank (E→D, D→C, C→B, B→A, A→S).
         private static readonly int[] WexpThresholds = { 1, 40, 71, 121, 201 };
 
-        private readonly Dictionary<WeaponType, WeaponRank> _ranks = new();
-        private readonly Dictionary<WeaponType, int> _wexp = new();
+        private readonly Dictionary<WeaponType, WeaponRank> ranks = new();
+        private readonly Dictionary<WeaponType, int> wexp = new();
 
         public event Action<WeaponType, WeaponRank> OnRankUp;
 
         public void InitializeRank(WeaponType type, WeaponRank startingRank)
         {
-            _ranks[type] = startingRank;
-            _wexp[type] = 0;
+            ranks[type] = startingRank;
+            wexp[type] = 0;
         }
 
         public WeaponRank GetRank(WeaponType type)
         {
-            return _ranks.TryGetValue(type, out var rank) ? rank : WeaponRank.E;
+            return ranks.TryGetValue(type, out var rank) ? rank : WeaponRank.E;
         }
 
         public int GetWexp(WeaponType type)
         {
-            return _wexp.TryGetValue(type, out var wexp) ? wexp : 0;
+            return this.wexp.TryGetValue(type, out var wexp) ? wexp : 0;
         }
 
-        public bool HasAccess(WeaponType type) => _ranks.ContainsKey(type);
+        public bool HasAccess(WeaponType type) => ranks.ContainsKey(type);
 
         public bool CanEquip(WeaponData weapon)
         {
@@ -42,20 +42,20 @@ namespace ProjectAstra.Core.Combat
 
         public void AddWexp(WeaponType type, int amount = 1)
         {
-            if (!_ranks.ContainsKey(type)) return;
+            if (!ranks.ContainsKey(type)) return;
 
-            var rank = _ranks[type];
+            var rank = ranks[type];
             if (rank >= WeaponRank.S) return;
 
-            if (!_wexp.ContainsKey(type)) _wexp[type] = 0;
-            _wexp[type] += amount;
+            if (!wexp.ContainsKey(type)) wexp[type] = 0;
+            wexp[type] += amount;
 
             int thresholdIndex = (int)rank;
-            if (thresholdIndex < WexpThresholds.Length && _wexp[type] >= WexpThresholds[thresholdIndex])
+            if (thresholdIndex < WexpThresholds.Length && wexp[type] >= WexpThresholds[thresholdIndex])
             {
-                _wexp[type] = 0;
-                _ranks[type] = rank + 1;
-                OnRankUp?.Invoke(type, _ranks[type]);
+                wexp[type] = 0;
+                ranks[type] = rank + 1;
+                OnRankUp?.Invoke(type, ranks[type]);
             }
         }
 

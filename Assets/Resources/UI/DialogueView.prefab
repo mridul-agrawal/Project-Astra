@@ -1349,17 +1349,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b435f2b7af56835458d603dfe69b5582, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Dialogue.DialogueView
-  _root: {fileID: 5721854267791650940}
-  _fullScreenImage: {fileID: 2354031425162072724}
-  _leftPortrait: {fileID: 1777861634523978476}
-  _rightPortrait: {fileID: 5799429085657150624}
-  _centerPortrait: {fileID: 2178218945655704695}
-  _namePlateLeft: {fileID: 8503075779137349814}
-  _nameLabelLeft: {fileID: 820467185623035213}
-  _namePlateRight: {fileID: 7789490822807576267}
-  _nameLabelRight: {fileID: 8617395363637263573}
-  _bodyText: {fileID: 2395186237505034604}
-  _continueHint: {fileID: 1801104972045718467}
+  root: {fileID: 5721854267791650940}
+  fullScreenImage: {fileID: 2354031425162072724}
+  leftPortrait: {fileID: 1777861634523978476}
+  rightPortrait: {fileID: 5799429085657150624}
+  centerPortrait: {fileID: 2178218945655704695}
+  namePlateLeft: {fileID: 8503075779137349814}
+  nameLabelLeft: {fileID: 820467185623035213}
+  namePlateRight: {fileID: 7789490822807576267}
+  nameLabelRight: {fileID: 8617395363637263573}
+  bodyText: {fileID: 2395186237505034604}
+  continueHint: {fileID: 1801104972045718467}
 --- !u!1 &7789490822807576267
 GameObject:
   m_ObjectHideFlags: 0

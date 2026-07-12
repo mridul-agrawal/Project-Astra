@@ -12,17 +12,17 @@ namespace ProjectAstra.Core.UI.Splash
     // stay data-driven and the controller stays small.
     public class SplashScreenController : MonoBehaviour
     {
-        [SerializeField] private VideoPlayer _videoPlayer;
-        [SerializeField] private CanvasGroup _fadeGroup;        // full-screen black cover, opaque until the video renders
+        [SerializeField] private VideoPlayer videoPlayer;
+        [SerializeField] private CanvasGroup fadeGroup;        // full-screen black cover, opaque until the video renders
 
-        private bool _isExiting;
-        private bool _playbackBegan;
-        private bool _revealed;
+        private bool isExiting;
+        private bool playbackBegan;
+        private bool revealed;
 
         private void Start()
         {
             ClearVideoTexture();
-            if (_fadeGroup != null) _fadeGroup.alpha = 1f;   // stay black until the video is rendering
+            if (fadeGroup != null) fadeGroup.alpha = 1f;   // stay black until the video is rendering
             BeginPlayback();
         }
 
@@ -31,7 +31,7 @@ namespace ProjectAstra.Core.UI.Splash
         // the reveal always begins from black.
         private void ClearVideoTexture()
         {
-            var target = _videoPlayer != null ? _videoPlayer.targetTexture : null;
+            var target = videoPlayer != null ? videoPlayer.targetTexture : null;
             if (target == null) return;
 
             var previous = RenderTexture.active;
@@ -42,22 +42,22 @@ namespace ProjectAstra.Core.UI.Splash
 
         private void BeginPlayback()
         {
-            if (_videoPlayer == null)
+            if (videoPlayer == null)
             {
                 Debug.LogError("[SplashScreen] No VideoPlayer assigned; advancing to Title.");
                 ExitToTitle();
                 return;
             }
 
-            _videoPlayer.isLooping = false;
-            _videoPlayer.loopPointReached += OnVideoFinished;
-            _videoPlayer.Play();
+            videoPlayer.isLooping = false;
+            videoPlayer.loopPointReached += OnVideoFinished;
+            videoPlayer.Play();
             AudioManager.Instance?.Play(SoundId.SplashSting);
         }
 
         private void Update()
         {
-            if (_isExiting) return;
+            if (isExiting) return;
             RevealWhenPlaybackStarts();
             if (SkipRequested() || PlaybackFinished())
                 ExitToTitle();
@@ -67,11 +67,11 @@ namespace ProjectAstra.Core.UI.Splash
         // is itself black) is in the texture, so the reveal begins seamlessly from black.
         private void RevealWhenPlaybackStarts()
         {
-            if (_revealed || _videoPlayer == null) return;
-            if (!_videoPlayer.isPlaying) return;
+            if (revealed || videoPlayer == null) return;
+            if (!videoPlayer.isPlaying) return;
 
-            if (_fadeGroup != null) _fadeGroup.alpha = 0f;
-            _revealed = true;
+            if (fadeGroup != null) fadeGroup.alpha = 0f;
+            revealed = true;
         }
 
         private void OnVideoFinished(VideoPlayer _) => ExitToTitle();
@@ -81,13 +81,13 @@ namespace ProjectAstra.Core.UI.Splash
         // player has stopped or reached its final frame.
         private bool PlaybackFinished()
         {
-            if (_videoPlayer == null) return false;
-            if (_videoPlayer.isPlaying) _playbackBegan = true;
-            if (!_playbackBegan) return false;
+            if (videoPlayer == null) return false;
+            if (videoPlayer.isPlaying) playbackBegan = true;
+            if (!playbackBegan) return false;
 
-            bool reachedLastFrame = _videoPlayer.frameCount > 0
-                && _videoPlayer.frame >= (long)_videoPlayer.frameCount - 1;
-            return !_videoPlayer.isPlaying || reachedLastFrame;
+            bool reachedLastFrame = videoPlayer.frameCount > 0
+                && videoPlayer.frame >= (long)videoPlayer.frameCount - 1;
+            return !videoPlayer.isPlaying || reachedLastFrame;
         }
 
         // Raw device polling rather than the action map: the splash runs outside any input
@@ -102,10 +102,10 @@ namespace ProjectAstra.Core.UI.Splash
 
         private void ExitToTitle()
         {
-            if (_isExiting) return;
-            _isExiting = true;
+            if (isExiting) return;
+            isExiting = true;
 
-            if (_videoPlayer != null) _videoPlayer.loopPointReached -= OnVideoFinished;
+            if (videoPlayer != null) videoPlayer.loopPointReached -= OnVideoFinished;
             AdvanceToTitle();   // ScreenFader fades the swap to the Title scene
         }
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7761063ff8de89c4e9e34b200e7ded54, type: 3}
   m_Name: UnitDatabase
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitDatabase
-  _units:
+  units:
   - {fileID: 11400000, guid: cb3b8824251e3d64abc604e49f9488bc, type: 2}
   - {fileID: 11400000, guid: e14da73106751fd458f76003d34e69c5, type: 2}
   - {fileID: 11400000, guid: 2671cb1b4fcde9049a13aa0d5b1e9ee2, type: 2}

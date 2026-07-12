@@ -43,19 +43,19 @@ namespace ProjectAstra.EditorTools
         {
             var script = ScriptableObject.CreateInstance<DialogueScript>();
             var so = new SerializedObject(script);
-            so.FindProperty("_scriptId").stringValue = "MAP1_T1_MOVE";
+            so.FindProperty("scriptId").stringValue = "MAP1_T1_MOVE";
 
-            var nodes = so.FindProperty("_nodes");
+            var nodes = so.FindProperty("nodes");
             nodes.arraySize = 1;
             var node = nodes.GetArrayElementAtIndex(0);
-            node.FindPropertyRelative("_nodeId").intValue = 0;
-            node.FindPropertyRelative("_speakerId").stringValue = "PROTAGONIST";
-            node.FindPropertyRelative("_text").stringValue =
+            node.FindPropertyRelative("nodeId").intValue = 0;
+            node.FindPropertyRelative("speakerId").stringValue = "PROTAGONIST";
+            node.FindPropertyRelative("text").stringValue =
                 "I need to get near the village — I have to reach the people before the Rakshasas do.";
-            node.FindPropertyRelative("_expression").enumValueIndex = (int)DialogueExpression.Determined;
-            node.FindPropertyRelative("_portraitPosition").enumValueIndex = (int)PortraitPosition.Left;
-            node.FindPropertyRelative("_textSpeedOverride").floatValue = -1f;
-            node.FindPropertyRelative("_autoAdvanceDelay").floatValue = 0f;
+            node.FindPropertyRelative("expression").enumValueIndex = (int)DialogueExpression.Determined;
+            node.FindPropertyRelative("portraitPosition").enumValueIndex = (int)PortraitPosition.Left;
+            node.FindPropertyRelative("textSpeedOverride").floatValue = -1f;
+            node.FindPropertyRelative("autoAdvanceDelay").floatValue = 0f;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             if (AssetDatabase.LoadAssetAtPath<Object>(ScriptPath) != null) AssetDatabase.DeleteAsset(ScriptPath);
@@ -69,13 +69,13 @@ namespace ProjectAstra.EditorTools
 
             var so = new SerializedObject(driver);
             // Turn and battle-dialogue channels now come from EventService — only triggers are wired here.
-            var triggers = so.FindProperty("_triggers");
+            var triggers = so.FindProperty("triggers");
             triggers.arraySize = 1;
             var trigger = triggers.GetArrayElementAtIndex(0);
-            trigger.FindPropertyRelative("_event").enumValueIndex = (int)BattleDialogueEventType.PlayerPhaseStarted;
-            trigger.FindPropertyRelative("_turnFilter").intValue = 1;
-            trigger.FindPropertyRelative("_script").objectReferenceValue = script;
-            trigger.FindPropertyRelative("_fireOnce").boolValue = true;
+            trigger.FindPropertyRelative("event").enumValueIndex = (int)BattleDialogueEventType.PlayerPhaseStarted;
+            trigger.FindPropertyRelative("turnFilter").intValue = 1;
+            trigger.FindPropertyRelative("script").objectReferenceValue = script;
+            trigger.FindPropertyRelative("fireOnce").boolValue = true;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(driver);
         }

@@ -12,9 +12,9 @@ namespace ProjectAstra.Core.Terrain
     // Subscribes after UnitRegistry.ResetPhaseFlags via EventService — that ordering is intentional.
     public class HealingTileSystem : MonoBehaviour
     {
-        [SerializeField] private TerrainStatTable _terrainStatTable;
-        [SerializeField] private MapRenderer _mapRenderer;
-        [SerializeField] private HealFloatSpawner _healFloatSpawner;
+        [SerializeField] private TerrainStatTable terrainStatTable;
+        [SerializeField] private MapRenderer mapRenderer;
+        [SerializeField] private HealFloatSpawner healFloatSpawner;
 
         private void Awake()
         {
@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Terrain
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)
         {
-            if (TurnManager.Instance == null || _terrainStatTable == null || _mapRenderer == null)
+            if (TurnManager.Instance == null || terrainStatTable == null || mapRenderer == null)
                 return;
 
             var faction = TurnManager.PhaseToFaction(phase);
@@ -44,8 +44,8 @@ namespace ProjectAstra.Core.Terrain
         {
             if (unit == null || unit.UnitInstance == null) return;
 
-            var terrain = _mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
-            var stats = _terrainStatTable.GetStats(terrain);
+            var terrain = mapRenderer.GetTerrainType(unit.gridPosition.x, unit.gridPosition.y);
+            var stats = terrainStatTable.GetStats(terrain);
             if (stats.healPerTurn <= 0) return;
 
             int before = unit.UnitInstance.CurrentHP;
@@ -53,7 +53,7 @@ namespace ProjectAstra.Core.Terrain
             int gained = unit.UnitInstance.CurrentHP - before;
 
             if (gained > 0)
-                _healFloatSpawner?.Show(unit.transform.position, gained);
+                healFloatSpawner?.Show(unit.transform.position, gained);
         }
     }
 }

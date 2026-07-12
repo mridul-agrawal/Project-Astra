@@ -464,9 +464,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce0a465c1b4778f43a42383c5bf29642, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.DialogueOverlayUI
-  _navigationButtons:
+  navigationButtons:
   - {fileID: 5994993805359725352}
-  _endDialogueButton: {fileID: 5994993805359725352}
+  endDialogueButton: {fileID: 5994993805359725352}
 --- !u!1 &7396486410494875511
 GameObject:
   m_ObjectHideFlags: 0

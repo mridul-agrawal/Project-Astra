@@ -13,24 +13,24 @@ namespace ProjectAstra.Core.UI.Overlays
         const float HoldDuration = 1.5f;
         const float ToastHeight = 36f;
 
-        private GameObject _toastObject;
-        private RectTransform _toastRect;
-        private TextMeshProUGUI _text;
+        private GameObject toastObject;
+        private RectTransform toastRect;
+        private TextMeshProUGUI text;
 
         private void Awake()
         {
             CreateUI();
-            if (_toastObject != null) _toastObject.SetActive(false);
+            if (toastObject != null) toastObject.SetActive(false);
         }
 
         public void Show(string message)
         {
-            if (_toastObject == null) CreateUI();
-            if (_toastObject == null) return;
+            if (toastObject == null) CreateUI();
+            if (toastObject == null) return;
 
             StopAllCoroutines();
-            _text.text = message;
-            _toastObject.SetActive(true);
+            text.text = message;
+            toastObject.SetActive(true);
             StartCoroutine(Animate());
         }
 
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core.UI.Overlays
             yield return Slide(Screen.width * 0.5f, 0f, SlideDuration);
             yield return new WaitForSeconds(HoldDuration);
             yield return Slide(0f, -Screen.width * 0.5f, SlideDuration);
-            _toastObject.SetActive(false);
+            toastObject.SetActive(false);
         }
 
         private IEnumerator Slide(float fromX, float toX, float duration)
@@ -49,10 +49,10 @@ namespace ProjectAstra.Core.UI.Overlays
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-                _toastRect.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), -80f);
+                toastRect.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), -80f);
                 yield return null;
             }
-            _toastRect.anchoredPosition = new Vector2(toX, -80f);
+            toastRect.anchoredPosition = new Vector2(toX, -80f);
         }
 
         private void CreateUI()
@@ -61,34 +61,34 @@ namespace ProjectAstra.Core.UI.Overlays
             if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
             if (canvas == null) return;
 
-            _toastObject = new GameObject("Toast");
-            _toastObject.transform.SetParent(canvas.transform, false);
+            toastObject = new GameObject("Toast");
+            toastObject.transform.SetParent(canvas.transform, false);
 
-            _toastRect = _toastObject.AddComponent<RectTransform>();
-            _toastRect.anchorMin = new Vector2(0.5f, 1f);
-            _toastRect.anchorMax = new Vector2(0.5f, 1f);
-            _toastRect.pivot = new Vector2(0.5f, 1f);
-            _toastRect.sizeDelta = new Vector2(320f, ToastHeight);
+            toastRect = toastObject.AddComponent<RectTransform>();
+            toastRect.anchorMin = new Vector2(0.5f, 1f);
+            toastRect.anchorMax = new Vector2(0.5f, 1f);
+            toastRect.pivot = new Vector2(0.5f, 1f);
+            toastRect.sizeDelta = new Vector2(320f, ToastHeight);
 
-            var bg = _toastObject.AddComponent<Image>();
+            var bg = toastObject.AddComponent<Image>();
             bg.color = new Color(0f, 0f, 0f, 0.78f);
 
             var textObj = new GameObject("ToastText");
-            textObj.transform.SetParent(_toastObject.transform, false);
+            textObj.transform.SetParent(toastObject.transform, false);
             var textRect = textObj.AddComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
             textRect.offsetMin = new Vector2(8f, 0f);
             textRect.offsetMax = new Vector2(-8f, 0f);
 
-            _text = textObj.AddComponent<TextMeshProUGUI>();
-            _text.alignment = TextAlignmentOptions.Center;
-            _text.fontSize = 18;
-            _text.fontStyle = FontStyles.Bold;
-            _text.color = new Color(1f, 0.85f, 0.5f, 1f);
-            _text.enableWordWrapping = false;
+            text = textObj.AddComponent<TextMeshProUGUI>();
+            text.alignment = TextAlignmentOptions.Center;
+            text.fontSize = 18;
+            text.fontStyle = FontStyles.Bold;
+            text.color = new Color(1f, 0.85f, 0.5f, 1f);
+            text.enableWordWrapping = false;
 
-            _toastObject.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            toastObject.AddComponent<CanvasGroup>().blocksRaycasts = false;
         }
     }
 }

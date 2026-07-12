@@ -10,11 +10,11 @@ namespace ProjectAstra.Core.Combat.Playback
     // serialized asset reference is shared across that scene.
     public class CombatAnimationSettingsRef : MonoBehaviour
     {
-        [SerializeField] private CombatAnimationSettings _asset;
+        [SerializeField] private CombatAnimationSettings asset;
 
         public static CombatAnimationSettings Current { get; private set; }
 
-        private void Awake() { if (_asset != null) Current = _asset; }
-        private void OnDestroy() { if (Current == _asset) Current = null; }
+        private void Awake() { if (asset != null) Current = asset; }
+        private void OnDestroy() { if (Current == asset) Current = null; }
     }
 }

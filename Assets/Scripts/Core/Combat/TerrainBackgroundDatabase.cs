@@ -19,18 +19,18 @@ namespace ProjectAstra.Core.Combat
         }
 
         [Tooltip("Used when a terrain has no authored entry.")]
-        [SerializeField] private Sprite _fallback;
-        [SerializeField] private Entry[] _entries;
+        [SerializeField] private Sprite fallback;
+        [SerializeField] private Entry[] entries;
 
         public Sprite GetBackground(TerrainType terrain)
         {
-            if (_entries != null)
+            if (entries != null)
             {
-                for (int i = 0; i < _entries.Length; i++)
-                    if (_entries[i].terrain == terrain && _entries[i].background != null)
-                        return _entries[i].background;
+                for (int i = 0; i < entries.Length; i++)
+                    if (entries[i].terrain == terrain && entries[i].background != null)
+                        return entries[i].background;
             }
-            return _fallback;
+            return fallback;
         }
     }
 }

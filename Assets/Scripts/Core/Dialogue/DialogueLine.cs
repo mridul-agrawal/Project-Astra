@@ -10,20 +10,20 @@ namespace ProjectAstra.Core.Dialogue
     [Serializable]
     public class DialogueLine
     {
-        [SpeakerId, SerializeField] private string _speakerId;
-        [SerializeField] private DialogueExpression _expression = DialogueExpression.Neutral;
-        [SerializeField] private PortraitPosition _portraitPosition = PortraitPosition.Left;
+        [SpeakerId, SerializeField] private string speakerId;
+        [SerializeField] private DialogueExpression expression = DialogueExpression.Neutral;
+        [SerializeField] private PortraitPosition portraitPosition = PortraitPosition.Left;
 
         [Tooltip("Which way the portrait looks. Art faces Left by default; Right flips it horizontally.")]
-        [SerializeField] private PortraitFacing _portraitFacing = PortraitFacing.Left;
+        [SerializeField] private PortraitFacing portraitFacing = PortraitFacing.Left;
 
-        [SerializeField, TextArea(2, 5)] private string _text;
+        [SerializeField, TextArea(2, 5)] private string text;
 
-        public string SpeakerId => _speakerId;
-        public DialogueExpression Expression => _expression;
-        public PortraitPosition PortraitPosition => _portraitPosition;
-        public PortraitFacing PortraitFacing => _portraitFacing;
-        public string Text => _text;
+        public string SpeakerId => speakerId;
+        public DialogueExpression Expression => expression;
+        public PortraitPosition PortraitPosition => portraitPosition;
+        public PortraitFacing PortraitFacing => portraitFacing;
+        public string Text => text;
 
         internal static DialogueLine Create(string speakerId, string text,
             DialogueExpression expression = DialogueExpression.Neutral,
@@ -32,11 +32,11 @@ namespace ProjectAstra.Core.Dialogue
         {
             return new DialogueLine
             {
-                _speakerId = speakerId,
-                _text = text,
-                _expression = expression,
-                _portraitPosition = position,
-                _portraitFacing = facing
+                speakerId = speakerId,
+                text = text,
+                expression = expression,
+                portraitPosition = position,
+                portraitFacing = facing
             };
         }
     }

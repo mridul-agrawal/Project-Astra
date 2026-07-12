@@ -40,26 +40,26 @@ namespace ProjectAstra.Core.Progression
     {
         public static DeathRegistry Instance { get; private set; }
 
-        private readonly List<DeathEntry> _entries = new();
-        private int _unnamedEnemyDeathCount;
+        private readonly List<DeathEntry> entries = new();
+        private int unnamedEnemyDeathCount;
 
         // Pluggable at runtime — scene setup can swap the default impl for
         // a richer one (e.g. support-log-backed epitaphs).
         public IDeathEpitaphProvider EpitaphProvider { get; set; } = DefaultDeathEpitaphProvider.Instance;
 
-        public int UnnamedEnemyDeathCount => _unnamedEnemyDeathCount;
-        public IReadOnlyList<DeathEntry> All => _entries;
+        public int UnnamedEnemyDeathCount => unnamedEnemyDeathCount;
+        public IReadOnlyList<DeathEntry> All => entries;
 
         public IReadOnlyList<DeathEntry> ForCurrentChapter()
         {
             int ch = ChapterContext.CurrentChapterNumber;
             var filtered = new List<DeathEntry>();
-            foreach (var e in _entries)
+            foreach (var e in entries)
                 if (e.chapterOfDeath == ch) filtered.Add(e);
             return filtered;
         }
 
-        public int UnnamedEnemyDeathCountForCurrentChapter() => _unnamedEnemyDeathCount;
+        public int UnnamedEnemyDeathCountForCurrentChapter() => unnamedEnemyDeathCount;
 
         private void Awake()
         {
@@ -82,11 +82,11 @@ namespace ProjectAstra.Core.Progression
         {
             if (args.faction == DeathFaction.EnemyGeneric)
             {
-                _unnamedEnemyDeathCount++;
+                unnamedEnemyDeathCount++;
                 return;
             }
 
-            _entries.Add(new DeathEntry
+            entries.Add(new DeathEntry
             {
                 unitId          = args.unitId,
                 unitName        = args.unitName,
@@ -102,21 +102,21 @@ namespace ProjectAstra.Core.Progression
 
         public void ResetForNewChapter()
         {
-            _entries.Clear();
-            _unnamedEnemyDeathCount = 0;
+            entries.Clear();
+            unnamedEnemyDeathCount = 0;
         }
 
         public DeathRegistryDto Serialize() => new DeathRegistryDto
         {
-            entries = _entries.ToArray(),
-            unnamedEnemyDeathCount = _unnamedEnemyDeathCount,
+            entries = entries.ToArray(),
+            unnamedEnemyDeathCount = unnamedEnemyDeathCount,
         };
 
         public void Restore(DeathRegistryDto dto)
         {
-            _entries.Clear();
-            if (dto.entries != null) _entries.AddRange(dto.entries);
-            _unnamedEnemyDeathCount = dto.unnamedEnemyDeathCount;
+            entries.Clear();
+            if (dto.entries != null) entries.AddRange(dto.entries);
+            unnamedEnemyDeathCount = dto.unnamedEnemyDeathCount;
         }
     }
 }

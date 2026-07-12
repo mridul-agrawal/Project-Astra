@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01f4d37d5c0cbae498baf301f330dd0d, type: 3}
   m_Name: MapCatalog
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Grid.MapCatalog
-  _maps:
+  maps:
   - {fileID: 11400000, guid: 9c725033086d2c245ac62e4fb60c4e9d, type: 2}
   - {fileID: 11400000, guid: 7d678dbc0f4c79e48bbbce20d92b6ad8, type: 2}

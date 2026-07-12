@@ -14,12 +14,12 @@ namespace ProjectAstra.Core.Progression
     [CreateAssetMenu(fileName = "Commitment", menuName = "Project Astra/Progression/Commitment")]
     public class Commitment : ScriptableObject
     {
-        [SerializeField] private string _id;
-        [SerializeField, TextArea] private string _commitmentText;
-        [SerializeField] private int _chapterIntroduced = 1;
+        [SerializeField] private string id;
+        [SerializeField, TextArea] private string commitmentText;
+        [SerializeField] private int chapterIntroduced = 1;
 
-        public string Id => _id;
-        public string Text => _commitmentText;
-        public int ChapterIntroduced => _chapterIntroduced;
+        public string Id => id;
+        public string Text => commitmentText;
+        public int ChapterIntroduced => chapterIntroduced;
     }
 }

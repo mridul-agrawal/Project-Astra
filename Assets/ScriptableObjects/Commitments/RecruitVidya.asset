@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a7b705bc24cfef4d823c0cf7b64c8a4, type: 3}
   m_Name: RecruitVidya
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Progression.Commitment
-  _id: recruit_vidya
-  _commitmentText: Recruit Vidya from the Templar Order.
-  _chapterIntroduced: 1
+  id: recruit_vidya
+  commitmentText: Recruit Vidya from the Templar Order.
+  chapterIntroduced: 1

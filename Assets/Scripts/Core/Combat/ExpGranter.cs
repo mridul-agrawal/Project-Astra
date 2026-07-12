@@ -27,17 +27,17 @@ namespace ProjectAstra.Core.Combat
     {
         public static ExpGranter Instance { get; private set; }
 
-        [SerializeField] private ExpGainOverlayUI _expGainOverlay;
-        [SerializeField] private LevelUpScreenUI _levelUpScreen;
+        [SerializeField] private ExpGainOverlayUI expGainOverlay;
+        [SerializeField] private LevelUpScreenUI levelUpScreen;
 
         private static readonly Func<int, bool> RollRandom =
             growthRate => UnityEngine.Random.Range(0, 100) < growthRate;
 
-        private readonly Queue<Pending> _queue = new Queue<Pending>();
-        private bool _draining;
+        private readonly Queue<Pending> queue = new Queue<Pending>();
+        private bool draining;
 
         // True while grants/level-ups are animating — end-of-chapter flow waits on this.
-        public bool IsBusy => _draining || _queue.Count > 0;
+        public bool IsBusy => draining || queue.Count > 0;
 
         private struct Pending
         {
@@ -74,8 +74,8 @@ namespace ProjectAstra.Core.Combat
                 return;
             }
 
-            _queue.Enqueue(new Pending { recipient = recipient, amount = amount, onComplete = onComplete });
-            if (!_draining) StartCoroutine(Drain());
+            queue.Enqueue(new Pending { recipient = recipient, amount = amount, onComplete = onComplete });
+            if (!draining) StartCoroutine(Drain());
         }
 
         private static bool IsGrantValid(TestUnit recipient, int amount)
@@ -95,14 +95,14 @@ namespace ProjectAstra.Core.Combat
 
         private IEnumerator Drain()
         {
-            _draining = true;
-            while (_queue.Count > 0)
+            draining = true;
+            while (queue.Count > 0)
             {
-                var pending = _queue.Dequeue();
+                var pending = queue.Dequeue();
                 yield return PlayGrant(pending);
                 pending.onComplete?.Invoke();
             }
-            _draining = false;
+            draining = false;
         }
 
         private IEnumerator PlayGrant(Pending p)
@@ -113,8 +113,8 @@ namespace ProjectAstra.Core.Combat
 
             int preExp = inst.CurrentEXP;
 
-            if (_expGainOverlay != null)
-                yield return _expGainOverlay.Play(unit, preExp, p.amount);
+            if (expGainOverlay != null)
+                yield return expGainOverlay.Play(unit, preExp, p.amount);
 
             inst.AddExp(p.amount);
 
@@ -136,8 +136,8 @@ namespace ProjectAstra.Core.Combat
 
             GameStateManager.Instance?.RequestTransition(GameState.LevelUpScreen, nameof(ExpGranter));
 
-            if (_levelUpScreen != null)
-                yield return _levelUpScreen.Play(unit, preStats, gains, preLevel, portrait);
+            if (levelUpScreen != null)
+                yield return levelUpScreen.Play(unit, preStats, gains, preLevel, portrait);
 
             GameStateManager.Instance?.RequestTransition(GameState.BattleMap, nameof(ExpGranter));
         }

@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 655c099b63894014cbb97f4d8fd09c53, type: 3}
   m_Name: RaidersHatchet
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.WeaponDefinition
-  _displayName: Raider's Hatchet
-  _weaponType: 2
-  _damageType: 0
-  _magicSchool: 0
-  _staffEffect: 0
-  _tier: 0
-  _minRank: 0
-  _might: 10
-  _hit: 75
-  _crit: 0
-  _weight: 6
-  _minRange: 1
-  _maxRange: 2
-  _maxUses: 45
-  _indestructible: 0
-  _brave: 0
-  _effectivenessTargets:
-  _characterLocked: 0
-  _ownerUnitId:
+  displayName: Raider's Hatchet
+  weaponType: 2
+  damageType: 0
+  magicSchool: 0
+  staffEffect: 0
+  tier: 0
+  minRank: 0
+  might: 10
+  hit: 75
+  crit: 0
+  weight: 6
+  minRange: 1
+  maxRange: 2
+  maxUses: 45
+  indestructible: 0
+  brave: 0
+  effectivenessTargets:
+  characterLocked: 0
+  ownerUnitId:

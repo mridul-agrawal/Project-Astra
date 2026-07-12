@@ -112,15 +112,15 @@ namespace ProjectAstra.Core.Editor
         private static void WireActionMenuAssets(UnitActionMenuUI actionMenu)
         {
             var so = new SerializedObject(actionMenu);
-            so.FindProperty("_bgSprite").objectReferenceValue =
+            so.FindProperty("bgSprite").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/action_menu_bg.png");
-            so.FindProperty("_cursorSprite").objectReferenceValue =
+            so.FindProperty("cursorSprite").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/trishul_cursor.png");
-            so.FindProperty("_dividerSprite").objectReferenceValue =
+            so.FindProperty("dividerSprite").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/ember_divider.png");
-            so.FindProperty("_optionFont").objectReferenceValue =
+            so.FindProperty("optionFont").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/UI/UnitInfoPanel/Fonts/Cinzel SDF.asset");
-            so.FindProperty("_selectedGlowMat").objectReferenceValue =
+            so.FindProperty("selectedGlowMat").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<Material>("Assets/UI/BattleMapHUD/Materials/CinzelGoldGlow.mat");
             so.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -130,16 +130,16 @@ namespace ProjectAstra.Core.Editor
             RangeHighlighter highlighter, PathArrowRenderer pathArrow, UnitMover unitMover, UnitActionMenuUI actionMenu)
         {
             var so = new SerializedObject(cursor);
-            so.FindProperty("_mapRenderer").objectReferenceValue = mapRenderer;
-            so.FindProperty("_terrainStatTable").objectReferenceValue = assets.terrainStatTable;
-            so.FindProperty("_spriteRenderer").objectReferenceValue = spriteRenderer;
-            so.FindProperty("_idleSprite").objectReferenceValue = assets.cursorIdle;
-            so.FindProperty("_selectedSprite").objectReferenceValue = assets.cursorSelected;
-            so.FindProperty("_targetingSprite").objectReferenceValue = assets.cursorTargeting;
-            so.FindProperty("_rangeHighlighter").objectReferenceValue = highlighter;
-            so.FindProperty("_pathArrowRenderer").objectReferenceValue = pathArrow;
-            so.FindProperty("_unitMover").objectReferenceValue = unitMover;
-            so.FindProperty("_actionMenuUI").objectReferenceValue = actionMenu;
+            so.FindProperty("mapRenderer").objectReferenceValue = mapRenderer;
+            so.FindProperty("terrainStatTable").objectReferenceValue = assets.terrainStatTable;
+            so.FindProperty("spriteRenderer").objectReferenceValue = spriteRenderer;
+            so.FindProperty("idleSprite").objectReferenceValue = assets.cursorIdle;
+            so.FindProperty("selectedSprite").objectReferenceValue = assets.cursorSelected;
+            so.FindProperty("targetingSprite").objectReferenceValue = assets.cursorTargeting;
+            so.FindProperty("rangeHighlighter").objectReferenceValue = highlighter;
+            so.FindProperty("pathArrowRenderer").objectReferenceValue = pathArrow;
+            so.FindProperty("unitMover").objectReferenceValue = unitMover;
+            so.FindProperty("actionMenuUI").objectReferenceValue = actionMenu;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -178,8 +178,8 @@ namespace ProjectAstra.Core.Editor
             if (unitDef != null || classOverride != null)
             {
                 var so = new SerializedObject(unit);
-                if (unitDef != null) so.FindProperty("_unitDefinition").objectReferenceValue = unitDef;
-                if (classOverride != null) so.FindProperty("_classOverride").objectReferenceValue = classOverride;
+                if (unitDef != null) so.FindProperty("unitDefinition").objectReferenceValue = unitDef;
+                if (classOverride != null) so.FindProperty("classOverride").objectReferenceValue = classOverride;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
 
@@ -263,7 +263,7 @@ namespace ProjectAstra.Core.Editor
             if (popupInstance != null)
             {
                 var so = new SerializedObject(inventoryMenu);
-                var prop = so.FindProperty("_popupInstance");
+                var prop = so.FindProperty("popupInstance");
                 if (prop != null && prop.objectReferenceValue != popupInstance)
                 {
                     prop.objectReferenceValue = popupInstance;
@@ -337,7 +337,7 @@ namespace ProjectAstra.Core.Editor
             if (supplyInstance != null)
             {
                 var so = new SerializedObject(convoyUI);
-                var prop = so.FindProperty("_popupInstance");
+                var prop = so.FindProperty("popupInstance");
                 if (prop != null && prop.objectReferenceValue != supplyInstance)
                 {
                     prop.objectReferenceValue = supplyInstance;
@@ -376,7 +376,7 @@ namespace ProjectAstra.Core.Editor
             if (forecastInstance != null)
             {
                 var so = new SerializedObject(forecastUI);
-                var prop = so.FindProperty("_popupInstance");
+                var prop = so.FindProperty("popupInstance");
                 if (prop != null && prop.objectReferenceValue != forecastInstance)
                 {
                     prop.objectReferenceValue = forecastInstance;
@@ -414,7 +414,7 @@ namespace ProjectAstra.Core.Editor
             if (ledgerInstance != null)
             {
                 var so = new SerializedObject(ledgerUI);
-                var prop = so.FindProperty("_popupInstance");
+                var prop = so.FindProperty("popupInstance");
                 if (prop != null && prop.objectReferenceValue != ledgerInstance)
                 {
                     prop.objectReferenceValue = ledgerInstance;
@@ -440,16 +440,16 @@ namespace ProjectAstra.Core.Editor
             if (cursor != null)
             {
                 var so = new SerializedObject(cursor);
-                so.FindProperty("_inventoryMenuUI").objectReferenceValue = inventoryMenu;
-                so.FindProperty("_confirmDialogUI").objectReferenceValue = confirmDialog;
-                so.FindProperty("_toastUI").objectReferenceValue = toast;
+                so.FindProperty("inventoryMenuUI").objectReferenceValue = inventoryMenu;
+                so.FindProperty("confirmDialogUI").objectReferenceValue = confirmDialog;
+                so.FindProperty("toastUI").objectReferenceValue = toast;
                 // Only overwrite _tradeUI if we actually found one — never clobber a wired
                 // reference with null, since the Trade Screen Build menu item sometimes
                 // wires it out-of-band and we want that wiring to survive.
                 if (tradeUI != null)
-                    so.FindProperty("_tradeUI").objectReferenceValue = tradeUI;
-                so.FindProperty("_convoyUI").objectReferenceValue = convoyUI;
-                var forecastProp = so.FindProperty("_combatForecastUI");
+                    so.FindProperty("tradeUI").objectReferenceValue = tradeUI;
+                so.FindProperty("convoyUI").objectReferenceValue = convoyUI;
+                var forecastProp = so.FindProperty("combatForecastUI");
                 if (forecastProp != null) forecastProp.objectReferenceValue = forecastUI;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
@@ -489,7 +489,7 @@ namespace ProjectAstra.Core.Editor
             var tm = go.AddComponent<TurnManager>();
 
             var so = new SerializedObject(tm);
-            so.FindProperty("_hasAllies").boolValue = false;
+            so.FindProperty("hasAllies").boolValue = false;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             Undo.RegisterCreatedObjectUndo(go, "Create TurnManager");
@@ -538,9 +538,9 @@ namespace ProjectAstra.Core.Editor
             var controller = Undo.AddComponent<CameraController>(cam.gameObject);
 
             var so = new SerializedObject(controller);
-            so.FindProperty("_gridCursor").objectReferenceValue = gridCursor;
-            so.FindProperty("_mapRenderer").objectReferenceValue = mapRenderer;
-            so.FindProperty("_deadzoneMarginTiles").intValue = 3;
+            so.FindProperty("gridCursor").objectReferenceValue = gridCursor;
+            so.FindProperty("mapRenderer").objectReferenceValue = mapRenderer;
+            so.FindProperty("deadzoneMarginTiles").intValue = 3;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

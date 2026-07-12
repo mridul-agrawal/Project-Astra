@@ -12,42 +12,42 @@ namespace ProjectAstra.Core.Grid
         private const int MinDimension = 1;
         private const int MaxDimension = 64;
 
-        [SerializeField] private string _mapName;
+        [SerializeField] private string mapName;
         [SerializeField] private string mapId;
-        [SerializeField] private int _width = 4;
-        [SerializeField] private int _height = 4;
+        [SerializeField] private int width = 4;
+        [SerializeField] private int height = 4;
         [SerializeField] private Sprite baseArt;
         [SerializeField] private TerrainType[] terrain = Array.Empty<TerrainType>();
-        [SerializeField] private UnitStartPosition[] _unitStartPositions = Array.Empty<UnitStartPosition>();
+        [SerializeField] private UnitStartPosition[] unitStartPositions = Array.Empty<UnitStartPosition>();
         [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
 
-        public string MapName => _mapName;
+        public string MapName => mapName;
         public string MapId => mapId;
-        public int Width => _width;
-        public int Height => _height;
+        public int Width => width;
+        public int Height => height;
         public Sprite BaseArt => baseArt;
         public TerrainType[] Terrain => terrain;
-        public UnitStartPosition[] UnitStartPositions => _unitStartPositions;
+        public UnitStartPosition[] UnitStartPositions => unitStartPositions;
         public MapObject[] Objects => objects;
 
         // Terrain for a cell, read straight from the painted grid. The single gameplay seam.
         public TerrainType TerrainAt(int x, int y)
         {
             if (!IsInBounds(x, y)) return TerrainType.Void;
-            int index = y * _width + x;
+            int index = y * width + x;
             if (terrain == null || index < 0 || index >= terrain.Length) return TerrainType.Void;
             return terrain[index];
         }
 
         public bool IsInBounds(int x, int y)
         {
-            return x >= 0 && x < _width && y >= 0 && y < _height;
+            return x >= 0 && x < width && y >= 0 && y < height;
         }
 
         private void OnValidate()
         {
-            _width = Mathf.Clamp(_width, MinDimension, MaxDimension);
-            _height = Mathf.Clamp(_height, MinDimension, MaxDimension);
+            width = Mathf.Clamp(width, MinDimension, MaxDimension);
+            height = Mathf.Clamp(height, MinDimension, MaxDimension);
         }
     }
 

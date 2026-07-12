@@ -9,24 +9,24 @@ namespace ProjectAstra.Core.Tests.Inventory
     [TestFixture]
     public class EquipResolverTests
     {
-        private TestUnit _unit;
+        private TestUnit unit;
 
         [SetUp]
         public void SetUp()
         {
-            _unit = new GameObject("EquipResolverUnit").AddComponent<TestUnit>();
+            unit = new GameObject("EquipResolverUnit").AddComponent<TestUnit>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_unit != null) Object.DestroyImmediate(_unit.gameObject);
+            if (unit != null) Object.DestroyImmediate(unit.gameObject);
         }
 
         [Test]
         public void EmptyWeapon_NotEquippable()
         {
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, WeaponData.None));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.None));
         }
 
         [Test]
@@ -34,52 +34,52 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             var sword = WeaponData.IronSword;
             sword.currentUses = 0;
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, sword));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, sword));
         }
 
         [Test]
         public void NoConstraints_AllowsAnything()
         {
             // No tracker, no class, no allowedWeaponTypes → permissive.
-            Assert.IsTrue(EquipResolver.CanEquip(_unit, WeaponData.IronSword));
+            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.IronSword));
         }
 
         [Test]
         public void RankTracker_Defers_AllowsRankMet()
         {
-            _unit.WeaponRankTracker = new WeaponRankTracker();
-            _unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.B);
-            Assert.IsTrue(EquipResolver.CanEquip(_unit, WeaponData.SilverSword));
+            unit.WeaponRankTracker = new WeaponRankTracker();
+            unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.B);
+            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.SilverSword));
         }
 
         [Test]
         public void RankTracker_Defers_RejectsRankTooLow()
         {
-            _unit.WeaponRankTracker = new WeaponRankTracker();
-            _unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.E);
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, WeaponData.SilverSword));
+            unit.WeaponRankTracker = new WeaponRankTracker();
+            unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.E);
+            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.SilverSword));
         }
 
         [Test]
         public void RankTracker_Defers_RejectsNoAccess()
         {
-            _unit.WeaponRankTracker = new WeaponRankTracker();
-            _unit.WeaponRankTracker.InitializeRank(WeaponType.Lance, WeaponRank.A);
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, WeaponData.IronSword));
+            unit.WeaponRankTracker = new WeaponRankTracker();
+            unit.WeaponRankTracker.InitializeRank(WeaponType.Lance, WeaponRank.A);
+            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.IronSword));
         }
 
         [Test]
         public void AllowedWeaponTypesFallback_Allows()
         {
-            SetAllowedTypes(_unit, WeaponType.Sword);
-            Assert.IsTrue(EquipResolver.CanEquip(_unit, WeaponData.IronSword));
+            SetAllowedTypes(unit, WeaponType.Sword);
+            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.IronSword));
         }
 
         [Test]
         public void AllowedWeaponTypesFallback_Rejects()
         {
-            SetAllowedTypes(_unit, WeaponType.AnimaTome);
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, WeaponData.IronSword));
+            SetAllowedTypes(unit, WeaponType.AnimaTome);
+            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.IronSword));
         }
 
         [Test]
@@ -90,12 +90,12 @@ namespace ProjectAstra.Core.Tests.Inventory
             locked.ownerUnitId = "krishna";
 
             // No UnitInstance → unitId resolves to null → mismatch with "krishna".
-            Assert.IsFalse(EquipResolver.CanEquip(_unit, locked));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, locked));
         }
 
         private static void SetAllowedTypes(TestUnit unit, params WeaponType[] types)
         {
-            var field = typeof(TestUnit).GetField("_allowedWeaponTypes",
+            var field = typeof(TestUnit).GetField("allowedWeaponTypes",
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
             field.SetValue(unit, types);
         }

@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Sage
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Sage
-  _classType: 4
-  _movementRange: 6
-  _movementType: 0
-  _weaponWhitelist: 0400000007000000
-  _statGrowthModifiers:
-    _values: 00000000000000000a0000000500000005000000000000000a0000000000000000000000
-  _statCaps:
-    _values: 3c000000060000001e0000001a0000001a000000140000001e0000000c0000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 0
-  _isPromoted: 1
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 030000000000000002000000020000000100000001000000020000000000000000000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Sage
+  classType: 4
+  movementRange: 6
+  movementType: 0
+  weaponWhitelist: 0400000007000000
+  statGrowthModifiers:
+    values: 00000000000000000a0000000500000005000000000000000a0000000000000000000000
+  statCaps:
+    values: 3c000000060000001e0000001a0000001a000000140000001e0000000c0000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 0
+  isPromoted: 1
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 030000000000000002000000020000000100000001000000020000000000000000000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

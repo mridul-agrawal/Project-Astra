@@ -28,57 +28,57 @@ namespace ProjectAstra.Core.UI.Trade
         enum Column { Left, Right }
         enum Phase { Browsing, ItemSelected }
 
-        TradeSession _session;
-        ConfirmDialogUI _confirmDialog;
-        Action _onConfirm;
-        Action _onCancel;
+        TradeSession session;
+        ConfirmDialogUI confirmDialog;
+        Action onConfirm;
+        Action onCancel;
 
-        Column _activeColumn;
-        int _cursorRow;
-        Phase _phase;
-        Column _selectedColumn;
-        int _selectedRow;
+        Column activeColumn;
+        int cursorRow;
+        Phase phase;
+        Column selectedColumn;
+        int selectedRow;
 
-        GameObject _dimOverlay;
+        GameObject dimOverlay;
 
         // Per-side panel refs resolved once on first Show().
-        bool _refsDiscovered;
-        Transform[] _leftRows;
-        Transform[] _rightRows;
-        TextMeshProUGUI _leftName;
-        TextMeshProUGUI _rightName;
-        TextMeshProUGUI _leftEpithet;
-        TextMeshProUGUI _rightEpithet;
-        TextMeshProUGUI _leftStatsLine;
-        TextMeshProUGUI _rightStatsLine;
-        TextMeshProUGUI _leftPortraitLabel;
-        TextMeshProUGUI _rightPortraitLabel;
-        TextMeshProUGUI _holdingValue;
+        bool refsDiscovered;
+        Transform[] leftRows;
+        Transform[] rightRows;
+        TextMeshProUGUI leftName;
+        TextMeshProUGUI rightName;
+        TextMeshProUGUI leftEpithet;
+        TextMeshProUGUI rightEpithet;
+        TextMeshProUGUI leftStatsLine;
+        TextMeshProUGUI rightStatsLine;
+        TextMeshProUGUI leftPortraitLabel;
+        TextMeshProUGUI rightPortraitLabel;
+        TextMeshProUGUI holdingValue;
 
-        GameObject _tooltipRoot;
-        TextMeshProUGUI _tooltipName;
-        TextMeshProUGUI _tooltipType;
-        TextMeshProUGUI _tooltipStats;
-        TextMeshProUGUI _tooltipEffectiveness;
-        TextMeshProUGUI _tooltipDescription;
+        GameObject tooltipRoot;
+        TextMeshProUGUI tooltipName;
+        TextMeshProUGUI tooltipType;
+        TextMeshProUGUI tooltipStats;
+        TextMeshProUGUI tooltipEffectiveness;
+        TextMeshProUGUI tooltipDescription;
 
         public void Show(TradeSession session, ConfirmDialogUI confirmDialog,
             Action onConfirm, Action onCancel)
         {
             if (session == null) return;
 
-            _session = session;
-            _confirmDialog = confirmDialog;
-            _onConfirm = onConfirm;
-            _onCancel = onCancel;
-            _activeColumn = Column.Left;
-            _cursorRow = 0;
-            _phase = Phase.Browsing;
+            this.session = session;
+            this.confirmDialog = confirmDialog;
+            this.onConfirm = onConfirm;
+            this.onCancel = onCancel;
+            activeColumn = Column.Left;
+            cursorRow = 0;
+            phase = Phase.Browsing;
 
-            if (!_refsDiscovered) DiscoverReferences();
+            if (!refsDiscovered) DiscoverReferences();
 
             gameObject.SetActive(true);
-            if (_dimOverlay != null) _dimOverlay.SetActive(true);
+            if (dimOverlay != null) dimOverlay.SetActive(true);
 
             PopulateHeaders();
             RefreshAllRows();
@@ -96,9 +96,9 @@ namespace ProjectAstra.Core.UI.Trade
             UnsubscribeInput();
 
             gameObject.SetActive(false);
-            if (_dimOverlay != null) _dimOverlay.SetActive(false);
+            if (dimOverlay != null) dimOverlay.SetActive(false);
 
-            _session = null;
+            session = null;
             if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
@@ -113,37 +113,37 @@ namespace ProjectAstra.Core.UI.Trade
 
         void DiscoverReferences()
         {
-            _refsDiscovered = true;
+            refsDiscovered = true;
 
             var parent = transform.parent;
             if (parent != null)
             {
                 var overlay = parent.Find("TradeScreenDimOverlay");
-                if (overlay != null) _dimOverlay = overlay.gameObject;
+                if (overlay != null) dimOverlay = overlay.gameObject;
             }
 
-            _leftRows  = ResolveRows("LeftPanel");
-            _rightRows = ResolveRows("RightPanel");
+            leftRows  = ResolveRows("LeftPanel");
+            rightRows = ResolveRows("RightPanel");
 
-            _leftName         = FindTMP("LeftPanel/Content/InfoBlock/UnitName");
-            _rightName        = FindTMP("RightPanel/Content/InfoBlock/UnitName");
-            _leftEpithet      = FindTMP("LeftPanel/Content/InfoBlock/Epithet");
-            _rightEpithet     = FindTMP("RightPanel/Content/InfoBlock/Epithet");
-            _leftStatsLine    = FindTMP("LeftPanel/Content/InfoBlock/StatsLine");
-            _rightStatsLine   = FindTMP("RightPanel/Content/InfoBlock/StatsLine");
-            _leftPortraitLabel  = FindTMP("LeftPanel/Content/Portrait/PortraitLabel");
-            _rightPortraitLabel = FindTMP("RightPanel/Content/Portrait/PortraitLabel");
-            _holdingValue     = FindTMP("ActionBar/HoldingReadout/HoldingValue");
+            leftName         = FindTMP("LeftPanel/Content/InfoBlock/UnitName");
+            rightName        = FindTMP("RightPanel/Content/InfoBlock/UnitName");
+            leftEpithet      = FindTMP("LeftPanel/Content/InfoBlock/Epithet");
+            rightEpithet     = FindTMP("RightPanel/Content/InfoBlock/Epithet");
+            leftStatsLine    = FindTMP("LeftPanel/Content/InfoBlock/StatsLine");
+            rightStatsLine   = FindTMP("RightPanel/Content/InfoBlock/StatsLine");
+            leftPortraitLabel  = FindTMP("LeftPanel/Content/Portrait/PortraitLabel");
+            rightPortraitLabel = FindTMP("RightPanel/Content/Portrait/PortraitLabel");
+            holdingValue     = FindTMP("ActionBar/HoldingReadout/HoldingValue");
 
             var tooltip = FindChildDeep(transform, "ItemTooltip");
             if (tooltip != null)
             {
-                _tooltipRoot = tooltip.gameObject;
-                _tooltipName          = tooltip.Find("Name")?.GetComponent<TextMeshProUGUI>();
-                _tooltipType          = tooltip.Find("Type")?.GetComponent<TextMeshProUGUI>();
-                _tooltipStats         = tooltip.Find("Stats")?.GetComponent<TextMeshProUGUI>();
-                _tooltipEffectiveness = tooltip.Find("Effectiveness")?.GetComponent<TextMeshProUGUI>();
-                _tooltipDescription   = tooltip.Find("Description")?.GetComponent<TextMeshProUGUI>();
+                tooltipRoot = tooltip.gameObject;
+                tooltipName          = tooltip.Find("Name")?.GetComponent<TextMeshProUGUI>();
+                tooltipType          = tooltip.Find("Type")?.GetComponent<TextMeshProUGUI>();
+                tooltipStats         = tooltip.Find("Stats")?.GetComponent<TextMeshProUGUI>();
+                tooltipEffectiveness = tooltip.Find("Effectiveness")?.GetComponent<TextMeshProUGUI>();
+                tooltipDescription   = tooltip.Find("Description")?.GetComponent<TextMeshProUGUI>();
             }
         }
 
@@ -169,8 +169,8 @@ namespace ProjectAstra.Core.UI.Trade
 
         void PopulateHeaders()
         {
-            PopulateUnitHeader(_session.LeftUnit,  _leftName,  _leftEpithet,  _leftStatsLine,  _leftPortraitLabel);
-            PopulateUnitHeader(_session.RightUnit, _rightName, _rightEpithet, _rightStatsLine, _rightPortraitLabel);
+            PopulateUnitHeader(session.LeftUnit,  leftName,  leftEpithet,  leftStatsLine,  leftPortraitLabel);
+            PopulateUnitHeader(session.RightUnit, rightName, rightEpithet, rightStatsLine, rightPortraitLabel);
         }
 
         static void PopulateUnitHeader(TestUnit unit,
@@ -211,8 +211,8 @@ namespace ProjectAstra.Core.UI.Trade
 
         void RefreshAllRows()
         {
-            RefreshSide(_leftRows,  isLeft: true);
-            RefreshSide(_rightRows, isLeft: false);
+            RefreshSide(leftRows,  isLeft: true);
+            RefreshSide(rightRows, isLeft: false);
         }
 
         void RefreshSide(Transform[] rows, bool isLeft)
@@ -221,7 +221,7 @@ namespace ProjectAstra.Core.UI.Trade
             for (int i = 0; i < rows.Length; i++)
             {
                 if (rows[i] == null) continue;
-                var item = isLeft ? _session.GetLeftSlot(i) : _session.GetRightSlot(i);
+                var item = isLeft ? session.GetLeftSlot(i) : session.GetRightSlot(i);
                 TradeScreenRowVisuals.SetRowItem(rows[i], item, isLeft, TradeScreenRowVisuals.IsDisabled(item));
             }
         }
@@ -249,11 +249,11 @@ namespace ProjectAstra.Core.UI.Trade
         void Navigate(Vector2Int dir)
         {
             if (dir.y > 0)
-                _cursorRow = _cursorRow <= 0 ? TradeSession.Capacity - 1 : _cursorRow - 1;
+                cursorRow = cursorRow <= 0 ? TradeSession.Capacity - 1 : cursorRow - 1;
             else if (dir.y < 0)
-                _cursorRow = _cursorRow >= TradeSession.Capacity - 1 ? 0 : _cursorRow + 1;
+                cursorRow = cursorRow >= TradeSession.Capacity - 1 ? 0 : cursorRow + 1;
             else if (dir.x != 0)
-                _activeColumn = _activeColumn == Column.Left ? Column.Right : Column.Left;
+                activeColumn = activeColumn == Column.Left ? Column.Right : Column.Left;
             else
                 return;
 
@@ -263,21 +263,21 @@ namespace ProjectAstra.Core.UI.Trade
 
         void Confirm()
         {
-            if (_phase == Phase.Browsing)
+            if (phase == Phase.Browsing)
             {
                 var item = GetSlotAtCursor();
                 if (item.IsEmpty) return;
 
                 AudioManager.Instance?.Play(SoundId.ConfirmItem);
-                _phase = Phase.ItemSelected;
-                _selectedColumn = _activeColumn;
-                _selectedRow = _cursorRow;
+                phase = Phase.ItemSelected;
+                selectedColumn = activeColumn;
+                selectedRow = cursorRow;
                 UpdateVisuals();
                 return;
             }
 
             // Phase.ItemSelected
-            if (_activeColumn == _selectedColumn)
+            if (activeColumn == selectedColumn)
             {
                 // Second confirm on the same column cancels the selection.
                 Deselect();
@@ -293,15 +293,15 @@ namespace ProjectAstra.Core.UI.Trade
 
         void Cancel()
         {
-            if (_phase == Phase.ItemSelected)
+            if (phase == Phase.ItemSelected)
             {
                 Deselect();
                 return;
             }
 
-            if (_session == null || !_session.HasChanges)
+            if (session == null || !session.HasChanges)
             {
-                var cb = _onCancel;
+                var cb = onCancel;
                 Hide();
                 cb?.Invoke();
                 return;
@@ -311,27 +311,27 @@ namespace ProjectAstra.Core.UI.Trade
             HasInputFocus = false;
             UnsubscribeInput();
 
-            if (_confirmDialog == null)
+            if (confirmDialog == null)
             {
                 // No dialog wired: commit silently so in-progress trades don't get lost.
-                _session.Commit();
-                var cb = _onConfirm;
+                session.Commit();
+                var cb = onConfirm;
                 Hide();
                 cb?.Invoke();
                 return;
             }
 
-            _confirmDialog.Show("Apply trade changes?",
+            confirmDialog.Show("Apply trade changes?",
                 onYes: () =>
                 {
-                    _session.Commit();
-                    var cb = _onConfirm;
+                    session.Commit();
+                    var cb = onConfirm;
                     Hide();
                     cb?.Invoke();
                 },
                 onNo: () =>
                 {
-                    var cb = _onCancel;
+                    var cb = onCancel;
                     Hide();
                     cb?.Invoke();
                 });
@@ -339,7 +339,7 @@ namespace ProjectAstra.Core.UI.Trade
 
         void Deselect()
         {
-            _phase = Phase.Browsing;
+            phase = Phase.Browsing;
             UpdateVisuals();
         }
 
@@ -349,20 +349,20 @@ namespace ProjectAstra.Core.UI.Trade
 
         bool ExecuteTradeOperation()
         {
-            if (_selectedColumn == Column.Left && _activeColumn == Column.Right)
+            if (selectedColumn == Column.Left && activeColumn == Column.Right)
             {
-                var rightItem = _session.GetRightSlot(_cursorRow);
+                var rightItem = session.GetRightSlot(cursorRow);
                 return rightItem.IsEmpty
-                    ? _session.TryGive(_selectedRow)
-                    : _session.TrySwap(_selectedRow, _cursorRow);
+                    ? session.TryGive(selectedRow)
+                    : session.TrySwap(selectedRow, cursorRow);
             }
 
-            if (_selectedColumn == Column.Right && _activeColumn == Column.Left)
+            if (selectedColumn == Column.Right && activeColumn == Column.Left)
             {
-                var leftItem = _session.GetLeftSlot(_cursorRow);
+                var leftItem = session.GetLeftSlot(cursorRow);
                 return leftItem.IsEmpty
-                    ? _session.TryTake(_selectedRow)
-                    : _session.TrySwap(_cursorRow, _selectedRow);
+                    ? session.TryTake(selectedRow)
+                    : session.TrySwap(cursorRow, selectedRow);
             }
 
             return false;
@@ -370,9 +370,9 @@ namespace ProjectAstra.Core.UI.Trade
 
         InventoryItem GetSlotAtCursor()
         {
-            return _activeColumn == Column.Left
-                ? _session.GetLeftSlot(_cursorRow)
-                : _session.GetRightSlot(_cursorRow);
+            return activeColumn == Column.Left
+                ? session.GetLeftSlot(cursorRow)
+                : session.GetRightSlot(cursorRow);
         }
 
         // ================================================================
@@ -381,8 +381,8 @@ namespace ProjectAstra.Core.UI.Trade
 
         void UpdateVisuals()
         {
-            UpdateSideVisuals(_leftRows,  Column.Left);
-            UpdateSideVisuals(_rightRows, Column.Right);
+            UpdateSideVisuals(leftRows,  Column.Left);
+            UpdateSideVisuals(rightRows, Column.Right);
             UpdateTooltip();
             UpdateHoldingText();
         }
@@ -395,16 +395,16 @@ namespace ProjectAstra.Core.UI.Trade
                 if (rows[i] == null) continue;
 
                 TradeRowVisualState vs;
-                bool isCursor = col == _activeColumn && i == _cursorRow;
-                bool isSelected = _phase == Phase.ItemSelected
-                    && col == _selectedColumn
-                    && i == _selectedRow;
+                bool isCursor = col == activeColumn && i == cursorRow;
+                bool isSelected = phase == Phase.ItemSelected
+                    && col == selectedColumn
+                    && i == selectedRow;
 
-                var item = col == Column.Left ? _session.GetLeftSlot(i) : _session.GetRightSlot(i);
+                var item = col == Column.Left ? session.GetLeftSlot(i) : session.GetRightSlot(i);
                 bool disabled = TradeScreenRowVisuals.IsDisabled(item);
 
                 if (isSelected) vs = TradeRowVisualState.Selected;
-                else if (isCursor && _phase == Phase.ItemSelected) vs = TradeRowVisualState.Pressed;
+                else if (isCursor && phase == Phase.ItemSelected) vs = TradeRowVisualState.Pressed;
                 else if (isCursor) vs = TradeRowVisualState.Focused;
                 else if (disabled) vs = TradeRowVisualState.Disabled;
                 else vs = TradeRowVisualState.Default;
@@ -416,17 +416,17 @@ namespace ProjectAstra.Core.UI.Trade
 
         void UpdateHoldingText()
         {
-            if (_holdingValue == null) return;
+            if (holdingValue == null) return;
 
-            if (_phase == Phase.ItemSelected)
+            if (phase == Phase.ItemSelected)
             {
-                var heldItem = _selectedColumn == Column.Left
-                    ? _session.GetLeftSlot(_selectedRow)
-                    : _session.GetRightSlot(_selectedRow);
+                var heldItem = selectedColumn == Column.Left
+                    ? session.GetLeftSlot(selectedRow)
+                    : session.GetRightSlot(selectedRow);
                 if (!heldItem.IsEmpty)
                 {
                     string uses = heldItem.Indestructible ? "\u221E" : heldItem.CurrentUses.ToString();
-                    _holdingValue.text = heldItem.DisplayName + "  \u00B7  " + uses + " uses";
+                    holdingValue.text = heldItem.DisplayName + "  \u00B7  " + uses + " uses";
                     return;
                 }
             }
@@ -434,26 +434,26 @@ namespace ProjectAstra.Core.UI.Trade
             var cursorItem = GetSlotAtCursor();
             if (cursorItem.IsEmpty)
             {
-                _holdingValue.text = "—";
+                holdingValue.text = "—";
                 return;
             }
 
             string u = cursorItem.Indestructible ? "\u221E" : cursorItem.CurrentUses.ToString();
-            _holdingValue.text = cursorItem.DisplayName + "  \u00B7  " + u + " uses";
+            holdingValue.text = cursorItem.DisplayName + "  \u00B7  " + u + " uses";
         }
 
         void UpdateTooltip()
         {
-            if (_tooltipRoot == null) return;
+            if (tooltipRoot == null) return;
 
             var item = GetSlotAtCursor();
             if (item.IsEmpty)
             {
-                _tooltipRoot.SetActive(false);
+                tooltipRoot.SetActive(false);
                 return;
             }
 
-            _tooltipRoot.SetActive(true);
+            tooltipRoot.SetActive(true);
             PopulateTooltip(item);
         }
 
@@ -462,17 +462,17 @@ namespace ProjectAstra.Core.UI.Trade
             bool isWeapon = item.kind == ItemKind.Weapon;
             bool isConsumable = item.kind == ItemKind.Consumable;
 
-            if (_tooltipName != null) _tooltipName.text = item.DisplayName;
+            if (tooltipName != null) tooltipName.text = item.DisplayName;
 
-            if (_tooltipType != null)
+            if (tooltipType != null)
             {
                 string typeStr = isWeapon ? item.weapon.weaponType.ToString()
                     : isConsumable ? "Consumable"
                     : "Item";
-                _tooltipType.text = typeStr.ToUpper();
+                tooltipType.text = typeStr.ToUpper();
             }
 
-            if (_tooltipStats != null)
+            if (tooltipStats != null)
             {
                 if (isWeapon)
                 {
@@ -489,18 +489,18 @@ namespace ProjectAstra.Core.UI.Trade
                     sb.Append("   <color=#e8c66a>Rank </color>").Append(w.minRank);
                     string uses = w.indestructible ? "\u221E" : w.currentUses + " / " + w.maxUses;
                     sb.Append("   <color=#e8c66a>Uses </color>").Append(uses);
-                    _tooltipStats.text = sb.ToString();
+                    tooltipStats.text = sb.ToString();
                 }
                 else if (isConsumable)
                 {
                     var c = item.consumable;
                     string uses = c.currentUses + " / " + c.maxUses;
-                    _tooltipStats.text = "<color=#e8c66a>Uses </color>" + uses;
+                    tooltipStats.text = "<color=#e8c66a>Uses </color>" + uses;
                 }
-                else _tooltipStats.text = "";
+                else tooltipStats.text = "";
             }
 
-            if (_tooltipEffectiveness != null)
+            if (tooltipEffectiveness != null)
             {
                 if (isWeapon && item.weapon.effectivenessTargets != null && item.weapon.effectivenessTargets.Length > 0)
                 {
@@ -510,16 +510,16 @@ namespace ProjectAstra.Core.UI.Trade
                         if (sb.Length > 0) sb.Append(", ");
                         sb.Append("Effective vs. ").Append(t);
                     }
-                    _tooltipEffectiveness.text = sb.ToString();
-                    _tooltipEffectiveness.gameObject.SetActive(true);
+                    tooltipEffectiveness.text = sb.ToString();
+                    tooltipEffectiveness.gameObject.SetActive(true);
                 }
                 else
                 {
-                    _tooltipEffectiveness.gameObject.SetActive(false);
+                    tooltipEffectiveness.gameObject.SetActive(false);
                 }
             }
 
-            if (_tooltipDescription != null)
+            if (tooltipDescription != null)
             {
                 string desc = "";
                 if (isWeapon)
@@ -540,8 +540,8 @@ namespace ProjectAstra.Core.UI.Trade
                         _ => "",
                     };
                 }
-                _tooltipDescription.text = desc;
-                _tooltipDescription.gameObject.SetActive(!string.IsNullOrEmpty(desc));
+                tooltipDescription.text = desc;
+                tooltipDescription.gameObject.SetActive(!string.IsNullOrEmpty(desc));
             }
         }
 

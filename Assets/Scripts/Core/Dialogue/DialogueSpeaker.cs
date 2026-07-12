@@ -18,12 +18,12 @@ namespace ProjectAstra.Core.Dialogue
             public Sprite Sprite;
         }
 
-        [SerializeField] private string _speakerId;
-        [SerializeField] private string _displayName;
-        [SerializeField] private List<ExpressionPortrait> _portraits = new();
+        [SerializeField] private string speakerId;
+        [SerializeField] private string displayName;
+        [SerializeField] private List<ExpressionPortrait> portraits = new();
 
-        public string SpeakerId => _speakerId;
-        public string DisplayName => _displayName;
+        public string SpeakerId => speakerId;
+        public string DisplayName => displayName;
 
         // Returns the sprite for the asked expression, falling back to Neutral and
         // then to whatever's authored first — so a missing variant still shows a face.
@@ -31,12 +31,12 @@ namespace ProjectAstra.Core.Dialogue
         {
             if (TryFindPortrait(expression, out var match)) return match;
             if (TryFindPortrait(DialogueExpression.Neutral, out var neutral)) return neutral;
-            return _portraits.Count > 0 ? _portraits[0].Sprite : null;
+            return portraits.Count > 0 ? portraits[0].Sprite : null;
         }
 
         private bool TryFindPortrait(DialogueExpression expression, out Sprite sprite)
         {
-            foreach (var entry in _portraits)
+            foreach (var entry in portraits)
             {
                 if (entry.Expression != expression) continue;
                 sprite = entry.Sprite;
@@ -49,8 +49,8 @@ namespace ProjectAstra.Core.Dialogue
         internal static DialogueSpeaker CreateForTest(string speakerId, string displayName)
         {
             var speaker = CreateInstance<DialogueSpeaker>();
-            speaker._speakerId = speakerId;
-            speaker._displayName = displayName;
+            speaker.speakerId = speakerId;
+            speaker.displayName = displayName;
             return speaker;
         }
     }

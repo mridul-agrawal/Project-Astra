@@ -24,35 +24,35 @@ namespace ProjectAstra.Core.UI.Overlays
         static readonly Color TurnTextColor = new(0.541f, 0.478f, 0.345f, 1f);
 
         [Header("UI References")]
-        [SerializeField] private RectTransform _bannerRoot;
-        [SerializeField] private Image _borderTop;
-        [SerializeField] private Image _borderBottom;
-        [SerializeField] private Image _innerBorderTop;
-        [SerializeField] private Image _innerBorderBottom;
-        [SerializeField] private Image[] _orbImages;
-        [SerializeField] private TextMeshProUGUI _phaseText;
-        [SerializeField] private TextMeshProUGUI _turnText;
-        [SerializeField] private Image _dimOverlay;
+        [SerializeField] private RectTransform bannerRoot;
+        [SerializeField] private Image borderTop;
+        [SerializeField] private Image borderBottom;
+        [SerializeField] private Image innerBorderTop;
+        [SerializeField] private Image innerBorderBottom;
+        [SerializeField] private Image[] orbImages;
+        [SerializeField] private TextMeshProUGUI phaseText;
+        [SerializeField] private TextMeshProUGUI turnText;
+        [SerializeField] private Image dimOverlay;
 
         [Header("Phase Materials")]
-        [SerializeField] private Material _playerGlowMat;
-        [SerializeField] private Material _enemyGlowMat;
-        [SerializeField] private Material _alliedGlowMat;
+        [SerializeField] private Material playerGlowMat;
+        [SerializeField] private Material enemyGlowMat;
+        [SerializeField] private Material alliedGlowMat;
 
         [Header("Animation")]
-        [SerializeField] private float _slideDuration = 0.3f;
-        [SerializeField] private float _holdDuration = 1.2f;
-        [SerializeField, Range(0f, 1f)] private float _dimAlpha = 0.55f;
+        [SerializeField] private float slideDuration = 0.3f;
+        [SerializeField] private float holdDuration = 1.2f;
+        [SerializeField, Range(0f, 1f)] private float dimAlpha = 0.55f;
         static readonly Color DimColor = new(0.0196f, 0.0118f, 0.0196f, 0f);
 
         private void Awake()
         {
-            if (_bannerRoot != null)
-                _bannerRoot.gameObject.SetActive(false);
-            if (_dimOverlay != null)
+            if (bannerRoot != null)
+                bannerRoot.gameObject.SetActive(false);
+            if (dimOverlay != null)
             {
-                _dimOverlay.color = DimColor;
-                _dimOverlay.gameObject.SetActive(false);
+                dimOverlay.color = DimColor;
+                dimOverlay.gameObject.SetActive(false);
             }
         }
 
@@ -89,17 +89,17 @@ namespace ProjectAstra.Core.UI.Overlays
         private IEnumerator ShowBanner(BattlePhase phase, int turnNumber)
         {
             ApplyPhaseVisuals(phase, turnNumber);
-            if (_bannerRoot == null) { RaiseBannerFinished(phase, turnNumber); yield break; }
+            if (bannerRoot == null) { RaiseBannerFinished(phase, turnNumber); yield break; }
 
-            _bannerRoot.gameObject.SetActive(true);
-            if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(true);
+            bannerRoot.gameObject.SetActive(true);
+            if (dimOverlay != null) dimOverlay.gameObject.SetActive(true);
 
-            yield return AnimateSlideAndDim(-Screen.width, 0, 0f, _dimAlpha, _slideDuration);
-            yield return new WaitForSeconds(_holdDuration);
-            yield return AnimateSlideAndDim(0, Screen.width, _dimAlpha, 0f, _slideDuration);
+            yield return AnimateSlideAndDim(-Screen.width, 0, 0f, dimAlpha, slideDuration);
+            yield return new WaitForSeconds(holdDuration);
+            yield return AnimateSlideAndDim(0, Screen.width, dimAlpha, 0f, slideDuration);
 
-            _bannerRoot.gameObject.SetActive(false);
-            if (_dimOverlay != null) _dimOverlay.gameObject.SetActive(false);
+            bannerRoot.gameObject.SetActive(false);
+            if (dimOverlay != null) dimOverlay.gameObject.SetActive(false);
 
             RaiseBannerFinished(phase, turnNumber);
         }
@@ -118,20 +118,20 @@ namespace ProjectAstra.Core.UI.Overlays
             {
                 elapsed += Time.deltaTime;
                 float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-                _bannerRoot.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), 0f);
+                bannerRoot.anchoredPosition = new Vector2(Mathf.Lerp(fromX, toX, t), 0f);
                 SetDimAlpha(Mathf.Lerp(fromDim, toDim, t));
                 yield return null;
             }
-            _bannerRoot.anchoredPosition = new Vector2(toX, 0f);
+            bannerRoot.anchoredPosition = new Vector2(toX, 0f);
             SetDimAlpha(toDim);
         }
 
         private void SetDimAlpha(float alpha)
         {
-            if (_dimOverlay == null) return;
-            var c = _dimOverlay.color;
+            if (dimOverlay == null) return;
+            var c = dimOverlay.color;
             c.a = alpha;
-            _dimOverlay.color = c;
+            dimOverlay.color = c;
         }
 
         private void ApplyPhaseVisuals(BattlePhase phase, int turnNumber)
@@ -140,22 +140,22 @@ namespace ProjectAstra.Core.UI.Overlays
             var textColor = GetTextColor(phase);
             var glowMat = GetGlowMaterial(phase);
 
-            if (_phaseText == null) return;
+            if (phaseText == null) return;
 
-            _phaseText.text = GetPhaseLabel(phase);
-            _phaseText.color = textColor;
-            if (glowMat != null) _phaseText.fontMaterial = glowMat;
+            phaseText.text = GetPhaseLabel(phase);
+            phaseText.color = textColor;
+            if (glowMat != null) phaseText.fontMaterial = glowMat;
 
-            if (_turnText != null)
-                _turnText.text = phase == BattlePhase.PlayerPhase ? $"Turn {turnNumber}" : "";
+            if (turnText != null)
+                turnText.text = phase == BattlePhase.PlayerPhase ? $"Turn {turnNumber}" : "";
 
-            if (_borderTop != null) _borderTop.color = WithAlpha(accent, 0.55f);
-            if (_borderBottom != null) _borderBottom.color = WithAlpha(accent, 0.55f);
-            if (_innerBorderTop != null) _innerBorderTop.color = WithAlpha(accent, 0.2f);
-            if (_innerBorderBottom != null) _innerBorderBottom.color = WithAlpha(accent, 0.2f);
+            if (borderTop != null) borderTop.color = WithAlpha(accent, 0.55f);
+            if (borderBottom != null) borderBottom.color = WithAlpha(accent, 0.55f);
+            if (innerBorderTop != null) innerBorderTop.color = WithAlpha(accent, 0.2f);
+            if (innerBorderBottom != null) innerBorderBottom.color = WithAlpha(accent, 0.2f);
 
-            if (_orbImages != null)
-                foreach (var orb in _orbImages)
+            if (orbImages != null)
+                foreach (var orb in orbImages)
                     if (orb != null) orb.color = accent;
         }
 
@@ -196,10 +196,10 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             return phase switch
             {
-                BattlePhase.PlayerPhase => _playerGlowMat,
-                BattlePhase.EnemyPhase => _enemyGlowMat,
-                BattlePhase.AlliedPhase => _alliedGlowMat,
-                _ => _playerGlowMat
+                BattlePhase.PlayerPhase => playerGlowMat,
+                BattlePhase.EnemyPhase => enemyGlowMat,
+                BattlePhase.AlliedPhase => alliedGlowMat,
+                _ => playerGlowMat
             };
         }
 

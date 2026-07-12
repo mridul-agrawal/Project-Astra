@@ -576,8 +576,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c3f1d31cffb4dd48bed394b45a23890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Splash.SplashScreenController
-  _videoPlayer: {fileID: 607740616}
-  _fadeGroup: {fileID: 1620349716}
+  videoPlayer: {fileID: 607740616}
+  fadeGroup: {fileID: 1620349716}
 --- !u!4 &1953012927
 Transform:
   m_ObjectHideFlags: 0

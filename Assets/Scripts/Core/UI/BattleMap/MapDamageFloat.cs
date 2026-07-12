@@ -13,26 +13,26 @@ namespace ProjectAstra.Core.UI.BattleMap
         public enum Kind { Damage, Miss, Crit }
 
         [Header("Motion")]
-        [SerializeField] private float _floatUpSeconds = 0.8f;
-        [SerializeField] private float _holdSeconds = 0.18f;
-        [SerializeField] private float _riseDistance = 0.65f;
-        [SerializeField] private Vector3 _spawnOffset = new Vector3(0f, 0.6f, 0f);
+        [SerializeField] private float floatUpSeconds = 0.8f;
+        [SerializeField] private float holdSeconds = 0.18f;
+        [SerializeField] private float riseDistance = 0.65f;
+        [SerializeField] private Vector3 spawnOffset = new Vector3(0f, 0.6f, 0f);
 
         [Header("Text")]
-        [SerializeField] private int _fontSize = 56;
-        [SerializeField] private Color _damageColor = new Color(0.96f, 0.88f, 0.85f, 1f);
-        [SerializeField] private Color _critColor = new Color(0.98f, 0.94f, 0.28f, 1f);
-        [SerializeField] private Color _missColor = new Color(0.86f, 0.86f, 0.86f, 1f);
-        [SerializeField] private Color _outlineColor = new Color(0f, 0f, 0f, 1f);
-        [SerializeField] private float _canvasScale = 0.025f;
+        [SerializeField] private int fontSize = 56;
+        [SerializeField] private Color damageColor = new Color(0.96f, 0.88f, 0.85f, 1f);
+        [SerializeField] private Color critColor = new Color(0.98f, 0.94f, 0.28f, 1f);
+        [SerializeField] private Color missColor = new Color(0.86f, 0.86f, 0.86f, 1f);
+        [SerializeField] private Color outlineColor = new Color(0f, 0f, 0f, 1f);
+        [SerializeField] private float canvasScale = 0.025f;
 
         [Header("Layering")]
-        [SerializeField] private string _sortingLayerName = "UIOverlay";
-        [SerializeField] private int _sortingOrder = 100;
+        [SerializeField] private string sortingLayerName = "UIOverlay";
+        [SerializeField] private int sortingOrder = 100;
 
         public void Show(Vector3 worldPos, int amount, Kind kind)
         {
-            StartCoroutine(PlayFloat(worldPos + _spawnOffset, amount, kind));
+            StartCoroutine(PlayFloat(worldPos + spawnOffset, amount, kind));
         }
 
         private IEnumerator PlayFloat(Vector3 startWorldPos, int amount, Kind kind)
@@ -43,12 +43,12 @@ namespace ProjectAstra.Core.UI.BattleMap
 
             var canvas = go.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
-            if (!string.IsNullOrEmpty(_sortingLayerName)) canvas.sortingLayerName = _sortingLayerName;
-            canvas.sortingOrder = _sortingOrder;
+            if (!string.IsNullOrEmpty(sortingLayerName)) canvas.sortingLayerName = sortingLayerName;
+            canvas.sortingOrder = sortingOrder;
 
             var rt = canvas.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(220f, 70f);
-            rt.localScale = Vector3.one * _canvasScale;
+            rt.localScale = Vector3.one * canvasScale;
 
             var cg = go.AddComponent<CanvasGroup>();
             cg.blocksRaycasts = false;
@@ -61,11 +61,11 @@ namespace ProjectAstra.Core.UI.BattleMap
                 : kind == Kind.Crit
                     ? amount + "!"
                     : amount.ToString();
-            tmp.fontSize = _fontSize;
+            tmp.fontSize = fontSize;
             tmp.fontStyle = FontStyles.Bold;
             tmp.alignment = TextAlignmentOptions.Center;
-            tmp.color = kind == Kind.Crit ? _critColor : kind == Kind.Miss ? _missColor : _damageColor;
-            tmp.outlineColor = _outlineColor;
+            tmp.color = kind == Kind.Crit ? critColor : kind == Kind.Miss ? missColor : damageColor;
+            tmp.outlineColor = outlineColor;
             tmp.outlineWidth = 0.28f;
             tmp.raycastTarget = false;
             var textRt = textGo.GetComponent<RectTransform>();
@@ -76,14 +76,14 @@ namespace ProjectAstra.Core.UI.BattleMap
 
             // Hold at full alpha so the player can read it, then rise + fade.
             float tHold = 0f;
-            while (tHold < _holdSeconds) { tHold += Time.deltaTime; yield return null; }
+            while (tHold < holdSeconds) { tHold += Time.deltaTime; yield return null; }
 
-            Vector3 endPos = startWorldPos + Vector3.up * _riseDistance;
+            Vector3 endPos = startWorldPos + Vector3.up * riseDistance;
             float t = 0f;
-            while (t < _floatUpSeconds)
+            while (t < floatUpSeconds)
             {
                 t += Time.deltaTime;
-                float p = Mathf.Clamp01(t / _floatUpSeconds);
+                float p = Mathf.Clamp01(t / floatUpSeconds);
                 go.transform.position = Vector3.Lerp(startWorldPos, endPos, p);
                 cg.alpha = 1f - p;
                 yield return null;

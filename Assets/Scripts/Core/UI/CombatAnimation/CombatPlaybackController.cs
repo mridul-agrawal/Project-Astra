@@ -24,31 +24,31 @@ namespace ProjectAstra.Core.UI.CombatAnimation
         // This controller picks it up in Start(), clears the slot.
         public static CombatPlaybackContext PendingContext;
 
-        [SerializeField] private CombatSceneRefs _refs;
+        [SerializeField] private CombatSceneRefs refs;
 
         [Header("Terrain background")]
-        [SerializeField] private TerrainBackgroundDatabase _terrainDb;
+        [SerializeField] private TerrainBackgroundDatabase terrainDb;
 
         [Header("Crit flash (full-screen)")]
-        [SerializeField] private float _critFlashIntensity = 0.85f;
-        [SerializeField] private float _critFlashSeconds  = 0.25f;
-        [SerializeField] private Color _righteousFlashColor = Color.white;
-        [SerializeField] private Color _tragicFlashColor    = new(0.45f, 0.40f, 0.55f, 1f);  // dim purple-grey
+        [SerializeField] private float critFlashIntensity = 0.85f;
+        [SerializeField] private float critFlashSeconds  = 0.25f;
+        [SerializeField] private Color righteousFlashColor = Color.white;
+        [SerializeField] private Color tragicFlashColor    = new(0.45f, 0.40f, 0.55f, 1f);  // dim purple-grey
 
         [Header("Crit pacing")]
         [Tooltip("Extra pre-death hold added before the fall when a Tragic crit kills.")]
-        [SerializeField] private float _tragicPreDeathHold = 0.30f;
+        [SerializeField] private float tragicPreDeathHold = 0.30f;
         [Tooltip("Death-fall speed multiplier when a Tragic crit kills (1.0 = normal, 0.7 = slower fall).")]
-        [SerializeField, Range(0.1f, 1.0f)] private float _tragicFallSpeed = 0.7f;
+        [SerializeField, Range(0.1f, 1.0f)] private float tragicFallSpeed = 0.7f;
 
         [Header("Brave fusion")]
         [Tooltip("Wind-up duration between the two strikes of a brave-fused pair (Normal-mode seconds).")]
-        [SerializeField] private float _braveShortWindup = 0.15f;
+        [SerializeField] private float braveShortWindup = 0.15f;
 
         [Header("Open / close holds (Normal-mode seconds)")]
-        [SerializeField] private float _openingHoldSeconds = 0.40f;
-        [SerializeField] private float _closingHoldSeconds = 0.50f;
-        [SerializeField] private float _deathHoldSeconds   = 0.50f;
+        [SerializeField] private float openingHoldSeconds = 0.40f;
+        [SerializeField] private float closingHoldSeconds = 0.50f;
+        [SerializeField] private float deathHoldSeconds   = 0.50f;
 
         private void Start()
         {
@@ -65,7 +65,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         public IEnumerator Play(CombatPlaybackContext ctx)
         {
-            if (_refs == null)
+            if (refs == null)
             {
                 Debug.LogError("[CombatPlaybackController] CombatSceneRefs not wired.");
                 FinalizeAndReturn(ctx);
@@ -81,10 +81,10 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             ApplyTerrainBackground(ctx.DefenderTerrain);
             AudioManager.Instance?.PlayMusic(SoundId.MusicBattle);
 
-            if (_refs.LeftFighter  != null) _refs.LeftFighter.Show(ctx.Attacker, facingRight: true);
-            if (_refs.RightFighter != null) _refs.RightFighter.Show(ctx.Defender, facingRight: false);
+            if (refs.LeftFighter  != null) refs.LeftFighter.Show(ctx.Attacker, facingRight: true);
+            if (refs.RightFighter != null) refs.RightFighter.Show(ctx.Defender, facingRight: false);
 
-            yield return CombatTiming.WaitSeconds(_openingHoldSeconds);
+            yield return CombatTiming.WaitSeconds(openingHoldSeconds);
 
             bool combatEnded = false;
             int stepIndex = 0;
@@ -106,7 +106,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
                 yield return CombatTiming.WaitPhase(CombatTiming.Phase.InterHitGap);
             }
 
-            yield return CombatTiming.WaitSeconds(_closingHoldSeconds);
+            yield return CombatTiming.WaitSeconds(closingHoldSeconds);
             FinalizeAndReturn(ctx);
         }
 
@@ -116,8 +116,8 @@ namespace ProjectAstra.Core.UI.CombatAnimation
         {
             var attackerUnit = step.AttackerIsStriker ? ctx.Attacker : ctx.Defender;
             var receiverUnit = step.AttackerIsStriker ? ctx.Defender : ctx.Attacker;
-            var attackerView = step.AttackerIsStriker ? _refs.LeftFighter  : _refs.RightFighter;
-            var defenderView = step.AttackerIsStriker ? _refs.RightFighter : _refs.LeftFighter;
+            var attackerView = step.AttackerIsStriker ? refs.LeftFighter  : refs.RightFighter;
+            var defenderView = step.AttackerIsStriker ? refs.RightFighter : refs.LeftFighter;
 
             int newHp = Mathf.Max(0, CurrentHP(receiverUnit) - (step.Hit.Hit ? step.Hit.Damage : 0));
 
@@ -161,8 +161,8 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             // Brave is always attacker-striker (composer guarantees this).
             var attackerUnit = ctx.Attacker;
             var receiverUnit = ctx.Defender;
-            var attackerView = _refs.LeftFighter;
-            var defenderView = _refs.RightFighter;
+            var attackerView = refs.LeftFighter;
+            var defenderView = refs.RightFighter;
 
             int hpAfterHit1 = Mathf.Max(0, CurrentHP(receiverUnit) - (step.Hit1.Hit ? step.Hit1.Damage : 0));
             int hpAfterHit2 = Mathf.Max(0, hpAfterHit1            - (step.Hit2.Hit ? step.Hit2.Damage : 0));
@@ -170,7 +170,7 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             float strikeDur  = CombatTiming.PhaseDuration(CombatTiming.Phase.Strike);
             float resolveDur = CombatTiming.PhaseDuration(CombatTiming.Phase.Resolve);
             float followDur  = CombatTiming.PhaseDuration(CombatTiming.Phase.FollowThrough);
-            float shortWindup = _braveShortWindup * SpeedScale();
+            float shortWindup = braveShortWindup * SpeedScale();
 
             // --- Hit 1 ---
             if (attackerView != null)
@@ -238,13 +238,13 @@ namespace ProjectAstra.Core.UI.CombatAnimation
             var args = UnitDeathHook.PrepareDeath(victim, killer);
 
             if (context == CritContext.Tragic)
-                yield return CombatTiming.WaitSeconds(_tragicPreDeathHold);
+                yield return CombatTiming.WaitSeconds(tragicPreDeathHold);
 
             if (victimView != null)
             {
-                float hold = _deathHoldSeconds;
+                float hold = deathHoldSeconds;
                 if (context == CritContext.Tragic)
-                    hold = _deathHoldSeconds / Mathf.Max(0.1f, _tragicFallSpeed);  // slower fall = longer hold
+                    hold = deathHoldSeconds / Mathf.Max(0.1f, tragicFallSpeed);  // slower fall = longer hold
                 yield return victimView.PlayDeath(hold);
             }
 
@@ -271,18 +271,18 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         private IEnumerator CritFlash(CritContext context)
         {
-            var img = _refs.FullScreenFlash;
+            var img = refs.FullScreenFlash;
             if (img == null) yield break;
-            var baseColor = context == CritContext.Tragic ? _tragicFlashColor : _righteousFlashColor;
+            var baseColor = context == CritContext.Tragic ? tragicFlashColor : righteousFlashColor;
             var color = baseColor;
-            color.a = _critFlashIntensity;
+            color.a = critFlashIntensity;
             img.color = color;
             float t = 0f;
-            while (t < _critFlashSeconds)
+            while (t < critFlashSeconds)
             {
                 t += Time.deltaTime;
-                float p = Mathf.Clamp01(t / _critFlashSeconds);
-                color.a = Mathf.Lerp(_critFlashIntensity, 0f, p);
+                float p = Mathf.Clamp01(t / critFlashSeconds);
+                color.a = Mathf.Lerp(critFlashIntensity, 0f, p);
                 img.color = color;
                 yield return null;
             }
@@ -292,9 +292,9 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
         private void ApplyTerrainBackground(ProjectAstra.Core.Grid.TerrainType terrain)
         {
-            if (_refs.TerrainBackground == null || _terrainDb == null) return;
-            var sprite = _terrainDb.GetBackground(terrain);
-            if (sprite != null) _refs.TerrainBackground.sprite = sprite;
+            if (refs.TerrainBackground == null || terrainDb == null) return;
+            var sprite = terrainDb.GetBackground(terrain);
+            if (sprite != null) refs.TerrainBackground.sprite = sprite;
         }
 
         private static float SpeedScale()

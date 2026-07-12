@@ -68,44 +68,44 @@ namespace ProjectAstra.EditorTools
 
         // --- Internal AudioUtil reflection (method names vary by version) ---
 
-        static MethodInfo _play;
-        static MethodInfo _stop;
+        static MethodInfo play;
+        static MethodInfo stop;
 
         static Type AudioUtilType => typeof(AudioImporter).Assembly.GetType("UnityEditor.AudioUtil");
 
         public static void Preview(AudioClip clip)
         {
             if (clip == null) return;
-            if (_play == null)
+            if (play == null)
             {
                 var t = AudioUtilType;
-                _play = t?.GetMethod("PlayPreviewClip", BindingFlags.Static | BindingFlags.Public,
+                play = t?.GetMethod("PlayPreviewClip", BindingFlags.Static | BindingFlags.Public,
                             null, new[] { typeof(AudioClip), typeof(int), typeof(bool) }, null)
                      ?? t?.GetMethod("PlayClip", BindingFlags.Static | BindingFlags.Public,
                             null, new[] { typeof(AudioClip), typeof(int), typeof(bool) }, null)
                      ?? t?.GetMethod("PlayClip", BindingFlags.Static | BindingFlags.Public,
                             null, new[] { typeof(AudioClip) }, null);
             }
-            if (_play == null)
+            if (play == null)
             {
                 Debug.LogWarning("[AudioClipPreview] AudioUtil play method not found in this Unity version.");
                 return;
             }
-            object[] args = _play.GetParameters().Length == 3
+            object[] args = play.GetParameters().Length == 3
                 ? new object[] { clip, 0, false }
                 : new object[] { clip };
-            _play.Invoke(null, args);
+            play.Invoke(null, args);
         }
 
         public static void StopAll()
         {
-            if (_stop == null)
+            if (stop == null)
             {
                 var t = AudioUtilType;
-                _stop = t?.GetMethod("StopAllPreviewClips", BindingFlags.Static | BindingFlags.Public)
+                stop = t?.GetMethod("StopAllPreviewClips", BindingFlags.Static | BindingFlags.Public)
                      ?? t?.GetMethod("StopAllClips", BindingFlags.Static | BindingFlags.Public);
             }
-            _stop?.Invoke(null, null);
+            stop?.Invoke(null, null);
         }
     }
 }

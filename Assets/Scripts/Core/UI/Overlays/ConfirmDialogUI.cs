@@ -19,18 +19,18 @@ namespace ProjectAstra.Core.UI.Overlays
         private static readonly Color TextNormal = Color.white;
         private static readonly Color TextSelected = new(1f, 1f, 0.6f, 1f);
 
-        private GameObject _root;
-        private TextMeshProUGUI _messageText;
-        private readonly List<TextMeshProUGUI> _optionTexts = new();
-        private int _selectedIndex;
-        private Action _onYes;
-        private Action _onNo;
+        private GameObject root;
+        private TextMeshProUGUI messageText;
+        private readonly List<TextMeshProUGUI> optionTexts = new();
+        private int selectedIndex;
+        private Action onYes;
+        private Action onNo;
 
         public void Show(string message, Action onYes, Action onNo)
         {
-            _onYes = onYes;
-            _onNo = onNo;
-            _selectedIndex = 1; // Default to "No" so accidental confirms don't destroy items.
+            this.onYes = onYes;
+            this.onNo = onNo;
+            selectedIndex = 1; // Default to "No" so accidental confirms don't destroy items.
 
             BuildUI(message);
             UpdateSelection();
@@ -58,10 +58,10 @@ namespace ProjectAstra.Core.UI.Overlays
                 InputManager.Instance.OnCancel -= Cancel;
             }
 
-            if (_root != null) Destroy(_root);
-            _optionTexts.Clear();
-            _onYes = null;
-            _onNo = null;
+            if (root != null) Destroy(root);
+            optionTexts.Clear();
+            onYes = null;
+            onNo = null;
         }
 
         private void OnDestroy()
@@ -72,7 +72,7 @@ namespace ProjectAstra.Core.UI.Overlays
         private void Navigate(Vector2Int dir)
         {
             if (dir.y == 0 && dir.x == 0) return;
-            _selectedIndex = _selectedIndex == 0 ? 1 : 0;
+            selectedIndex = selectedIndex == 0 ? 1 : 0;
             UpdateSelection();
             AudioManager.Instance?.Play(SoundId.UiMove);
         }
@@ -80,9 +80,9 @@ namespace ProjectAstra.Core.UI.Overlays
         private void Confirm()
         {
             AudioManager.Instance?.Play(SoundId.UiConfirm);
-            int index = _selectedIndex;
-            var yes = _onYes;
-            var no = _onNo;
+            int index = selectedIndex;
+            var yes = onYes;
+            var no = onNo;
             Hide();
             if (index == 0) yes?.Invoke();
             else no?.Invoke();
@@ -91,15 +91,15 @@ namespace ProjectAstra.Core.UI.Overlays
         private void Cancel()
         {
             AudioManager.Instance?.Play(SoundId.UiCancel);
-            var no = _onNo;
+            var no = onNo;
             Hide();
             no?.Invoke();
         }
 
         private void BuildUI(string message)
         {
-            if (_root != null) Destroy(_root);
-            _optionTexts.Clear();
+            if (root != null) Destroy(root);
+            optionTexts.Clear();
 
             var canvas = GetComponentInParent<Canvas>();
             if (canvas == null) canvas = FindAnyObjectByType<Canvas>();
@@ -109,20 +109,20 @@ namespace ProjectAstra.Core.UI.Overlays
             const float panelHeight = 120f;
             const float borderWidth = 3f;
 
-            _root = new GameObject("ConfirmDialog");
-            _root.transform.SetParent(canvas.transform, false);
-            var rootRect = _root.AddComponent<RectTransform>();
+            root = new GameObject("ConfirmDialog");
+            root.transform.SetParent(canvas.transform, false);
+            var rootRect = root.AddComponent<RectTransform>();
             rootRect.anchorMin = new Vector2(0.5f, 0.5f);
             rootRect.anchorMax = new Vector2(0.5f, 0.5f);
             rootRect.pivot = new Vector2(0.5f, 0.5f);
             rootRect.anchoredPosition = Vector2.zero;
             rootRect.sizeDelta = new Vector2(panelWidth + borderWidth * 2, panelHeight + borderWidth * 2);
 
-            var borderImg = _root.AddComponent<Image>();
+            var borderImg = root.AddComponent<Image>();
             borderImg.color = BorderColor;
 
             var panel = new GameObject("Panel");
-            panel.transform.SetParent(_root.transform, false);
+            panel.transform.SetParent(root.transform, false);
             var panelRect = panel.AddComponent<RectTransform>();
             panelRect.anchorMin = Vector2.zero;
             panelRect.anchorMax = Vector2.one;
@@ -138,13 +138,13 @@ namespace ProjectAstra.Core.UI.Overlays
             msgRect.offsetMin = new Vector2(12f, 0f);
             msgRect.offsetMax = new Vector2(-12f, -8f);
 
-            _messageText = msgGo.AddComponent<TextMeshProUGUI>();
-            _messageText.text = message;
-            _messageText.fontSize = 18;
-            _messageText.alignment = TextAlignmentOptions.Center;
-            _messageText.color = TextNormal;
-            _messageText.fontStyle = FontStyles.Bold;
-            _messageText.enableWordWrapping = true;
+            messageText = msgGo.AddComponent<TextMeshProUGUI>();
+            messageText.text = message;
+            messageText.fontSize = 18;
+            messageText.alignment = TextAlignmentOptions.Center;
+            messageText.color = TextNormal;
+            messageText.fontStyle = FontStyles.Bold;
+            messageText.enableWordWrapping = true;
 
             string[] labels = { "Yes", "No" };
             for (int i = 0; i < 2; i++)
@@ -163,16 +163,16 @@ namespace ProjectAstra.Core.UI.Overlays
                 tmp.alignment = TextAlignmentOptions.Center;
                 tmp.fontStyle = FontStyles.Bold;
                 tmp.color = TextNormal;
-                _optionTexts.Add(tmp);
+                optionTexts.Add(tmp);
             }
 
-            _root.AddComponent<CanvasGroup>().blocksRaycasts = false;
+            root.AddComponent<CanvasGroup>().blocksRaycasts = false;
         }
 
         private void UpdateSelection()
         {
-            for (int i = 0; i < _optionTexts.Count; i++)
-                _optionTexts[i].color = i == _selectedIndex ? TextSelected : TextNormal;
+            for (int i = 0; i < optionTexts.Count; i++)
+                optionTexts[i].color = i == selectedIndex ? TextSelected : TextNormal;
         }
     }
 }

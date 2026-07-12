@@ -11,13 +11,13 @@ namespace ProjectAstra.Core.Grid
         const int Border = 1;
         const float GradientStrength = 0.22f;
 
-        private static Sprite _cachedSprite;
+        private static Sprite cachedSprite;
 
         public static Sprite GetOverlaySprite()
         {
-            if (_cachedSprite == null)
-                _cachedSprite = CreateOverlaySprite();
-            return _cachedSprite;
+            if (cachedSprite == null)
+                cachedSprite = CreateOverlaySprite();
+            return cachedSprite;
         }
 
         private static Sprite CreateOverlaySprite()

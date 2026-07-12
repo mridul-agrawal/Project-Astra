@@ -6315,12 +6315,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88144da593964754c8500a0a39bed16e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.LevelUpScreenUI
-  _overlayRoot: {fileID: 2263929892445208539}
-  _portraitImage: {fileID: 1572274322655938628}
-  _unitNameText: {fileID: 7648272425148226551}
-  _levelTransitionText: {fileID: 3801219527107376405}
-  _confirmHintText: {fileID: 7063390876248470032}
-  _statRows:
+  overlayRoot: {fileID: 2263929892445208539}
+  portraitImage: {fileID: 1572274322655938628}
+  unitNameText: {fileID: 7648272425148226551}
+  levelTransitionText: {fileID: 3801219527107376405}
+  confirmHintText: {fileID: 7063390876248470032}
+  statRows:
   - stat: 0
     rowCanvasGroup: {fileID: 5961671066360736871}
     labelText: {fileID: 5637846683646078569}
@@ -6375,10 +6375,10 @@ MonoBehaviour:
     beforeValueText: {fileID: 1833683262356770094}
     gainText: {fileID: 6127068895061576949}
     afterValueText: {fileID: 2124345732493408376}
-  _rowStaggerSeconds: 0.1
-  _rowFadeSeconds: 0.15
-  _gainAccentColor: {r: 0.486, g: 0.827, b: 0.416, a: 1}
-  _noGainColor: {r: 0.541, g: 0.478, b: 0.345, a: 1}
+  rowStaggerSeconds: 0.1
+  rowFadeSeconds: 0.15
+  gainAccentColor: {r: 0.486, g: 0.827, b: 0.416, a: 1}
+  noGainColor: {r: 0.541, g: 0.478, b: 0.345, a: 1}
 --- !u!1 &9207612536358890428
 GameObject:
   m_ObjectHideFlags: 0

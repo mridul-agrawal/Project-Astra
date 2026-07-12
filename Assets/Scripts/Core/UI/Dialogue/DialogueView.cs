@@ -14,27 +14,27 @@ namespace ProjectAstra.Core.UI.Dialogue
         private static readonly Color ActiveTint = Color.white;
         private static readonly Color DimTint = new(0.45f, 0.45f, 0.45f, 1f);
 
-        [SerializeField] private GameObject _root;
-        [SerializeField] private Image _fullScreenImage;
-        [SerializeField] private Image _leftPortrait;
-        [SerializeField] private Image _rightPortrait;
-        [SerializeField] private Image _centerPortrait;
+        [SerializeField] private GameObject root;
+        [SerializeField] private Image fullScreenImage;
+        [SerializeField] private Image leftPortrait;
+        [SerializeField] private Image rightPortrait;
+        [SerializeField] private Image centerPortrait;
 
         [Header("Nameplates — shown on the active speaker's side")]
-        [SerializeField] private GameObject _namePlateLeft;
-        [SerializeField] private TMP_Text _nameLabelLeft;
-        [SerializeField] private GameObject _namePlateRight;
-        [SerializeField] private TMP_Text _nameLabelRight;
+        [SerializeField] private GameObject namePlateLeft;
+        [SerializeField] private TMP_Text nameLabelLeft;
+        [SerializeField] private GameObject namePlateRight;
+        [SerializeField] private TMP_Text nameLabelRight;
 
-        [SerializeField] private TMP_Text _bodyText;
-        [SerializeField] private GameObject _continueHint;
+        [SerializeField] private TMP_Text bodyText;
+        [SerializeField] private GameObject continueHint;
 
-        private int _lastVisibleCount;
+        private int lastVisibleCount;
 
         public void Show(DialogueTriggeringContext context)
         {
             ResetPortraits();
-            if (_root != null) _root.SetActive(true);
+            if (root != null) root.SetActive(true);
         }
 
         public void ShowLine(in DialogueLineView line)
@@ -42,40 +42,40 @@ namespace ProjectAstra.Core.UI.Dialogue
             ApplyBackground(line.Background);
             ApplyPortrait(line.Portrait, line.Position, line.Facing);
             ApplyName(line.SpeakerName, line.Position);
-            _bodyText.text = line.Text ?? string.Empty;
-            _bodyText.maxVisibleCharacters = 0;
-            _lastVisibleCount = 0;
+            bodyText.text = line.Text ?? string.Empty;
+            bodyText.maxVisibleCharacters = 0;
+            lastVisibleCount = 0;
             SetContinueHintVisible(false);
         }
 
         public void SetVisibleCharacters(int count)
         {
             // One soft blip per newly typed character — skip whitespace and reveal-all jumps.
-            if (count == _lastVisibleCount + 1 && _bodyText.text != null
-                && count >= 1 && count <= _bodyText.text.Length
-                && !char.IsWhiteSpace(_bodyText.text[count - 1]))
+            if (count == lastVisibleCount + 1 && bodyText.text != null
+                && count >= 1 && count <= bodyText.text.Length
+                && !char.IsWhiteSpace(bodyText.text[count - 1]))
             {
                 AudioManager.Instance?.Play(SoundId.DialogueBlip);
             }
-            _lastVisibleCount = count;
-            _bodyText.maxVisibleCharacters = count;
+            lastVisibleCount = count;
+            bodyText.maxVisibleCharacters = count;
         }
 
         public void SetContinueHintVisible(bool visible)
         {
-            if (_continueHint != null) _continueHint.SetActive(visible);
+            if (continueHint != null) continueHint.SetActive(visible);
         }
 
         public void Hide()
         {
-            if (_root != null) _root.SetActive(false);
+            if (root != null) root.SetActive(false);
         }
 
         private void ApplyBackground(Sprite background)
         {
-            if (_fullScreenImage == null) return;
-            _fullScreenImage.sprite = background;
-            _fullScreenImage.enabled = background != null;
+            if (fullScreenImage == null) return;
+            fullScreenImage.sprite = background;
+            fullScreenImage.enabled = background != null;
         }
 
         // Assigns the speaking portrait to its side and keeps it; the active side is
@@ -89,9 +89,9 @@ namespace ProjectAstra.Core.UI.Dialogue
                 ApplyFacing(slot, facing);
             }
 
-            Tint(_leftPortrait, position == PortraitPosition.Left);
-            Tint(_rightPortrait, position == PortraitPosition.Right);
-            Tint(_centerPortrait, position == PortraitPosition.Center);
+            Tint(leftPortrait, position == PortraitPosition.Left);
+            Tint(rightPortrait, position == PortraitPosition.Right);
+            Tint(centerPortrait, position == PortraitPosition.Center);
         }
 
         // Art faces Left by default; Right mirrors the portrait horizontally.
@@ -105,9 +105,9 @@ namespace ProjectAstra.Core.UI.Dialogue
 
         private Image SlotFor(PortraitPosition position) => position switch
         {
-            PortraitPosition.Right => _rightPortrait,
-            PortraitPosition.Center => _centerPortrait,
-            _ => _leftPortrait
+            PortraitPosition.Right => rightPortrait,
+            PortraitPosition.Center => centerPortrait,
+            _ => leftPortrait
         };
 
         private static void AssignPortrait(Image slot, Sprite portrait)
@@ -129,8 +129,8 @@ namespace ProjectAstra.Core.UI.Dialogue
         {
             bool hasName = !string.IsNullOrEmpty(speakerName);
             bool right = position == PortraitPosition.Right;
-            SetPlate(_namePlateLeft, _nameLabelLeft, hasName && !right, speakerName);
-            SetPlate(_namePlateRight, _nameLabelRight, hasName && right, speakerName);
+            SetPlate(namePlateLeft, nameLabelLeft, hasName && !right, speakerName);
+            SetPlate(namePlateRight, nameLabelRight, hasName && right, speakerName);
         }
 
         private static void SetPlate(GameObject plate, TMP_Text label, bool show, string speakerName)
@@ -142,9 +142,9 @@ namespace ProjectAstra.Core.UI.Dialogue
         // A fresh conversation shouldn't inherit the previous one's portraits.
         private void ResetPortraits()
         {
-            ResetSlot(_leftPortrait);
-            ResetSlot(_rightPortrait);
-            ResetSlot(_centerPortrait);
+            ResetSlot(leftPortrait);
+            ResetSlot(rightPortrait);
+            ResetSlot(centerPortrait);
         }
 
         private static void ResetSlot(Image slot)

@@ -192,11 +192,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f82647c3be18c1e4fbcdad217ff3ad09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMapPausedOverlayUI
-  _endTurnButton: {fileID: 7485289121661231944}
-  _resumeButton: {fileID: 638812928898807169}
-  _saveMenuButton: {fileID: 4742999237104389019}
-  _settingsMenuButton: {fileID: 7077918343134993307}
-  _quitButton: {fileID: 7566011987966125588}
+  endTurnButton: {fileID: 7485289121661231944}
+  resumeButton: {fileID: 638812928898807169}
+  saveMenuButton: {fileID: 4742999237104389019}
+  settingsMenuButton: {fileID: 7077918343134993307}
+  quitButton: {fileID: 7566011987966125588}
   Normal: {r: 0.2, g: 0.2, b: 0.2, a: 0.9}
   Selected: {r: 0.4, g: 0.4, b: 0.6, a: 1}
 --- !u!1 &4083548367553448019

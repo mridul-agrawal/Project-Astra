@@ -122,11 +122,11 @@ namespace ProjectAstra.EditorTools
 
             var ui = rootGo.AddComponent<ExpGainOverlayUI>();
             var so = new SerializedObject(ui);
-            so.FindProperty("_overlayRoot").objectReferenceValue = overlayGo;
-            so.FindProperty("_canvasGroup").objectReferenceValue = cg;
-            so.FindProperty("_unitNameText").objectReferenceValue = unitNameTmp;
-            so.FindProperty("_counterText").objectReferenceValue = counterTmp;
-            so.FindProperty("_gainText").objectReferenceValue = gainTmp;
+            so.FindProperty("overlayRoot").objectReferenceValue = overlayGo;
+            so.FindProperty("canvasGroup").objectReferenceValue = cg;
+            so.FindProperty("unitNameText").objectReferenceValue = unitNameTmp;
+            so.FindProperty("counterText").objectReferenceValue = counterTmp;
+            so.FindProperty("gainText").objectReferenceValue = gainTmp;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             overlayGo.SetActive(false);

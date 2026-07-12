@@ -17,23 +17,23 @@ namespace ProjectAstra.Core.Dialogue
             public DialogueScript script;
         }
 
-        [SerializeField] private List<Entry> _cutscenes = new();
+        [SerializeField] private List<Entry> cutscenes = new();
 
-        private Dictionary<CutsceneId, DialogueScript> _byId;
+        private Dictionary<CutsceneId, DialogueScript> byId;
 
         public DialogueScript Get(CutsceneId id)
         {
             EnsureIndexBuilt();
-            return _byId.TryGetValue(id, out DialogueScript script) ? script : null;
+            return byId.TryGetValue(id, out DialogueScript script) ? script : null;
         }
 
         private void EnsureIndexBuilt()
         {
-            if (_byId != null) return;
-            _byId = new Dictionary<CutsceneId, DialogueScript>();
-            foreach (Entry e in _cutscenes)
+            if (byId != null) return;
+            byId = new Dictionary<CutsceneId, DialogueScript>();
+            foreach (Entry e in cutscenes)
                 if (e.script != null && e.id != CutsceneId.None)
-                    _byId[e.id] = e.script;
+                    byId[e.id] = e.script;
         }
     }
 }

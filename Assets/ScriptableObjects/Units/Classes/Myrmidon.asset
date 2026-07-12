@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: Myrmidon
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: Myrmidon
-  _classType: 0
-  _movementRange: 5
-  _movementType: 0
-  _weaponWhitelist: 00000000
-  _statGrowthModifiers:
-    _values: fbffffff00000000000000000a0000000a000000fbffffff000000000000000000000000
-  _statCaps:
-    _values: 3000000016000000020000001c0000001c00000012000000140000000c0000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 1
-  _isPromoted: 0
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 120000000500000000000000090000000a00000003000000020000000500000005000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: Myrmidon
+  classType: 0
+  movementRange: 5
+  movementType: 0
+  weaponWhitelist: 00000000
+  statGrowthModifiers:
+    values: fbffffff00000000000000000a0000000a000000fbffffff000000000000000000000000
+  statCaps:
+    values: 3000000016000000020000001c0000001c00000012000000140000000c0000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 1
+  isPromoted: 0
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 120000000500000000000000090000000a00000003000000020000000500000005000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

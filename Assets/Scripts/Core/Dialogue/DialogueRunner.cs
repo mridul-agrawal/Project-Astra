@@ -11,20 +11,20 @@ namespace ProjectAstra.Core.Dialogue
     {
         private const float MinCharsPerSecond = 1f;
 
-        private readonly DialogueScript _script;
-        private readonly DialogueSpeakerRegistry _registry;
-        private readonly IDialogueView _view;
-        private readonly DialogueTriggeringContext _context;
-        private readonly float _defaultCharsPerSecond;
+        private readonly DialogueScript script;
+        private readonly DialogueSpeakerRegistry registry;
+        private readonly IDialogueView view;
+        private readonly DialogueTriggeringContext context;
+        private readonly float defaultCharsPerSecond;
 
-        private int _index;
-        private DialogueNode _node;
-        private string _text = string.Empty;
-        private float _charsPerSecond;
-        private float _revealed;
-        private float _autoAdvanceElapsed;
-        private bool _crawlComplete;
-        private int _lastShown;
+        private int index;
+        private DialogueNode node;
+        private string text = string.Empty;
+        private float charsPerSecond;
+        private float revealed;
+        private float autoAdvanceElapsed;
+        private bool crawlComplete;
+        private int lastShown;
 
         public event Action OnComplete;
         public bool IsRunning { get; private set; }
@@ -32,18 +32,18 @@ namespace ProjectAstra.Core.Dialogue
         public DialogueRunner(DialogueScript script, DialogueSpeakerRegistry registry,
             IDialogueView view, DialogueTriggeringContext context, float defaultCharsPerSecond)
         {
-            _script = script;
-            _registry = registry;
-            _view = view;
-            _context = context;
-            _defaultCharsPerSecond = Mathf.Max(MinCharsPerSecond, defaultCharsPerSecond);
+            this.script = script;
+            this.registry = registry;
+            this.view = view;
+            this.context = context;
+            this.defaultCharsPerSecond = Mathf.Max(MinCharsPerSecond, defaultCharsPerSecond);
         }
 
         public void Start()
         {
             IsRunning = true;
-            _index = 0;
-            _view.Show(_context);
+            index = 0;
+            view.Show(context);
             PresentCurrentNode();
         }
 
@@ -51,15 +51,15 @@ namespace ProjectAstra.Core.Dialogue
         public void Tick(float deltaTime)
         {
             if (!IsRunning) return;
-            if (!_crawlComplete) AdvanceCrawl(deltaTime);
-            else if (_node.AutoAdvances) AdvanceAutoTimer(deltaTime);
+            if (!crawlComplete) AdvanceCrawl(deltaTime);
+            else if (node.AutoAdvances) AdvanceAutoTimer(deltaTime);
         }
 
         // Confirm snaps a crawling line to full first, then advances on the next press.
         public void Confirm()
         {
             if (!IsRunning) return;
-            if (!_crawlComplete) CompleteCrawl();
+            if (!crawlComplete) CompleteCrawl();
             else Advance();
         }
 
@@ -71,62 +71,62 @@ namespace ProjectAstra.Core.Dialogue
 
         private void PresentCurrentNode()
         {
-            if (_index >= _script.Nodes.Count) { Finish(); return; }
+            if (index >= script.Nodes.Count) { Finish(); return; }
 
-            _node = _script.Nodes[_index];
-            if (!TryBuildLine(_node, out var line)) { SkipMissingSpeaker(); return; }
+            node = script.Nodes[index];
+            if (!TryBuildLine(node, out var line)) { SkipMissingSpeaker(); return; }
 
-            BeginCrawl(_node, line);
+            BeginCrawl(node, line);
         }
 
         private void BeginCrawl(DialogueNode node, in DialogueLineView line)
         {
-            _view.ShowLine(line);
-            _text = node.Text ?? string.Empty;
-            _charsPerSecond = node.HasTextSpeedOverride ? node.TextSpeedOverride : _defaultCharsPerSecond;
-            _revealed = 0f;
-            _lastShown = 0;
-            _autoAdvanceElapsed = 0f;
-            _crawlComplete = false;
-            _view.SetVisibleCharacters(0);
-            _view.SetContinueHintVisible(false);
+            view.ShowLine(line);
+            text = node.Text ?? string.Empty;
+            charsPerSecond = node.HasTextSpeedOverride ? node.TextSpeedOverride : defaultCharsPerSecond;
+            revealed = 0f;
+            lastShown = 0;
+            autoAdvanceElapsed = 0f;
+            crawlComplete = false;
+            view.SetVisibleCharacters(0);
+            view.SetContinueHintVisible(false);
 
-            if (_text.Length == 0) CompleteCrawl();
+            if (text.Length == 0) CompleteCrawl();
         }
 
         private void AdvanceCrawl(float deltaTime)
         {
-            _revealed += _charsPerSecond * deltaTime;
-            int target = Mathf.Min((int)_revealed, _text.Length);
+            revealed += charsPerSecond * deltaTime;
+            int target = Mathf.Min((int)revealed, text.Length);
 
             // Reveal one letter at a time so the cadence is even and each letter blips.
-            while (_lastShown < target)
+            while (lastShown < target)
             {
-                _lastShown++;
-                _view.SetVisibleCharacters(_lastShown);
+                lastShown++;
+                view.SetVisibleCharacters(lastShown);
             }
 
-            if (_lastShown >= _text.Length) CompleteCrawl();
+            if (lastShown >= text.Length) CompleteCrawl();
         }
 
         private void CompleteCrawl()
         {
-            _crawlComplete = true;
-            _lastShown = _text.Length;
-            _view.SetVisibleCharacters(_text.Length);
+            crawlComplete = true;
+            lastShown = text.Length;
+            view.SetVisibleCharacters(text.Length);
             // A line that advances on its own shouldn't beg for a button press.
-            _view.SetContinueHintVisible(!_node.AutoAdvances);
+            view.SetContinueHintVisible(!node.AutoAdvances);
         }
 
         private void AdvanceAutoTimer(float deltaTime)
         {
-            _autoAdvanceElapsed += deltaTime;
-            if (_autoAdvanceElapsed >= _node.AutoAdvanceDelay) Advance();
+            autoAdvanceElapsed += deltaTime;
+            if (autoAdvanceElapsed >= node.AutoAdvanceDelay) Advance();
         }
 
         private void Advance()
         {
-            _index++;
+            index++;
             PresentCurrentNode();
         }
 
@@ -134,8 +134,8 @@ namespace ProjectAstra.Core.Dialogue
         // authors guard existence with branch nodes once those ship.
         private void SkipMissingSpeaker()
         {
-            Debug.LogWarning($"[DialogueRunner] Script '{_script.ScriptId}' node {_node.NodeId}: " +
-                             $"speaker '{_node.SpeakerId}' not found. Skipping line.");
+            Debug.LogWarning($"[DialogueRunner] Script '{script.ScriptId}' node {node.NodeId}: " +
+                             $"speaker '{node.SpeakerId}' not found. Skipping line.");
             Advance();
         }
 
@@ -150,7 +150,7 @@ namespace ProjectAstra.Core.Dialogue
                 return true;
             }
 
-            if (_registry == null || !_registry.TryResolve(node.SpeakerId, out var speaker))
+            if (registry == null || !registry.TryResolve(node.SpeakerId, out var speaker))
                 return false;
 
             var portrait = hidden ? null : speaker.ResolvePortrait(node.Expression);
@@ -161,7 +161,7 @@ namespace ProjectAstra.Core.Dialogue
         private void Finish()
         {
             IsRunning = false;
-            _view.Hide();
+            view.Hide();
             OnComplete?.Invoke();
         }
     }

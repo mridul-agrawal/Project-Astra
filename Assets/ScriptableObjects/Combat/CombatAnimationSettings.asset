@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 599bf0baae63c774a92e4081abada622, type: 3}
   m_Name: CombatAnimationSettings
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Combat.Playback.CombatAnimationSettings
-  _default: 0
+  default: 0

@@ -155,7 +155,7 @@ namespace ProjectAstra.EditorTools
             if (cursor != null)
             {
                 var so = new SerializedObject(cursor);
-                var prop = so.FindProperty("_tradeUI");
+                var prop = so.FindProperty("tradeUI");
                 if (prop != null)
                 {
                     prop.objectReferenceValue = controller;

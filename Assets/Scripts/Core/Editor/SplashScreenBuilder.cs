@@ -155,8 +155,8 @@ namespace ProjectAstra.Core.Editor
         {
             var go = new GameObject("SplashController");
             var controller = go.AddComponent<SplashScreenController>();
-            SetField(controller, "_videoPlayer", videoPlayer);
-            SetField(controller, "_fadeGroup", fadeGroup);
+            SetField(controller, "videoPlayer", videoPlayer);
+            SetField(controller, "fadeGroup", fadeGroup);
         }
 
         private static void SetInitialStateToSplash()
@@ -168,7 +168,7 @@ namespace ProjectAstra.Core.Editor
                 Debug.LogError("[SplashBuilder] GameStateManager not found in BootScene; initial state not set.");
                 return;
             }
-            SetField(gsm, "_initialState", GameState.Splash);
+            SetField(gsm, "initialState", GameState.Splash);
             EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         }

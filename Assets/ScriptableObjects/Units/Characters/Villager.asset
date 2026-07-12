@@ -12,23 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
   m_Name: Villager
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
-  _unitName: Villager
-  _unitId: villager
-  _defaultClass: {fileID: 11400000, guid: 8697dcf3b5d45884698887c155ba1b8b, type: 2}
-  _baseStats:
-    _values: 100000000100000006000000050000000600000001000000080000000300000007000000
-  _baseLevel: 1
-  _personalGrowths:
-    _values: 2d0000000500000032000000230000001e0000000a000000370000000000000032000000
-  _mapSprite: {fileID: 21300000, guid: 8a67a8e30ece5104cbf7c7458bcee3ce, type: 3}
-  _portrait: {fileID: 0}
-  _woundedPortrait: {fileID: 0}
-  _criticalPortrait: {fileID: 0}
-  _deceasedPortrait: {fileID: 0}
-  _stressedOverlay: {fileID: 0}
-  _affinity: 0
-  _personality: 0
-  _isNamedCommander: 0
-  _oneLineIdentity: 
-  _isLord: 0
-  _lastWordsLines: []
+  unitName: Villager
+  unitId: villager
+  defaultClass: {fileID: 11400000, guid: 8697dcf3b5d45884698887c155ba1b8b, type: 2}
+  baseStats:
+    values: 100000000100000006000000050000000600000001000000080000000300000007000000
+  baseLevel: 1
+  personalGrowths:
+    values: 2d0000000500000032000000230000001e0000000a000000370000000000000032000000
+  mapSprite: {fileID: 21300000, guid: 8a67a8e30ece5104cbf7c7458bcee3ce, type: 3}
+  portrait: {fileID: 0}
+  woundedPortrait: {fileID: 0}
+  criticalPortrait: {fileID: 0}
+  deceasedPortrait: {fileID: 0}
+  stressedOverlay: {fileID: 0}
+  affinity: 0
+  personality: 0
+  isNamedCommander: 0
+  oneLineIdentity: 
+  isLord: 0
+  lastWordsLines: []

@@ -9,7 +9,7 @@ namespace ProjectAstra.Core.Editor
     [InitializeOnLoad]
     public static class AutoRecorder
     {
-        private static RecorderController _controller;
+        private static RecorderController controller;
 
         private const string EnabledPrefKey = "ProjectAstra_AutoRecorder_Enabled";
 
@@ -71,19 +71,19 @@ namespace ProjectAstra.Core.Editor
 
             controllerSettings.AddRecorderSettings(movieSettings);
 
-            _controller = new RecorderController(controllerSettings);
-            _controller.PrepareRecording();
-            _controller.StartRecording();
+            controller = new RecorderController(controllerSettings);
+            controller.PrepareRecording();
+            controller.StartRecording();
 
             Debug.Log($"AutoRecorder: Recording started → {outputFolder}");
         }
 
         private static void StopRecording()
         {
-            if (_controller == null || !_controller.IsRecording()) return;
+            if (controller == null || !controller.IsRecording()) return;
 
-            _controller.StopRecording();
-            _controller = null;
+            controller.StopRecording();
+            controller = null;
             Debug.Log("AutoRecorder: Recording saved.");
         }
     }

@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
   m_Name: WyvernLord
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  _className: WyvernLord
-  _classType: 2
-  _movementRange: 8
-  _movementType: 3
-  _weaponWhitelist: 010000000200000000000000
-  _statGrowthModifiers:
-    _values: 0a0000000a0000000000000005000000000000000a000000000000000000000000000000
-  _statCaps:
-    _values: 480000001e0000000400000018000000180000001e00000014000000120000001e000000
-  _hpGainOnLevelUp: 2
-  _canPromote: 0
-  _isPromoted: 1
-  _promotionTargets: []
-  _baseClass: {fileID: 0}
-  _promotionBonuses:
-    _values: 040000000200000000000000010000000100000002000000000000000100000000000000
-  _classAbilities: []
-  _mapSpriteId: 
-  _combatAnimationSetId: 
+  className: WyvernLord
+  classType: 2
+  movementRange: 8
+  movementType: 3
+  weaponWhitelist: 010000000200000000000000
+  statGrowthModifiers:
+    values: 0a0000000a0000000000000005000000000000000a000000000000000000000000000000
+  statCaps:
+    values: 480000001e0000000400000018000000180000001e00000014000000120000001e000000
+  hpGainOnLevelUp: 2
+  canPromote: 0
+  isPromoted: 1
+  promotionTargets: []
+  baseClass: {fileID: 0}
+  promotionBonuses:
+    values: 040000000200000000000000010000000100000002000000000000000100000000000000
+  classAbilities: []
+  mapSpriteId: 
+  combatAnimationSetId: 

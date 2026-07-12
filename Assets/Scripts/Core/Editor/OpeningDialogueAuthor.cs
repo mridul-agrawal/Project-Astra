@@ -52,8 +52,8 @@ namespace ProjectAstra.EditorTools
         {
             var speaker = ScriptableObject.CreateInstance<DialogueSpeaker>();
             var so = new SerializedObject(speaker);
-            so.FindProperty("_speakerId").stringValue = speakerId;
-            so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("speakerId").stringValue = speakerId;
+            so.FindProperty("displayName").stringValue = displayName;
             so.ApplyModifiedPropertiesWithoutUndo();
             ReplaceAsset(speaker, path);
             return AssetDatabase.LoadAssetAtPath<DialogueSpeaker>(path);
@@ -63,7 +63,7 @@ namespace ProjectAstra.EditorTools
         {
             var registry = ScriptableObject.CreateInstance<DialogueSpeakerRegistry>();
             var so = new SerializedObject(registry);
-            var list = so.FindProperty("_speakers");
+            var list = so.FindProperty("speakers");
             list.arraySize = speakers.Length;
             for (int i = 0; i < speakers.Length; i++)
                 list.GetArrayElementAtIndex(i).objectReferenceValue = speakers[i];
@@ -75,9 +75,9 @@ namespace ProjectAstra.EditorTools
         {
             var script = ScriptableObject.CreateInstance<DialogueScript>();
             var so = new SerializedObject(script);
-            so.FindProperty("_scriptId").stringValue = "OPENING_CH01";
+            so.FindProperty("scriptId").stringValue = "OPENING_CH01";
 
-            var nodes = so.FindProperty("_nodes");
+            var nodes = so.FindProperty("nodes");
             nodes.arraySize = OpeningLines.Length;
             for (int i = 0; i < OpeningLines.Length; i++)
                 ApplyLine(nodes.GetArrayElementAtIndex(i), i, OpeningLines[i]);
@@ -88,13 +88,13 @@ namespace ProjectAstra.EditorTools
 
         private static void ApplyLine(SerializedProperty node, int id, Line line)
         {
-            node.FindPropertyRelative("_nodeId").intValue = id;
-            node.FindPropertyRelative("_speakerId").stringValue = line.SpeakerId;
-            node.FindPropertyRelative("_text").stringValue = line.Text;
-            node.FindPropertyRelative("_expression").enumValueIndex = (int)line.Expression;
-            node.FindPropertyRelative("_portraitPosition").enumValueIndex = (int)line.Position;
-            node.FindPropertyRelative("_textSpeedOverride").floatValue = -1f;
-            node.FindPropertyRelative("_autoAdvanceDelay").floatValue = 0f;
+            node.FindPropertyRelative("nodeId").intValue = id;
+            node.FindPropertyRelative("speakerId").stringValue = line.SpeakerId;
+            node.FindPropertyRelative("text").stringValue = line.Text;
+            node.FindPropertyRelative("expression").enumValueIndex = (int)line.Expression;
+            node.FindPropertyRelative("portraitPosition").enumValueIndex = (int)line.Position;
+            node.FindPropertyRelative("textSpeedOverride").floatValue = -1f;
+            node.FindPropertyRelative("autoAdvanceDelay").floatValue = 0f;
         }
 
         private static void ReplaceAsset(Object asset, string path)

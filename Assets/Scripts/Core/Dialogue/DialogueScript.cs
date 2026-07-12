@@ -8,43 +8,43 @@ namespace ProjectAstra.Core.Dialogue
     [CreateAssetMenu(fileName = "DialogueScript", menuName = "Project Astra/Dialogue/Dialogue Script")]
     public class DialogueScript : ScriptableObject
     {
-        [SerializeField] private string _scriptId;
-        [SerializeField] private List<DialogueSegment> _segments = new();
+        [SerializeField] private string scriptId;
+        [SerializeField] private List<DialogueSegment> segments = new();
 
         // Legacy flat node list — kept for migration safety + fallback. New scripts
         // author in _segments; the migration tool fills _segments from here.
-        [HideInInspector, SerializeField] private List<DialogueNode> _nodes = new();
+        [HideInInspector, SerializeField] private List<DialogueNode> nodes = new();
 
-        [System.NonSerialized] private List<DialogueNode> _flattened;
+        [System.NonSerialized] private List<DialogueNode> flattened;
 
-        public string ScriptId => _scriptId;
+        public string ScriptId => scriptId;
 
         // The runner consumes this. Serve flattened segments when present, else the
         // legacy nodes — so pre-migration data keeps working.
         public IReadOnlyList<DialogueNode> Nodes =>
-            _segments != null && _segments.Count > 0 ? Flattened() : _nodes;
+            segments != null && segments.Count > 0 ? Flattened() : nodes;
 
         private List<DialogueNode> Flattened()
         {
-            if (_flattened != null) return _flattened;
-            _flattened = new List<DialogueNode>();
+            if (flattened != null) return flattened;
+            flattened = new List<DialogueNode>();
             int id = 0;
-            foreach (var segment in _segments)
+            foreach (var segment in segments)
             {
                 if (segment?.Lines == null) continue;
                 foreach (var line in segment.Lines)
-                    _flattened.Add(DialogueNode.CreateRuntime(id++, line, segment));
+                    flattened.Add(DialogueNode.CreateRuntime(id++, line, segment));
             }
-            return _flattened;
+            return flattened;
         }
 
         // Node ids always mirror list position, so designers never hand-number them
         // when adding or reordering nodes in the inspector.
         private void OnValidate()
         {
-            _flattened = null; // refresh the flatten cache after any inspector edit
-            for (int i = 0; i < _nodes.Count; i++)
-                _nodes[i]?.SetNodeId(i);
+            flattened = null; // refresh the flatten cache after any inspector edit
+            for (int i = 0; i < nodes.Count; i++)
+                nodes[i]?.SetNodeId(i);
         }
 
         // Builds a one-segment script from code at runtime (no asset) for dynamic,
@@ -72,8 +72,8 @@ namespace ProjectAstra.Core.Dialogue
             var segment = DialogueSegment.Create(null, textSpeed, autoAdvanceDelay, built);
 
             var script = CreateInstance<DialogueScript>();
-            script._scriptId = scriptId;
-            script._segments = new List<DialogueSegment> { segment };
+            script.scriptId = scriptId;
+            script.segments = new List<DialogueSegment> { segment };
             return script;
         }
 
@@ -81,16 +81,16 @@ namespace ProjectAstra.Core.Dialogue
         internal static DialogueScript CreateForTest(string scriptId, params DialogueNode[] nodes)
         {
             var script = CreateInstance<DialogueScript>();
-            script._scriptId = scriptId;
-            script._nodes = new List<DialogueNode>(nodes);
+            script.scriptId = scriptId;
+            script.nodes = new List<DialogueNode>(nodes);
             return script;
         }
 
         internal static DialogueScript CreateForTestWithSegments(string scriptId, params DialogueSegment[] segments)
         {
             var script = CreateInstance<DialogueScript>();
-            script._scriptId = scriptId;
-            script._segments = new List<DialogueSegment>(segments);
+            script.scriptId = scriptId;
+            script.segments = new List<DialogueSegment>(segments);
             return script;
         }
     }

@@ -22,16 +22,16 @@ namespace ProjectAstra.Core.Combat
     // minInclusive so tests don't crash if they under-supply rolls.
     public class FixedRng : IRng
     {
-        private readonly Queue<int> _values;
+        private readonly Queue<int> values;
 
         public FixedRng(params int[] values)
         {
-            _values = new Queue<int>(values);
+            this.values = new Queue<int>(values);
         }
 
         public int Range(int minInclusive, int maxExclusive)
         {
-            return _values.Count > 0 ? _values.Dequeue() : minInclusive;
+            return values.Count > 0 ? values.Dequeue() : minInclusive;
         }
     }
 }

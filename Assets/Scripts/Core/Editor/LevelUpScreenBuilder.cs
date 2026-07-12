@@ -165,13 +165,13 @@ namespace ProjectAstra.EditorTools
 
             var ui = rootGo.AddComponent<LevelUpScreenUI>();
             var so = new SerializedObject(ui);
-            so.FindProperty("_overlayRoot").objectReferenceValue = overlayGo;
-            so.FindProperty("_portraitImage").objectReferenceValue = portraitImg;
-            so.FindProperty("_unitNameText").objectReferenceValue = unitNameTmp;
-            so.FindProperty("_levelTransitionText").objectReferenceValue = levelTransTmp;
-            so.FindProperty("_confirmHintText").objectReferenceValue = hintTmp;
+            so.FindProperty("overlayRoot").objectReferenceValue = overlayGo;
+            so.FindProperty("portraitImage").objectReferenceValue = portraitImg;
+            so.FindProperty("unitNameText").objectReferenceValue = unitNameTmp;
+            so.FindProperty("levelTransitionText").objectReferenceValue = levelTransTmp;
+            so.FindProperty("confirmHintText").objectReferenceValue = hintTmp;
 
-            var rowsProp = so.FindProperty("_statRows");
+            var rowsProp = so.FindProperty("statRows");
             rowsProp.arraySize = statRows.Count;
             for (int i = 0; i < statRows.Count; i++)
             {

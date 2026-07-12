@@ -191,23 +191,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af7b4d50f4b756f49a1ada1ce0dce80e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatAnimation.CombatFighterView
-  _slotRoot: {fileID: 3207753432957180110}
-  _spriteImage: {fileID: 4788515148667231357}
-  _canvasGroup: {fileID: 7343895774083400599}
-  _unitNameLabel: {fileID: 8595106779819878830}
-  _weaponNameLabel: {fileID: 3699363281387706189}
-  _damageLabel: {fileID: 6522500111163550856}
-  _hpBarFill: {fileID: 485608965084274409}
-  _hpBarRoot: {fileID: 500760693314233886}
-  _attackLungeDistance: 80
-  _windupPullBack: 12
-  _hitRecoilDistance: 40
-  _dodgeDistance: 70
-  _hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  _hitFlashSeconds: 0.08
-  _damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
-  _critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
-  _missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
+  slotRoot: {fileID: 3207753432957180110}
+  spriteImage: {fileID: 4788515148667231357}
+  canvasGroup: {fileID: 7343895774083400599}
+  unitNameLabel: {fileID: 8595106779819878830}
+  weaponNameLabel: {fileID: 3699363281387706189}
+  damageLabel: {fileID: 6522500111163550856}
+  hpBarFill: {fileID: 485608965084274409}
+  hpBarRoot: {fileID: 500760693314233886}
+  attackLungeDistance: 80
+  windupPullBack: 12
+  hitRecoilDistance: 40
+  dodgeDistance: 70
+  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  hitFlashSeconds: 0.08
+  damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
+  critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
+  missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
 --- !u!225 &7343895774083400599
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -935,23 +935,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af7b4d50f4b756f49a1ada1ce0dce80e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatAnimation.CombatFighterView
-  _slotRoot: {fileID: 3126238082426946539}
-  _spriteImage: {fileID: 8991305838044592636}
-  _canvasGroup: {fileID: 5383037997993697839}
-  _unitNameLabel: {fileID: 4720410270150067089}
-  _weaponNameLabel: {fileID: 466773163898269282}
-  _damageLabel: {fileID: 8187130311775016231}
-  _hpBarFill: {fileID: 5748079641979573842}
-  _hpBarRoot: {fileID: 2605680475142287887}
-  _attackLungeDistance: 80
-  _windupPullBack: 12
-  _hitRecoilDistance: 40
-  _dodgeDistance: 70
-  _hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  _hitFlashSeconds: 0.08
-  _damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
-  _critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
-  _missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
+  slotRoot: {fileID: 3126238082426946539}
+  spriteImage: {fileID: 8991305838044592636}
+  canvasGroup: {fileID: 5383037997993697839}
+  unitNameLabel: {fileID: 4720410270150067089}
+  weaponNameLabel: {fileID: 466773163898269282}
+  damageLabel: {fileID: 8187130311775016231}
+  hpBarFill: {fileID: 5748079641979573842}
+  hpBarRoot: {fileID: 2605680475142287887}
+  attackLungeDistance: 80
+  windupPullBack: 12
+  hitRecoilDistance: 40
+  dodgeDistance: 70
+  hitFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  hitFlashSeconds: 0.08
+  damageColor: {r: 0.96, g: 0.88, b: 0.85, a: 1}
+  critColor: {r: 0.98, g: 0.94, b: 0.28, a: 1}
+  missColor: {r: 0.86, g: 0.86, b: 0.86, a: 1}
 --- !u!225 &5383037997993697839
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1315,19 +1315,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e086085054d73b47800ce38d4f73da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.CombatAnimation.CombatPlaybackController
-  _refs: {fileID: 5561426626055398170}
-  _audioMap: {fileID: 11400000, guid: c7b95e35473e8974085f9e22ea5eec1c, type: 2}
-  _terrainDb: {fileID: 11400000, guid: 302fb66295c256942b2f568351e6fbda, type: 2}
-  _critFlashIntensity: 0.85
-  _critFlashSeconds: 0.25
-  _righteousFlashColor: {r: 1, g: 1, b: 1, a: 1}
-  _tragicFlashColor: {r: 0.45, g: 0.4, b: 0.55, a: 1}
-  _tragicPreDeathHold: 0.3
-  _tragicFallSpeed: 0.7
-  _braveShortWindup: 0.15
-  _openingHoldSeconds: 0.4
-  _closingHoldSeconds: 0.5
-  _deathHoldSeconds: 0.5
+  refs: {fileID: 5561426626055398170}
+  audioMap: {fileID: 11400000, guid: c7b95e35473e8974085f9e22ea5eec1c, type: 2}
+  terrainDb: {fileID: 11400000, guid: 302fb66295c256942b2f568351e6fbda, type: 2}
+  critFlashIntensity: 0.85
+  critFlashSeconds: 0.25
+  righteousFlashColor: {r: 1, g: 1, b: 1, a: 1}
+  tragicFlashColor: {r: 0.45, g: 0.4, b: 0.55, a: 1}
+  tragicPreDeathHold: 0.3
+  tragicFallSpeed: 0.7
+  braveShortWindup: 0.15
+  openingHoldSeconds: 0.4
+  closingHoldSeconds: 0.5
+  deathHoldSeconds: 0.5
 --- !u!1 &6575569086165990466
 GameObject:
   m_ObjectHideFlags: 0

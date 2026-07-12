@@ -10,17 +10,17 @@ namespace ProjectAstra.Core.Pathfinding
     // own the unit-position lookup, not this service.
     public class PathfindingService
     {
-        private readonly MapRenderer _mapRenderer;
-        private readonly TerrainStatTable _terrainStatTable;
+        private readonly MapRenderer mapRenderer;
+        private readonly TerrainStatTable terrainStatTable;
 
         // Fires when a runtime cell change invalidates any cached reachability.
         public event Action OnMapChanged;
 
         public PathfindingService(MapRenderer mapRenderer, TerrainStatTable terrainStatTable)
         {
-            _mapRenderer = mapRenderer;
-            _terrainStatTable = terrainStatTable;
-            _mapRenderer.OnCellChanged += HandleCellChanged;
+            this.mapRenderer = mapRenderer;
+            this.terrainStatTable = terrainStatTable;
+            mapRenderer.OnCellChanged += HandleCellChanged;
         }
 
         public Pathfinder.ReachabilityResult ComputeReachability(
@@ -29,12 +29,12 @@ namespace ProjectAstra.Core.Pathfinding
             MovementType moveType,
             Func<Vector2Int, Pathfinder.OccupantType> getOccupant)
         {
-            var map = _mapRenderer.CurrentMap;
+            var map = mapRenderer.CurrentMap;
             return Pathfinder.ComputeReachability(
                 origin, movementPoints, moveType,
                 map.Width, map.Height,
-                (x, y) => _mapRenderer.GetTerrainType(x, y),
-                t => _terrainStatTable.GetStats(t),
+                (x, y) => mapRenderer.GetTerrainType(x, y),
+                t => terrainStatTable.GetStats(t),
                 getOccupant);
         }
 
@@ -51,7 +51,7 @@ namespace ProjectAstra.Core.Pathfinding
             int minRange,
             int maxRange)
         {
-            var map = _mapRenderer.CurrentMap;
+            var map = mapRenderer.CurrentMap;
             return Pathfinder.ComputeAttackRange(destinations, minRange, maxRange,
                 map.Width, map.Height);
         }

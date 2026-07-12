@@ -22,15 +22,15 @@ namespace ProjectAstra.Core.UI.CombatAnimation
     public class SkipModePlaybackController : MonoBehaviour
     {
         [Header("Visual helpers (assign in scene)")]
-        [SerializeField] private MapDamageFloat _damageFloat;
+        [SerializeField] private MapDamageFloat damageFloat;
 
         [Header("Timing (Skip mode)")]
-        [SerializeField] private float _interHitGap = 0.15f;
-        [SerializeField] private float _hpDrainDuration = 0.10f;
-        [SerializeField] private float _deathFadeDuration = 0.30f;
-        [SerializeField] private float _hpBarHideDelay = 0.30f;
-        [SerializeField] private float _hitFlashDuration = 0.10f;
-        [SerializeField] private Color _hitFlashColor = Color.white;
+        [SerializeField] private float interHitGap = 0.15f;
+        [SerializeField] private float hpDrainDuration = 0.10f;
+        [SerializeField] private float deathFadeDuration = 0.30f;
+        [SerializeField] private float hpBarHideDelay = 0.30f;
+        [SerializeField] private float hitFlashDuration = 0.10f;
+        [SerializeField] private Color hitFlashColor = Color.white;
 
         public IEnumerator Play(CombatPlaybackContext ctx)
         {
@@ -64,35 +64,35 @@ namespace ProjectAstra.Core.UI.CombatAnimation
 
                 CombatResultApplicator.ApplyHitDamage(receiver, newHp);
 
-                if (_damageFloat != null)
+                if (damageFloat != null)
                 {
                     var pos = receiver.transform.position;
-                    if (!hit.Hit) _damageFloat.Show(pos, 0, MapDamageFloat.Kind.Miss);
-                    else if (hit.Crit) _damageFloat.Show(pos, damage, MapDamageFloat.Kind.Crit);
-                    else _damageFloat.Show(pos, damage, MapDamageFloat.Kind.Damage);
+                    if (!hit.Hit) damageFloat.Show(pos, 0, MapDamageFloat.Kind.Miss);
+                    else if (hit.Crit) damageFloat.Show(pos, damage, MapDamageFloat.Kind.Crit);
+                    else damageFloat.Show(pos, damage, MapDamageFloat.Kind.Damage);
                 }
 
                 if (hit.Hit)
                 {
                     if (receiverSprite != null)
-                        StartCoroutine(HitFlashEffect.Flash(receiverSprite, _hitFlashDuration, _hitFlashColor));
-                    receiverBar?.DrainTo(newHp, _hpDrainDuration);
+                        StartCoroutine(HitFlashEffect.Flash(receiverSprite, hitFlashDuration, hitFlashColor));
+                    receiverBar?.DrainTo(newHp, hpDrainDuration);
                 }
 
                 bool died = hit.Hit && newHp <= 0;
                 if (died)
                 {
                     var args = UnitDeathHook.PrepareDeath(receiver, attacker);
-                    yield return SpriteFader.FadeOut(receiverSprite, _deathFadeDuration);
+                    yield return SpriteFader.FadeOut(receiverSprite, deathFadeDuration);
                     UnitDeathHook.HideVictim(receiver);
                     UnitDeathHook.RaiseDeath(args);
                     break;
                 }
 
-                yield return CombatTiming.WaitSeconds(_interHitGap);
+                yield return CombatTiming.WaitSeconds(interHitGap);
             }
 
-            yield return CombatTiming.WaitSeconds(_hpBarHideDelay);
+            yield return CombatTiming.WaitSeconds(hpBarHideDelay);
             atkBar?.Hide();
             defBar?.Hide();
 

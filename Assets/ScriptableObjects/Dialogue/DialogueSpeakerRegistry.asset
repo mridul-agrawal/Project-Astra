@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3f9fd0a7ddd4aa4da2aa22d5863aa8e, type: 3}
   m_Name: DialogueSpeakerRegistry
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueSpeakerRegistry
-  _speakers:
+  speakers:
   - {fileID: 11400000, guid: a6421f565073f3048a2f0f5c28c9414a, type: 2}
   - {fileID: 11400000, guid: f85a0c31b232c3f499df2865f5dd7de3, type: 2}
   - {fileID: 11400000, guid: 4d2df040508744a2b2a5353b437f74e4, type: 2}

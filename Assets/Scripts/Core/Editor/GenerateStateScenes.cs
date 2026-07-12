@@ -73,30 +73,30 @@ namespace ProjectAstra.Core.Editor
         private static readonly Dictionary<GameState, ButtonDef[]> ButtonConfigs = new()
         {
             { GameState.BattleMap, new[] {
-                new ButtonDef { Label = "Cutscene",          FieldName = "_cutsceneButton" },
-                new ButtonDef { Label = "Combat Animation",  FieldName = "_combatAnimationButton" },
-                new ButtonDef { Label = "Dialogue",          FieldName = "_dialogueButton" },
-                new ButtonDef { Label = "Chapter Clear",     FieldName = "_chapterClearButton" },
-                new ButtonDef { Label = "Game Over",         FieldName = "_gameOverButton" },
+                new ButtonDef { Label = "Cutscene",          FieldName = "cutsceneButton" },
+                new ButtonDef { Label = "Combat Animation",  FieldName = "combatAnimationButton" },
+                new ButtonDef { Label = "Dialogue",          FieldName = "dialogueButton" },
+                new ButtonDef { Label = "Chapter Clear",     FieldName = "chapterClearButton" },
+                new ButtonDef { Label = "Game Over",         FieldName = "gameOverButton" },
             }},
             { GameState.BattleMapPaused, new[] {
-                new ButtonDef { Label = "End Turn",      FieldName = "_endTurnButton" },
-                new ButtonDef { Label = "Resume",        FieldName = "_resumeButton" },
-                new ButtonDef { Label = "Save Menu",     FieldName = "_saveMenuButton" },
-                new ButtonDef { Label = "Settings Menu", FieldName = "_settingsMenuButton" },
-                new ButtonDef { Label = "Quit to Main Menu", FieldName = "_quitButton" },
+                new ButtonDef { Label = "End Turn",      FieldName = "endTurnButton" },
+                new ButtonDef { Label = "Resume",        FieldName = "resumeButton" },
+                new ButtonDef { Label = "Save Menu",     FieldName = "saveMenuButton" },
+                new ButtonDef { Label = "Settings Menu", FieldName = "settingsMenuButton" },
+                new ButtonDef { Label = "Quit to Main Menu", FieldName = "quitButton" },
             }},
             { GameState.CombatAnimation, new[] {
-                new ButtonDef { Label = "Return to Battle", FieldName = "_returnButton" },
+                new ButtonDef { Label = "Return to Battle", FieldName = "returnButton" },
             }},
             { GameState.Dialogue, new[] {
-                new ButtonDef { Label = "End Dialogue", FieldName = "_endDialogueButton" },
+                new ButtonDef { Label = "End Dialogue", FieldName = "endDialogueButton" },
             }},
             { GameState.SaveMenu, new[] {
-                new ButtonDef { Label = "Return", FieldName = "_returnButton" },
+                new ButtonDef { Label = "Return", FieldName = "returnButton" },
             }},
             { GameState.SettingsMenu, new[] {
-                new ButtonDef { Label = "Return", FieldName = "_returnButton" },
+                new ButtonDef { Label = "Return", FieldName = "returnButton" },
             }},
         };
 
@@ -330,7 +330,7 @@ namespace ProjectAstra.Core.Editor
             phaseTmp.raycastTarget = false;
             labelGo.AddComponent<LayoutElement>().preferredHeight = 35;
 
-            SetField(controller, "_phaseLabel", phaseTmp);
+            SetField(controller, "phaseLabel", phaseTmp);
 
             // Advance Phase button
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/UI/NavigationButton.prefab");
@@ -349,12 +349,12 @@ namespace ProjectAstra.Core.Editor
                 advanceButton = CreateFallbackButton(container, "Advance Phase").GetComponent<Button>();
             }
 
-            SetField(controller, "_advancePhaseButton", advanceButton);
+            SetField(controller, "advancePhaseButton", advanceButton);
 
             // Has Allies toggle
             var toggleGo = CreateToggle(container, "Has Allies", true);
             var toggle = toggleGo.GetComponent<Toggle>();
-            SetField(controller, "_hasAlliesToggle", toggle);
+            SetField(controller, "hasAlliesToggle", toggle);
 
             // Spacer
             var spacer = new GameObject("Spacer", typeof(RectTransform));

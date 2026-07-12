@@ -11,23 +11,23 @@ namespace ProjectAstra.Core.UI.Overlays
     // Save / Settings / Quit; Cancel returns to BattleMap.
     public class BattleMapPausedOverlayUI : MonoBehaviour
     {
-        [SerializeField] private Button _endTurnButton;
-        [SerializeField] private Button _resumeButton;
-        [SerializeField] private Button _saveMenuButton;
-        [SerializeField] private Button _settingsMenuButton;
-        [SerializeField] private Button _quitButton;
+        [SerializeField] private Button endTurnButton;
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button saveMenuButton;
+        [SerializeField] private Button settingsMenuButton;
+        [SerializeField] private Button quitButton;
 
         [SerializeField] private Color Normal = new(0.2f, 0.2f, 0.2f, 0.9f);
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
-        private Button[] _buttons;
-        private int _selected;
-        private bool _confirmingQuit;
+        private Button[] buttons;
+        private int selected;
+        private bool confirmingQuit;
 
         private void OnEnable()
         {
-            _buttons = new[] { _endTurnButton, _resumeButton, _saveMenuButton, _settingsMenuButton, _quitButton };
-            _confirmingQuit = false;
+            buttons = new[] { endTurnButton, resumeButton, saveMenuButton, settingsMenuButton, quitButton };
+            confirmingQuit = false;
 
             AddListeners();
             InitializeButtonColors();
@@ -42,11 +42,11 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void AddListeners()
         {
-            if (_endTurnButton != null) _endTurnButton.onClick.AddListener(EndTurn);
-            if (_resumeButton != null) _resumeButton.onClick.AddListener(Resume);
-            if (_saveMenuButton != null) _saveMenuButton.onClick.AddListener(GoToSaveMenu);
-            if (_settingsMenuButton != null) _settingsMenuButton.onClick.AddListener(GoToSettingsMenu);
-            if (_quitButton != null) _quitButton.onClick.AddListener(ConfirmQuit);
+            if (endTurnButton != null) endTurnButton.onClick.AddListener(EndTurn);
+            if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
+            if (saveMenuButton != null) saveMenuButton.onClick.AddListener(GoToSaveMenu);
+            if (settingsMenuButton != null) settingsMenuButton.onClick.AddListener(GoToSettingsMenu);
+            if (quitButton != null) quitButton.onClick.AddListener(ConfirmQuit);
 
             if (InputManager.Instance == null) return;
             InputManager.Instance.OnCursorMove += Navigate;
@@ -56,11 +56,11 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void RemoveListeners()
         {
-            if (_endTurnButton != null) _endTurnButton.onClick.RemoveListener(EndTurn);
-            if (_resumeButton != null) _resumeButton.onClick.RemoveListener(Resume);
-            if (_saveMenuButton != null) _saveMenuButton.onClick.RemoveListener(GoToSaveMenu);
-            if (_settingsMenuButton != null) _settingsMenuButton.onClick.RemoveListener(GoToSettingsMenu);
-            if (_quitButton != null) _quitButton.onClick.RemoveListener(ConfirmQuit);
+            if (endTurnButton != null) endTurnButton.onClick.RemoveListener(EndTurn);
+            if (resumeButton != null) resumeButton.onClick.RemoveListener(Resume);
+            if (saveMenuButton != null) saveMenuButton.onClick.RemoveListener(GoToSaveMenu);
+            if (settingsMenuButton != null) settingsMenuButton.onClick.RemoveListener(GoToSettingsMenu);
+            if (quitButton != null) quitButton.onClick.RemoveListener(ConfirmQuit);
 
             if (InputManager.Instance == null) return;
             InputManager.Instance.OnCursorMove -= Navigate;
@@ -97,8 +97,8 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void Navigate(Vector2Int dir)
         {
-            if (dir.y > 0) SelectButtonByIndex(_selected <= 0 ? _buttons.Length - 1 : _selected - 1);
-            else if (dir.y < 0) SelectButtonByIndex(_selected >= _buttons.Length - 1 ? 0 : _selected + 1);
+            if (dir.y > 0) SelectButtonByIndex(selected <= 0 ? buttons.Length - 1 : selected - 1);
+            else if (dir.y < 0) SelectButtonByIndex(selected >= buttons.Length - 1 ? 0 : selected + 1);
             else return;
             AudioManager.Instance?.Play(SoundId.UiMove);
         }
@@ -106,7 +106,7 @@ namespace ProjectAstra.Core.UI.Overlays
         private void ConfirmSelection()
         {
             AudioManager.Instance?.Play(SoundId.UiConfirm);
-            _buttons[_selected].onClick.Invoke();
+            buttons[selected].onClick.Invoke();
         }
 
         private void HandleCancel()
@@ -117,16 +117,16 @@ namespace ProjectAstra.Core.UI.Overlays
 
         private void InitializeButtonColors()
         {
-            foreach (var button in _buttons)
+            foreach (var button in buttons)
                 if (button != null)
                     button.image.color = Normal;
         }
 
         private void SelectButtonByIndex(int i)
         {
-            if (_buttons[_selected] != null) _buttons[_selected].image.color = Normal;
-            _selected = i;
-            if (_buttons[_selected] != null) _buttons[_selected].image.color = Selected;
+            if (buttons[selected] != null) buttons[selected].image.color = Normal;
+            selected = i;
+            if (buttons[selected] != null) buttons[selected].image.color = Selected;
         }
     }
 }

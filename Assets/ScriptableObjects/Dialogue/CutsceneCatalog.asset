@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b7e70ac6916a540883d53437e87f67, type: 3}
   m_Name: CutsceneCatalog
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.CutsceneCatalog
-  _cutscenes:
+  cutscenes:
   - id: 1
     script: {fileID: 11400000, guid: 374c270d26cfd3c4eb2d8392e74cef36, type: 2}
   - id: 2

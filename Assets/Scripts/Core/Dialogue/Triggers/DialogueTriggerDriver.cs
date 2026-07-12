@@ -11,11 +11,11 @@ namespace ProjectAstra.Core.Dialogue
     // DialogueTriggerSet, display lives in DialogueService.
     public class DialogueTriggerDriver : MonoBehaviour
     {
-        [SerializeField] private List<DialogueTrigger> _triggers = new();
+        [SerializeField] private List<DialogueTrigger> triggers = new();
 
-        private DialogueTriggerSet _set;
+        private DialogueTriggerSet set;
 
-        private void Awake() => _set = new DialogueTriggerSet(_triggers);
+        private void Awake() => set = new DialogueTriggerSet(triggers);
 
         private void OnEnable()
         {
@@ -45,7 +45,7 @@ namespace ProjectAstra.Core.Dialogue
 
         private void Fire(BattleDialogueEventType eventType, int turn)
         {
-            var script = _set.Resolve(eventType, turn);
+            var script = set.Resolve(eventType, turn);
             if (script != null) DialogueService.Instance?.Play(script, DialogueTriggeringContext.BattleMap);
         }
 

@@ -766,12 +766,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0f485cee57d90f46bc0ce46caa30620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.ExpGainOverlayUI
-  _overlayRoot: {fileID: 7604674048396730183}
-  _canvasGroup: {fileID: 1626457988887890142}
-  _unitNameText: {fileID: 2824595497916312058}
-  _counterText: {fileID: 4189596154397674219}
-  _gainText: {fileID: 1624618881101531570}
-  _fadeInSeconds: 0.2
-  _countSeconds: 0.6
-  _holdSeconds: 0.3
-  _fadeOutSeconds: 0.2
+  overlayRoot: {fileID: 7604674048396730183}
+  canvasGroup: {fileID: 1626457988887890142}
+  unitNameText: {fileID: 2824595497916312058}
+  counterText: {fileID: 4189596154397674219}
+  gainText: {fileID: 1624618881101531570}
+  fadeInSeconds: 0.2
+  countSeconds: 0.6
+  holdSeconds: 0.3
+  fadeOutSeconds: 0.2

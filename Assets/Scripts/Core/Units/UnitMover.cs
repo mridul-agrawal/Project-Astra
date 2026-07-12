@@ -10,7 +10,7 @@ namespace ProjectAstra.Core.Units
     // enemy, and allied movement. Coroutine-driven with configurable speed.
     public class UnitMover : MonoBehaviour
     {
-        [SerializeField] private float _tilesPerSecond = 8f;
+        [SerializeField] private float tilesPerSecond = 8f;
 
         public bool IsMoving { get; private set; }
 
@@ -46,7 +46,7 @@ namespace ProjectAstra.Core.Units
             Action onComplete, Action<Vector2Int> onTileEntered)
         {
             IsMoving = true;
-            float secondsPerTile = 1f / _tilesPerSecond;
+            float secondsPerTile = 1f / tilesPerSecond;
 
             for (int i = 1; i < path.Count; i++)
             {

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
   m_Name: Priya
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UnitDefinition
-  _unitName: Priya
-  _unitId: priya
-  _defaultClass: {fileID: 11400000, guid: 8697dcf3b5d45884698887c155ba1b8b, type: 2}
-  _baseStats:
-    _values: 100000000100000006000000050000000600000001000000080000000300000007000000
-  _baseLevel: 1
-  _personalGrowths:
-    _values: 2d0000000500000032000000230000001e0000000a000000370000000000000032000000
+  unitName: Priya
+  unitId: priya
+  defaultClass: {fileID: 11400000, guid: 8697dcf3b5d45884698887c155ba1b8b, type: 2}
+  baseStats:
+    values: 100000000100000006000000050000000600000001000000080000000300000007000000
+  baseLevel: 1
+  personalGrowths:
+    values: 2d0000000500000032000000230000001e0000000a000000370000000000000032000000

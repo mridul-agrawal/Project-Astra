@@ -12,62 +12,62 @@ namespace ProjectAstra.Core.Units
     public class ClassDefinition : ScriptableObject
     {
         [Header("Identity")]
-        [SerializeField] private string _className;
-        [SerializeField] private ClassType _classType;
+        [SerializeField] private string className;
+        [SerializeField] private ClassType classType;
 
         [Header("Movement")]
-        [SerializeField] private int _movementRange = 5;
-        [SerializeField] private MovementType _movementType = MovementType.Foot;
+        [SerializeField] private int movementRange = 5;
+        [SerializeField] private MovementType movementType = MovementType.Foot;
 
         [Header("Weapons")]
-        [SerializeField] private WeaponType[] _weaponWhitelist;
+        [SerializeField] private WeaponType[] weaponWhitelist;
 
         [Header("Stats")]
-        [SerializeField] private StatArray _statGrowthModifiers;
-        [SerializeField] private StatArray _statCaps;
-        [SerializeField] private int _hpGainOnLevelUp = 2;
+        [SerializeField] private StatArray statGrowthModifiers;
+        [SerializeField] private StatArray statCaps;
+        [SerializeField] private int hpGainOnLevelUp = 2;
 
         [Tooltip("UC-08. Class-level crit bonus folded into the Crit formula.")]
-        [SerializeField] private int _critBonus;
+        [SerializeField] private int critBonus;
 
         [Header("Promotion")]
-        [SerializeField] private bool _canPromote;
-        [SerializeField] private bool _isPromoted;
-        [SerializeField] private ClassDefinition[] _promotionTargets;
-        [SerializeField] private ClassDefinition _baseClass;
-        [SerializeField] private StatArray _promotionBonuses;
+        [SerializeField] private bool canPromote;
+        [SerializeField] private bool isPromoted;
+        [SerializeField] private ClassDefinition[] promotionTargets;
+        [SerializeField] private ClassDefinition baseClass;
+        [SerializeField] private StatArray promotionBonuses;
 
         [Header("EXP (Experience Scaling)")]
         [Tooltip("Divisor in the FE GBA EXP formula. Higher = less EXP per action. FE GBA canon: Myrmidon ≈ 2, most classes ≈ 3, Lord typically 1.0 so the protagonist levels faster.")]
-        [SerializeField, Min(0.1f)] private float _expPowerFactor = 1f;
+        [SerializeField, Min(0.1f)] private float expPowerFactor = 1f;
 
         [Header("Abilities")]
-        [SerializeField] private string[] _classAbilities;
+        [SerializeField] private string[] classAbilities;
 
         [Header("Visuals")]
-        [SerializeField] private string _mapSpriteId;
-        [SerializeField] private string _combatAnimationSetId;
+        [SerializeField] private string mapSpriteId;
+        [SerializeField] private string combatAnimationSetId;
 
-        public string ClassName => _className;
-        public ClassType ClassType => _classType;
-        public int MovementRange => _movementRange;
-        public MovementType MovementType => _movementType;
-        public WeaponType[] WeaponWhitelist => _weaponWhitelist;
-        public StatArray StatGrowthModifiers => _statGrowthModifiers;
-        public StatArray StatCaps => _statCaps;
-        public int HPGainOnLevelUp => _hpGainOnLevelUp;
-        public int CritBonus => _critBonus;
-        public bool CanPromote => _canPromote;
-        public bool IsPromoted => _isPromoted;
-        public ClassDefinition[] PromotionTargets => _promotionTargets;
-        public ClassDefinition BaseClass => _baseClass;
-        public StatArray PromotionBonuses => _promotionBonuses;
-        public float ExpPowerFactor => _expPowerFactor;
-        public string[] ClassAbilities => _classAbilities;
-        public string MapSpriteId => _mapSpriteId;
-        public string CombatAnimationSetId => _combatAnimationSetId;
+        public string ClassName => className;
+        public ClassType ClassType => classType;
+        public int MovementRange => movementRange;
+        public MovementType MovementType => movementType;
+        public WeaponType[] WeaponWhitelist => weaponWhitelist;
+        public StatArray StatGrowthModifiers => statGrowthModifiers;
+        public StatArray StatCaps => statCaps;
+        public int HPGainOnLevelUp => hpGainOnLevelUp;
+        public int CritBonus => critBonus;
+        public bool CanPromote => canPromote;
+        public bool IsPromoted => isPromoted;
+        public ClassDefinition[] PromotionTargets => promotionTargets;
+        public ClassDefinition BaseClass => baseClass;
+        public StatArray PromotionBonuses => promotionBonuses;
+        public float ExpPowerFactor => expPowerFactor;
+        public string[] ClassAbilities => classAbilities;
+        public string MapSpriteId => mapSpriteId;
+        public string CombatAnimationSetId => combatAnimationSetId;
 
         // Canto — cavalry and flying units keep any unused movement after a primary action.
-        public bool HasCanto => _classType == ClassType.Cavalry || _classType == ClassType.Flying;
+        public bool HasCanto => classType == ClassType.Cavalry || classType == ClassType.Flying;
     }
 }
