@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
   scriptId: MAP1_T1_MOVE
   nodes:
-  - _nodeId: 0
+  - nodeId: 0
     speakerId: PROTAGONIST
     expression: 5
     portraitPosition: 0

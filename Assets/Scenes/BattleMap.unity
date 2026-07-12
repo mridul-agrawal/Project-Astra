@@ -4473,15 +4473,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueTriggerDriver
   triggers:
-  - _event: 0
+  - event: 0
     turnFilter: 1
     script: {fileID: 11400000, guid: 61401fd2e8939ad4cb7f554665e61a84, type: 2}
     fireOnce: 1
-  - _event: 0
+  - event: 0
     turnFilter: 2
     script: {fileID: 11400000, guid: 5be61f76b3344d0aa6830455722865aa, type: 2}
     fireOnce: 1
-  - _event: 0
+  - event: 0
     turnFilter: 3
     script: {fileID: 11400000, guid: d345497c738e4622bb32da8c9bdfd5ae, type: 2}
     fireOnce: 1

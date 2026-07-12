@@ -14,22 +14,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
   scriptId: MAP1_BOSS_TAUNT
   segments:
-  - _background: {fileID: 0}
+  - background: {fileID: 0}
     textSpeed: -1
     autoAdvanceDelay: 0
     lines:
-    - _speakerId: RAKSHASA_CHIEF
+    - speakerId: RAKSHASA_CHIEF
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: Come, little archer. Your bridge wont hold us for long.
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 5
       portraitPosition: 1
       portraitFacing: 0
       text: "This village  is not yours to take. \nNot while I draw breath."
   nodes:
-  - _nodeId: 0
+  - nodeId: 0
     speakerId: RAKSHASA_CHIEF
     expression: 0
     portraitPosition: 1
@@ -39,7 +39,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 0}
-  - _nodeId: 1
+  - nodeId: 1
     speakerId: PROTAGONIST
     expression: 5
     portraitPosition: 0

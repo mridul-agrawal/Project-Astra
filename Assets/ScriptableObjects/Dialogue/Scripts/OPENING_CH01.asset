@@ -14,131 +14,131 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
   scriptId: OPENING_CH01
   segments:
-  - _background: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
+  - background: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
     textSpeed: -1
     autoAdvanceDelay: 0
     lines:
-    - _speakerId: NARRATOR
+    - speakerId: NARRATOR
       expression: 0
       portraitPosition: 3
       portraitFacing: 0
       text: "Below the mountains, \nwhere the jungle keeps its oldest secrets,"
-    - _speakerId: NARRATOR
+    - speakerId: NARRATOR
       expression: 0
       portraitPosition: 3
       portraitFacing: 0
       text: 'there was a village that asked little of the world.
 
 '
-    - _speakerId: NARRATOR
+    - speakerId: NARRATOR
       expression: 0
       portraitPosition: 3
       portraitFacing: 0
       text: "And a girl who hunted its forests. \n"
-    - _speakerId: NARRATOR
+    - speakerId: NARRATOR
       expression: 0
       portraitPosition: 3
       portraitFacing: 0
       text: "She could read a trail like scripture, \nand loose an arrow before
         a deer thought to run."
-    - _speakerId: NARRATOR
+    - speakerId: NARRATOR
       expression: 0
       portraitPosition: 3
       portraitFacing: 0
       text: 'This dusk, she tracked alone,
 
         the way she liked best.'
-  - _background: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
+  - background: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
     textSpeed: -1
     autoAdvanceDelay: 0
     lines:
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: 'Fresh tracks. Still soft at the edges.
 
 '
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "But these aren't deer. \nNot boar. \u2026Nothing I've ever tracked."
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 4
       portraitPosition: 0
       portraitFacing: 1
       text: "Too deep...  Clawed... \nAnd they don't wander like a beast."
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 4
       portraitPosition: 0
       portraitFacing: 1
       text: "They go straight...\n\u2026Straight for the village!"
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "There is smoke in the sky too\u2026. \r\nWait! Its coming from the
         same direction!"
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "From the Village\u2026 from Home!\r\nI must return quickly!"
-  - _background: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
+  - background: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
     textSpeed: -1
     autoAdvanceDelay: 0
     lines:
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "Aranya! Aranya\u2014!\n"
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: "- I'm here\u2026 Breathe.\r\n- Look at me\u2026 what happened?"
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "They came out of the dark. \r\nMonsters\u2026 Rakshas."
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "They burned the granary! \r\nand Maa told me to run and not look back"
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: "You did right to run. \nWhere are the others?"
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: 'Others are Hiding.
 
         The Rakshas are attacking the temple too.'
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: "The temple\u2026\r\nGajen, the gatekeeper\u2026 where is he?"
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "At the temple. Fighting them. \nBut he can't hold them alone."
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: 'Then he won''t be alone for long.
 
 '
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
@@ -146,25 +146,25 @@ MonoBehaviour:
 
         I must hold them here
         first'
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: 'Then help Gajen at the temple.
 
 '
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 0
       portraitPosition: 1
       portraitFacing: 0
       text: "Now go and Hide. \r\nand don't come out until it's quiet. Promise me"
-    - _speakerId: CHILD
+    - speakerId: CHILD
       expression: 0
       portraitPosition: 0
       portraitFacing: 1
       text: "\u2026Promise.\n"
   nodes:
-  - _nodeId: 0
+  - nodeId: 0
     speakerId: NARRATOR
     expression: 0
     portraitPosition: 3
@@ -173,7 +173,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
-  - _nodeId: 1
+  - nodeId: 1
     speakerId: NARRATOR
     expression: 0
     portraitPosition: 3
@@ -184,7 +184,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
-  - _nodeId: 2
+  - nodeId: 2
     speakerId: NARRATOR
     expression: 0
     portraitPosition: 3
@@ -193,7 +193,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
-  - _nodeId: 3
+  - nodeId: 3
     speakerId: NARRATOR
     expression: 0
     portraitPosition: 3
@@ -203,7 +203,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
-  - _nodeId: 4
+  - nodeId: 4
     speakerId: NARRATOR
     expression: 0
     portraitPosition: 3
@@ -214,7 +214,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 5555fa21db147a64dbd0485685737c58, type: 3}
-  - _nodeId: 5
+  - nodeId: 5
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 0
@@ -225,7 +225,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 6
+  - nodeId: 6
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 0
@@ -234,7 +234,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 7
+  - nodeId: 7
     speakerId: PROTAGONIST
     expression: 4
     portraitPosition: 0
@@ -243,7 +243,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 8
+  - nodeId: 8
     speakerId: PROTAGONIST
     expression: 4
     portraitPosition: 0
@@ -252,7 +252,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 9
+  - nodeId: 9
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 0
@@ -262,7 +262,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 10
+  - nodeId: 10
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 0
@@ -271,7 +271,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 7776573a2e3d9574b992d6c915af533c, type: 3}
-  - _nodeId: 11
+  - nodeId: 11
     speakerId: CHILD
     expression: 0
     portraitPosition: 0
@@ -280,7 +280,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 12
+  - nodeId: 12
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -289,7 +289,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 14
+  - nodeId: 14
     speakerId: CHILD
     expression: 0
     portraitPosition: 0
@@ -298,7 +298,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 15
+  - nodeId: 15
     speakerId: CHILD
     expression: 0
     portraitPosition: 0
@@ -307,7 +307,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 16
+  - nodeId: 16
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -316,7 +316,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 17
+  - nodeId: 17
     speakerId: CHILD
     expression: 0
     portraitPosition: 0
@@ -327,7 +327,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 18
+  - nodeId: 18
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -336,7 +336,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 19
+  - nodeId: 19
     speakerId: CHILD
     expression: 0
     portraitPosition: 0
@@ -345,7 +345,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 20
+  - nodeId: 20
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -356,7 +356,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 21
+  - nodeId: 21
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -367,7 +367,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 22
+  - nodeId: 22
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -378,7 +378,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 23
+  - nodeId: 23
     speakerId: PROTAGONIST
     expression: 0
     portraitPosition: 1
@@ -387,7 +387,7 @@ MonoBehaviour:
     textSpeedOverride: -1
     autoAdvanceDelay: 0
     fullScreenImage: {fileID: 21300000, guid: 34cae94a36041bc4ead0ec77433f86e1, type: 3}
-  - _nodeId: 24
+  - nodeId: 24
     speakerId: CHILD
     expression: 0
     portraitPosition: 0

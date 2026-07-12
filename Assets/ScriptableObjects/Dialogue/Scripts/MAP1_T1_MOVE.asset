@@ -14,18 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
   scriptId: MAP1_T1_MOVE
   segments:
-  - _background: {fileID: 0}
+  - background: {fileID: 0}
     textSpeed: -1
     autoAdvanceDelay: 0
     lines:
-    - _speakerId: PROTAGONIST
+    - speakerId: PROTAGONIST
       expression: 5
       portraitPosition: 0
       portraitFacing: 1
       text: I need to get near the village. I have to reach the people before the
         Rakshas do.
   nodes:
-  - _nodeId: 0
+  - nodeId: 0
     speakerId: PROTAGONIST
     expression: 5
     portraitPosition: 0
