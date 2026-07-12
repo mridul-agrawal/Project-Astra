@@ -1,7 +1,20 @@
 # Map Data Layer & Editor — Redesign
 
-**Status:** Design agreed 2026-07-12. Execution not yet started (planning next).
+**Status:** ✅ Implemented 2026-07-12 on branch `map-data-redesign` (off `refactoring`). Built in 7 verified phases; 513 EditMode tests green; Map1 renders + spawns units live in play mode. Real hand-painted art drops in via the Map Editor's "Import PNG" (currently a generated 32px placeholder).
 **Owner:** Mridul
+
+## What shipped (vs. the target below)
+
+- `MapData` is now `{ mapName, mapId (string), baseArt (Sprite), width/height, terrain[] (TerrainType per cell), unitStartPositions[], objects[] (MapObject scaffold) }`. `TerrainAt(x,y)` is the terrain source; `MapRenderer.GetTerrainType` reads it — pathfinding/combat/healing/HUD unchanged.
+- `MapId` enum **deleted** → data-driven string id on `MapData`; `MapCatalog`/`CampaignStep` key by string; `CampaignStep` drawer shows a map-id dropdown. Adding a map needs **no code**.
+- `MapRenderer` draws the base PNG on the Ground sorting layer + object sprites; `MapCamera` = 32 PPU / 480×270. `SwapTile`/`OnTileSwapped` → `OnCellChanged` (destructible scaffold).
+- **Deleted:** `TilesetDefinition`/`TileEntry`, `SyncedAnimatedTile`, `MapLayer`, `MapId`, the tileset editor + placeholder/test-map generators, `TilesetDefinitionTests`, and orphaned tileset/tile/test-map assets. `Unity.2D.Tilemap.Extras` dropped from both asmdefs.
+- **New:** `Assets/Scripts/Core/Editor/MapEditorWindow.cs` (menu: Project Astra/Map/Map Editor). Map1 migrated losslessly (terrain parity 165/165).
+- **Object-layer behaviors** (tree→bridge passability, chest open/close, wall→rubble) are scaffolded only (data + render + `OnCellChanged`); wiring them up is the next increment.
+
+---
+
+## (Original design, retained for reference)
 **Related code:** `Assets/Scripts/Core/Grid/`, `Assets/Scripts/Core/Units/UnitSpawner.cs`, `Assets/Scripts/Core/Editor/` (map tools), `Assets/Scripts/Core/Flow/` (campaign hookup)
 
 ---
