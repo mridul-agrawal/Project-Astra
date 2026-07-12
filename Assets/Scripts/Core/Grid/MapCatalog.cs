@@ -12,11 +12,18 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private List<MapData> _maps = new();
 
         private Dictionary<MapId, MapData> _byId;
+        private Dictionary<string, MapData> _byStringId;
 
         public MapData Get(MapId id)
         {
             EnsureIndexBuilt();
             return _byId.TryGetValue(id, out MapData map) ? map : null;
+        }
+
+        public MapData Get(string id)
+        {
+            EnsureStringIndexBuilt();
+            return _byStringId.TryGetValue(id, out MapData map) ? map : null;
         }
 
         private void EnsureIndexBuilt()
@@ -26,6 +33,15 @@ namespace ProjectAstra.Core.Grid
             foreach (MapData map in _maps)
                 if (map != null && map.Id != MapId.None)
                     _byId[map.Id] = map;
+        }
+
+        private void EnsureStringIndexBuilt()
+        {
+            if (_byStringId != null) return;
+            _byStringId = new Dictionary<string, MapData>();
+            foreach (MapData map in _maps)
+                if (map != null && !string.IsNullOrEmpty(map.MapStringId))
+                    _byStringId[map.MapStringId] = map;
         }
     }
 }

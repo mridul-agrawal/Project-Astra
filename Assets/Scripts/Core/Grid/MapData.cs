@@ -21,6 +21,12 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private UnitStartPosition[] _unitStartPositions = Array.Empty<UnitStartPosition>();
         [SerializeField] private EventTrigger[] _eventTriggers = Array.Empty<EventTrigger>();
 
+        // New seamless-PNG model (added alongside the legacy tile model during migration).
+        [SerializeField] private string mapId;
+        [SerializeField] private Sprite baseArt;
+        [SerializeField] private TerrainType[] terrain = Array.Empty<TerrainType>();
+        [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
+
         public string MapName => _mapName;
         public MapId Id => _id;
         public int Width => _width;
@@ -29,6 +35,21 @@ namespace ProjectAstra.Core.Grid
         public MapLayerData[] Layers => _layers;
         public UnitStartPosition[] UnitStartPositions => _unitStartPositions;
         public EventTrigger[] EventTriggers => _eventTriggers;
+
+        // Becomes the canonical MapId property once the legacy enum id is retired.
+        public string MapStringId => mapId;
+        public Sprite BaseArt => baseArt;
+        public TerrainType[] Terrain => terrain;
+        public MapObject[] Objects => objects;
+
+        // Terrain for a cell, read straight from the painted grid. The single gameplay seam.
+        public TerrainType TerrainAt(int x, int y)
+        {
+            if (!IsInBounds(x, y)) return TerrainType.Void;
+            int index = y * _width + x;
+            if (terrain == null || index < 0 || index >= terrain.Length) return TerrainType.Void;
+            return terrain[index];
+        }
 
         public bool IsInBounds(int x, int y)
         {
@@ -131,5 +152,18 @@ namespace ProjectAstra.Core.Grid
     {
         public Vector2Int position;
         public string eventId;
+    }
+
+    // A placed sprite above the base art for things that change appearance mid-game
+    // (tree becoming a bridge, chest opening, wall breaking). Behaviors come later; for now
+    // it carries position, art, an id handle, and an optional terrain override for that cell.
+    [Serializable]
+    public struct MapObject
+    {
+        public Vector2Int position;
+        public Sprite sprite;
+        public string objectId;
+        public bool overridesTerrain;
+        public TerrainType terrainOverride;
     }
 }
