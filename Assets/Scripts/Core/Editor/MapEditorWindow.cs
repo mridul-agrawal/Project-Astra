@@ -10,6 +10,9 @@ namespace ProjectAstra.Core.Editor
     // Visual authoring tool for battle maps. A designer imports a seamless PNG (which sets the
     // map size), paints terrain per cell over the art, drops units and interactive objects, and
     // saves a MapData that plugs straight into the campaign — no code, no tile ids.
+    //
+    // All editing happens on fast in-memory working state; the project is scanned once (not per
+    // repaint) and written back only on Save, so typing and painting stay responsive.
     public class MapEditorWindow : EditorWindow
     {
         private enum Tool { Terrain, Units, Objects }
@@ -17,27 +20,44 @@ namespace ProjectAstra.Core.Editor
         private const int CellPixels = 32;
 
         private MapData target;
-        private SerializedObject so;
+
+        // Working state — edited live, written back on Save.
+        private string workName = "";
+        private string workId = "";
+        private Sprite workArt;
+        private int width, height;
+        private TerrainType[] terrain = new TerrainType[0];
+        private List<UnitStartPosition> units = new();
+        private List<MapObject> objects = new();
+        private bool dirty;
+
+        // Cached project lookups (refreshed on target change / after register), never per repaint.
+        private MapCatalog catalog;
+        private UnitDatabase unitDb;
+        private string[] unitIds = new string[0];
+        private bool registered;
 
         private Tool tool = Tool.Terrain;
         private TerrainType brushTerrain = TerrainType.Plain;
-        private string[] unitIds = new string[0];
         private int unitIdIndex;
         private int unitTeam;
         private string objectId = "";
         private Sprite objectSprite;
 
+        private float zoom = 44f;
         private Vector2 scroll;
+        private GUIStyle cellLabelStyle;
 
         [MenuItem("Project Astra/Map/Map Editor")]
         public static void Open()
         {
             var window = GetWindow<MapEditorWindow>("Map Editor");
-            window.minSize = new Vector2(520, 640);
+            window.minSize = new Vector2(720, 820);
         }
 
         private void OnGUI()
         {
+            EnsureStyles();
             DrawTargetSelector();
             if (target == null)
             {
@@ -45,17 +65,28 @@ namespace ProjectAstra.Core.Editor
                 return;
             }
 
-            so.Update();
             scroll = EditorGUILayout.BeginScrollView(scroll);
             DrawIdentityFields();
             DrawBaseArtSection();
             DrawToolbar();
             DrawPalette();
-            DrawGridCanvas();
-            DrawValidation();
+            DrawView();
+            var issues = Validate();
+            DrawValidation(issues);
             DrawActions();
+            DrawGridCanvas();
             EditorGUILayout.EndScrollView();
-            so.ApplyModifiedProperties();
+        }
+
+        private void EnsureStyles()
+        {
+            if (cellLabelStyle != null) return;
+            cellLabelStyle = new GUIStyle(EditorStyles.miniLabel)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 9,
+                clipping = TextClipping.Clip,
+            };
         }
 
         // --- Target -----------------------------------------------------
@@ -72,9 +103,34 @@ namespace ProjectAstra.Core.Editor
         private void SetTarget(MapData map)
         {
             target = map;
-            so = map != null ? new SerializedObject(map) : null;
-            unitIds = LoadUnitIds();
-            unitIdIndex = 0;
+            if (map != null) LoadWorkingState();
+            CacheProjectAssets();
+        }
+
+        private void LoadWorkingState()
+        {
+            workName = target.MapName ?? "";
+            workId = target.MapId ?? "";
+            workArt = target.BaseArt;
+            width = Mathf.Max(target.Width, 0);
+            height = Mathf.Max(target.Height, 0);
+
+            terrain = new TerrainType[width * height];
+            var src = target.Terrain;
+            if (src != null)
+                for (int i = 0; i < terrain.Length && i < src.Length; i++) terrain[i] = src[i];
+
+            units = new List<UnitStartPosition>(target.UnitStartPositions ?? new UnitStartPosition[0]);
+            objects = new List<MapObject>(target.Objects ?? new MapObject[0]);
+            dirty = false;
+        }
+
+        private void CacheProjectAssets()
+        {
+            catalog = LoadFirst<MapCatalog>();
+            unitDb = LoadFirst<UnitDatabase>();
+            unitIds = BuildUnitIds();
+            registered = ComputeRegistered();
         }
 
         private void CreateNewMap()
@@ -94,8 +150,9 @@ namespace ProjectAstra.Core.Editor
         private void DrawIdentityFields()
         {
             EditorGUILayout.LabelField("Identity", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(so.FindProperty("_mapName"), new GUIContent("Name"));
-            EditorGUILayout.PropertyField(so.FindProperty("mapId"), new GUIContent("Map Id"));
+            string name = EditorGUILayout.TextField("Name", workName);
+            string id = EditorGUILayout.TextField("Map Id", workId);
+            if (name != workName || id != workId) { workName = name; workId = id; dirty = true; }
         }
 
         // --- Base art ---------------------------------------------------
@@ -105,9 +162,9 @@ namespace ProjectAstra.Core.Editor
             EditorGUILayout.Space(6);
             EditorGUILayout.LabelField("Base Art", EditorStyles.boldLabel);
 
-            var artProp = so.FindProperty("baseArt");
-            EditorGUILayout.PropertyField(artProp, new GUIContent("Sprite"));
-            EditorGUILayout.LabelField("Size", $"{so.FindProperty("_width").intValue} x {so.FindProperty("_height").intValue} cells");
+            var art = (Sprite)EditorGUILayout.ObjectField("Sprite", workArt, typeof(Sprite), false);
+            if (art != workArt) { workArt = art; dirty = true; }
+            EditorGUILayout.LabelField("Size", $"{width} x {height} cells");
 
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("Import PNG…")) ImportPng();
@@ -127,8 +184,8 @@ namespace ProjectAstra.Core.Editor
             AssetDatabase.Refresh();
             ConfigureImporter(dest);
 
-            so.FindProperty("baseArt").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(dest);
-            so.ApplyModifiedProperties();
+            workArt = AssetDatabase.LoadAssetAtPath<Sprite>(dest);
+            dirty = true;
             SyncSizeToArt();
         }
 
@@ -151,14 +208,13 @@ namespace ProjectAstra.Core.Editor
         // Derives cell dimensions from the assigned sprite and resizes the terrain grid to match.
         private void SyncSizeToArt()
         {
-            var sprite = so.FindProperty("baseArt").objectReferenceValue as Sprite;
-            if (sprite == null)
+            if (workArt == null)
             {
                 EditorUtility.DisplayDialog("No art", "Assign a base sprite first.", "OK");
                 return;
             }
 
-            int pxW = (int)sprite.rect.width, pxH = (int)sprite.rect.height;
+            int pxW = (int)workArt.rect.width, pxH = (int)workArt.rect.height;
             if (pxW % CellPixels != 0 || pxH % CellPixels != 0)
             {
                 EditorUtility.DisplayDialog("Bad size",
@@ -166,16 +222,19 @@ namespace ProjectAstra.Core.Editor
                 return;
             }
 
-            so.FindProperty("_width").intValue = pxW / CellPixels;
-            so.FindProperty("_height").intValue = pxH / CellPixels;
-            ResizeTerrainToGrid();
-            so.ApplyModifiedProperties();
+            ResizeGrid(pxW / CellPixels, pxH / CellPixels);
         }
 
-        private void ResizeTerrainToGrid()
+        private void ResizeGrid(int newW, int newH)
         {
-            int cells = so.FindProperty("_width").intValue * so.FindProperty("_height").intValue;
-            so.FindProperty("terrain").arraySize = cells;
+            var resized = new TerrainType[newW * newH];
+            for (int y = 0; y < newH && y < height; y++)
+                for (int x = 0; x < newW && x < width; x++)
+                    resized[y * newW + x] = terrain[y * width + x];
+            width = newW;
+            height = newH;
+            terrain = resized;
+            dirty = true;
         }
 
         // --- Toolbar + palettes ----------------------------------------
@@ -200,7 +259,7 @@ namespace ProjectAstra.Core.Editor
         {
             EditorGUILayout.LabelField("Brush", brushTerrain.ToString());
             var terrains = (TerrainType[])System.Enum.GetValues(typeof(TerrainType));
-            int perRow = 6;
+            const int perRow = 6;
             for (int i = 0; i < terrains.Length; i++)
             {
                 if (i % perRow == 0) EditorGUILayout.BeginHorizontal();
@@ -209,13 +268,13 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
-        private void DrawTerrainSwatch(TerrainType terrain)
+        private void DrawTerrainSwatch(TerrainType t)
         {
             var prev = GUI.backgroundColor;
-            GUI.backgroundColor = ColorFor(terrain);
-            bool selected = brushTerrain == terrain;
-            if (GUILayout.Toggle(selected, terrain.ToString(), "Button", GUILayout.Height(22)) && !selected)
-                brushTerrain = terrain;
+            GUI.backgroundColor = ColorFor(t);
+            bool selected = brushTerrain == t;
+            if (GUILayout.Toggle(selected, t.ToString(), "Button", GUILayout.Height(22)) && !selected)
+                brushTerrain = t;
             GUI.backgroundColor = prev;
         }
 
@@ -239,248 +298,278 @@ namespace ProjectAstra.Core.Editor
             EditorGUILayout.HelpBox("Click a cell to place; click a placed object to remove it.", MessageType.None);
         }
 
+        private void DrawView()
+        {
+            EditorGUILayout.Space(4);
+            zoom = EditorGUILayout.Slider("Zoom (px/cell)", zoom, 16f, 96f);
+        }
+
         // --- Grid canvas ------------------------------------------------
 
         private void DrawGridCanvas()
         {
-            int w = so.FindProperty("_width").intValue;
-            int h = so.FindProperty("_height").intValue;
-            if (w <= 0 || h <= 0) return;
+            if (width <= 0 || height <= 0) return;
 
-            float scale = Mathf.Clamp(EditorGUIUtility.currentViewWidth - 40f, 64f, 1024f) / w;
-            scale = Mathf.Min(scale, 28f);
-            var rect = GUILayoutUtility.GetRect(w * scale, h * scale, GUILayout.ExpandWidth(false));
-
+            var rect = GUILayoutUtility.GetRect(width * zoom, height * zoom, GUILayout.ExpandWidth(false));
             DrawArt(rect);
-            DrawTerrainOverlay(rect, w, h, scale);
-            DrawGridLines(rect, w, h, scale);
-            DrawUnitMarkers(rect, h, scale);
-            DrawObjectMarkers(rect, h, scale);
-            HandleCanvasInput(rect, w, h, scale);
+            if (tool == Tool.Terrain) DrawTerrainOverlay(rect);
+            DrawGridLines(rect);
+            DrawUnitMarkers(rect);
+            DrawObjectMarkers(rect);
+            HandleCanvasInput(rect);
         }
 
         private void DrawArt(Rect rect)
         {
-            var sprite = so.FindProperty("baseArt").objectReferenceValue as Sprite;
-            if (sprite != null && sprite.texture != null)
-                GUI.DrawTexture(rect, sprite.texture, ScaleMode.StretchToFill);
+            if (workArt != null && workArt.texture != null)
+                GUI.DrawTexture(rect, workArt.texture, ScaleMode.StretchToFill);
             else
                 EditorGUI.DrawRect(rect, new Color(0.15f, 0.15f, 0.15f));
         }
 
-        // Terrain colours only render in Terrain mode, so the art stays visible while placing units.
-        private void DrawTerrainOverlay(Rect rect, int w, int h, float scale)
+        // Terrain colours + a short label per cell — only in Terrain mode so the art stays clear
+        // while placing units. Labels are clipped to their own cell.
+        private void DrawTerrainOverlay(Rect rect)
         {
-            if (tool != Tool.Terrain) return;
-            var terrain = so.FindProperty("terrain");
-            for (int y = 0; y < h; y++)
-                for (int x = 0; x < w; x++)
+            bool labels = zoom >= 22f;
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
                 {
-                    int index = y * w + x;
-                    if (index >= terrain.arraySize) continue;
-                    var c = ColorFor((TerrainType)terrain.GetArrayElementAtIndex(index).enumValueIndex);
+                    var cell = CellRect(rect, x, y);
+                    var t = terrain[y * width + x];
+                    var c = ColorFor(t);
                     c.a = 0.5f;
-                    EditorGUI.DrawRect(CellRect(rect, x, y, h, scale), c);
+                    EditorGUI.DrawRect(cell, c);
+                    if (labels) DrawCellLabel(cell, t);
                 }
         }
 
-        private static void DrawGridLines(Rect rect, int w, int h, float scale)
+        private void DrawCellLabel(Rect cell, TerrainType t)
+        {
+            cellLabelStyle.normal.textColor = Luminance(ColorFor(t)) > 0.5f ? Color.black : Color.white;
+            GUI.Label(cell, TerrainAbbrev[(int)t], cellLabelStyle);
+        }
+
+        private void DrawGridLines(Rect rect)
         {
             var line = new Color(0f, 0f, 0f, 0.25f);
-            for (int x = 0; x <= w; x++)
-                EditorGUI.DrawRect(new Rect(rect.x + x * scale, rect.y, 1, h * scale), line);
-            for (int y = 0; y <= h; y++)
-                EditorGUI.DrawRect(new Rect(rect.x, rect.y + y * scale, w * scale, 1), line);
+            for (int x = 0; x <= width; x++)
+                EditorGUI.DrawRect(new Rect(rect.x + x * zoom, rect.y, 1, height * zoom), line);
+            for (int y = 0; y <= height; y++)
+                EditorGUI.DrawRect(new Rect(rect.x, rect.y + y * zoom, width * zoom, 1), line);
         }
 
-        private void DrawUnitMarkers(Rect rect, int h, float scale)
+        private void DrawUnitMarkers(Rect rect)
         {
-            var units = so.FindProperty("_unitStartPositions");
-            for (int i = 0; i < units.arraySize; i++)
-            {
-                var e = units.GetArrayElementAtIndex(i);
-                var pos = e.FindPropertyRelative("position").vector2IntValue;
-                var cell = CellRect(rect, pos.x, pos.y, h, scale);
-                EditorGUI.DrawRect(Inset(cell, scale * 0.25f), TeamColor(e.FindPropertyRelative("team").intValue));
-            }
+            foreach (var u in units)
+                EditorGUI.DrawRect(Inset(CellRect(rect, u.position.x, u.position.y), zoom * 0.25f), TeamColor(u.team));
         }
 
-        private void DrawObjectMarkers(Rect rect, int h, float scale)
+        private void DrawObjectMarkers(Rect rect)
         {
-            var objects = so.FindProperty("objects");
-            for (int i = 0; i < objects.arraySize; i++)
-            {
-                var pos = objects.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector2IntValue;
-                var cell = CellRect(rect, pos.x, pos.y, h, scale);
-                EditorGUI.DrawRect(Inset(cell, scale * 0.32f), new Color(1f, 0.9f, 0.2f, 0.9f));
-            }
+            foreach (var o in objects)
+                EditorGUI.DrawRect(Inset(CellRect(rect, o.position.x, o.position.y), zoom * 0.32f), new Color(1f, 0.9f, 0.2f, 0.9f));
         }
 
-        private void HandleCanvasInput(Rect rect, int w, int h, float scale)
+        // Proper hot-control capture so a single click paints, and drag keeps painting.
+        private void HandleCanvasInput(Rect rect)
         {
+            int id = GUIUtility.GetControlID(FocusType.Passive);
             var e = Event.current;
-            bool paint = e.type == EventType.MouseDown || (e.type == EventType.MouseDrag && tool == Tool.Terrain);
-            if (!paint || e.button != 0 || !rect.Contains(e.mousePosition)) return;
-
-            int x = Mathf.FloorToInt((e.mousePosition.x - rect.x) / scale);
-            int y = h - 1 - Mathf.FloorToInt((e.mousePosition.y - rect.y) / scale);
-            if (x < 0 || x >= w || y < 0 || y >= h) return;
-
-            ApplyToolAt(new Vector2Int(x, y), w);
-            e.Use();
-            Repaint();
+            switch (e.GetTypeForControl(id))
+            {
+                case EventType.MouseDown:
+                    if (e.button == 0 && rect.Contains(e.mousePosition))
+                    {
+                        GUIUtility.hotControl = id;
+                        GUIUtility.keyboardControl = 0;
+                        ApplyToolAt(CellUnder(rect, e.mousePosition));
+                        e.Use();
+                    }
+                    break;
+                case EventType.MouseDrag:
+                    if (GUIUtility.hotControl == id && tool == Tool.Terrain && rect.Contains(e.mousePosition))
+                    {
+                        ApplyToolAt(CellUnder(rect, e.mousePosition));
+                        e.Use();
+                    }
+                    break;
+                case EventType.MouseUp:
+                    if (GUIUtility.hotControl == id) { GUIUtility.hotControl = 0; e.Use(); }
+                    break;
+            }
         }
 
-        private void ApplyToolAt(Vector2Int cell, int w)
+        private Vector2Int CellUnder(Rect rect, Vector2 mouse)
+        {
+            int x = Mathf.Clamp(Mathf.FloorToInt((mouse.x - rect.x) / zoom), 0, width - 1);
+            int y = Mathf.Clamp(height - 1 - Mathf.FloorToInt((mouse.y - rect.y) / zoom), 0, height - 1);
+            return new Vector2Int(x, y);
+        }
+
+        private void ApplyToolAt(Vector2Int cell)
         {
             switch (tool)
             {
-                case Tool.Terrain: PaintTerrain(cell, w); break;
+                case Tool.Terrain: PaintTerrain(cell); break;
                 case Tool.Units: ToggleUnit(cell); break;
                 case Tool.Objects: ToggleObject(cell); break;
             }
+            dirty = true;
+            Repaint();
         }
 
-        private void PaintTerrain(Vector2Int cell, int w)
+        private void PaintTerrain(Vector2Int cell)
         {
-            var terrain = so.FindProperty("terrain");
-            int index = cell.y * w + cell.x;
-            if (index < terrain.arraySize)
-                terrain.GetArrayElementAtIndex(index).enumValueIndex = (int)brushTerrain;
+            int index = cell.y * width + cell.x;
+            if (index >= 0 && index < terrain.Length) terrain[index] = brushTerrain;
         }
 
         private void ToggleUnit(Vector2Int cell)
         {
-            var units = so.FindProperty("_unitStartPositions");
-            int existing = IndexAt(units, cell);
-            if (existing >= 0) { units.DeleteArrayElementAtIndex(existing); return; }
+            int existing = units.FindIndex(u => u.position == cell);
+            if (existing >= 0) { units.RemoveAt(existing); return; }
             if (unitIds.Length == 0) return;
-
-            units.arraySize++;
-            var e = units.GetArrayElementAtIndex(units.arraySize - 1);
-            e.FindPropertyRelative("position").vector2IntValue = cell;
-            e.FindPropertyRelative("unitId").stringValue = unitIds[unitIdIndex];
-            e.FindPropertyRelative("team").intValue = unitTeam;
-            e.FindPropertyRelative("loadoutOverride").objectReferenceValue = null;
+            units.Add(new UnitStartPosition { position = cell, unitId = unitIds[unitIdIndex], team = unitTeam });
         }
 
         private void ToggleObject(Vector2Int cell)
         {
-            var objects = so.FindProperty("objects");
-            int existing = IndexAt(objects, cell);
-            if (existing >= 0) { objects.DeleteArrayElementAtIndex(existing); return; }
-
-            objects.arraySize++;
-            var e = objects.GetArrayElementAtIndex(objects.arraySize - 1);
-            e.FindPropertyRelative("position").vector2IntValue = cell;
-            e.FindPropertyRelative("objectId").stringValue = objectId;
-            e.FindPropertyRelative("sprite").objectReferenceValue = objectSprite;
-            e.FindPropertyRelative("overridesTerrain").boolValue = false;
-        }
-
-        private static int IndexAt(SerializedProperty array, Vector2Int cell)
-        {
-            for (int i = 0; i < array.arraySize; i++)
-                if (array.GetArrayElementAtIndex(i).FindPropertyRelative("position").vector2IntValue == cell)
-                    return i;
-            return -1;
+            int existing = objects.FindIndex(o => o.position == cell);
+            if (existing >= 0) { objects.RemoveAt(existing); return; }
+            objects.Add(new MapObject { position = cell, objectId = objectId, sprite = objectSprite });
         }
 
         // --- Validation + actions --------------------------------------
 
-        private void DrawValidation()
-        {
-            EditorGUILayout.Space(6);
-            EditorGUILayout.LabelField("Validation", EditorStyles.boldLabel);
-            foreach (string issue in Validate())
-                EditorGUILayout.HelpBox(issue, MessageType.Warning);
-            if (Validate().Count == 0)
-                EditorGUILayout.HelpBox("Ready to play.", MessageType.Info);
-        }
-
         private List<string> Validate()
         {
             var issues = new List<string>();
-            int w = so.FindProperty("_width").intValue, h = so.FindProperty("_height").intValue;
+            if (string.IsNullOrEmpty(workId)) issues.Add("Map Id is empty.");
+            if (workArt == null) issues.Add("No base art assigned.");
+            if (terrain.Length != width * height) issues.Add($"Terrain has {terrain.Length} cells, expected {width * height}.");
 
-            if (string.IsNullOrEmpty(so.FindProperty("mapId").stringValue)) issues.Add("Map Id is empty.");
-            if (so.FindProperty("baseArt").objectReferenceValue == null) issues.Add("No base art assigned.");
-            if (so.FindProperty("terrain").arraySize != w * h)
-                issues.Add($"Terrain has {so.FindProperty("terrain").arraySize} cells, expected {w * h}.");
+            var seen = new HashSet<Vector2Int>();
+            foreach (var u in units)
+            {
+                if (u.position.x < 0 || u.position.x >= width || u.position.y < 0 || u.position.y >= height)
+                    issues.Add($"Unit '{u.unitId}' is off the map at {u.position}.");
+                if (!seen.Add(u.position)) issues.Add($"Two units share cell {u.position}.");
+                if (unitDb != null && !unitDb.TryResolve(u.unitId, out _))
+                    issues.Add($"Unit id '{u.unitId}' is not in the UnitDatabase.");
+            }
 
-            ValidateUnits(issues, w, h);
-            if (!IsRegistered()) issues.Add("Not registered in a MapCatalog (click Register).");
+            if (!registered) issues.Add("Not registered in a MapCatalog (click Register).");
             return issues;
         }
 
-        private void ValidateUnits(List<string> issues, int w, int h)
+        private void DrawValidation(List<string> issues)
         {
-            var units = so.FindProperty("_unitStartPositions");
-            var database = LoadUnitDatabase();
-            var seen = new HashSet<Vector2Int>();
-            for (int i = 0; i < units.arraySize; i++)
-            {
-                var e = units.GetArrayElementAtIndex(i);
-                var pos = e.FindPropertyRelative("position").vector2IntValue;
-                string id = e.FindPropertyRelative("unitId").stringValue;
-                if (pos.x < 0 || pos.x >= w || pos.y < 0 || pos.y >= h) issues.Add($"Unit '{id}' is off the map at {pos}.");
-                if (!seen.Add(pos)) issues.Add($"Two units share cell {pos}.");
-                if (database != null && !database.TryResolve(id, out _)) issues.Add($"Unit id '{id}' is not in the UnitDatabase.");
-            }
+            EditorGUILayout.Space(6);
+            EditorGUILayout.LabelField("Validation", EditorStyles.boldLabel);
+            foreach (string issue in issues) EditorGUILayout.HelpBox(issue, MessageType.Warning);
+            if (issues.Count == 0) EditorGUILayout.HelpBox("Ready to play.", MessageType.Info);
         }
 
         private void DrawActions()
         {
             EditorGUILayout.Space(6);
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Save")) SaveTarget();
-            if (GUILayout.Button("Register In Catalog")) RegisterInCatalog();
+            if (GUILayout.Button(dirty ? "Save *" : "Save")) SaveTarget();
+            using (new EditorGUI.DisabledScope(catalog == null || registered))
+                if (GUILayout.Button("Register In Catalog")) RegisterInCatalog();
             EditorGUILayout.EndHorizontal();
         }
 
         private void SaveTarget()
         {
+            var so = new SerializedObject(target);
+            so.FindProperty("_mapName").stringValue = workName;
+            so.FindProperty("mapId").stringValue = workId;
+            so.FindProperty("baseArt").objectReferenceValue = workArt;
+            so.FindProperty("_width").intValue = width;
+            so.FindProperty("_height").intValue = height;
+            WriteTerrain(so);
+            WriteUnits(so);
+            WriteObjects(so);
             so.ApplyModifiedProperties();
+
             EditorUtility.SetDirty(target);
             AssetDatabase.SaveAssets();
+            dirty = false;
+        }
+
+        private void WriteTerrain(SerializedObject so)
+        {
+            var p = so.FindProperty("terrain");
+            p.arraySize = terrain.Length;
+            for (int i = 0; i < terrain.Length; i++)
+                p.GetArrayElementAtIndex(i).enumValueIndex = (int)terrain[i];
+        }
+
+        private void WriteUnits(SerializedObject so)
+        {
+            var p = so.FindProperty("_unitStartPositions");
+            p.arraySize = units.Count;
+            for (int i = 0; i < units.Count; i++)
+            {
+                var e = p.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("position").vector2IntValue = units[i].position;
+                e.FindPropertyRelative("unitId").stringValue = units[i].unitId;
+                e.FindPropertyRelative("team").intValue = units[i].team;
+                e.FindPropertyRelative("loadoutOverride").objectReferenceValue = units[i].loadoutOverride;
+            }
+        }
+
+        private void WriteObjects(SerializedObject so)
+        {
+            var p = so.FindProperty("objects");
+            p.arraySize = objects.Count;
+            for (int i = 0; i < objects.Count; i++)
+            {
+                var e = p.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("position").vector2IntValue = objects[i].position;
+                e.FindPropertyRelative("sprite").objectReferenceValue = objects[i].sprite;
+                e.FindPropertyRelative("objectId").stringValue = objects[i].objectId;
+                e.FindPropertyRelative("overridesTerrain").boolValue = objects[i].overridesTerrain;
+                e.FindPropertyRelative("terrainOverride").enumValueIndex = (int)objects[i].terrainOverride;
+            }
         }
 
         private void RegisterInCatalog()
         {
-            var catalog = LoadMapCatalog();
-            if (catalog == null) { EditorUtility.DisplayDialog("No catalog", "No MapCatalog asset found.", "OK"); return; }
+            if (catalog == null) return;
+            if (dirty) SaveTarget();
 
-            var cso = new SerializedObject(catalog);
-            var maps = cso.FindProperty("_maps");
-            if (IndexOfObject(maps, target) < 0)
-            {
-                maps.arraySize++;
-                maps.GetArrayElementAtIndex(maps.arraySize - 1).objectReferenceValue = target;
-                cso.ApplyModifiedProperties();
-                EditorUtility.SetDirty(catalog);
-                AssetDatabase.SaveAssets();
-            }
+            var so = new SerializedObject(catalog);
+            var maps = so.FindProperty("_maps");
+            maps.arraySize++;
+            maps.GetArrayElementAtIndex(maps.arraySize - 1).objectReferenceValue = target;
+            so.ApplyModifiedProperties();
+            EditorUtility.SetDirty(catalog);
+            AssetDatabase.SaveAssets();
+            registered = true;
         }
 
-        private bool IsRegistered()
+        private bool ComputeRegistered()
         {
-            var catalog = LoadMapCatalog();
-            if (catalog == null) return false;
+            if (catalog == null || target == null) return false;
             var maps = new SerializedObject(catalog).FindProperty("_maps");
-            return IndexOfObject(maps, target) >= 0;
-        }
-
-        private static int IndexOfObject(SerializedProperty array, Object value)
-        {
-            for (int i = 0; i < array.arraySize; i++)
-                if (array.GetArrayElementAtIndex(i).objectReferenceValue == value) return i;
-            return -1;
+            for (int i = 0; i < maps.arraySize; i++)
+                if (maps.GetArrayElementAtIndex(i).objectReferenceValue == target) return true;
+            return false;
         }
 
         // --- Asset lookups + helpers -----------------------------------
 
-        private static UnitDatabase LoadUnitDatabase() => LoadFirst<UnitDatabase>();
-        private static MapCatalog LoadMapCatalog() => LoadFirst<MapCatalog>();
+        private string[] BuildUnitIds()
+        {
+            if (unitDb == null) return new string[0];
+            var ids = new List<string>();
+            foreach (var unit in unitDb.Units)
+                if (unit != null && !string.IsNullOrEmpty(unit.UnitId)) ids.Add(unit.UnitId);
+            return ids.ToArray();
+        }
 
         private static T LoadFirst<T>() where T : Object
         {
@@ -489,20 +578,12 @@ namespace ProjectAstra.Core.Editor
             return null;
         }
 
-        private static string[] LoadUnitIds()
-        {
-            var database = LoadUnitDatabase();
-            if (database == null) return new string[0];
-            var ids = new List<string>();
-            foreach (var unit in database.Units)
-                if (unit != null && !string.IsNullOrEmpty(unit.UnitId)) ids.Add(unit.UnitId);
-            return ids.ToArray();
-        }
-
-        private static Rect CellRect(Rect canvas, int x, int y, int h, float scale) =>
-            new(canvas.x + x * scale, canvas.y + (h - 1 - y) * scale, scale, scale);
+        private Rect CellRect(Rect canvas, int x, int y) =>
+            new(canvas.x + x * zoom, canvas.y + (height - 1 - y) * zoom, zoom, zoom);
 
         private static Rect Inset(Rect r, float by) => new(r.x + by, r.y + by, r.width - 2 * by, r.height - 2 * by);
+
+        private static float Luminance(Color c) => 0.299f * c.r + 0.587f * c.g + 0.114f * c.b;
 
         private static Color TeamColor(int team) => team switch
         {
@@ -512,6 +593,12 @@ namespace ProjectAstra.Core.Editor
         };
 
         private static Color ColorFor(TerrainType t) => TerrainColors[(int)t];
+
+        private static readonly string[] TerrainAbbrev =
+        {
+            "PLN", "FOR", "MTN", "PEK", "WTR", "SEA", "RIV", "ROD", "VIL", "FRT",
+            "GAT", "CHS", "DOR", "WAL", "DWL", "RUB", "SND", "VOI", "THR",
+        };
 
         private static readonly Color[] TerrainColors =
         {
