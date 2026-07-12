@@ -9,11 +9,11 @@ namespace ProjectAstra.Core.Camera
     [RequireComponent(typeof(UnityEngine.Camera))]
     public class MapCamera : MonoBehaviour
     {
-        // 240 / 16 PPU = 15 tiles wide. 240×135 is 16:9, upscaled 8× to 1920×1080.
+        // 480 / 32 PPU = 15 tiles wide. 480×270 is 16:9, upscaled 4× to 1920×1080.
         [Header("Pixel Perfect Settings")]
-        [SerializeField] private int _assetsPPU = 16;
-        [SerializeField] private int _referenceResolutionX = 240;
-        [SerializeField] private int _referenceResolutionY = 135;
+        [SerializeField] private int _assetsPPU = 32;
+        [SerializeField] private int _referenceResolutionX = 480;
+        [SerializeField] private int _referenceResolutionY = 270;
 
         private PixelPerfectCamera _pixelPerfect;
         private UnityEngine.Camera _camera;

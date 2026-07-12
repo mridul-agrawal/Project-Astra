@@ -33,7 +33,7 @@ namespace ProjectAstra.Core.Tests.Camera
             so.FindProperty("_height").intValue = MapH;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            var field = typeof(MapRenderer).GetField("_currentMap",
+            var field = typeof(MapRenderer).GetField("currentMap",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_mapRenderer, _mapData);
 
@@ -162,7 +162,7 @@ namespace ProjectAstra.Core.Tests.Camera
             so.FindProperty("_height").intValue = 5;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            var field = typeof(MapRenderer).GetField("_currentMap",
+            var field = typeof(MapRenderer).GetField("currentMap",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             field.SetValue(_mapRenderer, smallMap);
 

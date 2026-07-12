@@ -29,11 +29,11 @@ namespace ProjectAstra.Core.Tests.Cursor
             so.FindProperty("_height").intValue = 5;
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            // Load map into renderer via reflection (set _currentMap)
+            // Load map into renderer via reflection (set currentMap)
             var mapSo = new UnityEditor.SerializedObject(_mapRenderer);
             // Can't easily load map without tilemaps, so use Initialize method
             // Instead, set the field directly
-            var currentMapField = typeof(MapRenderer).GetField("_currentMap",
+            var currentMapField = typeof(MapRenderer).GetField("currentMap",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             currentMapField.SetValue(_mapRenderer, _mapData);
 

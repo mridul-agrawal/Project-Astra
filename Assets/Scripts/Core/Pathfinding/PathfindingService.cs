@@ -13,14 +13,14 @@ namespace ProjectAstra.Core.Pathfinding
         private readonly MapRenderer _mapRenderer;
         private readonly TerrainStatTable _terrainStatTable;
 
-        // Fires when a tile swap invalidates any cached reachability.
+        // Fires when a runtime cell change invalidates any cached reachability.
         public event Action OnMapChanged;
 
         public PathfindingService(MapRenderer mapRenderer, TerrainStatTable terrainStatTable)
         {
             _mapRenderer = mapRenderer;
             _terrainStatTable = terrainStatTable;
-            _mapRenderer.OnTileSwapped += HandleTileSwapped;
+            _mapRenderer.OnCellChanged += HandleCellChanged;
         }
 
         public Pathfinder.ReachabilityResult ComputeReachability(
@@ -56,7 +56,7 @@ namespace ProjectAstra.Core.Pathfinding
                 map.Width, map.Height);
         }
 
-        private void HandleTileSwapped(Vector2Int position)
+        private void HandleCellChanged(Vector2Int position)
         {
             OnMapChanged?.Invoke();
         }
