@@ -726,6 +726,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.InputManager
   _inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  _inputContextTable: {fileID: 11400000, guid: 09f3226e087c0f24a8ee95c6c77cffb5, type: 2}
   _dasInitialDelay: 0.4
   _dasRepeatRate: 0.1
   _dasFastRepeatRate: 0.05

@@ -417,7 +417,7 @@ namespace ProjectAstra.Core.Cursor
             var im = InputManager.Instance;
             var settings = CombatAnimationSettingsRef.Current;
             if (im == null || settings == null) return;
-            if (!im.IsActionHeld(InputContext.SkipAnimation)) return;
+            if (!im.IsActionHeld(GameInputAction.SkipAnimation)) return;
             var current = settings.EffectiveSpeed;
             var flipped = current == CombatAnimationSpeed.Skip
                 ? CombatAnimationSpeed.Normal

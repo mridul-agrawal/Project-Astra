@@ -21,6 +21,7 @@ namespace ProjectAstra.Core.Input
         public static InputManager Instance { get; private set; }
 
         [SerializeField] private InputActionAsset _inputActions;
+        [SerializeField] private InputContextTable _inputContextTable;
 
         [Header("DAS Settings")]
         [SerializeField] private float _dasInitialDelay = 0.4f;
@@ -152,7 +153,13 @@ namespace ProjectAstra.Core.Input
 
         private void ApplyContextFilter(GameState state)
         {
-            var allowed = InputContext.GetAllowedActions(state);
+            if (_inputContextTable == null)
+            {
+                Debug.LogError("[InputManager] Input Context Table is not wired — cannot filter input by state.");
+                return;
+            }
+
+            var allowed = _inputContextTable.GetAllowedActionNames(state);
 
             foreach (var action in _gameplayMap.actions)
             {
@@ -249,6 +256,8 @@ namespace ProjectAstra.Core.Input
         // need a modifier-key check at decision time (e.g. hold SkipAnimation
         // while confirming an attack to flip the playback speed for that one
         // combat).
+        public bool IsActionHeld(GameInputAction gameAction) => IsActionHeld(gameAction.ToString());
+
         public bool IsActionHeld(string actionName)
         {
             var action = _gameplayMap?.FindAction(actionName);

@@ -1,74 +1,80 @@
 using System;
 using NUnit.Framework;
+using UnityEditor;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Tests.Input
 {
+    // Validates the authored InputContextTable asset — the real data a designer edits — so an
+    // accidental toggle that would (say) strip Confirm from a screen fails the build, not the game.
     [TestFixture]
     public class InputContextTests
     {
-        [Test]
-        public void EveryGameState_HasDefinedContext()
+        private const string AssetPath = "Assets/ScriptableObjects/Core/InputContextTable.asset";
+
+        private InputContextTable _table;
+
+        [OneTimeSetUp]
+        public void LoadTable()
         {
-            foreach (GameState state in Enum.GetValues(typeof(GameState)))
-            {
-                var actions = InputContext.GetAllowedActions(state);
-                Assert.IsNotNull(actions, $"State {state} has no input context defined");
-                Assert.IsTrue(actions.Count > 0, $"State {state} has empty input context");
-            }
+            _table = AssetDatabase.LoadAssetAtPath<InputContextTable>(AssetPath);
+            Assert.IsNotNull(_table, $"InputContextTable asset not found at {AssetPath}");
         }
 
         [Test]
-        public void TotalActionCount_Is16()
+        public void EveryGameState_HasAtLeastOneAllowedAction()
         {
-            Assert.AreEqual(16, InputContext.TotalActionCount);
+            foreach (GameState state in Enum.GetValues(typeof(GameState)))
+                Assert.IsTrue(_table.GetAllowedActionNames(state).Count > 0,
+                    $"State {state} has no allowed input — it could soft-lock.");
+        }
+
+        [Test]
+        public void ActionEnum_Defines16Actions()
+        {
+            Assert.AreEqual(16, Enum.GetValues(typeof(GameInputAction)).Length - 1); // minus None
         }
 
         [Test]
         public void BattleMap_AllowsAll16Actions()
         {
-            var actions = InputContext.GetAllowedActions(GameState.BattleMap);
-            Assert.AreEqual(16, actions.Count);
+            Assert.AreEqual(16, _table.GetAllowedActionNames(GameState.BattleMap).Count);
         }
 
         [Test]
         public void CombatAnimation_AllowsSkipAnimationAndBlocksGameplay()
         {
-            var actions = InputContext.GetAllowedActions(GameState.CombatAnimation);
-            Assert.IsTrue(actions.Contains(InputContext.SkipAnimation));
-            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
-            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
-            Assert.IsFalse(actions.Contains(InputContext.FastCursor));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.CombatAnimation, GameInputAction.SkipAnimation));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.CombatAnimation, GameInputAction.OpenMapMenu));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.CombatAnimation, GameInputAction.NextUnit));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.CombatAnimation, GameInputAction.FastCursor));
         }
 
         [Test]
         public void Cutscene_AllowsDialogueActionsAndBlocksGameplay()
         {
-            var actions = InputContext.GetAllowedActions(GameState.Cutscene);
-            Assert.IsTrue(actions.Contains(InputContext.SkipDialogue));
-            Assert.IsTrue(actions.Contains(InputContext.HoldAdvanceDialogue));
-            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
-            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.Cutscene, GameInputAction.SkipDialogue));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.Cutscene, GameInputAction.HoldAdvanceDialogue));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.Cutscene, GameInputAction.OpenMapMenu));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.Cutscene, GameInputAction.NextUnit));
         }
 
         [Test]
         public void Dialogue_AllowsDialogueActionsAndBlocksGameplay()
         {
-            var actions = InputContext.GetAllowedActions(GameState.Dialogue);
-            Assert.IsTrue(actions.Contains(InputContext.SkipDialogue));
-            Assert.IsTrue(actions.Contains(InputContext.HoldAdvanceDialogue));
-            Assert.IsFalse(actions.Contains(InputContext.OpenMapMenu));
-            Assert.IsFalse(actions.Contains(InputContext.NextUnit));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.Dialogue, GameInputAction.SkipDialogue));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.Dialogue, GameInputAction.HoldAdvanceDialogue));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.Dialogue, GameInputAction.OpenMapMenu));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.Dialogue, GameInputAction.NextUnit));
         }
 
         [Test]
         public void TitleScreen_OnlyAllowsConfirm()
         {
-            var actions = InputContext.GetAllowedActions(GameState.TitleScreen);
-            Assert.AreEqual(1, actions.Count);
-            Assert.IsTrue(actions.Contains(InputContext.Confirm));
+            Assert.AreEqual(1, _table.GetAllowedActionNames(GameState.TitleScreen).Count);
+            Assert.IsTrue(_table.IsActionAllowed(GameState.TitleScreen, GameInputAction.Confirm));
         }
 
         [Test]
@@ -83,41 +89,39 @@ namespace ProjectAstra.Core.Tests.Input
 
             foreach (var state in menuStates)
             {
-                var actions = InputContext.GetAllowedActions(state);
-                Assert.IsTrue(actions.Contains(InputContext.CursorUp), $"{state} missing CursorUp");
-                Assert.IsTrue(actions.Contains(InputContext.CursorDown), $"{state} missing CursorDown");
-                Assert.IsTrue(actions.Contains(InputContext.CursorLeft), $"{state} missing CursorLeft");
-                Assert.IsTrue(actions.Contains(InputContext.CursorRight), $"{state} missing CursorRight");
-                Assert.IsTrue(actions.Contains(InputContext.Confirm), $"{state} missing Confirm");
-                Assert.IsTrue(actions.Contains(InputContext.Cancel), $"{state} missing Cancel");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.CursorUp), $"{state} missing CursorUp");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.CursorDown), $"{state} missing CursorDown");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.CursorLeft), $"{state} missing CursorLeft");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.CursorRight), $"{state} missing CursorRight");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.Confirm), $"{state} missing Confirm");
+                Assert.IsTrue(_table.IsActionAllowed(state, GameInputAction.Cancel), $"{state} missing Cancel");
             }
         }
 
         [Test]
         public void PreBattlePrep_IncludesPause()
         {
-            var actions = InputContext.GetAllowedActions(GameState.PreBattlePrep);
-            Assert.IsTrue(actions.Contains(InputContext.Pause));
-            Assert.IsTrue(actions.Contains(InputContext.Confirm));
-            Assert.IsTrue(actions.Contains(InputContext.Cancel));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.PreBattlePrep, GameInputAction.Pause));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.PreBattlePrep, GameInputAction.Confirm));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.PreBattlePrep, GameInputAction.Cancel));
         }
 
-        [TestCase(InputContext.CursorUp)]
-        [TestCase(InputContext.Confirm)]
-        [TestCase(InputContext.Pause)]
-        [TestCase(InputContext.NextUnit)]
-        [TestCase(InputContext.SkipAnimation)]
-        public void BattleMap_ContainsAction(string actionName)
+        [TestCase(GameInputAction.CursorUp)]
+        [TestCase(GameInputAction.Confirm)]
+        [TestCase(GameInputAction.Pause)]
+        [TestCase(GameInputAction.NextUnit)]
+        [TestCase(GameInputAction.SkipAnimation)]
+        public void BattleMap_ContainsAction(GameInputAction action)
         {
-            Assert.IsTrue(InputContext.IsActionAllowed(GameState.BattleMap, actionName));
+            Assert.IsTrue(_table.IsActionAllowed(GameState.BattleMap, action));
         }
 
-        [TestCase(InputContext.OpenMapMenu)]
-        [TestCase(InputContext.NextUnit)]
-        [TestCase(InputContext.FastCursor)]
-        public void CombatAnimation_DoesNotAllowGameplayActions(string actionName)
+        [TestCase(GameInputAction.OpenMapMenu)]
+        [TestCase(GameInputAction.NextUnit)]
+        [TestCase(GameInputAction.FastCursor)]
+        public void CombatAnimation_DoesNotAllowGameplayActions(GameInputAction action)
         {
-            Assert.IsFalse(InputContext.IsActionAllowed(GameState.CombatAnimation, actionName));
+            Assert.IsFalse(_table.IsActionAllowed(GameState.CombatAnimation, action));
         }
     }
 }
