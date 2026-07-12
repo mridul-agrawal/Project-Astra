@@ -21,7 +21,7 @@ namespace ProjectAstra.Core.UI.MainMenu
         private void PlayerPressedConfirm()
         {
             AudioManager.Instance?.Play(SoundId.ConfirmStartGame);
-            // Boot flow owns GameFlow; the fallback keeps editor direct-play of the title working.
+
             if (GameFlow.Instance != null) GameFlow.Instance.Begin();
             else GameStateManager.Instance.RequestTransition(GameState.Cutscene, "TitleScreenUI");
         }

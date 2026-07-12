@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.UI.Cutscene
     public class CutsceneUI : MonoBehaviour
     {
         [Tooltip("Editor direct-play only — used when GameFlow isn't running (no boot scene).")]
-        [SerializeField] private DialogueScript _directPlayFallbackScript;
+        [SerializeField] private DialogueScript directPlayFallbackScript;
 
         private void OnEnable()
         {
@@ -27,7 +27,7 @@ namespace ProjectAstra.Core.UI.Cutscene
             GameFlow flow = GameFlow.Instance;
             if (flow != null && flow.CurrentCutsceneScript != null)
                 return flow.CurrentCutsceneScript;
-            return _directPlayFallbackScript;
+            return directPlayFallbackScript;
         }
 
         private void OnCutsceneComplete()

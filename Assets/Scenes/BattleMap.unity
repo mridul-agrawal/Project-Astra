@@ -14775,9 +14775,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90c5b72d364acfc4c84e2660b76a9119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapBootstrapper
-  _mapRenderer: {fileID: 268787981}
-  _unitSpawner: {fileID: 506087793}
-  _mapData: {fileID: 11400000, guid: 9c725033086d2c245ac62e4fb60c4e9d, type: 2}
+  mapRenderer: {fileID: 268787981}
+  unitSpawner: {fileID: 506087793}
+  fallbackMapData: {fileID: 11400000, guid: 9c725033086d2c245ac62e4fb60c4e9d, type: 2}
 --- !u!4 &506087792
 Transform:
   m_ObjectHideFlags: 0
