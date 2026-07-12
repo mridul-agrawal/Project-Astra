@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using ProjectAstra.Core.Dialogue;
-using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Flow
 {
@@ -16,10 +15,10 @@ namespace ProjectAstra.Core.Flow
     {
         [SerializeField] private CampaignStepKind kind;
         [SerializeField] private CutsceneId cutscene;
-        [SerializeField] private MapId map;
+        [SerializeField] private string mapId;
 
         public CampaignStepKind Kind => kind;
         public CutsceneId Cutscene => cutscene;
-        public MapId Map => map;
+        public string MapId => mapId;
     }
 }

@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.Flow
 
         public MapData CurrentMap =>
             (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.Battle && mapCatalog != null)
-                ? mapCatalog.Get(CurrentStep.Map) : null;
+                ? mapCatalog.Get(CurrentStep.MapId) : null;
 
         private void Awake()
         {

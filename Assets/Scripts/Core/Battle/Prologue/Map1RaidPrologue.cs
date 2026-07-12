@@ -477,7 +477,7 @@ namespace ProjectAstra.Core.Battle.Prologue
             var mapRenderer = FindFirstObjectByType<MapRenderer>();
             return mapRenderer != null
                 && mapRenderer.CurrentMap != null
-                && mapRenderer.CurrentMap.Id == MapId.Map1_BridgeAtSuvarnapur;
+                && mapRenderer.CurrentMap.MapId == "map1_bridge";
         }
     }
 }

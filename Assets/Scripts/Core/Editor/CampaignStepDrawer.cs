@@ -1,12 +1,15 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Flow;
+using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.EditorTools
 {
-    // Draws a campaign step as: the Kind dropdown, then ONLY the id field that matches it
-    // (cutscene id for a Cutscene step, map id for a Battle step). Keeps the irrelevant id
-    // hidden so a designer only ever sees the one field that applies.
+    // Draws a campaign step as: the Kind dropdown, then ONLY the id that matches it — a cutscene
+    // id for a Cutscene step, or a map-id popup (built from the MapData assets in the project) for
+    // a Battle step. A designer only ever sees the one field that applies, and picks a map from a
+    // list instead of typing a raw id.
     [CustomPropertyDrawer(typeof(CampaignStep))]
     public class CampaignStepDrawer : PropertyDrawer
     {
@@ -18,13 +21,41 @@ namespace ProjectAstra.EditorTools
             EditorGUI.PropertyField(row, kind);
             row.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-            EditorGUI.PropertyField(row, property.FindPropertyRelative(IdFieldFor(kind)));
+            if ((CampaignStepKind)kind.enumValueIndex == CampaignStepKind.Battle)
+                DrawMapIdPopup(row, property.FindPropertyRelative("mapId"));
+            else
+                EditorGUI.PropertyField(row, property.FindPropertyRelative("cutscene"));
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) =>
             EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
 
-        private static string IdFieldFor(SerializedProperty kind) =>
-            (CampaignStepKind)kind.enumValueIndex == CampaignStepKind.Battle ? "map" : "cutscene";
+        private static void DrawMapIdPopup(Rect row, SerializedProperty mapIdProp)
+        {
+            string[] ids = AllMapIds();
+            if (ids.Length == 0)
+            {
+                EditorGUI.LabelField(row, "Map", "(no MapData assets found)");
+                return;
+            }
+
+            int index = System.Array.IndexOf(ids, mapIdProp.stringValue);
+            EditorGUI.BeginChangeCheck();
+            int picked = EditorGUI.Popup(row, "Map", Mathf.Max(index, 0), ids);
+            if (EditorGUI.EndChangeCheck() && picked >= 0 && picked < ids.Length)
+                mapIdProp.stringValue = ids[picked];
+        }
+
+        private static string[] AllMapIds()
+        {
+            var ids = new List<string>();
+            foreach (string guid in AssetDatabase.FindAssets("t:MapData"))
+            {
+                var map = AssetDatabase.LoadAssetAtPath<MapData>(AssetDatabase.GUIDToAssetPath(guid));
+                if (map != null && !string.IsNullOrEmpty(map.MapId)) ids.Add(map.MapId);
+            }
+            ids.Sort();
+            return ids.ToArray();
+        }
     }
 }

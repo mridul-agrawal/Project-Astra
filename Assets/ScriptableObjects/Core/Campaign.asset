@@ -15,10 +15,10 @@ MonoBehaviour:
   steps:
   - kind: 0
     cutscene: 1
-    map: 0
+    mapId: 
   - kind: 1
     cutscene: 0
-    map: 1
+    mapId: map1_bridge
   - kind: 0
     cutscene: 2
-    map: 0
+    mapId: 

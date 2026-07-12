@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Map1_BridgeAtSuvarnapur
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Grid.MapData
   _mapName: Bridge at Suvarnapur
-  _id: 1
   _width: 15
   _height: 11
   _tilesets:

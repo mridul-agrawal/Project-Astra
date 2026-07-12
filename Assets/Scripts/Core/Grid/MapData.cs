@@ -13,7 +13,6 @@ namespace ProjectAstra.Core.Grid
         private const int MaxDimension = 64;
 
         [SerializeField] private string _mapName;
-        [SerializeField] private MapId _id;
         [SerializeField] private int _width = 4;
         [SerializeField] private int _height = 4;
         [SerializeField] private TilesetDefinition[] _tilesets = Array.Empty<TilesetDefinition>();
@@ -28,7 +27,6 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
 
         public string MapName => _mapName;
-        public MapId Id => _id;
         public int Width => _width;
         public int Height => _height;
         public TilesetDefinition[] Tilesets => _tilesets;
@@ -36,8 +34,7 @@ namespace ProjectAstra.Core.Grid
         public UnitStartPosition[] UnitStartPositions => _unitStartPositions;
         public EventTrigger[] EventTriggers => _eventTriggers;
 
-        // Becomes the canonical MapId property once the legacy enum id is retired.
-        public string MapStringId => mapId;
+        public string MapId => mapId;
         public Sprite BaseArt => baseArt;
         public TerrainType[] Terrain => terrain;
         public MapObject[] Objects => objects;

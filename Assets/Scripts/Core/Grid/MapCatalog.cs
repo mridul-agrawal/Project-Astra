@@ -3,45 +3,29 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Grid
 {
-    // Lookup from a MapId to its MapData asset. One shared asset; lets the campaign flow (or
-    // debug / future save data) request a battle by enum, without holding a direct asset
-    // reference. Each MapData declares its own Id. Mirrors DialogueSpeakerRegistry's lazy index.
+    // Lookup from a string map id to its MapData asset. One shared asset; lets the campaign flow
+    // (or debug / future save data) request a battle by id, without holding a direct asset
+    // reference. Each MapData declares its own id. Mirrors DialogueSpeakerRegistry's lazy index.
     [CreateAssetMenu(menuName = "Project Astra/Map/Map Catalog")]
     public class MapCatalog : ScriptableObject
     {
         [SerializeField] private List<MapData> _maps = new();
 
-        private Dictionary<MapId, MapData> _byId;
-        private Dictionary<string, MapData> _byStringId;
+        private Dictionary<string, MapData> _byId;
 
-        public MapData Get(MapId id)
+        public MapData Get(string id)
         {
             EnsureIndexBuilt();
             return _byId.TryGetValue(id, out MapData map) ? map : null;
         }
 
-        public MapData Get(string id)
-        {
-            EnsureStringIndexBuilt();
-            return _byStringId.TryGetValue(id, out MapData map) ? map : null;
-        }
-
         private void EnsureIndexBuilt()
         {
             if (_byId != null) return;
-            _byId = new Dictionary<MapId, MapData>();
+            _byId = new Dictionary<string, MapData>();
             foreach (MapData map in _maps)
-                if (map != null && map.Id != MapId.None)
-                    _byId[map.Id] = map;
-        }
-
-        private void EnsureStringIndexBuilt()
-        {
-            if (_byStringId != null) return;
-            _byStringId = new Dictionary<string, MapData>();
-            foreach (MapData map in _maps)
-                if (map != null && !string.IsNullOrEmpty(map.MapStringId))
-                    _byStringId[map.MapStringId] = map;
+                if (map != null && !string.IsNullOrEmpty(map.MapId))
+                    _byId[map.MapId] = map;
         }
     }
 }

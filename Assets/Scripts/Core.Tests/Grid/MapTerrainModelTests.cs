@@ -63,9 +63,9 @@ namespace ProjectAstra.Core.Tests.Grid
         }
 
         [Test]
-        public void MapStringId_RoundTrips()
+        public void MapId_RoundTrips()
         {
-            Assert.AreEqual("test_map", _map.MapStringId);
+            Assert.AreEqual("test_map", _map.MapId);
         }
 
         [Test]
