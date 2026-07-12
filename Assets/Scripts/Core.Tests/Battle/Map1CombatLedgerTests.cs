@@ -202,8 +202,7 @@ namespace ProjectAstra.Core.Tests.Battle
 
         private (int def, int avo) TerrainAt(Vector2Int tile, UnitDefinition unit)
         {
-            int tileId = map.GetTileId(MapLayer.Ground, tile.x, tile.y);
-            var terrain = map.Tilesets[0].GetTerrainType(tileId);
+            var terrain = map.TerrainAt(tile.x, tile.y);
             return TerrainStatTable.GetTerrainBonuses(terrainTable.GetStats(terrain), unit.DefaultClass.MovementType);
         }
 
