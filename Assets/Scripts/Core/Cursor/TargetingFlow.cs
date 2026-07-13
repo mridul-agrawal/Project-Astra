@@ -54,9 +54,9 @@ namespace ProjectAstra.Core.Cursor
         // weapon range.
         public List<Vector2Int> GetEnemiesInAttackRange(TestUnit selectedUnit, Vector2Int committedDestination)
         {
+            selectedUnit.GetAttackRange(out int rangeMin, out int rangeMax);
             var attackRange = pathfindingService.ComputeAttackRange(
-                new HashSet<Vector2Int> { committedDestination },
-                selectedUnit.attackRangeMin, selectedUnit.attackRangeMax);
+                new HashSet<Vector2Int> { committedDestination }, rangeMin, rangeMax);
 
             var enemyTiles = new List<Vector2Int>();
             foreach (var tile in attackRange)

@@ -20,15 +20,18 @@ namespace ProjectAstra.Core.Units
         // TODO(UM-02-followups): cannot-dismiss guard + mandatory-deployment
         // guard land when roster and deployment systems ship.
         //
-        // Source of truth is UnitDefinition.IsLord — synced in Start. Kept
-        // serialized so scene-only test units (no definition) can still flag
-        // themselves.
+        // Authoritative source is UnitDefinition.IsLord — set in Start when a
+        // definition drives the unit. Kept serialized so scene-only test units
+        // (no definition) can still flag themselves.
         public bool isLord;
 
         [Header("Unit Stats")]
         public Vector2Int gridPosition = new(2, 2);
         public int movementPoints = 3;
         public MovementType movementType = MovementType.Foot;
+
+        // Fallback attack reach for bare scene units with no usable weapon; armed units derive their
+        // range from their equipped weapons via GetAttackRange, so authored weapon range drives it.
         public int attackRangeMin = 1;
         public int attackRangeMax = 1;
 
@@ -151,8 +154,30 @@ namespace ProjectAstra.Core.Units
 
         private void SyncLordFlagFromDefinition()
         {
-            if (unitDefinition != null && unitDefinition.IsLord)
-                isLord = true;
+            if (unitDefinition != null)
+                isLord = unitDefinition.IsLord;   // the definition is authoritative when present
+        }
+
+        // Attack reach = union of the ranges of every usable, damaging weapon the unit carries.
+        // Falls back to the serialized attackRangeMin/Max only when the unit has no usable weapon
+        // (bare scene test units). This is what makes a weapon's authored range drive who it can hit.
+        public void GetAttackRange(out int min, out int max)
+        {
+            min = int.MaxValue;
+            max = 0;
+            for (int i = 0; i < UnitInventory.Capacity; i++)
+            {
+                InventoryItem item = Inventory.GetSlot(i);
+                if (item.kind != ItemKind.Weapon) continue;
+
+                WeaponData weapon = item.weapon;
+                if (weapon.weaponType == WeaponType.Staff) continue;   // staves heal, they don't attack
+                if (!EquipResolver.CanEquip(this, weapon)) continue;
+
+                if (weapon.minRange < min) min = weapon.minRange;
+                if (weapon.maxRange > max) max = weapon.maxRange;
+            }
+            if (max == 0) { min = attackRangeMin; max = attackRangeMax; }
         }
 
         private void EnsureFlyingHoverAnimator()

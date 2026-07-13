@@ -119,7 +119,10 @@ namespace ProjectAstra.Core.Cursor
                     unit.equippedWeapon, distance, classCrit);
             }
 
-            // Test-seam fallback for legacy TestUnits without a UnitInstance.
+            // A spawned or definition-bound unit always has a UnitInstance; reaching here means a
+            // scene unit with no UnitDefinition slipped into combat. Warn loudly and fall back to its
+            // serialized HP with neutral offence so combat resolves instead of crashing.
+            Debug.LogWarning($"CombatExecutor: '{unit.name}' has no UnitInstance — assign a UnitDefinition. Using fallback stats.", unit);
             var stats = StatArray.From(unit.maxHP, 8, 3, 7, 9, 5, 2, 6, 5);
             return CombatantData.FromStats(stats, unit.currentHP, unit.maxHP, unit.equippedWeapon, distance);
         }
