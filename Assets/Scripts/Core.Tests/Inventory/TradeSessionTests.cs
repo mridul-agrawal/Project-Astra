@@ -29,8 +29,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Constructor_CopiesSlotsFromBothUnits()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
 
             var session = new TradeSession(left, right);
 
@@ -41,8 +41,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TrySwap_ExchangesItems()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             bool ok = session.TrySwap(0, 0);
@@ -55,7 +55,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TrySwap_FailsWhenEitherSlotEmpty()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             var session = new TradeSession(left, right);
 
             Assert.IsFalse(session.TrySwap(0, 0));
@@ -64,7 +64,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryGive_MovesItemLeftToRight()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             var session = new TradeSession(left, right);
 
             bool ok = session.TryGive(0);
@@ -77,9 +77,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryGive_FailsWhenRightIsFull()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             for (int i = 0; i < UnitInventory.Capacity; i++)
-                right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+                right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             Assert.IsFalse(session.TryGive(0));
@@ -88,7 +88,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryTake_MovesItemRightToLeft()
         {
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             bool ok = session.TryTake(0);
@@ -102,8 +102,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void TryTake_FailsWhenLeftIsFull()
         {
             for (int i = 0; i < UnitInventory.Capacity; i++)
-                left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+                left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             Assert.IsFalse(session.TryTake(0));
@@ -112,8 +112,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Commit_WritesBackToRealInventories()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             session.TrySwap(0, 0);
@@ -126,8 +126,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DiscardingSession_LeavesInventoriesUnchanged()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             session.TrySwap(0, 0);
@@ -140,9 +140,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void MultipleOperations_AllApplyOnCommit()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            left.Inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromConsumable(TestItems.Vulnerary), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             session.TryGive(1); // Give Vulnerary to right
@@ -160,8 +160,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             for (int i = 0; i < UnitInventory.Capacity; i++)
             {
-                left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-                right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+                left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+                right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             }
             var session = new TradeSession(left, right);
 
@@ -174,8 +174,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void HasChanges_FalseInitially_TrueAfterOperation()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            right.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            right.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
             var session = new TradeSession(left, right);
 
             Assert.IsFalse(session.HasChanges);
@@ -186,7 +186,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void EquippedWeapon_ReResolvesAfterCommit()
         {
-            left.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            left.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             var session = new TradeSession(left, right);
 
             session.TryGive(0); // Give away the only weapon

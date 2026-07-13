@@ -94,7 +94,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_StandardHeal_ReturnsMightPlusMag()
         {
-            var staff = WeaponData.Heal; // might=10
+            var staff = TestItems.Heal; // might=10
             int result = StaffEffects.ComputeHealAmount(staff, 6, 5, 25);
             Assert.AreEqual(16, result); // 10+6=16, missing 20
         }
@@ -102,7 +102,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_ClampsToMissingHP()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             int result = StaffEffects.ComputeHealAmount(staff, 6, 22, 25);
             Assert.AreEqual(3, result); // 10+6=16 but only 3 missing
         }
@@ -110,7 +110,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_FullHeal_RestoresToMax()
         {
-            var staff = WeaponData.Recover;
+            var staff = TestItems.Recover;
             int result = StaffEffects.ComputeHealAmount(staff, 6, 5, 25);
             Assert.AreEqual(20, result);
         }
@@ -118,7 +118,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_Ranged_HalvesMight()
         {
-            var staff = WeaponData.Physic; // might=10
+            var staff = TestItems.Physic; // might=10
             int result = StaffEffects.ComputeHealAmount(staff, 6, 5, 25);
             Assert.AreEqual(11, result); // 10/2 + 6 = 11, missing 20
         }
@@ -126,7 +126,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_AoE_HalvesMight()
         {
-            var staff = WeaponData.Fortify; // might=10
+            var staff = TestItems.Fortify; // might=10
             int result = StaffEffects.ComputeHealAmount(staff, 6, 5, 25);
             Assert.AreEqual(11, result); // 10/2 + 6 = 11
         }
@@ -134,7 +134,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_TargetAtFullHP_ReturnsZero()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             int result = StaffEffects.ComputeHealAmount(staff, 6, 25, 25);
             Assert.AreEqual(0, result);
         }
@@ -142,7 +142,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ComputeHealAmount_OddMight_RoundsDown()
         {
-            var staff = WeaponData.Physic;
+            var staff = TestItems.Physic;
             // might=10, 10/2=5, even. Make a staff with odd might.
             var oddStaff = staff;
             oddStaff.might = 7;
@@ -157,7 +157,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanUseStaff_BrokenStaff_Fails()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             staff.currentUses = 0;
             bool ok = StaffEffects.CanUseStaff(healer, staff, out string fail);
             Assert.IsFalse(ok);
@@ -167,7 +167,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanUseStaff_NotStaff_Fails()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             bool ok = StaffEffects.CanUseStaff(healer, sword, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("Not a healing staff"));
@@ -176,7 +176,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanUseStaff_ValidStaff_Succeeds()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanUseStaff(healer, staff, out _);
             Assert.IsTrue(ok);
         }
@@ -189,7 +189,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void CanHealTarget_SelfTarget_Fails()
         {
             healer.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanHealTarget(healer, healer, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("self-heal"));
@@ -198,7 +198,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void CanHealTarget_FullHP_Fails()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("full HP"));
@@ -209,7 +209,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             target.faction = Faction.Enemy;
             target.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("allied"));
@@ -220,7 +220,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             target.UnitInstance.ApplyDamage(5);
             target.gridPosition = new Vector2Int(10, 10); // far away
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out string fail);
             Assert.IsFalse(ok);
             Assert.IsTrue(fail.Contains("out of range"));
@@ -231,7 +231,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             target.faction = Faction.Allied;
             target.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             bool ok = StaffEffects.CanHealTarget(healer, target, staff, 6, out _);
             Assert.IsTrue(ok);
         }
@@ -245,7 +245,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             target.UnitInstance.ApplyDamage(20);
             int hpBefore = target.UnitInstance.CurrentHP;
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             int usesBefore = staff.currentUses;
 
             bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
@@ -260,7 +260,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ApplyHeal_LastUse_HealsFullyThenStaffBroken()
         {
             target.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             staff.currentUses = 1;
 
             bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
@@ -275,7 +275,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ApplyHeal_Recover_FullyRestores()
         {
             target.UnitInstance.ApplyDamage(20);
-            var staff = WeaponData.Recover;
+            var staff = TestItems.Recover;
 
             bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
@@ -289,7 +289,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             target.UnitInstance.ApplyDamage(20);
             target.gridPosition = new Vector2Int(6, 3); // distance 3, within Mag/2=3
-            var staff = WeaponData.Physic;
+            var staff = TestItems.Physic;
 
             bool ok = StaffEffects.ApplyHeal(healer, target, ref staff, out int healed, out _);
 
@@ -312,7 +312,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             target.UnitInstance.ApplyDamage(10);
             ally2.UnitInstance.ApplyDamage(8);
 
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             var allUnits = new List<TestUnit> { healer, target, ally2 };
 
             bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
@@ -332,7 +332,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             fullHPAlly.faction = Faction.Player;
             fullHPAlly.gridPosition = new Vector2Int(4, 3);
 
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             var allUnits = new List<TestUnit> { target, fullHPAlly };
 
             bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
@@ -349,7 +349,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             healer.UnitInstance.ApplyDamage(5);
             target.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             var allUnits = new List<TestUnit> { healer, target };
 
             bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
@@ -363,7 +363,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ApplyFortify_ExcludesCasterIfFullHP()
         {
             target.UnitInstance.ApplyDamage(5);
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             var allUnits = new List<TestUnit> { healer, target };
 
             bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out var healed, out _);
@@ -383,7 +383,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             ally2.gridPosition = new Vector2Int(4, 3);
             ally2.UnitInstance.ApplyDamage(5);
 
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             int usesBefore = staff.currentUses;
             var allUnits = new List<TestUnit> { target, ally2 };
 
@@ -397,7 +397,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ApplyFortify_NoValidTargets_Fails()
         {
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             var allUnits = new List<TestUnit> { target }; // target at full HP
 
             bool ok = StaffEffects.ApplyFortify(healer, allUnits, ref staff, out _, out string fail);
@@ -413,7 +413,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void PhysicRange_EqualsMagDiv2_Min1()
         {
-            var staff = WeaponData.Physic;
+            var staff = TestItems.Physic;
             Assert.AreEqual(3, StaffRangeResolver.GetEffectiveMaxRange(staff, 6)); // 6/2=3
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMaxRange(staff, 1)); // min 1
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMaxRange(staff, 0)); // min 1
@@ -423,7 +423,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void FortifyRadius_EqualsMagDiv2_Min1()
         {
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             Assert.AreEqual(3, StaffRangeResolver.GetEffectiveMaxRange(staff, 6));
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMaxRange(staff, 1));
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMaxRange(staff, 0));
@@ -432,7 +432,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void StandardStaff_UsesStaticRange()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMaxRange(staff, 20));
             Assert.AreEqual(1, StaffRangeResolver.GetEffectiveMinRange(staff));
         }
@@ -440,14 +440,14 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void FortifyMinRange_IsZero()
         {
-            var staff = WeaponData.Fortify;
+            var staff = TestItems.Fortify;
             Assert.AreEqual(0, StaffRangeResolver.GetEffectiveMinRange(staff));
         }
 
         [Test]
         public void IsInRange_Adjacent_StandardStaff_True()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             Assert.IsTrue(StaffRangeResolver.IsInRange(
                 staff, 6, new Vector2Int(3, 3), new Vector2Int(3, 4)));
         }
@@ -455,7 +455,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void IsInRange_TwoAway_StandardStaff_False()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             Assert.IsFalse(StaffRangeResolver.IsInRange(
                 staff, 6, new Vector2Int(3, 3), new Vector2Int(3, 5)));
         }
@@ -463,7 +463,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void IsInRange_Physic_ExactBoundary_True()
         {
-            var staff = WeaponData.Physic;
+            var staff = TestItems.Physic;
             // mag=6, range=3. Distance of exactly 3 should be in range.
             Assert.IsTrue(StaffRangeResolver.IsInRange(
                 staff, 6, new Vector2Int(3, 3), new Vector2Int(6, 3)));
@@ -472,7 +472,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void IsInRange_Physic_BeyondBoundary_False()
         {
-            var staff = WeaponData.Physic;
+            var staff = TestItems.Physic;
             // mag=6, range=3. Distance of 4 should be out of range.
             Assert.IsFalse(StaffRangeResolver.IsInRange(
                 staff, 6, new Vector2Int(3, 3), new Vector2Int(7, 3)));
@@ -485,19 +485,19 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void AllStaffFactories_HaveCorrectValues()
         {
-            AssertStaff(WeaponData.Heal, "Chikitsa", StaffEffect.Heal,
+            AssertStaff(TestItems.Heal, "Chikitsa", StaffEffect.Heal,
                 might: 10, uses: 30, rank: WeaponRank.E, minRange: 1, maxRange: 1);
 
-            AssertStaff(WeaponData.Mend, "Sukhada", StaffEffect.Heal,
+            AssertStaff(TestItems.Mend, "Sukhada", StaffEffect.Heal,
                 might: 20, uses: 20, rank: WeaponRank.C, minRange: 1, maxRange: 1);
 
-            AssertStaff(WeaponData.Recover, "Kayakalpa", StaffEffect.FullHeal,
+            AssertStaff(TestItems.Recover, "Kayakalpa", StaffEffect.FullHeal,
                 might: 0, uses: 15, rank: WeaponRank.B, minRange: 1, maxRange: 1);
 
-            AssertStaff(WeaponData.Physic, "Dooradarshi", StaffEffect.Ranged,
+            AssertStaff(TestItems.Physic, "Dooradarshi", StaffEffect.Ranged,
                 might: 10, uses: 15, rank: WeaponRank.B, minRange: 1, maxRange: 1);
 
-            AssertStaff(WeaponData.Fortify, "Sarva Raksha", StaffEffect.AreaOfEffect,
+            AssertStaff(TestItems.Fortify, "Sarva Raksha", StaffEffect.AreaOfEffect,
                 might: 10, uses: 8, rank: WeaponRank.A, minRange: 0, maxRange: 0);
         }
 
@@ -526,7 +526,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryUseStaff_HealsAndUpdatesInventory()
         {
-            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.Heal), out _);
+            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.Heal), out _);
             target.UnitInstance.ApplyDamage(15);
 
             bool ok = healer.Inventory.TryUseStaff(target, out int healed, out string fail);
@@ -540,7 +540,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryUseStaff_LastUse_RemovesFromInventory()
         {
-            var staff = WeaponData.Heal;
+            var staff = TestItems.Heal;
             staff.currentUses = 1;
             healer.Inventory.TryAddItem(InventoryItem.FromWeapon(staff), out int slot);
             target.UnitInstance.ApplyDamage(5);
@@ -554,7 +554,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryUseStaff_NonStaffEquipped_Fails()
         {
-            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            healer.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             target.UnitInstance.ApplyDamage(5);
 
             bool ok = healer.Inventory.TryUseStaff(target, out _, out string fail);

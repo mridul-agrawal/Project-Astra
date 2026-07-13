@@ -14,7 +14,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Effectiveness_BowVsFlying_TripleMight()
         {
-            var bow = WeaponData.IronBow;
+            var bow = TestItems.IronBow;
             int effective = CombatEngine.ComputeEffectiveMight(bow.might, bow, ClassType.Flying);
             Assert.AreEqual(bow.might * 3, effective);
         }
@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Effectiveness_BowVsInfantry_NormalMight()
         {
-            var bow = WeaponData.IronBow;
+            var bow = TestItems.IronBow;
             int normal = CombatEngine.ComputeEffectiveMight(bow.might, bow, ClassType.Infantry);
             Assert.AreEqual(bow.might, normal);
         }
@@ -30,21 +30,21 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Effectiveness_SwordNoTargets_NormalMight()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             Assert.AreEqual(sword.might, CombatEngine.ComputeEffectiveMight(sword.might, sword, ClassType.Flying));
         }
 
         [Test]
         public void IsEffectiveAgainst_MatchingTarget_True()
         {
-            var bow = WeaponData.IronBow;
+            var bow = TestItems.IronBow;
             Assert.IsTrue(bow.IsEffectiveAgainst(ClassType.Flying));
         }
 
         [Test]
         public void IsEffectiveAgainst_NoTargets_False()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             Assert.IsFalse(sword.IsEffectiveAgainst(ClassType.Flying));
         }
 
@@ -55,8 +55,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void BraveWeapon_TwoHitsBeforeCounter()
         {
-            var atkWeapon = WeaponData.BraveSword;
-            var defWeapon = WeaponData.IronLance;
+            var atkWeapon = TestItems.BraveSword;
+            var defWeapon = TestItems.IronLance;
 
             // High con to offset brave sword weight, equal speed to prevent doubles
             var atk = MakeCombatant(20, 8, 8, 5, 10, 5, con: 14, weapon: atkWeapon);
@@ -75,8 +75,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void BraveWeapon_DefenderNotBrave_OnlyOneCounter()
         {
-            var atkWeapon = WeaponData.IronSword;
-            var defWeapon = WeaponData.BraveSword;
+            var atkWeapon = TestItems.IronSword;
+            var defWeapon = TestItems.BraveSword;
 
             // Equal effective AS to prevent any doubles
             var atk = MakeCombatant(20, 8, 8, 5, 10, 5, con: 14, weapon: atkWeapon);
@@ -97,7 +97,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void ConsumeDurability_Decrements()
         {
-            var weapon = WeaponData.IronSword;
+            var weapon = TestItems.IronSword;
             weapon.ConsumeDurability();
             Assert.AreEqual(44, weapon.currentUses);
         }
@@ -105,7 +105,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void ConsumeDurability_Indestructible_NoChange()
         {
-            var weapon = WeaponData.IronSword;
+            var weapon = TestItems.IronSword;
             weapon.indestructible = true;
             weapon.ConsumeDurability();
             Assert.AreEqual(45, weapon.currentUses);
@@ -114,7 +114,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void IsBroken_AtZeroUses_True()
         {
-            var weapon = WeaponData.IronSword;
+            var weapon = TestItems.IronSword;
             weapon.currentUses = 0;
             Assert.IsTrue(weapon.IsBroken);
         }
@@ -122,7 +122,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void IsBroken_Indestructible_AlwaysFalse()
         {
-            var weapon = WeaponData.IronSword;
+            var weapon = TestItems.IronSword;
             weapon.currentUses = 0;
             weapon.indestructible = true;
             Assert.IsFalse(weapon.IsBroken);
@@ -131,7 +131,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void IsBroken_HasUses_False()
         {
-            Assert.IsFalse(WeaponData.IronSword.IsBroken);
+            Assert.IsFalse(TestItems.IronSword.IsBroken);
         }
 
         #endregion
@@ -171,7 +171,7 @@ namespace ProjectAstra.Core.Tests.Combat
         {
             var tracker = new WeaponRankTracker();
             tracker.InitializeRank(WeaponType.Sword, WeaponRank.B);
-            Assert.IsTrue(tracker.CanEquip(WeaponData.SilverSword));
+            Assert.IsTrue(tracker.CanEquip(TestItems.SilverSword));
         }
 
         [Test]
@@ -179,7 +179,7 @@ namespace ProjectAstra.Core.Tests.Combat
         {
             var tracker = new WeaponRankTracker();
             tracker.InitializeRank(WeaponType.Sword, WeaponRank.C);
-            Assert.IsFalse(tracker.CanEquip(WeaponData.SilverSword));
+            Assert.IsFalse(tracker.CanEquip(TestItems.SilverSword));
         }
 
         [Test]
@@ -187,7 +187,7 @@ namespace ProjectAstra.Core.Tests.Combat
         {
             var tracker = new WeaponRankTracker();
             tracker.InitializeRank(WeaponType.Lance, WeaponRank.S);
-            Assert.IsFalse(tracker.CanEquip(WeaponData.IronSword));
+            Assert.IsFalse(tracker.CanEquip(TestItems.IronSword));
         }
 
         [Test]
@@ -217,8 +217,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void CombatRound_LanceVsSword_DefenderHasAdvantage()
         {
-            var atk = MakeCombatant(20, 8, 8, 5, 10, 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(20, 8, 8, 5, 5, 3, weapon: WeaponData.IronLance);
+            var atk = MakeCombatant(20, 8, 8, 5, 10, 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(20, 8, 8, 5, 5, 3, weapon: TestItems.IronLance);
 
             var rng = new FixedRng(0, 0, 99, 0, 0, 99);
             var result = CombatRound.Resolve(atk, def, 0, 0, 0, 0, rng);
@@ -229,7 +229,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void CombatRound_EffectiveWeapon_FlagsResult()
         {
-            var atk = MakeCombatant(20, 8, 8, 5, 10, 5, weapon: WeaponData.IronBow);
+            var atk = MakeCombatant(20, 8, 8, 5, 10, 5, weapon: TestItems.IronBow);
             var def = MakeCombatant(20, 5, 5, 3, 5, 3, weapon: WeaponData.None);
 
             var rng = new FixedRng(0, 0, 99);

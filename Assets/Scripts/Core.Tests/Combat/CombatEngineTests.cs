@@ -199,8 +199,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Round_AttackerKillsDefender_StopsEarly()
         {
-            var atk = MakeCombatant(hp: 20, str: 15, spd: 10, def: 5, skl: 10, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 5, str: 8, spd: 6, def: 3, skl: 5, niyati: 3, weapon: WeaponData.IronLance);
+            var atk = MakeCombatant(hp: 20, str: 15, spd: 10, def: 5, skl: 10, niyati: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 5, str: 8, spd: 6, def: 3, skl: 5, niyati: 3, weapon: TestItems.IronLance);
 
             // RNG: always hit (0,0 → TrueHit=0), no crit (99)
             var rng = new FixedRng(0, 0, 99);
@@ -214,8 +214,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Round_DefenderCounterattacks()
         {
-            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: WeaponData.IronLance);
+            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: TestItems.IronLance);
 
             // RNG for 2 hits: hit1(0,0,99), hit2(0,0,99)
             var rng = new FixedRng(0, 0, 99, 0, 0, 99);
@@ -229,8 +229,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Round_AttackerDoubles_WithHighAS()
         {
-            var atk = MakeCombatant(hp: 20, str: 8, spd: 14, def: 5, skl: 10, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 30, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: WeaponData.IronLance);
+            var atk = MakeCombatant(hp: 20, str: 8, spd: 14, def: 5, skl: 10, niyati: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 30, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: TestItems.IronLance);
 
             // 3 hits: atk(0,0,99), def counter(0,0,99), atk double(0,0,99)
             var rng = new FixedRng(0, 0, 99, 0, 0, 99, 0, 0, 99);
@@ -243,7 +243,7 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Round_NoCounter_DefenderUnarmed()
         {
-            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: TestItems.IronSword);
             var def = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: WeaponData.None);
 
             var rng = new FixedRng(0, 0, 99);
@@ -255,8 +255,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void Round_Miss_NoDamage()
         {
-            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: WeaponData.IronLance);
+            var atk = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 10, niyati: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 20, str: 8, spd: 8, def: 5, skl: 5, niyati: 3, weapon: TestItems.IronLance);
 
             // RNG: both 99 → TrueHit=99, likely miss for moderate hit rates
             var rng = new FixedRng(99, 99, 99, 99, 99, 99);
@@ -271,8 +271,8 @@ namespace ProjectAstra.Core.Tests.Combat
         public void Round_CritTriples_Damage()
         {
             // Use same weapon type to avoid triangle affecting damage
-            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, skl: 20, niyati: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 100, str: 5, spd: 5, def: 5, skl: 5, niyati: 0, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, skl: 20, niyati: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 100, str: 5, spd: 5, def: 5, skl: 5, niyati: 0, weapon: TestItems.IronSword);
 
             // Hit succeeds (0,0), crit succeeds (0), defender counter hit(0,0), no crit(99)
             var rng = new FixedRng(0, 0, 0, 0, 0, 99);

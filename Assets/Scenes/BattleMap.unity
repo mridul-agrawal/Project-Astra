@@ -41283,6 +41283,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a693d12c40d9d0943a2ecc2f06031e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ConvoyBootstrap
+  starterItems:
+  - {fileID: 11400000, guid: 593f9d8a3b1707a48a59696abd835ffc, type: 2}
+  - {fileID: 11400000, guid: d29d41c11bb0b604abc1b2a9afb4171b, type: 2}
+  - {fileID: 11400000, guid: 5d62457b53db680419fb73cf4a801664, type: 2}
 --- !u!4 &1591493340
 Transform:
   m_ObjectHideFlags: 0

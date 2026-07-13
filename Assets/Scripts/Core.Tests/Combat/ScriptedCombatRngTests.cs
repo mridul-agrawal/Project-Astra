@@ -13,8 +13,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void QueuedHitThenMiss_AttackerLands_CounterWhiffs()
         {
-            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: TestItems.IronSword);
 
             var result = Resolve(atk, def, SwingOutcome.Hit, SwingOutcome.Miss);
 
@@ -39,8 +39,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void ExhaustedQueue_EverySwingHitsWithoutCrit()
         {
-            var atk = MakeCombatant(hp: 50, str: 8, spd: 14, def: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 50, str: 8, spd: 8, def: 5, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 50, str: 8, spd: 14, def: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 50, str: 8, spd: 8, def: 5, weapon: TestItems.IronSword);
 
             // Empty queue across attack, counter, and double — the off-script default.
             var result = Resolve(atk, def);
@@ -56,8 +56,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void MissedSwingSkipsCritRoll_NextSwingStaysAligned()
         {
-            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: WeaponData.IronSword);
-            var def = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: TestItems.IronSword);
+            var def = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: TestItems.IronSword);
 
             // A miss consumes two rolls, a hit three; a desynced state machine
             // would bleed the miss into the counter's rolls.
@@ -73,7 +73,7 @@ namespace ProjectAstra.Core.Tests.Combat
         public void QueueOutcomes_ReplacesLeftoversFromPriorCombat()
         {
             var rng = new ScriptedCombatRng();
-            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, weapon: TestItems.IronSword);
             var unarmed = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5);
 
             rng.QueueOutcomes(SwingOutcome.Miss, SwingOutcome.Miss);
@@ -98,7 +98,7 @@ namespace ProjectAstra.Core.Tests.Combat
         // skl 10 keeps the attacker's crit rate above zero — a 0% crit can't be forced.
         private static HitResult SoloSwing(SwingOutcome outcome)
         {
-            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, skl: 10, weapon: WeaponData.IronSword);
+            var atk = MakeCombatant(hp: 20, str: 10, spd: 8, def: 5, skl: 10, weapon: TestItems.IronSword);
             var unarmed = MakeCombatant(hp: 50, str: 10, spd: 8, def: 5);
             return Resolve(atk, unarmed, outcome).Hits[0];
         }

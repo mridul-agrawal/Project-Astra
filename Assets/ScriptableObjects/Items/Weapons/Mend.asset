@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 655c099b63894014cbb97f4d8fd09c53, type: 3}
+  m_Name: Mend
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.WeaponDefinition
+  displayName: Sukhada
+  weaponType: 7
+  damageType: 1
+  magicSchool: 0
+  staffEffect: 1
+  tier: 0
+  minRank: 2
+  might: 20
+  hit: 100
+  crit: 0
+  weight: 4
+  minRange: 1
+  maxRange: 1
+  maxUses: 20
+  indestructible: 0
+  brave: 0
+  effectivenessTargets: 
+  characterLocked: 0
+  ownerUnitId: 

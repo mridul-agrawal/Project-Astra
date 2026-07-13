@@ -200,30 +200,56 @@ namespace ProjectAstra.Core.Editor
             {
                 if (unitName == "PlayerUnit3")
                 {
-                    inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.Heal));
-                    inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.Mend), out _);
-                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                    inventory.SetSlot(0, ItemFromAsset("Heal"));
+                    inventory.TryAddItem(ItemFromAsset("Mend"), out _);
+                    inventory.TryAddItem(ItemFromAsset("Vulnerary"), out _);
                 }
                 else
                 {
-                    inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronSword));
+                    inventory.SetSlot(0, ItemFromAsset("IronSword"));
                 }
 
                 if (unitName == "PlayerUnit1")
                 {
-                    inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
-                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
-                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.ShaktiMudrika), out _);
+                    inventory.TryAddItem(ItemFromAsset("IronAxe"), out _);
+                    inventory.TryAddItem(ItemFromAsset("Vulnerary"), out _);
+                    inventory.TryAddItem(ItemFromAsset("ShaktiMudrika"), out _);
                 }
                 else if (unitName == "PlayerUnit2")
                 {
-                    inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+                    inventory.TryAddItem(ItemFromAsset("Vulnerary"), out _);
                 }
             }
             else
             {
-                inventory.SetSlot(0, InventoryItem.FromWeapon(WeaponData.IronLance));
+                inventory.SetSlot(0, ItemFromAsset("IronLance"));
             }
+        }
+
+        // Loads a stock item asset by file name (Weapons or Consumables folder) and bakes its runtime
+        // slot value. Editor-only scaffolding path for seeding test-scene inventories.
+        private static InventoryItem ItemFromAsset(string assetName)
+        {
+            ItemDefinition item = LoadStockItem(assetName);
+            if (item != null) return item.ToInventoryItem();
+            Debug.LogWarning($"CursorSceneSetup: stock item asset '{assetName}' not found.");
+            return InventoryItem.None;
+        }
+
+        private static ItemDefinition LoadStockItem(string assetName) =>
+            AssetDatabase.LoadAssetAtPath<ItemDefinition>($"Assets/ScriptableObjects/Items/Weapons/{assetName}.asset")
+            ?? AssetDatabase.LoadAssetAtPath<ItemDefinition>($"Assets/ScriptableObjects/Items/Consumables/{assetName}.asset");
+
+        // Wires the starter convoy's items, mirroring the old hardcoded IronLance/Fire/Vulnerary set.
+        private static void SeedConvoyStarter(ConvoyBootstrap bootstrap)
+        {
+            var items = new[] { LoadStockItem("IronLance"), LoadStockItem("Fire"), LoadStockItem("Vulnerary") };
+            var so = new SerializedObject(bootstrap);
+            var arr = so.FindProperty("starterItems");
+            arr.arraySize = items.Length;
+            for (int i = 0; i < items.Length; i++)
+                arr.GetArrayElementAtIndex(i).objectReferenceValue = items[i];
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         private static void SetupInventoryUIBindings()
@@ -432,7 +458,8 @@ namespace ProjectAstra.Core.Editor
             if (Object.FindAnyObjectByType<ConvoyBootstrap>() == null)
             {
                 var bootstrapGo = new GameObject("ConvoyBootstrap");
-                bootstrapGo.AddComponent<ConvoyBootstrap>();
+                var bootstrap = bootstrapGo.AddComponent<ConvoyBootstrap>();
+                SeedConvoyStarter(bootstrap);
                 Undo.RegisterCreatedObjectUndo(bootstrapGo, "Create ConvoyBootstrap");
             }
 

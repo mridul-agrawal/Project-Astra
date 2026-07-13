@@ -32,7 +32,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void BrokenWeapon_NotEquippable()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             sword.currentUses = 0;
             Assert.IsFalse(EquipResolver.CanEquip(unit, sword));
         }
@@ -41,7 +41,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void NoConstraints_AllowsAnything()
         {
             // No tracker, no class, no allowedWeaponTypes → permissive.
-            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.IronSword));
+            Assert.IsTrue(EquipResolver.CanEquip(unit, TestItems.IronSword));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             unit.WeaponRankTracker = new WeaponRankTracker();
             unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.B);
-            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.SilverSword));
+            Assert.IsTrue(EquipResolver.CanEquip(unit, TestItems.SilverSword));
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             unit.WeaponRankTracker = new WeaponRankTracker();
             unit.WeaponRankTracker.InitializeRank(WeaponType.Sword, WeaponRank.E);
-            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.SilverSword));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, TestItems.SilverSword));
         }
 
         [Test]
@@ -65,27 +65,27 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             unit.WeaponRankTracker = new WeaponRankTracker();
             unit.WeaponRankTracker.InitializeRank(WeaponType.Lance, WeaponRank.A);
-            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.IronSword));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, TestItems.IronSword));
         }
 
         [Test]
         public void AllowedWeaponTypesFallback_Allows()
         {
             SetAllowedTypes(unit, WeaponType.Sword);
-            Assert.IsTrue(EquipResolver.CanEquip(unit, WeaponData.IronSword));
+            Assert.IsTrue(EquipResolver.CanEquip(unit, TestItems.IronSword));
         }
 
         [Test]
         public void AllowedWeaponTypesFallback_Rejects()
         {
             SetAllowedTypes(unit, WeaponType.AnimaTome);
-            Assert.IsFalse(EquipResolver.CanEquip(unit, WeaponData.IronSword));
+            Assert.IsFalse(EquipResolver.CanEquip(unit, TestItems.IronSword));
         }
 
         [Test]
         public void CharacterLockedWeapon_NonOwner_Rejected()
         {
-            var locked = WeaponData.IronSword;
+            var locked = TestItems.IronSword;
             locked.characterLocked = true;
             locked.ownerUnitId = "krishna";
 

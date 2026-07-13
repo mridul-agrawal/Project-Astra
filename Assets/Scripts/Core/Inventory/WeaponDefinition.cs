@@ -23,8 +23,9 @@ namespace ProjectAstra.Core
         [SerializeField, Range(0, 100)] private int hit = 80;
         [SerializeField, Range(0, 100)] private int crit;
         [SerializeField] private int weight;
-        [SerializeField, Min(1)] private int minRange = 1;
-        [SerializeField, Min(1)] private int maxRange = 1;
+        [Tooltip("0 is allowed for self-centred AoE staves (e.g. Fortify).")]
+        [SerializeField, Min(0)] private int minRange = 1;
+        [SerializeField, Min(0)] private int maxRange = 1;
 
         [Header("Durability")]
         [SerializeField, Min(0)] private int maxUses = 45;

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 655c099b63894014cbb97f4d8fd09c53, type: 3}
   m_Name: IronAxe
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.WeaponDefinition
-  displayName: Iron Axe
+  displayName: Loha Parashu
   weaponType: 2
   damageType: 0
   magicSchool: 0

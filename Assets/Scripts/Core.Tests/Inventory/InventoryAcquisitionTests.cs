@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.IronSword),
+                InventoryItem.FromWeapon(TestItems.IronSword),
                 r => captured = r);
 
             Assert.IsTrue(captured.HasValue);
@@ -56,7 +56,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                InventoryItem.FromWeapon(TestItems.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
@@ -70,7 +70,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             var handler = new TestPromptHandler { ChooseDiscardSlot = 2 };
             InventoryAcquisition.PromptHandler = handler;
 
-            var incoming = InventoryItem.FromWeapon(WeaponData.SteelSword);
+            var incoming = InventoryItem.FromWeapon(TestItems.SteelSword);
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(unit, incoming, r => captured = r);
 
@@ -90,7 +90,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                InventoryItem.FromWeapon(TestItems.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
@@ -101,7 +101,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void NullConvoy_IsUnavailable()
         {
             Assert.IsFalse(NullConvoy.Instance.IsAvailable);
-            Assert.IsFalse(NullConvoy.Instance.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword)));
+            Assert.IsFalse(NullConvoy.Instance.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword)));
         }
 
         [Test]
@@ -114,7 +114,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                InventoryItem.FromWeapon(TestItems.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.SentToConvoy, captured.Value.Outcome);
@@ -127,14 +127,14 @@ namespace ProjectAstra.Core.Tests.Inventory
             FillInventory();
             var convoy = new SupplyConvoy();
             for (int i = 0; i < SupplyConvoy.MaxCapacity; i++)
-                convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe));
+                convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronAxe));
             Convoy.Current = convoy;
             InventoryAcquisition.PromptHandler = null;
 
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                InventoryItem.FromWeapon(TestItems.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.Canceled, captured.Value.Outcome);
@@ -152,7 +152,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             AcquisitionResult? captured = null;
             InventoryAcquisition.TryAcquireItem(
                 unit,
-                InventoryItem.FromWeapon(WeaponData.SteelSword),
+                InventoryItem.FromWeapon(TestItems.SteelSword),
                 r => captured = r);
 
             Assert.AreEqual(AcquisitionOutcome.SentToConvoy, captured.Value.Outcome);
@@ -162,7 +162,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         private void FillInventory()
         {
             for (int i = 0; i < UnitInventory.Capacity; i++)
-                unit.Inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+                unit.Inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
         }
 
         private class TestPromptHandler : IInventoryFullPromptHandler

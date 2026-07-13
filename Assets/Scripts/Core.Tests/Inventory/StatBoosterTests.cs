@@ -98,7 +98,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ConsumableEffects_StatBooster_ReturnsTrue()
         {
-            var booster = ConsumableData.ShaktiMudrika;
+            var booster = TestItems.ShaktiMudrika;
             bool ok = ConsumableEffects.Apply(booster, unit, out string fail);
             Assert.IsTrue(ok, fail);
         }
@@ -107,7 +107,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void ConsumableEffects_StatBooster_NoUnitInstance_Fails()
         {
             var bare = new GameObject("BareUnit").AddComponent<TestUnit>();
-            var booster = ConsumableData.ShaktiMudrika;
+            var booster = TestItems.ShaktiMudrika;
             bool ok = ConsumableEffects.Apply(booster, bare, out string fail);
             Assert.IsFalse(ok);
             Assert.IsNotNull(fail);
@@ -121,7 +121,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DescribeStatBoost_NormalCase_NoReducedEffect()
         {
-            var booster = ConsumableData.ShaktiMudrika;
+            var booster = TestItems.ShaktiMudrika;
             var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsFalse(reduced);
             Assert.IsTrue(msg.Contains("Strength"));
@@ -135,7 +135,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             updated[StatIndex.Str] = 29;
             unit.BindUnitInstance(new UnitInstance(testDef, testClass, 1, updated));
 
-            var booster = ConsumableData.ShaktiMudrika;
+            var booster = TestItems.ShaktiMudrika;
             var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsTrue(reduced);
             Assert.IsTrue(msg.Contains("reduced"));
@@ -148,7 +148,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             updated[StatIndex.Str] = 30;
             unit.BindUnitInstance(new UnitInstance(testDef, testClass, 1, updated));
 
-            var booster = ConsumableData.ShaktiMudrika;
+            var booster = TestItems.ShaktiMudrika;
             var (msg, reduced) = ConsumableEffects.DescribeStatBoost(booster, unit);
             Assert.IsTrue(reduced);
             Assert.IsTrue(msg.Contains("no effect"));
@@ -161,15 +161,15 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void AllNineBoosterFactories_HaveCorrectStatAndMagnitude()
         {
-            AssertBooster(ConsumableData.AmritaVastra, StatIndex.HP, 7);
-            AssertBooster(ConsumableData.ShaktiMudrika, StatIndex.Str, 2);
-            AssertBooster(ConsumableData.VidyaDhuli, StatIndex.Mag, 2);
-            AssertBooster(ConsumableData.SutraGrantha, StatIndex.Skl, 2);
-            AssertBooster(ConsumableData.VayuPankha, StatIndex.Spd, 2);
-            AssertBooster(ConsumableData.DeviPratima, StatIndex.Niyati, 2);
-            AssertBooster(ConsumableData.NagaKavach, StatIndex.Def, 2);
-            AssertBooster(ConsumableData.RakshaSutra, StatIndex.Res, 2);
-            AssertBooster(ConsumableData.DehaMudrika, StatIndex.Con, 2);
+            AssertBooster(TestItems.AmritaVastra, StatIndex.HP, 7);
+            AssertBooster(TestItems.ShaktiMudrika, StatIndex.Str, 2);
+            AssertBooster(TestItems.VidyaDhuli, StatIndex.Mag, 2);
+            AssertBooster(TestItems.SutraGrantha, StatIndex.Skl, 2);
+            AssertBooster(TestItems.VayuPankha, StatIndex.Spd, 2);
+            AssertBooster(TestItems.DeviPratima, StatIndex.Niyati, 2);
+            AssertBooster(TestItems.NagaKavach, StatIndex.Def, 2);
+            AssertBooster(TestItems.RakshaSutra, StatIndex.Res, 2);
+            AssertBooster(TestItems.DehaMudrika, StatIndex.Con, 2);
         }
 
         private static void AssertBooster(ConsumableData booster, StatIndex expectedStat, int expectedMagnitude)
@@ -190,7 +190,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void TryUseConsumable_StatBooster_AppliesAndRemovesSlot()
         {
             int strBefore = unit.UnitInstance.Stats[StatIndex.Str];
-            unit.Inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.ShaktiMudrika), out int slot);
+            unit.Inventory.TryAddItem(InventoryItem.FromConsumable(TestItems.ShaktiMudrika), out int slot);
 
             bool ok = unit.Inventory.TryUseConsumable(slot, out string fail);
 

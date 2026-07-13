@@ -18,7 +18,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Deposit_AddsItem()
         {
-            Assert.IsTrue(convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword)));
+            Assert.IsTrue(convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword)));
             Assert.AreEqual(1, convoy.Count);
         }
 
@@ -32,8 +32,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Deposit_SortsByWeaponType_SwordBeforeAxe()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronAxe));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
 
             Assert.AreEqual(WeaponType.Sword, convoy.GetSlot(0).weapon.weaponType);
             Assert.AreEqual(WeaponType.Axe, convoy.GetSlot(1).weapon.weaponType);
@@ -42,8 +42,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Deposit_SortsByTierWithinType_IronBeforeSteel()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.SteelSword));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.SteelSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
 
             Assert.AreEqual(WeaponTier.Iron, convoy.GetSlot(0).weapon.tier);
             Assert.AreEqual(WeaponTier.Steel, convoy.GetSlot(1).weapon.tier);
@@ -52,8 +52,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Deposit_StaffsAfterRegularWeapons()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.Heal));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.Heal));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
 
             Assert.AreEqual(WeaponType.Sword, convoy.GetSlot(0).weapon.weaponType);
             Assert.AreEqual(WeaponType.Staff, convoy.GetSlot(1).weapon.weaponType);
@@ -62,8 +62,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Deposit_ConsumablesAfterWeapons()
         {
-            convoy.TryDeposit(InventoryItem.FromConsumable(ConsumableData.Vulnerary));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromConsumable(TestItems.Vulnerary));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
 
             Assert.AreEqual(ItemKind.Weapon, convoy.GetSlot(0).kind);
             Assert.AreEqual(ItemKind.Consumable, convoy.GetSlot(1).kind);
@@ -73,17 +73,17 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void Deposit_WhenFull_ReturnsFalse()
         {
             for (int i = 0; i < SupplyConvoy.MaxCapacity; i++)
-                convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+                convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
 
             Assert.IsTrue(convoy.IsFull);
-            Assert.IsFalse(convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe)));
+            Assert.IsFalse(convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronAxe)));
             Assert.AreEqual(SupplyConvoy.MaxCapacity, convoy.Count);
         }
 
         [Test]
         public void Withdraw_RemovesItem()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
             Assert.IsTrue(convoy.TryWithdraw(0, out var item));
             Assert.AreEqual("Loha Khadga", item.DisplayName);
             Assert.AreEqual(0, convoy.Count);
@@ -99,9 +99,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Withdraw_PreservesSortOrder()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronLance));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronLance));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronAxe));
 
             convoy.TryWithdraw(1, out _); // Remove Lance (middle)
 
@@ -126,9 +126,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ToArray_LoadFrom_RoundTrips()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronAxe));
-            convoy.TryDeposit(InventoryItem.FromConsumable(ConsumableData.Vulnerary));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronAxe));
+            convoy.TryDeposit(InventoryItem.FromConsumable(TestItems.Vulnerary));
 
             var snapshot = convoy.ToArray();
             var restored = new SupplyConvoy();
@@ -144,14 +144,14 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             int count = 0;
             convoy.OnConvoyChanged += () => count++;
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
             Assert.AreEqual(1, count);
         }
 
         [Test]
         public void OnConvoyChanged_FiresOnWithdraw()
         {
-            convoy.TryDeposit(InventoryItem.FromWeapon(WeaponData.IronSword));
+            convoy.TryDeposit(InventoryItem.FromWeapon(TestItems.IronSword));
             int count = 0;
             convoy.OnConvoyChanged += () => count++;
             convoy.TryWithdraw(0, out _);
@@ -173,32 +173,32 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void Weapons_SortByType_SwordBeforeLance()
         {
-            var sword = InventoryItem.FromWeapon(WeaponData.IronSword);
-            var lance = InventoryItem.FromWeapon(WeaponData.IronLance);
+            var sword = InventoryItem.FromWeapon(TestItems.IronSword);
+            var lance = InventoryItem.FromWeapon(TestItems.IronLance);
             Assert.Less(comparer.Compare(sword, lance), 0);
         }
 
         [Test]
         public void SameType_SortByTier_IronBeforeSteel()
         {
-            var iron = InventoryItem.FromWeapon(WeaponData.IronSword);
-            var steel = InventoryItem.FromWeapon(WeaponData.SteelSword);
+            var iron = InventoryItem.FromWeapon(TestItems.IronSword);
+            var steel = InventoryItem.FromWeapon(TestItems.SteelSword);
             Assert.Less(comparer.Compare(iron, steel), 0);
         }
 
         [Test]
         public void Staff_SortsAfterRegularWeapons()
         {
-            var staff = InventoryItem.FromWeapon(WeaponData.Heal);
-            var sword = InventoryItem.FromWeapon(WeaponData.IronSword);
+            var staff = InventoryItem.FromWeapon(TestItems.Heal);
+            var sword = InventoryItem.FromWeapon(TestItems.IronSword);
             Assert.Greater(comparer.Compare(staff, sword), 0);
         }
 
         [Test]
         public void Consumables_SortAfterAllWeapons()
         {
-            var vuln = InventoryItem.FromConsumable(ConsumableData.Vulnerary);
-            var staff = InventoryItem.FromWeapon(WeaponData.Heal);
+            var vuln = InventoryItem.FromConsumable(TestItems.Vulnerary);
+            var staff = InventoryItem.FromWeapon(TestItems.Heal);
             Assert.Greater(comparer.Compare(vuln, staff), 0);
         }
 
@@ -206,7 +206,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void EmptyItems_SortToEnd()
         {
             var empty = InventoryItem.None;
-            var sword = InventoryItem.FromWeapon(WeaponData.IronSword);
+            var sword = InventoryItem.FromWeapon(TestItems.IronSword);
             Assert.Greater(comparer.Compare(empty, sword), 0);
         }
     }

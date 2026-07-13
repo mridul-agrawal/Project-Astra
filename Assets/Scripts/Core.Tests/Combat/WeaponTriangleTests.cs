@@ -29,8 +29,8 @@ namespace ProjectAstra.Core.Tests.Combat
         [Test]
         public void CrossType_PhysicalVsMagic_NoTriangle()
         {
-            var sword = WeaponData.IronSword;
-            var fire = WeaponData.Fire;
+            var sword = TestItems.IronSword;
+            var fire = TestItems.Fire;
             Assert.AreEqual(0, WeaponTriangle.ComputeAdvantage(sword, fire));
         }
 

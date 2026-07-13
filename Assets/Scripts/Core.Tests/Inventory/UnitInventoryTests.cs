@@ -43,10 +43,10 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void TryAddItem_AppendsToFirstEmptySlot()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out int slot);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out int slot);
             Assert.AreEqual(0, slot);
 
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out int slot2);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out int slot2);
             Assert.AreEqual(1, slot2);
             Assert.AreEqual(2, inventory.OccupiedCount);
         }
@@ -55,10 +55,10 @@ namespace ProjectAstra.Core.Tests.Inventory
         public void TryAddItem_FailsWhenFull()
         {
             for (int i = 0; i < UnitInventory.Capacity; i++)
-                inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+                inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
 
             Assert.IsTrue(inventory.IsFull);
-            bool added = inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out int slot);
+            bool added = inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out int slot);
             Assert.IsFalse(added);
             Assert.AreEqual(-1, slot);
         }
@@ -66,7 +66,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DiscardSlot_ClearsAndFiresChanged()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             int changedCount = 0;
             inventory.OnInventoryChanged += () => changedCount++;
 
@@ -78,8 +78,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void SwapSlots_PermutesCorrectly()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
 
             inventory.SwapSlots(0, 1);
 
@@ -90,8 +90,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void GetEquippedWeapon_ScansFromSlot0()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
 
             Assert.AreEqual(0, inventory.EquippedWeaponSlot);
             Assert.AreEqual("Loha Khadga", inventory.GetEquippedWeapon().name);
@@ -100,8 +100,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void GetEquippedWeapon_SkipsConsumablesInSlot0()
         {
-            inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromConsumable(TestItems.Vulnerary), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
 
             Assert.AreEqual(1, inventory.EquippedWeaponSlot);
             Assert.IsFalse(inventory.IsUnarmed);
@@ -110,9 +110,9 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void GetEquippedWeapon_SkipsBrokenWeapons()
         {
-            var broken = WeaponData.IronSword;
+            var broken = TestItems.IronSword;
             broken.currentUses = 0;
-            var fresh = WeaponData.IronAxe;
+            var fresh = TestItems.IronAxe;
 
             inventory.TryAddItem(InventoryItem.FromWeapon(broken), out _);
             inventory.TryAddItem(InventoryItem.FromWeapon(fresh), out _);
@@ -132,7 +132,7 @@ namespace ProjectAstra.Core.Tests.Inventory
             field.SetValue(unit, new[] { WeaponType.AnimaTome });
 
             for (int i = 0; i < 5; i++)
-                inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+                inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
 
             Assert.IsTrue(inventory.IsUnarmed);
             Assert.IsTrue(inventory.GetEquippedWeapon().IsEmpty);
@@ -141,8 +141,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DiscardingEquippedWeapon_NextWeaponBecomesEquipped()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
 
             inventory.DiscardSlot(0);
 
@@ -152,7 +152,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void DiscardingOnlyWeapon_BecomesUnarmed()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             inventory.DiscardSlot(0);
 
             Assert.IsTrue(inventory.IsUnarmed);
@@ -161,7 +161,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ConsumeEquippedWeaponUses_DecrementsAndClearsOnBreak()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             sword.currentUses = 1;
             inventory.TryAddItem(InventoryItem.FromWeapon(sword), out _);
 
@@ -178,7 +178,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void ConsumeEquippedWeaponUses_DecrementsWithoutBreaking()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
             inventory.ConsumeEquippedWeaponUses(1);
             Assert.AreEqual(44, inventory.GetSlot(0).weapon.currentUses);
         }
@@ -186,7 +186,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void IndestructibleWeapon_NeverDecrements()
         {
-            var sword = WeaponData.IronSword;
+            var sword = TestItems.IronSword;
             sword.indestructible = true;
             inventory.TryAddItem(InventoryItem.FromWeapon(sword), out _);
 
@@ -199,8 +199,8 @@ namespace ProjectAstra.Core.Tests.Inventory
         [Test]
         public void EquipFromSlot_MovesWeaponToSlotZero()
         {
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronSword), out _);
-            inventory.TryAddItem(InventoryItem.FromWeapon(WeaponData.IronAxe), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronSword), out _);
+            inventory.TryAddItem(InventoryItem.FromWeapon(TestItems.IronAxe), out _);
 
             inventory.EquipFromSlot(1);
 
@@ -213,7 +213,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             unit.maxHP = 30;
             unit.currentHP = 10;
-            inventory.TryAddItem(InventoryItem.FromConsumable(ConsumableData.Vulnerary), out _);
+            inventory.TryAddItem(InventoryItem.FromConsumable(TestItems.Vulnerary), out _);
 
             bool ok = inventory.TryUseConsumable(0, out string fail);
 
@@ -227,7 +227,7 @@ namespace ProjectAstra.Core.Tests.Inventory
         {
             unit.maxHP = 30;
             unit.currentHP = 10;
-            var v = ConsumableData.Vulnerary;
+            var v = TestItems.Vulnerary;
             v.currentUses = 1;
             inventory.TryAddItem(InventoryItem.FromConsumable(v), out _);
 
