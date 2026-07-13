@@ -15,11 +15,11 @@ namespace ProjectAstra.Core.Units
         [SerializeField] private string unitId;
 
         [Header("Class")]
-        [SerializeField] private ClassDefinition defaultClass;
+        [SerializeField, HubRef] private ClassDefinition defaultClass;
 
         [Header("Inventory")]
         [Tooltip("Default starting kit, baked into the unit's inventory on spawn. A per-map UnitStartPosition override takes precedence.")]
-        [SerializeField] private InventoryLoadout defaultLoadout;
+        [SerializeField, HubRef] private InventoryLoadout defaultLoadout;
 
         [Header("Base Stats (Level 1)")]
         [SerializeField] private StatArray baseStats;
@@ -58,7 +58,7 @@ namespace ProjectAstra.Core.Units
 
         [Header("Dialogue")]
         [Tooltip("Optional. Which dialogue speaker voices this unit (portrait + name) for runtime lines such as the Lord's last words. Leave empty for nameless narration.")]
-        [SerializeField] private DialogueSpeaker speaker;
+        [SerializeField, HubRef] private DialogueSpeaker speaker;
 
         public string UnitName => unitName;
         public string UnitId => unitId;

@@ -33,8 +33,8 @@ namespace ProjectAstra.Core.Units
         [Header("Promotion")]
         [SerializeField] private bool canPromote;
         [SerializeField] private bool isPromoted;
-        [SerializeField] private ClassDefinition[] promotionTargets;
-        [SerializeField] private ClassDefinition baseClass;
+        [SerializeField, HubRef] private ClassDefinition[] promotionTargets;
+        [SerializeField, HubRef] private ClassDefinition baseClass;
         [SerializeField] private StatArray promotionBonuses;
 
         [Header("EXP (Experience Scaling)")]

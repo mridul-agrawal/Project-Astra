@@ -9,7 +9,7 @@ namespace ProjectAstra.Core
     public class InventoryLoadout : ScriptableObject
     {
         [Tooltip("Starting items in slot order (first 5 used). The first wieldable weapon becomes the equipped weapon.")]
-        [SerializeField] private ItemDefinition[] items;
+        [SerializeField, HubRef] private ItemDefinition[] items;
 
         public ItemDefinition[] Items => items;
 
