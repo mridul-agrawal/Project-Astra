@@ -97,7 +97,7 @@ namespace ProjectAstra.Core.Editor
             {
                 if (!Matches(asset)) continue;
                 bool on = selected == asset;
-                if (GUILayout.Toggle(on, asset.name, "Button") && !on) Select(asset);
+                if (GUILayout.Toggle(on, DisplayLabel(asset), "Button") && !on) Select(asset);
             }
             EditorGUILayout.EndScrollView();
             EditorGUILayout.EndVertical();
@@ -114,7 +114,9 @@ namespace ProjectAstra.Core.Editor
             }
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField($"Editing: {selected.name}", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"Editing: {DisplayLabel(selected)}", EditorStyles.boldLabel);
+            using (new EditorGUI.DisabledScope(!FileNameDiffersFromLabel(selected)))
+                if (GUILayout.Button("Rename file", GUILayout.Width(90))) RenameFileToMatch(selected);
             if (GUILayout.Button("Reveal in Project", GUILayout.Width(130))) EditorGUIUtility.PingObject(selected);
             EditorGUILayout.EndHorizontal();
 
@@ -178,8 +180,41 @@ namespace ProjectAstra.Core.Editor
             embedded = asset != null ? UnityEditor.Editor.CreateEditor(asset) : null;
         }
 
-        private bool Matches(UnityEngine.Object asset) =>
-            string.IsNullOrEmpty(filter) || asset.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+        private bool Matches(UnityEngine.Object asset)
+        {
+            if (string.IsNullOrEmpty(filter)) return true;
+            return DisplayLabel(asset).IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                || asset.name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        // What the catalog shows: the asset's own name field (className / unitName / displayName),
+        // not the .asset file name. New assets are created with a generic file name and the designer
+        // sets the real name in the inspector, so keying on the file name would list them all alike.
+        private static string DisplayLabel(UnityEngine.Object asset)
+        {
+            string internalName = asset switch
+            {
+                UnitDefinition u => u.UnitName,
+                ClassDefinition c => c.ClassName,
+                ItemDefinition i => i.DisplayName,
+                _ => null,
+            };
+            return string.IsNullOrWhiteSpace(internalName) ? asset.name : internalName;
+        }
+
+        private static bool FileNameDiffersFromLabel(UnityEngine.Object asset)
+        {
+            string label = DisplayLabel(asset);
+            return !string.IsNullOrWhiteSpace(label) && asset.name != label;
+        }
+
+        // Renames the .asset file to match its display name, so the Project view agrees with the Hub.
+        private void RenameFileToMatch(UnityEngine.Object asset)
+        {
+            if (!FileNameDiffersFromLabel(asset)) return;
+            AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(asset), DisplayLabel(asset));
+            AssetDatabase.SaveAssets();
+        }
 
         private static List<UnityEngine.Object> LoadAll(Type type)
         {
