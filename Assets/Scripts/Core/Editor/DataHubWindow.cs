@@ -11,14 +11,16 @@ namespace ProjectAstra.Core.Editor
     // normal inspector. Inline [HubRef] "+ New" buttons jump here via DataHubAssets.NavigateRequested.
     public class DataHubWindow : EditorWindow
     {
-        private enum Tab { Units, Classes, Weapons, Consumables, Loadouts }
+        private enum Tab { Units, Classes, Weapons, Consumables, Loadouts, Problems }
 
         private Tab tab = Tab.Units;
         private UnityEngine.Object selected;
         private UnityEditor.Editor embedded;
         private string filter = "";
         private string newName = "";
-        private Vector2 listScroll, detailScroll;
+        private Vector2 listScroll, detailScroll, problemsScroll;
+        private List<HubProblem> problems;
+        private UnityEngine.Object pendingNavigate;
 
         [MenuItem("Project Astra/Data Hub")]
         public static void Open()
@@ -47,9 +49,16 @@ namespace ProjectAstra.Core.Editor
         {
             EditorGUILayout.BeginHorizontal();
             DrawRail();
-            DrawList();
-            DrawDetail();
+            if (tab == Tab.Problems) DrawProblems();
+            else { DrawList(); DrawDetail(); }
             EditorGUILayout.EndHorizontal();
+
+            // Deferred so tab/selection don't change mid-layout (avoids IMGUI layout mismatches).
+            if (pendingNavigate != null)
+            {
+                OnNavigate(pendingNavigate);
+                pendingNavigate = null;
+            }
         }
 
         private void DrawRail()
@@ -64,6 +73,7 @@ namespace ProjectAstra.Core.Editor
                 {
                     tab = t;
                     Select(null);
+                    if (t == Tab.Problems) problems = null;   // recompute on entry
                 }
             }
             EditorGUILayout.EndVertical();
@@ -111,6 +121,44 @@ namespace ProjectAstra.Core.Editor
             detailScroll = EditorGUILayout.BeginScrollView(detailScroll);
             if (embedded != null) embedded.OnInspectorGUI();
             EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawProblems()
+        {
+            EditorGUILayout.BeginVertical();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Problems", EditorStyles.boldLabel);
+            if (GUILayout.Button("Refresh", GUILayout.Width(80))) problems = DataHubProblems.Collect();
+            if (GUILayout.Button("Rescan UnitDatabase", GUILayout.Width(170)))
+            {
+                int count = DataHubAssets.RescanUnits();
+                problems = DataHubProblems.Collect();
+                ShowNotification(new GUIContent(count >= 0 ? $"UnitDatabase rebuilt: {count} units" : "No UnitDatabase asset found"));
+            }
+            EditorGUILayout.EndHorizontal();
+
+            problems ??= DataHubProblems.Collect();
+
+            problemsScroll = EditorGUILayout.BeginScrollView(problemsScroll);
+            if (problems.Count == 0)
+                EditorGUILayout.HelpBox("No problems found — every reference resolves.", MessageType.Info);
+            foreach (HubProblem problem in problems)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.HelpBox(problem.Message, MessageType.Warning);
+                using (new EditorGUI.DisabledScope(problem.Asset == null))
+                    if (GUILayout.Button("Fix", GUILayout.Width(50), GUILayout.Height(38)))
+                    {
+                        Selection.activeObject = problem.Asset;
+                        EditorGUIUtility.PingObject(problem.Asset);
+                        pendingNavigate = problem.Asset;
+                    }
+                EditorGUILayout.EndHorizontal();
+            }
+            EditorGUILayout.EndScrollView();
+
             EditorGUILayout.EndVertical();
         }
 
