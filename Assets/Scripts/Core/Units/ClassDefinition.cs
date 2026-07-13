@@ -42,6 +42,7 @@ namespace ProjectAstra.Core.Units
         [SerializeField, Min(0.1f)] private float expPowerFactor = 1f;
 
         [Header("Abilities")]
+        [Tooltip("Authored ability ids. NOTE: not yet consumed by any runtime system — reserved for a future abilities pass.")]
         [SerializeField] private string[] classAbilities;
 
         [Header("Visuals")]

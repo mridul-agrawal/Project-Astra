@@ -48,6 +48,8 @@ namespace ProjectAstra.Core.Units
             unit.faction = FactionFromTeam(start.team);
             unit.gridPosition = start.position;
             unit.InitializeFromDefinition(definition);
+            // TODO(weapon-ranks): seed unit.WeaponRankTracker from definition.StartingWeaponRanks
+            // once the rank system goes live — authored data exists, runtime seeding deferred.
             SeedInventory(unit, start, definition);
 
             AttachSprite(unitGO, definition.MapSprite != null ? definition.MapSprite : fallbackSprite);

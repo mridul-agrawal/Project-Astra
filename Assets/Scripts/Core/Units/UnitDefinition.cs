@@ -56,6 +56,10 @@ namespace ProjectAstra.Core.Units
         [Tooltip("2–4 authored lines played as a dialogue sequence when this unit dies. Only consulted when IsLord is true.")]
         [SerializeField, TextArea(1, 3)] private string[] lastWordsLines;
 
+        [Header("Weapon Ranks (authored — runtime seeding pending)")]
+        [Tooltip("Starting proficiency per weapon type. Authored now, but not yet seeded into the runtime WeaponRankTracker at spawn (see UnitSpawner TODO).")]
+        [SerializeField] private StartingWeaponRank[] startingWeaponRanks;
+
         [Header("Dialogue")]
         [Tooltip("Optional. Which dialogue speaker voices this unit (portrait + name) for runtime lines such as the Lord's last words. Leave empty for nameless narration.")]
         [SerializeField, HubRef] private DialogueSpeaker speaker;
@@ -79,6 +83,7 @@ namespace ProjectAstra.Core.Units
         public string OneLineIdentity => oneLineIdentity;
         public bool IsLord => isLord;
         public string[] LastWordsLines => lastWordsLines;
+        public StartingWeaponRank[] StartingWeaponRanks => startingWeaponRanks;
         public DialogueSpeaker Speaker => speaker;
     }
 }
