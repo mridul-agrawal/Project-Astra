@@ -23,4 +23,8 @@ MonoBehaviour:
     unitId: aranya
     team: 0
     loadoutOverride: {fileID: 0}
+  - position: {x: 8, y: 4}
+    unitId: rakshasa_raider
+    team: 1
+    loadoutOverride: {fileID: 0}
   objects: []
