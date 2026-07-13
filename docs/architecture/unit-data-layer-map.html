@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Astra — Unit Data Layer Map</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --panel:#ffffff; --panel-2:#eef1f8; --ink:#191c28; --ink-soft:#565d78;
+    --line:#d8dcec; --mono:#2b3049; --shadow:0 1px 2px rgba(24,28,48,.06),0 8px 24px rgba(24,28,48,.05);
+    --c-so:#4a5fd0;   --c-so-bg:#eef1fd;
+    --c-struct:#0f9a90;--c-struct-bg:#e2f5f2;
+    --c-enum:#666d84;  --c-enum-bg:#eceef4;
+    --c-reg:#bd7815;   --c-reg-bg:#faf0da;
+    --c-place:#238a54; --c-place-bg:#e3f3ea;
+    --c-run:#767d92;   --c-run-bg:#eef0f5;
+    --c-code:#cd4633;  --c-code-bg:#fbe9e6;
+    --flaw:#cf3c26;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d0f16; --panel:#161a25; --panel-2:#1d2230; --ink:#e8ebf5; --ink-soft:#a3a9c0;
+      --line:#2a3042; --mono:#c7cce4; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+      --c-so:#93a2f4;   --c-so-bg:#1b2342;
+      --c-struct:#46cabf;--c-struct-bg:#0f322f;
+      --c-enum:#99a0b6;  --c-enum-bg:#222634;
+      --c-reg:#e6a949;   --c-reg-bg:#33290f;
+      --c-place:#57c384; --c-place-bg:#123125;
+      --c-run:#9aa1b5;   --c-run-bg:#20242f;
+      --c-code:#f07359;  --c-code-bg:#341410;
+      --flaw:#f07359;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f6fb; --panel:#ffffff; --panel-2:#eef1f8; --ink:#191c28; --ink-soft:#565d78;
+    --line:#d8dcec; --mono:#2b3049; --shadow:0 1px 2px rgba(24,28,48,.06),0 8px 24px rgba(24,28,48,.05);
+    --c-so:#4a5fd0;--c-so-bg:#eef1fd;--c-struct:#0f9a90;--c-struct-bg:#e2f5f2;--c-enum:#666d84;--c-enum-bg:#eceef4;
+    --c-reg:#bd7815;--c-reg-bg:#faf0da;--c-place:#238a54;--c-place-bg:#e3f3ea;--c-run:#767d92;--c-run-bg:#eef0f5;
+    --c-code:#cd4633;--c-code-bg:#fbe9e6;--flaw:#cf3c26;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d0f16; --panel:#161a25; --panel-2:#1d2230; --ink:#e8ebf5; --ink-soft:#a3a9c0;
+    --line:#2a3042; --mono:#c7cce4; --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+    --c-so:#93a2f4;--c-so-bg:#1b2342;--c-struct:#46cabf;--c-struct-bg:#0f322f;--c-enum:#99a0b6;--c-enum-bg:#222634;
+    --c-reg:#e6a949;--c-reg-bg:#33290f;--c-place:#57c384;--c-place-bg:#123125;--c-run:#9aa1b5;--c-run-bg:#20242f;
+    --c-code:#f07359;--c-code-bg:#341410;--flaw:#f07359;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5; padding:32px 20px 72px;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace}
+
+  /* header */
+  header{margin-bottom:26px}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--c-so);font-weight:600}
+  h1{font-size:clamp(24px,3.4vw,34px);line-height:1.12;margin:.28em 0 .1em;letter-spacing:-.02em;text-wrap:balance}
+  .lede{color:var(--ink-soft);max-width:70ch;margin:.4em 0 0;font-size:15px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .meta .pill{font-size:12px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--ink-soft)}
+  .meta .pill b{color:var(--ink);font-weight:600}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:20px 0 8px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+  .legend .key{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft)}
+  .swatch{width:12px;height:12px;border-radius:3px;border:1px solid rgba(0,0,0,.12);flex:0 0 auto}
+
+  /* zones */
+  .zone{margin-top:26px}
+  .zone-h{display:flex;align-items:baseline;gap:10px;margin:0 0 12px}
+  .zone-h .n{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ink)}
+  .zone-h .sub{font-size:13px;color:var(--ink-soft)}
+
+  /* card */
+  .grid{display:grid;gap:16px}
+  .cols-3{grid-template-columns:repeat(3,1fr)}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.cols-3,.cols-2{grid-template-columns:1fr}}
+
+  .card{
+    --accent:var(--c-so); --accent-bg:var(--c-so-bg);
+    position:relative; background:var(--panel); border:1px solid var(--line);
+    border-radius:13px; padding:15px 16px 15px 18px; box-shadow:var(--shadow);
+    border-left:4px solid var(--accent);
+  }
+  .card.hero{padding:18px 20px 18px 22px}
+  .card.dashed{border-style:dashed;border-left-style:solid;background:transparent}
+
+  .cat-so{--accent:var(--c-so);--accent-bg:var(--c-so-bg)}
+  .cat-struct{--accent:var(--c-struct);--accent-bg:var(--c-struct-bg)}
+  .cat-reg{--accent:var(--c-reg);--accent-bg:var(--c-reg-bg)}
+  .cat-place{--accent:var(--c-place);--accent-bg:var(--c-place-bg)}
+  .cat-run{--accent:var(--c-run);--accent-bg:var(--c-run-bg)}
+  .cat-code{--accent:var(--c-code);--accent-bg:var(--c-code-bg)}
+
+  .card-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px}
+  .tname{font-size:16.5px;font-weight:650;letter-spacing:-.01em}
+  .hero .tname{font-size:19px}
+  .badge{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent);background:var(--accent-bg);border-radius:5px;padding:2px 7px;white-space:nowrap}
+  .count{margin-left:auto;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .count b{color:var(--ink);font-weight:650}
+
+  .grp{margin:8px 0 0}
+  .grp .lab{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:4px}
+  .tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace;font-size:12px;color:var(--mono);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+  .tag .t{color:var(--c-struct);font-weight:600}      /* struct ref inline */
+  .tag .e{color:var(--c-enum);font-weight:600}        /* enum inline */
+
+  /* reference rows */
+  .refs{margin-top:11px;border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:5px}
+  .refs .rh{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin-bottom:1px}
+  .ref{display:flex;align-items:center;gap:8px;font-size:13px}
+  .ref .arrow{color:var(--ink-soft);font-weight:700}
+  .ref .fld{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--ink-soft)}
+  .ref .to{font-weight:600;display:inline-flex;align-items:center;gap:6px}
+  .ref .to::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--dot,var(--c-so));display:inline-block}
+  .to.so{--dot:var(--c-so)} .to.struct{--dot:var(--c-struct)} .to.place{--dot:var(--c-place)}
+  .to.enumx{--dot:var(--c-enum)} .to.self{--dot:var(--c-so)}
+
+  /* flaw badge */
+  .flaw{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;
+    color:var(--flaw);background:color-mix(in srgb,var(--flaw) 12%,transparent);
+    border:1px solid color-mix(in srgb,var(--flaw) 35%,transparent);border-radius:7px;padding:5px 9px;font-weight:500}
+  .flaw::before{content:"▲";font-size:10px}
+
+  /* connectors */
+  .flow{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .conn{display:flex;justify-content:center;align-items:center;height:30px;position:relative}
+  .conn::before{content:"";width:2px;height:100%;background:var(--line)}
+  .conn .cap{position:absolute;background:var(--bg);padding:0 10px;font-size:11.5px;color:var(--ink-soft)}
+  .conn.arrow::after{content:"";position:absolute;bottom:-1px;width:0;height:0;
+    border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--line)}
+
+  .note{font-size:12.5px;color:var(--ink-soft);margin:6px 2px 0}
+
+  /* StatArray foundation bar */
+  .foundation{margin-top:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;
+    background:var(--c-struct-bg);border:1px solid color-mix(in srgb,var(--c-struct) 35%,var(--line));
+    border-radius:12px;padding:13px 16px;border-left:4px solid var(--c-struct)}
+  .foundation .fh{font-weight:650;font-size:15px;display:flex;align-items:center;gap:9px}
+  .foundation .stats{display:flex;flex-wrap:wrap;gap:5px}
+  .stat9{font-family:ui-monospace,Consolas,monospace;font-size:12px;background:var(--panel);border:1px solid var(--line);
+    border-radius:6px;padding:2px 8px;color:var(--mono)}
+  .foundation .used{font-size:12.5px;color:var(--ink-soft);margin-left:auto}
+
+  /* flaws panel */
+  .flaws{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .flaws h2{margin:0 0 4px;font-size:16px;letter-spacing:-.01em}
+  .flaws .sub{color:var(--ink-soft);font-size:13px;margin:0 0 14px}
+  .flaws ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+  @media(max-width:820px){.flaws ol{grid-template-columns:1fr}}
+  .flaws li{display:flex;gap:11px;font-size:13.5px}
+  .flaws .fx{flex:0 0 auto;width:22px;height:22px;border-radius:6px;background:color-mix(in srgb,var(--flaw) 15%,transparent);
+    color:var(--flaw);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .flaws b{font-weight:650}
+  .flaws span{color:var(--ink-soft)}
+
+  footer{margin-top:26px;padding:16px 18px;border:1px dashed var(--c-so);border-radius:12px;background:var(--c-so-bg)}
+  footer .fh{font-weight:650;color:var(--c-so);font-size:13px;letter-spacing:.02em;margin-bottom:5px}
+  footer p{margin:0;font-size:13.5px;color:var(--ink)}
+  footer .mono{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Project Astra · Architecture</div>
+    <h1>Unit Data Layer — how a unit is authored today</h1>
+    <p class="lede">Every box a designer fills in to define a unit, and how those ScriptableObjects
+      reference each other. Blue = authored asset a designer creates. The map ends with the flaws we
+      discussed — the reasons this is painful without a dedicated tool.</p>
+    <div class="meta">
+      <span class="pill"><b>9</b> units (6 heroes · 3 enemies)</span>
+      <span class="pill"><b>27</b> classes</span>
+      <span class="pill"><b>4</b> weapon assets</span>
+      <span class="pill"><b>0</b> consumable assets</span>
+      <span class="pill"><b>4</b> loadouts</span>
+      <span class="pill">Unity 6 · URP 2D</span>
+    </div>
+  </header>
+
+  <div class="legend" aria-label="legend">
+    <span class="key"><span class="swatch" style="background:var(--c-so)"></span>Authored SO (designer creates)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-struct)"></span>Shared struct (StatArray)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-enum)"></span>Enum (fixed, not data)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-reg)"></span>Registry (hand-maintained)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-place)"></span>Placement (Map Editor writes)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-run)"></span>Runtime (derived, not authored)</span>
+    <span class="key"><span class="swatch" style="background:var(--c-code)"></span>Hardcoded in code (should be SO)</span>
+    <span class="key"><span style="color:var(--flaw);font-weight:700">▲</span> known flaw</span>
+  </div>
+
+  <!-- ZONE 1 : THE AUTHORED WEB -->
+  <section class="zone">
+    <div class="zone-h"><span class="n">The authored web</span><span class="sub">designers create &amp; cross-reference these ScriptableObjects</span></div>
+
+    <div class="flow">
+
+      <!-- UnitDefinition hero -->
+      <div class="card hero cat-so">
+        <div class="card-top">
+          <span class="badge">ScriptableObject</span>
+          <span class="tname">UnitDefinition</span>
+          <span class="count"><b>9</b> assets · one per character/enemy</span>
+        </div>
+        <div class="grp"><div class="lab">Identity</div>
+          <div class="tags"><span class="tag">unitName</span><span class="tag">unitId</span></div></div>
+        <div class="grp"><div class="lab">Base stats &amp; growth</div>
+          <div class="tags"><span class="tag">baseStats <span class="t">⟨StatArray⟩</span></span><span class="tag">baseLevel</span><span class="tag">personalGrowths <span class="t">⟨StatArray⟩</span></span></div></div>
+        <div class="grp"><div class="lab">Visuals</div>
+          <div class="tags"><span class="tag">mapSprite</span><span class="tag">portrait</span><span class="tag">+ wounded / critical / deceased / stressed</span></div></div>
+        <div class="grp"><div class="lab">Story flags &amp; identity</div>
+          <div class="tags"><span class="tag">affinity <span class="e">⟨PanchaBhuta⟩</span></span><span class="tag">personality <span class="e">⟨enum⟩</span></span><span class="tag">isLord</span><span class="tag">lastWordsLines[]</span><span class="tag">isNamedCommander</span><span class="tag">oneLineIdentity</span></div></div>
+
+        <div class="refs">
+          <div class="rh">References out</div>
+          <div class="ref"><span class="fld">defaultClass</span><span class="arrow">→</span><span class="to so">ClassDefinition</span></div>
+          <div class="ref"><span class="fld">defaultLoadout</span><span class="arrow">→</span><span class="to so">InventoryLoadout</span></div>
+          <div class="ref"><span class="fld">speaker</span><span class="arrow">→</span><span class="to so">DialogueSpeaker</span></div>
+        </div>
+        <div class="flaw">Enemy assets (RakshasaRaider, RakshasaPati, RakshasaMiniboss) ship with all-zero <span class="mono">baseStats</span> → spawn at 0 HP.</div>
+      </div>
+
+      <div class="conn arrow"><span class="cap">the three direct references ↓</span></div>
+
+      <!-- Tier 2 : direct refs -->
+      <div class="grid cols-3">
+        <div class="card cat-so">
+          <div class="card-top"><span class="badge">ScriptableObject</span><span class="tname">ClassDefinition</span></div>
+          <div class="count" style="margin:0 0 8px">27 assets · full FE-style tree</div>
+          <div class="grp"><div class="lab">Identity &amp; movement</div>
+            <div class="tags"><span class="tag">className</span><span class="tag">classType <span class="e">⟨enum⟩</span></span><span class="tag">movementRange</span><span class="tag">movementType <span class="e">⟨enum⟩</span></span></div></div>
+          <div class="grp"><div class="lab">Stats</div>
+            <div class="tags"><span class="tag">statGrowthModifiers <span class="t">⟨StatArray⟩</span></span><span class="tag">statCaps <span class="t">⟨StatArray⟩</span></span><span class="tag">promotionBonuses <span class="t">⟨StatArray⟩</span></span><span class="tag">hpGainOnLevelUp</span><span class="tag">critBonus</span></div></div>
+          <div class="grp"><div class="lab">Promotion &amp; exp</div>
+            <div class="tags"><span class="tag">canPromote</span><span class="tag">isPromoted</span><span class="tag">expPowerFactor</span></div></div>
+          <div class="refs">
+            <div class="rh">References out</div>
+            <div class="ref"><span class="fld">weaponWhitelist</span><span class="arrow">→</span><span class="to enumx">WeaponType[]</span></div>
+            <div class="ref"><span class="fld">promotionTargets[] · baseClass</span><span class="arrow">→</span><span class="to self">ClassDefinition (self)</span></div>
+          </div>
+          <div class="flaw"><span class="mono">classAbilities[]</span> is free-text strings — no Ability SO consumes them (stub).</div>
+        </div>
+
+        <div class="card cat-so">
+          <div class="card-top"><span class="badge">ScriptableObject</span><span class="tname">InventoryLoadout</span></div>
+          <div class="count" style="margin:0 0 8px">4 assets · a starting kit</div>
+          <div class="grp"><div class="lab">Contents</div>
+            <div class="tags"><span class="tag">items[] <span class="e">(first 5)</span></span></div>
+            <div class="note">First wieldable weapon becomes the equipped weapon. Baked into a live inventory on spawn.</div></div>
+          <div class="refs">
+            <div class="rh">References out</div>
+            <div class="ref"><span class="fld">items[]</span><span class="arrow">→</span><span class="to so">ItemDefinition[]</span></div>
+          </div>
+        </div>
+
+        <div class="card cat-so">
+          <div class="card-top"><span class="badge">ScriptableObject</span><span class="tname">DialogueSpeaker</span></div>
+          <div class="count" style="margin:0 0 8px">3 assets · shared with Dialogue</div>
+          <div class="grp"><div class="lab">Fields</div>
+            <div class="tags"><span class="tag">speakerId</span><span class="tag">displayName</span><span class="tag">portraits[] <span class="e">(expression→sprite)</span></span></div>
+            <div class="note">Deliberately separate from UnitDefinition: emotion-based portraits, and some speakers are never units.</div></div>
+        </div>
+      </div>
+
+      <div class="conn arrow"><span class="cap">a loadout is a list of items ↓</span></div>
+
+      <!-- Tier 3 : items -->
+      <div class="card cat-so" style="border-left-style:dashed">
+        <div class="card-top"><span class="badge">Abstract SO</span><span class="tname">ItemDefinition</span><span class="count">base type · <span class="mono">displayName</span> + <span class="mono">ToInventoryItem()</span></span></div>
+        <div class="note">Two concrete kinds bake themselves into the runtime inventory item:</div>
+      </div>
+
+      <div class="conn"></div>
+
+      <div class="grid cols-2">
+        <div class="card cat-so">
+          <div class="card-top"><span class="badge">SO : ItemDefinition</span><span class="tname">WeaponDefinition</span><span class="count"><b>4</b> assets</span></div>
+          <div class="grp"><div class="lab">Type</div>
+            <div class="tags"><span class="tag">weaponType <span class="e">⟨enum⟩</span></span><span class="tag">damageType</span><span class="tag">magicSchool</span><span class="tag">staffEffect</span><span class="tag">tier</span><span class="tag">minRank</span></div></div>
+          <div class="grp"><div class="lab">Combat &amp; durability</div>
+            <div class="tags"><span class="tag">might</span><span class="tag">hit</span><span class="tag">crit</span><span class="tag">weight</span><span class="tag">min/maxRange</span><span class="tag">maxUses</span><span class="tag">brave</span></div></div>
+          <div class="refs">
+            <div class="rh">References out</div>
+            <div class="ref"><span class="fld">effectivenessTargets[]</span><span class="arrow">→</span><span class="to enumx">ClassType[]</span></div>
+            <div class="ref"><span class="fld">ownerUnitId</span><span class="arrow">→</span><span class="to so">UnitDefinition.unitId (string)</span></div>
+          </div>
+        </div>
+
+        <div class="card cat-so">
+          <div class="card-top"><span class="badge">SO : ItemDefinition</span><span class="tname">ConsumableDefinition</span><span class="count"><b>0</b> assets</span></div>
+          <div class="grp"><div class="lab">Fields</div>
+            <div class="tags"><span class="tag">type <span class="e">⟨ConsumableType⟩</span></span><span class="tag">magnitude</span><span class="tag">maxUses</span></div></div>
+          <div class="refs">
+            <div class="rh">References out</div>
+            <div class="ref"><span class="fld">targetStat</span><span class="arrow">→</span><span class="to enumx">StatIndex (enum)</span></div>
+          </div>
+          <div class="flaw">No consumable assets exist yet — all live in code (see below).</div>
+        </div>
+      </div>
+
+      <!-- StatArray foundation -->
+      <div class="foundation">
+        <div class="fh"><span style="width:12px;height:12px;border-radius:3px;background:var(--c-struct);display:inline-block"></span>StatArray <span style="font-weight:400;color:var(--ink-soft);font-size:13px">— the shared 9-stat atom (a struct, not an asset)</span></div>
+        <div class="stats">
+          <span class="stat9">HP</span><span class="stat9">Str</span><span class="stat9">Mag</span><span class="stat9">Skl</span><span class="stat9">Spd</span><span class="stat9">Def</span><span class="stat9">Res</span><span class="stat9">Con</span><span class="stat9">Niyati</span>
+        </div>
+        <div class="used">Used by UnitDefinition ×2 · ClassDefinition ×3</div>
+      </div>
+      <div class="flaw" style="margin-left:2px">Serialized as a raw <span class="mono">int[9]</span> with no PropertyDrawer — the inspector shows nine unlabeled numbers. This is the #1 authoring pain, and why the zero-HP enemies went unnoticed.</div>
+
+    </div>
+  </section>
+
+  <!-- ZONE 2 : REGISTRY & PLACEMENT -->
+  <section class="zone">
+    <div class="zone-h"><span class="n">Registry &amp; placement</span><span class="sub">how a unit id gets from an asset onto a map</span></div>
+    <div class="grid cols-2">
+      <div class="card cat-reg">
+        <div class="card-top"><span class="badge">ScriptableObject</span><span class="tname">UnitDatabase</span><span class="count">1 asset · 9 entries</span></div>
+        <div class="grp"><div class="lab">Contents</div>
+          <div class="tags"><span class="tag">List&lt;UnitDefinition&gt;</span></div>
+          <div class="note">Feeds the Map Editor's unit picker (<span class="mono">unitId → UnitDefinition</span>). The <span class="mono">unitId</span> string typed on each asset is the source of truth.</div></div>
+        <div class="flaw">Hand-maintained list. Forget to add a new unit and it silently vanishes from the picker &amp; fails at spawn.</div>
+      </div>
+      <div class="card cat-place">
+        <div class="card-top"><span class="badge">Map data</span><span class="tname">MapData › UnitStartPosition</span><span class="count">Map Editor writes this</span></div>
+        <div class="grp"><div class="lab">Per placement</div>
+          <div class="tags"><span class="tag">position</span><span class="tag">team <span class="e">(→ Faction)</span></span></div></div>
+        <div class="refs">
+          <div class="rh">References out</div>
+          <div class="ref"><span class="fld">unitId</span><span class="arrow">→</span><span class="to reg" style="--dot:var(--c-reg)">UnitDatabase</span></div>
+          <div class="ref"><span class="fld">loadoutOverride</span><span class="arrow">→</span><span class="to so">InventoryLoadout (optional)</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZONE 3 : RUNTIME -->
+  <section class="zone">
+    <div class="zone-h"><span class="n">Runtime</span><span class="sub">derived at play time — not authored, shown for context</span></div>
+    <div class="grid cols-3">
+      <div class="card cat-run dashed">
+        <div class="card-top"><span class="badge">MonoBehaviour</span><span class="tname">UnitSpawner</span></div>
+        <div class="note">Resolves <span class="mono">unitId</span> via UnitDatabase, instantiates a TestUnit, calls <span class="mono">InitializeFromDefinition</span>, bakes the loadout.</div>
+      </div>
+      <div class="card cat-run dashed">
+        <div class="card-top"><span class="badge">MonoBehaviour</span><span class="tname">TestUnit</span></div>
+        <div class="note">The on-grid token in the scene.</div>
+        <div class="flaw">Duplicates definition data as its own fields (<span class="mono">maxHP, movementPoints, movementType, isLord…</span>) synced at <span class="mono">Start</span> — two sources of truth.</div>
+      </div>
+      <div class="card cat-run dashed">
+        <div class="card-top"><span class="badge">C# class</span><span class="tname">UnitInstance</span></div>
+        <div class="note">Live run state built from the definition: <span class="mono">Level, Stats, CurrentHP, EXP, StressTier</span>, level-up &amp; promotion math.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZONE 4 : CODE ISLAND -->
+  <section class="zone">
+    <div class="zone-h"><span class="n">Hardcoded in code</span><span class="sub">the migration debt — should be assets, isn't</span></div>
+    <div class="card cat-code dashed">
+      <div class="card-top"><span class="badge">C# static factories</span><span class="tname">WeaponData.cs &amp; ConsumableData.cs</span><span class="count">~18 weapons · ~10 consumables</span></div>
+      <div class="note">IronSword, SteelSword, Fire, Lightning, Flux, Heal, Mend, Vulnerary, stat boosters… defined as literal numbers <b>in code</b>, not as ScriptableObjects. Only 4 weapon assets exist on disk; some code items are still referenced at runtime.</div>
+      <div class="flaw">To let designers tune everything: audit which are used → convert those to WeaponDefinition / ConsumableDefinition assets → discard the rest.</div>
+    </div>
+  </section>
+
+  <!-- FLAWS PANEL -->
+  <div class="flaws">
+    <h2>Why this hurts without a tool — the flaws, in one place</h2>
+    <p class="sub">Each maps to a badge above. These are the problems the master editor should erase.</p>
+    <ol>
+      <li><span class="fx">1</span><span><b>Faceless stats.</b> <span>StatArray renders as an unlabeled <span class="mono">int[9]</span> in the inspector — you edit stats by counting array indices.</span></span></li>
+      <li><span class="fx">2</span><span><b>Items live in code.</b> <span>~28 weapons/consumables are C# factories, not assets — invisible to a designer.</span></span></li>
+      <li><span class="fx">3</span><span><b>Manual registration.</b> <span>UnitDatabase (and MapCatalog) are hand-maintained; omissions fail silently at runtime, not authoring time.</span></span></li>
+      <li><span class="fx">4</span><span><b>Blank enemy stats.</b> <span>Enemy assets ship all-zero — a landmine the faceless inspector hides.</span></span></li>
+      <li><span class="fx">5</span><span><b>Duplicated truth.</b> <span>TestUnit repeats definition fields, editable independently of the asset.</span></span></li>
+      <li><span class="fx">6</span><span><b>Unauthored stubs.</b> <span>Abilities, weapon ranks, and supports/bonds have no data yet — only enums &amp; free-text ids.</span></span></li>
+    </ol>
+  </div>
+
+  <footer>
+    <div class="fh">WHERE THIS IS HEADING</div>
+    <p>In the proposed <b>Data Hub</b>, each blue ScriptableObject becomes one left-rail tab; every <span class="mono">→</span> reference becomes an inline dropdown with a <b>+ New</b> that creates the target and returns; auto-registration removes the amber registry step; and the red/amber badges become a live <b>Problems</b> panel.</p>
+  </footer>
+
+</div>
+</body>
+</html>
