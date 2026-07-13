@@ -248,7 +248,8 @@ namespace ProjectAstra.Core.Battle.Map1
 
             AudioManager.Instance?.Play(SoundId.RakshasaRoar);
             if (mapCamera != null) yield return mapCamera.Shake(0.12f, 0.25f);
-            yield return PlayBossTaunt();
+            // TEMP: on-map boss-taunt dialogue disabled — re-enable to restore the taunt box.
+            // yield return PlayBossTaunt();
 
             if (objectiveBanner != null)
                 yield return objectiveBanner.Show("OBJECTIVE CHANGED", "Slay the Rakshasa champion", 1.6f);

@@ -19,8 +19,10 @@ namespace ProjectAstra.Core.Dialogue
 
         private void OnEnable()
         {
-            EventService.Instance.SubscribePhaseBannerFinished(OnPhaseBannerFinished);
-            EventService.Instance.SubscribeBattleDialogue(OnBattleEvent);
+            // TEMP: on-map dialogue disabled — the driver doesn't listen for battle moments, so no
+            // tutorial/battle dialogue boxes interrupt gameplay. Re-enable both lines to restore.
+            // EventService.Instance.SubscribePhaseBannerFinished(OnPhaseBannerFinished);
+            // EventService.Instance.SubscribeBattleDialogue(OnBattleEvent);
         }
 
         private void OnDisable()

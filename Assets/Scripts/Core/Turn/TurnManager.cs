@@ -80,10 +80,10 @@ namespace ProjectAstra.Core.Turn
             AudioManager.Instance?.PlayMusic(SoundId.MusicMap);
             AudioManager.Instance?.PlayAmbient(SoundId.AmbientWind);
 
-            var prologue = FindPrologue();
+            /*var prologue = FindPrologue();
             if (prologue != null)
                 StartCoroutine(RunPrologueThenBeginPhase(prologue));
-            else
+            else*/
                 BeginPhase();
         }
 
