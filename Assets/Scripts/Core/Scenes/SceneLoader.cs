@@ -8,6 +8,13 @@ namespace ProjectAstra.Core.Scenes
 {
     public class SceneLoader : MonoBehaviour
     {
+        private static SceneLoader instance;
+
+        // "Enter Play Mode" with domain reload off leaves statics set between sessions; reset on
+        // every play start so a stale reference can't survive and defeat the singleton guard.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => instance = null;
+
         private string currentScene;
         private ScreenFader screenFader;
         [SerializeField] private SceneStateCatalog sceneStateCatalog;
@@ -15,11 +22,22 @@ namespace ProjectAstra.Core.Scenes
 
         private void Awake()
         {
+            // Persistent singleton. Without this guard a second SceneLoader (e.g. one leaked from a
+            // prior play session when "Enter Play Mode" has domain reload off) also subscribes to
+            // state changes and re-loads every scene — the scene loads twice and the opening
+            // cutscene gets queued twice, which then over-advances the campaign on skip.
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            instance = this;
+
             DontDestroyOnLoad(gameObject);
             Initialize();
             InitializeSceneFader();
         }
-        
+
         private void Initialize()
         {
             if (sceneStateCatalog == null)
@@ -54,6 +72,7 @@ namespace ProjectAstra.Core.Scenes
 
         private void OnDestroy()
         {
+            if (instance == this) instance = null;
             if (EventService.Instance != null)
                 EventService.Instance.UnsubscribeGameStateChanged(OnStateChanged);
         }
