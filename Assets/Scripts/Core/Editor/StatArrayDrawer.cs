@@ -23,7 +23,9 @@ namespace ProjectAstra.Core.Editor
             var values = property.FindPropertyRelative("values");
             EnsureNineSlots(values);
 
-            bool asPercentSlider = fieldInfo != null && fieldInfo.IsDefined(typeof(GrowthRateAttribute), true);
+            var slider = fieldInfo != null
+                ? (GrowthRateAttribute)System.Attribute.GetCustomAttribute(fieldInfo, typeof(GrowthRateAttribute))
+                : null;
 
             float line = EditorGUIUtility.singleLineHeight;
             float pad = EditorGUIUtility.standardVerticalSpacing;
@@ -38,10 +40,10 @@ namespace ProjectAstra.Core.Editor
             {
                 var cell = CellRect(position, i, cellWidth, line, pad);
                 var element = values.GetArrayElementAtIndex(i);
-                if (asPercentSlider)
+                if (slider != null)
                 {
                     EditorGUI.BeginChangeCheck();
-                    int picked = EditorGUI.IntSlider(cell, new GUIContent(StatLabels[i]), element.intValue, 0, 100);
+                    int picked = EditorGUI.IntSlider(cell, new GUIContent(StatLabels[i]), element.intValue, slider.Min, slider.Max);
                     if (EditorGUI.EndChangeCheck()) element.intValue = picked;
                 }
                 else

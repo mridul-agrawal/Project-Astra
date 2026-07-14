@@ -23,8 +23,8 @@ namespace ProjectAstra.Core.Units
         [SerializeField] private WeaponType[] weaponWhitelist;
 
         [Header("Stats")]
-        [Tooltip("Per stat: a signed modifier ADDED to each unit's personal growth % (can be negative — a class weak at a stat lowers its growth). NOT an absolute 0-100 value, so it stays a number field, not a slider.")]
-        [SerializeField] private StatArray statGrowthModifiers;
+        [Tooltip("Per stat: a signed modifier (-100..100) ADDED to each unit's personal growth % (negative for a stat this class is weak at). The sum with the unit's growth is the real per-level chance.")]
+        [SerializeField, GrowthRate(-100, 100)] private StatArray statGrowthModifiers;
         [Tooltip("Maximum each stat can reach for units of this class. Level-up and promotion gains stop here.")]
         [SerializeField] private StatArray statCaps;
         [Tooltip("How many HP points HP rises by each time its growth roll succeeds (every OTHER stat rises by 1). This is the growth STEP for HP, not the chance — the chance is the HP growth rate.")]
