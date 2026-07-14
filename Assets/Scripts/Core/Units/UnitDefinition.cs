@@ -21,12 +21,15 @@ namespace ProjectAstra.Core.Units
         [Tooltip("Default starting kit, baked into the unit's inventory on spawn. A per-map UnitStartPosition override takes precedence.")]
         [SerializeField, HubRef] private InventoryLoadout defaultLoadout;
 
-        [Header("Base Stats (Level 1)")]
-        [SerializeField] private StatArray baseStats;
+        [Header("Base Level & Base Stats")]
+        [Tooltip("The level this unit is introduced at — not necessarily 1. Drives EXP scaling and the level shown in-game.")]
         [SerializeField] private int baseLevel = 1;
+        [Tooltip("The unit's ACTUAL stats at its Base Level — authored directly, NOT auto-scaled from level 1. Introducing a level-5 unit? Enter its level-5 stats here and set Base Level to 5.")]
+        [SerializeField] private StatArray baseStats;
 
-        [Header("Growth Rates (0-100)")]
-        [SerializeField] private StatArray personalGrowths;
+        [Header("Personal Growth Rates (% chance per level-up)")]
+        [Tooltip("Per stat: the % chance (0-100) to gain a point on level-up. Added to the class's growth modifier. On a hit, HP gains the class's HP-per-level; other stats gain +1. Con never grows.")]
+        [SerializeField, GrowthRate] private StatArray personalGrowths;
 
         [Header("Map sprite (on-grid token)")]
         [SerializeField] private Sprite mapSprite;
