@@ -22,12 +22,14 @@ MonoBehaviour:
   statCaps:
     values: 2c000000020000001a0000001600000016000000100000001a0000000a0000001e000000
   hpGainOnLevelUp: 2
+  critBonus: 0
   canPromote: 1
   isPromoted: 0
   promotionTargets: []
   baseClass: {fileID: 0}
   promotionBonuses:
     values: 110000000100000008000000060000000700000002000000060000000400000005000000
+  levelingSpeed: 0
   classAbilities: []
   mapSpriteId: 
   combatAnimationSetId: 

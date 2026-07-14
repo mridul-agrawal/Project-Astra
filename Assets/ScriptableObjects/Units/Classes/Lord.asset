@@ -29,7 +29,7 @@ MonoBehaviour:
   baseClass: {fileID: 0}
   promotionBonuses:
     values: 140000000700000002000000060000000800000005000000030000000700000006000000
-  expPowerFactor: 1
+  levelingSpeed: 0
   classAbilities: []
   mapSpriteId: 
   combatAnimationSetId: 

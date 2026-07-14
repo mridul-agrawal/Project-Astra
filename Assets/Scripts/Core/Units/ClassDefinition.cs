@@ -46,8 +46,8 @@ namespace ProjectAstra.Core.Units
         [SerializeField] private StatArray promotionBonuses;
 
         [Header("EXP (Experience Scaling)")]
-        [Tooltip("Divisor in the EXP formula: exp = (31 + enemyLevel - yourLevel) / this. Higher = LESS EXP per action (slower leveling). Default 1 = fastest; most FE-style classes want ~2-3.")]
-        [SerializeField, Min(0.1f)] private float expPowerFactor = 1f;
+        [Tooltip("How fast units of this class gain levels. Fast = few kills per level; Very Slow = grindy. Maps to the EXP formula's divisor internally, so designers pick a pace, not a number.")]
+        [SerializeField] private LevelingSpeed levelingSpeed = LevelingSpeed.Fast;
 
         [Header("Abilities (reserved)")]
         [Tooltip("Authored ability ids. NOTE: not yet consumed by any runtime system — reserved for a future abilities pass.")]
@@ -73,12 +73,24 @@ namespace ProjectAstra.Core.Units
         public ClassDefinition[] PromotionTargets => promotionTargets;
         public ClassDefinition BaseClass => baseClass;
         public StatArray PromotionBonuses => promotionBonuses;
-        public float ExpPowerFactor => expPowerFactor;
+        public LevelingSpeed LevelingSpeed => levelingSpeed;
+        public float ExpPowerFactor => LevelingSpeedToFactor(levelingSpeed);
         public string[] ClassAbilities => classAbilities;
         public string MapSpriteId => mapSpriteId;
         public string CombatAnimationSetId => combatAnimationSetId;
 
         // Canto — cavalry and flying units keep any unused movement after a primary action.
         public bool HasCanto => classType == ClassType.Cavalry || classType == ClassType.Flying;
+
+        // The designer picks a Leveling Speed; the FE-style EXP formula wants a divisor.
+        // Higher divisor = less EXP per action = slower leveling. Fast (=1) preserves the old default.
+        private static float LevelingSpeedToFactor(LevelingSpeed speed) => speed switch
+        {
+            LevelingSpeed.Fast => 1f,
+            LevelingSpeed.Normal => 3f,
+            LevelingSpeed.Slow => 4.5f,
+            LevelingSpeed.VerySlow => 6f,
+            _ => 1f,
+        };
     }
 }

@@ -10,25 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
-  m_Name: Rakshasa
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.ClassDefinition
-  className: Rakshasa
+  m_Name: New ClassDefinition
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.ClassDefinition
+  className: Stree Class
   classType: 0
-  movementRange: 5
+  movementRange: 3
   movementType: 0
-  weaponWhitelist: 02000000
+  weaponWhitelist: 03000000
   statGrowthModifiers:
-    values: 0a0000000a00000000000000000000000000000000000000fbffffff0000000000000000
+    values: 000000000000000000000000000000000000000000000000000000000000000000000000
   statCaps:
-    values: 380000001c0000000200000014000000140000001400000010000000100000001e000000
+    values: 000000000000000000000000000000000000000000000000000000000000000000000000
   hpGainOnLevelUp: 2
   critBonus: 0
-  canPromote: 1
+  canPromote: 0
   isPromoted: 0
   promotionTargets: []
   baseClass: {fileID: 0}
   promotionBonuses:
-    values: 180000000800000000000000040000000500000004000000010000000a00000003000000
+    values: 000000000000000000000000000000000000000000000000000000000000000000000000
   levelingSpeed: 0
   classAbilities: []
   mapSpriteId: 
