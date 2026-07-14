@@ -168,6 +168,7 @@ namespace ProjectAstra.Core.Editor
         {
             string name = string.IsNullOrWhiteSpace(newName) ? $"New {type.Name}" : newName;
             ScriptableObject asset = DataHubAssets.Create(type, name);
+            if (!string.IsNullOrWhiteSpace(newName)) DataHubAssets.SetDisplayName(asset, newName);
             newName = "";
             GUI.FocusControl(null);
             Select(asset);
@@ -197,6 +198,7 @@ namespace ProjectAstra.Core.Editor
                 UnitDefinition u => u.UnitName,
                 ClassDefinition c => c.ClassName,
                 ItemDefinition i => i.DisplayName,
+                InventoryLoadout l => l.LoadoutName,
                 _ => null,
             };
             return string.IsNullOrWhiteSpace(internalName) ? asset.name : internalName;

@@ -45,6 +45,30 @@ namespace ProjectAstra.Core.Editor
             return asset;
         }
 
+        // Writes a human name into whichever "name" field this asset type owns, so a newly created
+        // asset is identifiable in the catalog rather than a generic "New X". No-op for types without one.
+        public static void SetDisplayName(ScriptableObject asset, string name)
+        {
+            if (asset == null || string.IsNullOrWhiteSpace(name)) return;
+            string prop = asset switch
+            {
+                UnitDefinition _ => "unitName",
+                ClassDefinition _ => "className",
+                ItemDefinition _ => "displayName",
+                InventoryLoadout _ => "loadoutName",
+                _ => null,
+            };
+            if (prop == null) return;
+
+            var so = new SerializedObject(asset);
+            var property = so.FindProperty(prop);
+            if (property == null) return;
+            property.stringValue = name;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(asset);
+            AssetDatabase.SaveAssets();
+        }
+
         public static void EnsureFolder(string folder)
         {
             if (AssetDatabase.IsValidFolder(folder)) return;
