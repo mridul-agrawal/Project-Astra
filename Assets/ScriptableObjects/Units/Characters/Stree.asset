@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd0eb70667731aa419e315ba8b6acf9b, type: 3}
+  m_Name: Stree
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitDefinition
+  unitName: Stree
+  unitId: stree
+  defaultClass: {fileID: 11400000, guid: 6e28cdef99094df4495a6f16c98b5bd3, type: 2}
+  defaultLoadout: {fileID: 11400000, guid: 3db5d177ced454f4580cdb071fabb1ec, type: 2}
+  baseLevel: 1
+  baseStats:
+    values: 000000000000000000000000000000000000000000000000000000000000000000000000
+  personalGrowths:
+    values: 000000000000000000000000000000000000000000000000000000000000000000000000
+  mapSprite: {fileID: 0}
+  portrait: {fileID: 0}
+  woundedPortrait: {fileID: 0}
+  criticalPortrait: {fileID: 0}
+  deceasedPortrait: {fileID: 0}
+  stressedOverlay: {fileID: 0}
+  affinity: 0
+  personality: 0
+  isNamedCommander: 0
+  oneLineIdentity: 
+  isLord: 1
+  lastWordsLines: []
+  startingWeaponRanks:
+  - weaponType: 3
+    rank: 0
+  speaker: {fileID: 0}

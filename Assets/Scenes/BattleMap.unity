@@ -19091,14 +19091,14 @@ MonoBehaviour:
   combatForecastUI: {fileID: 1467876469}
   skipModeController: {fileID: 1745841787}
   spriteRenderer: {fileID: 2111737127}
-  idleSprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
+  idleSprite: {fileID: 21300000, guid: 026e807933484984bbd85b3daf608308, type: 3}
   selectedSprite: {fileID: 21300000, guid: a989ce4cdbdf47d0a3c2cb441d3982ab, type: 3}
   targetingSprite: {fileID: 21300000, guid: 88733e74e2324f7086dd761e8ba38e2e, type: 3}
-  pulseSpeed: 1
+  pulseSpeed: 0.5
   alphaMin: 1
-  alphaMax: 2
-  scaleMin: 1
-  scaleMax: 1.2
+  alphaMax: 1
+  scaleMin: 1.4
+  scaleMax: 1.6
 --- !u!114 &694383134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56577,7 +56577,7 @@ SpriteRenderer:
   m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: bfdbc453a3d54e5e87c8fa4f9c8a4ca5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 026e807933484984bbd85b3daf608308, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
