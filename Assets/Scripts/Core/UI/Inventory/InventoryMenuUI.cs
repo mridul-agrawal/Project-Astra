@@ -54,6 +54,7 @@ namespace ProjectAstra.Core.UI.Inventory
         public void Show(TestUnit unit, ConfirmDialogUI confirmDialog,
             Action onConsumableUsed, Action onClose)
         {
+            gameObject.SetActive(true); // root must be active so the slot sub-menu child can render
             this.unit = unit;
             inventory = unit?.Inventory;
             this.confirmDialog = confirmDialog;
@@ -92,6 +93,8 @@ namespace ProjectAstra.Core.UI.Inventory
             bool wasOpen = popupInstance != null && popupInstance.activeSelf;
             if (popupInstance != null) popupInstance.SetActive(false);
             if (wasOpen) AudioManager.Instance?.Play(SoundId.UiPanelClose);
+
+            gameObject.SetActive(false); // back to disabled-by-default once the menu closes
         }
 
         private void OnDestroy()

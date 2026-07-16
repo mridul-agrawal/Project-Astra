@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Grid;
 using ProjectAstra.Core.Turn;
-using ProjectAstra.Core.UI.BattleMap;
+using ProjectAstra.Core.UI.BattleMap.HUD;
 
 namespace ProjectAstra.EditorTools
 {
@@ -89,21 +89,22 @@ namespace ProjectAstra.EditorTools
             EnsureTmpMaterials();
 
             var canvas = EnsureCanvas();
-            var existing = canvas.transform.Find("BattleMapHUD");
-            if (existing != null) Object.DestroyImmediate(existing.gameObject);
+            DestroyIfExists(canvas.transform, "BattleHUD");
+            DestroyIfExists(canvas.transform, "BattleMapHUD"); // remove the legacy pre-MVVM root
 
-            var root = NewRect("BattleMapHUD", canvas.transform);
+            // Empty screen container — no script. Each panel owns its own MVVM triad.
+            var root = NewRect("BattleHUD", canvas.transform);
             SetStretch(root, 0);
 
             BuildUnitCard(root);
             BuildObjectivePanel(root);
             BuildTileInfoPanel(root);
 
-            WireController(root);
+            WirePanels(root);
 
             EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
             Selection.activeGameObject = root.gameObject;
-            Debug.Log("BattleMapHUD built.");
+            Debug.Log("BattleHUD built.");
         }
 
         // ==================================================================
@@ -112,9 +113,24 @@ namespace ProjectAstra.EditorTools
 
         static Canvas EnsureCanvas()
         {
-            var existing = Object.FindObjectOfType<Canvas>();
-            if (existing != null && existing.renderMode == RenderMode.ScreenSpaceOverlay)
-                return existing;
+            // The scene has several ScreenSpaceOverlay canvases (ExpGain, LevelUpScreen),
+            // so FindObjectOfType<Canvas>() is unreliable. Target the main HUD canvas:
+            // the one hosting BattleMapUI, else one named "Canvas", else any overlay.
+            var withUI = Object.FindObjectOfType<ProjectAstra.Core.UI.BattleMap.BattleMapUI>();
+            if (withUI != null)
+            {
+                var uiCanvas = withUI.GetComponent<Canvas>();
+                if (uiCanvas != null && uiCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                    return uiCanvas;
+            }
+
+            var canvases = Object.FindObjectsOfType<Canvas>();
+            foreach (var existing in canvases)
+                if (existing.renderMode == RenderMode.ScreenSpaceOverlay && existing.name == "Canvas")
+                    return existing;
+            foreach (var existing in canvases)
+                if (existing.renderMode == RenderMode.ScreenSpaceOverlay)
+                    return existing;
 
             var go = new GameObject("UICanvas",
                 typeof(Canvas),
@@ -410,40 +426,72 @@ namespace ProjectAstra.EditorTools
         }
 
         // ==================================================================
-        // runtime controller wiring
+        // MVVM component wiring — each panel gets its own View + ViewModel.
+        // The View holds the widget refs (presentation); the ViewModel holds the
+        // game coupling. The Model is a plain C# object created at runtime.
         // ==================================================================
 
-        static void WireController(RectTransform root)
+        static void WirePanels(RectTransform root)
         {
-            var controller = root.gameObject.AddComponent<BattleMapHUDController>();
+            WireUnitCard(root);
+            WireObjective(root);
+            WireTileInfo(root);
+        }
 
-            // Unit card refs
-            controller.UnitCardRoot  = root.Find("UnitCard").gameObject;
-            controller.UnitName      = root.Find("UnitCard/UnitName").GetComponent<TextMeshProUGUI>();
-            controller.UnitClass     = root.Find("UnitCard/UnitClass").GetComponent<TextMeshProUGUI>();
-            controller.HpValue       = root.Find("UnitCard/HPValue").GetComponent<TextMeshProUGUI>();
-            controller.HpFill        = root.Find("UnitCard/HpBar/HpBarBg/HpFill").GetComponent<Image>();
-            controller.WeaponName    = root.Find("UnitCard/WeaponName").GetComponent<TextMeshProUGUI>();
-            controller.PortraitImage = root.Find("UnitCard/PortraitFrame/Arjuna").GetComponent<Image>();
-            controller.DefaultPortrait = AssetDatabase.LoadAssetAtPath<Sprite>(SpriteDir + "portrait_arjuna.png");
+        static void WireUnitCard(RectTransform root)
+        {
+            var go = root.Find("UnitCard").gameObject;
 
-            // Objective panel refs
-            controller.ObjText       = root.Find("ObjectivePanel/ObjText").GetComponent<TextMeshProUGUI>();
-            controller.TurnNum       = root.Find("ObjectivePanel/TurnNum").GetComponent<TextMeshProUGUI>();
+            var view = go.AddComponent<UnitCardView>();
+            view.Root          = go;
+            view.UnitName      = root.Find("UnitCard/UnitName").GetComponent<TextMeshProUGUI>();
+            view.UnitClass     = root.Find("UnitCard/UnitClass").GetComponent<TextMeshProUGUI>();
+            view.HpValue       = root.Find("UnitCard/HPValue").GetComponent<TextMeshProUGUI>();
+            view.HpFill        = root.Find("UnitCard/HpBar/HpBarBg/HpFill").GetComponent<Image>();
+            view.WeaponName    = root.Find("UnitCard/WeaponName").GetComponent<TextMeshProUGUI>();
+            view.PortraitImage = root.Find("UnitCard/PortraitFrame/Arjuna").GetComponent<Image>();
 
-            // Tile info panel refs
-            controller.TileInfoRoot  = root.Find("TileInfoPanel").gameObject;
-            controller.TileName      = root.Find("TileInfoPanel/TileName").GetComponent<TextMeshProUGUI>();
-            controller.StatValueDef  = root.Find("TileInfoPanel/StatValueDef").GetComponent<TextMeshProUGUI>();
-            controller.StatValueAvo  = root.Find("TileInfoPanel/StatValueAvo").GetComponent<TextMeshProUGUI>();
-            controller.HealValue     = root.Find("TileInfoPanel/HealValue").GetComponent<TextMeshProUGUI>();
+            var vm = go.AddComponent<UnitCardViewModel>();
+            vm.View = view;
+            vm.DefaultPortrait = AssetDatabase.LoadAssetAtPath<Sprite>(SpriteDir + "portrait_arjuna.png");
+        }
 
-            // Data sources — ScriptableObjects wired by path. (Turn channel now comes from EventService.)
-            controller.StatTable     = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Grid.TerrainStatTable>(
+        static void WireObjective(RectTransform root)
+        {
+            var go = root.Find("ObjectivePanel").gameObject;
+
+            var view = go.AddComponent<ObjectiveView>();
+            view.ObjText = root.Find("ObjectivePanel/ObjText").GetComponent<TextMeshProUGUI>();
+            view.TurnNum = root.Find("ObjectivePanel/TurnNum").GetComponent<TextMeshProUGUI>();
+
+            var vm = go.AddComponent<ObjectiveViewModel>();
+            vm.View = view; // ObjectiveText keeps its inspector default.
+        }
+
+        static void WireTileInfo(RectTransform root)
+        {
+            var go = root.Find("TileInfoPanel").gameObject;
+
+            var view = go.AddComponent<TileInfoView>();
+            view.Root         = go;
+            view.TileName     = root.Find("TileInfoPanel/TileName").GetComponent<TextMeshProUGUI>();
+            view.StatValueDef = root.Find("TileInfoPanel/StatValueDef").GetComponent<TextMeshProUGUI>();
+            view.StatValueAvo = root.Find("TileInfoPanel/StatValueAvo").GetComponent<TextMeshProUGUI>();
+            view.HealValue    = root.Find("TileInfoPanel/HealValue").GetComponent<TextMeshProUGUI>();
+
+            var vm = go.AddComponent<TileInfoViewModel>();
+            vm.View = view;
+            vm.StatTable = AssetDatabase.LoadAssetAtPath<ProjectAstra.Core.Grid.TerrainStatTable>(
                 "Assets/ScriptableObjects/Map/TerrainStatTable.asset");
 
-            if (controller.StatTable == null)
+            if (vm.StatTable == null)
                 Debug.LogWarning("BattleMapHUDBuilder: TerrainStatTable asset not found — tile bonuses will be 0.");
+        }
+
+        static void DestroyIfExists(Transform parent, string childName)
+        {
+            var existing = parent.Find(childName);
+            if (existing != null) Object.DestroyImmediate(existing.gameObject);
         }
 
         // ==================================================================
