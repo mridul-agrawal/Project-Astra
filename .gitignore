@@ -94,6 +94,10 @@ crashlytics-build.properties
 
 # Editor-time screenshots captured for verification; not shipped assets.
 /Assets/Screenshots/
+/Assets/Screenshots.meta
+
+# Ad-hoc frame-grab scratch dir dropped at the repo root during dev.
+/.tmp_frames/
 
 # Unity crash-recovery scene backups; never part of the project.
 /Assets/_Recovery/
