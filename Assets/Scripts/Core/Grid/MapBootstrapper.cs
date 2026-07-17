@@ -10,6 +10,7 @@ namespace ProjectAstra.Core.Grid
     {
         [SerializeField] private MapRenderer mapRenderer;
         [SerializeField] private UnitSpawner unitSpawner;
+        [SerializeField] private TerrainStatTable terrainStatTable;
         [Tooltip("Fallback map for pressing Play directly in this scene (when GameFlow isn't running).")]
         [SerializeField] private MapData fallbackMapData;
 
@@ -18,6 +19,7 @@ namespace ProjectAstra.Core.Grid
             MapData map = ResolveMap();
             if (mapRenderer == null || map == null) return;
 
+            MapService.Load(map, terrainStatTable);
             mapRenderer.LoadMap(map);
             if (unitSpawner != null)
                 unitSpawner.SpawnUnits(map);

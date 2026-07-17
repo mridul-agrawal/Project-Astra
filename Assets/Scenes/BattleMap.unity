@@ -3384,7 +3384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &76639621
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9703,14 +9703,13 @@ GameObject:
   - component: {fileID: 293287101}
   - component: {fileID: 293287100}
   - component: {fileID: 293287099}
-  - component: {fileID: 293287098}
   m_Layer: 0
   m_Name: TileInfoPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &293287097
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9741,20 +9740,6 @@ RectTransform:
   m_AnchoredPosition: {x: -56, y: 56}
   m_SizeDelta: {x: 340, y: 180}
   m_Pivot: {x: 1, y: 0}
---- !u!114 &293287098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 293287096}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f40fb23fea264e044a404308b0cf9cef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.HUD.TileInfoViewModel
-  View: {fileID: 293287099}
-  StatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
 --- !u!114 &293287099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14235,6 +14220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.MapBootstrapper
   mapRenderer: {fileID: 268787981}
   unitSpawner: {fileID: 506087793}
+  terrainStatTable: {fileID: 11400000, guid: e827a307b5f902a4bb400c7fe1abf2b5, type: 2}
   fallbackMapData: {fileID: 11400000, guid: 9c725033086d2c245ac62e4fb60c4e9d, type: 2}
 --- !u!4 &506087792
 Transform:
@@ -24193,14 +24179,13 @@ GameObject:
   - component: {fileID: 860983277}
   - component: {fileID: 860983276}
   - component: {fileID: 860983275}
-  - component: {fileID: 860983274}
   m_Layer: 0
   m_Name: UnitCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &860983273
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24231,20 +24216,6 @@ RectTransform:
   m_AnchoredPosition: {x: 56, y: -56}
   m_SizeDelta: {x: 580, y: 228}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &860983274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 860983272}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fe1ee350a24bf2418bd877f74002ca5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.HUD.UnitCardViewModel
-  View: {fileID: 860983275}
-  DefaultPortrait: {fileID: 21300000, guid: 6ad4637ddb26ce24f8396bf82a9cf1e6, type: 3}
 --- !u!114 &860983275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24259,10 +24230,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.HUD.UnitCardView
   Root: {fileID: 860983272}
   UnitName: {fileID: 702102214}
-  UnitClass: {fileID: 1833580821}
   HpValue: {fileID: 405328791}
   HpFill: {fileID: 1748524133}
-  WeaponName: {fileID: 76639622}
   PortraitImage: {fileID: 1999888403}
 --- !u!114 &860983276
 MonoBehaviour:
@@ -36381,6 +36350,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1396608093}
+  - component: {fileID: 1396608094}
   m_Layer: 0
   m_Name: BattleHUD
   m_TagString: Untagged
@@ -36401,8 +36371,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 860983273}
-  - {fileID: 2133604829}
   - {fileID: 293287097}
+  - {fileID: 2133604829}
   m_Father: {fileID: 992180733}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -36410,6 +36380,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1396608094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1396608092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c1d04e33da8f354fae61b376046795b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.HUD.BattleHUDUIController
+  unitCardView: {fileID: 860983275}
+  tileInfoView: {fileID: 293287099}
 --- !u!1 &1403164678
 GameObject:
   m_ObjectHideFlags: 0
@@ -47677,7 +47661,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1833580820
 RectTransform:
   m_ObjectHideFlags: 0
@@ -57459,14 +57443,13 @@ GameObject:
   - component: {fileID: 2133604833}
   - component: {fileID: 2133604832}
   - component: {fileID: 2133604831}
-  - component: {fileID: 2133604830}
   m_Layer: 0
   m_Name: ObjectivePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2133604829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -57495,20 +57478,6 @@ RectTransform:
   m_AnchoredPosition: {x: -56, y: -56}
   m_SizeDelta: {x: 450, y: 200}
   m_Pivot: {x: 1, y: 1}
---- !u!114 &2133604830
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2133604828}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8e1f88c9c9ee5641af37767c264300c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.BattleMap.HUD.ObjectiveViewModel
-  View: {fileID: 2133604831}
-  ObjectiveText: Slay the Asura Lord
 --- !u!114 &2133604831
 MonoBehaviour:
   m_ObjectHideFlags: 0

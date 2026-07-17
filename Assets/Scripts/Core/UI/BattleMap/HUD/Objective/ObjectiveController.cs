@@ -7,18 +7,20 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
     // Controller for the Objective panel. The objective line is static config; the
     // turn counter tracks TurnManager via the turn/phase event channel. The panel
     // stays visible in every phase.
-    public sealed class ObjectiveViewModel : MonoBehaviour
+    public sealed class ObjectiveController
     {
-        public ObjectiveView View; // wired by BattleMapHUDBuilder
+        public ObjectiveView objectiveView; // wired by BattleMapHUDBuilder
 
         [TextArea] public string ObjectiveText = "Slay the Asura Lord";
 
         private readonly ObjectiveModel model = new ObjectiveModel();
 
-        private void Awake()
+        public ObjectiveController(ObjectiveView objectiveView)
         {
-            EventService.Instance.SubscribePhaseStarted(HandlePhaseStarted);
-            EventService.Instance.SubscribeTurnAdvanced(HandleTurnAdvanced);
+            this.objectiveView = objectiveView;
+
+            //EventService.Instance.SubscribePhaseStarted(HandlePhaseStarted);
+            //EventService.Instance.SubscribeTurnAdvanced(HandleTurnAdvanced);
         }
 
         private void Start()
@@ -47,7 +49,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private void Render()
         {
-            if (View != null) View.Render(model);
+            if (objectiveView != null) objectiveView.Render(model);
         }
     }
 }

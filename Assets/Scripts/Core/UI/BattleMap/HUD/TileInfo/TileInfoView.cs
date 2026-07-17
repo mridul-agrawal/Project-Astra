@@ -35,9 +35,12 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         public void Render(TileInfoModel model)
         {
-            if (model == null) return;
-            if (Root != null) Root.SetActive(model.Visible);
-            if (!model.Visible) return;
+            if (model == null)
+            {
+                if (Root != null) Root.SetActive(false);
+                return;
+            }
+            if (Root != null) Root.SetActive(true);
 
             if (TileName != null)     TileName.text     = model.TerrainName;
             if (StatValueDef != null) StatValueDef.text = FormatStat(model.Defense);

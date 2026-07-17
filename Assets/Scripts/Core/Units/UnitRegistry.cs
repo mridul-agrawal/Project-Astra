@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ProjectAstra.Core.Units
 {
@@ -47,6 +48,16 @@ namespace ProjectAstra.Core.Units
                 if (entry.Faction == faction && entry.CanAct)
                     result.Add(entry.Unit);
             return result;
+        }
+
+        // The unit standing on the given tile, or null if none. Linear scan over the
+        // roster we already track — no scene lookup.
+        public TestUnit GetUnitAt(Vector2Int position)
+        {
+            foreach (var entry in units)
+                if (entry.Unit != null && entry.Unit.gridPosition == position)
+                    return entry.Unit;
+            return null;
         }
 
         public bool CanAct(TestUnit unit)

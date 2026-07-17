@@ -6,19 +6,13 @@ using UnityEngine.UI;
 
 namespace ProjectAstra.Core.UI.BattleMap.HUD
 {
-    // Presentation for the Unit Card panel: maps a UnitCardModel onto the TMP/Image
-    // widgets and nothing more. No game references. Public fields are assigned by
-    // BattleMapHUDBuilder at build time (the Editor-assembly builder writes them
-    // directly, the same convention the old controller used).
     public sealed class UnitCardView : MonoBehaviour
     {
         [Header("Widgets")]
         public GameObject Root;
         public TextMeshProUGUI UnitName;
-        public TextMeshProUGUI UnitClass;
         public TextMeshProUGUI HpValue;
         public Image HpFill;
-        public TextMeshProUGUI WeaponName;
         public Image PortraitImage;
 
         // HP threshold colours (mockup gradient #2e7a3a -> #8de078).
@@ -32,17 +26,15 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         public void Render(UnitCardModel model)
         {
-            if (model == null || !model.HasUnit)
+            if (model == null)
             {
                 if (Root != null) Root.SetActive(false);
                 return;
             }
             if (Root != null) Root.SetActive(true);
 
-            if (UnitName != null)   UnitName.text   = model.Name;
-            if (UnitClass != null)  UnitClass.text  = model.ClassName;
+            if (UnitName != null)   UnitName.text   = model.UnitName;
             if (HpValue != null)    HpValue.text    = model.CurrentHP + " / " + model.MaxHP;
-            if (WeaponName != null) WeaponName.text = model.Weapon;
 
             if (HpFill != null)
             {
@@ -50,10 +42,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
                 HpFill.color      = HpColorForFraction(model.HpFraction);
             }
 
-            TintCornerBosses(FactionTint(model.Faction));
+            TintCornerBosses(FactionTint(model.UnitFaction));
 
-            if (PortraitImage != null && model.Portrait != null)
-                PortraitImage.sprite = model.Portrait;
+            if (PortraitImage != null && model.unitCardPortriat != null)
+                PortraitImage.sprite = model.unitCardPortriat;
         }
 
         private static Color HpColorForFraction(float frac)
