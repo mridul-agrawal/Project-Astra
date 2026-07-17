@@ -12,6 +12,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public GameObject Root;
         public TextMeshProUGUI UnitName;
         public TextMeshProUGUI HpValue;
+        public TextMeshProUGUI LvlValue;
         public Image HpFill;
         public Image PortraitImage;
 
@@ -35,6 +36,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
             if (UnitName != null)   UnitName.text   = model.UnitName;
             if (HpValue != null)    HpValue.text    = model.CurrentHP + " / " + model.MaxHP;
+            if (LvlValue != null)   LvlValue.text   = model.UnitLevel.ToString();
 
             if (HpFill != null)
             {
