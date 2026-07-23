@@ -6,6 +6,6 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public int Defense;
         public int Avoid;
         public int Heal;
-        public bool PanelOnLeft;
+        public HudCorner Corner;
     }
 }

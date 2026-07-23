@@ -148,6 +148,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PeekObjective",
+                    "type": "Button",
+                    "id": "a0100000-0000-0000-0000-000000000017",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -207,7 +216,10 @@
                 { "name": "", "id": "b0150002", "path": "<Gamepad>/dpad/right", "interactions": "", "processors": "", "groups": "Gamepad", "action": "NextUnit", "isComposite": false, "isPartOfComposite": false },
 
                 { "name": "", "id": "b0160001", "path": "<Keyboard>/leftBracket", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "PrevUnit", "isComposite": false, "isPartOfComposite": false },
-                { "name": "", "id": "b0160002", "path": "<Gamepad>/dpad/left", "interactions": "", "processors": "", "groups": "Gamepad", "action": "PrevUnit", "isComposite": false, "isPartOfComposite": false }
+                { "name": "", "id": "b0160002", "path": "<Gamepad>/dpad/left", "interactions": "", "processors": "", "groups": "Gamepad", "action": "PrevUnit", "isComposite": false, "isPartOfComposite": false },
+
+                { "name": "", "id": "b0170001", "path": "<Keyboard>/o", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "PeekObjective", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b0170002", "path": "<Gamepad>/select", "interactions": "", "processors": "", "groups": "Gamepad", "action": "PeekObjective", "isComposite": false, "isPartOfComposite": false }
             ]
         },
         {

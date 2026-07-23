@@ -40,6 +40,7 @@ namespace ProjectAstra.Core.Input
         public event Action<bool> OnHoldAdvanceDialogue;
         public event Action OnNextUnit;
         public event Action OnPrevUnit;
+        public event Action<bool> OnPeekObjective;
         public event Action<InputDeviceType> OnDeviceChanged;
         public event Action OnGamepadDisconnected;
 
@@ -223,6 +224,9 @@ namespace ProjectAstra.Core.Input
 
             Bind("NextUnit", _ => OnNextUnit?.Invoke());
             Bind("PrevUnit", _ => OnPrevUnit?.Invoke());
+
+            Bind("PeekObjective",       _ => OnPeekObjective?.Invoke(true));
+            BindCancel("PeekObjective", _ => OnPeekObjective?.Invoke(false));
         }
 
         private void Bind(string actionName, Action<InputAction.CallbackContext> callback)

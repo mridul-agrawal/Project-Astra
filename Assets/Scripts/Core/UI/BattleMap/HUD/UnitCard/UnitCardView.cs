@@ -21,9 +21,18 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         private static readonly Color HpYellow = new Color32(0xf0, 0xd0, 0x60, 0xff);
         private static readonly Color HpRed    = new Color32(0xe8, 0x40, 0x2a, 0xff);
 
-        private Image[] cornerBosses;
+        private const float EdgePad = 56f;
 
-        private void Awake() => CacheCornerBosses();
+        private Image[] cornerBosses;
+        private RectTransform rect;
+        private HudCorner corner;
+        private bool cornerInit;
+
+        private void Awake()
+        {
+            CacheCornerBosses();
+            rect = Root != null ? Root.GetComponent<RectTransform>() : GetComponent<RectTransform>();
+        }
 
         public void Render(UnitCardModel model)
         {
@@ -48,6 +57,18 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
             if (PortraitImage != null && model.unitCardPortriat != null)
                 PortraitImage.sprite = model.unitCardPortriat;
+
+            ApplyCorner(model.Corner);
+        }
+
+        // The unit card docks diagonally opposite the cursor; the composition root hands
+        // it the corner. Docking is the shared corner-layout used by every HUD panel.
+        private void ApplyCorner(HudCorner target)
+        {
+            if (rect == null || (cornerInit && target == corner)) return;
+            corner = target;
+            cornerInit = true;
+            HudCornerLayout.Apply(rect, target, EdgePad);
         }
 
         private static Color HpColorForFraction(float frac)

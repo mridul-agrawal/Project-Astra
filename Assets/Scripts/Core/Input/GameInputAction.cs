@@ -26,5 +26,6 @@ namespace ProjectAstra.Core.Input
         HoldAdvanceDialogue = 1 << 13,
         NextUnit            = 1 << 14,
         PrevUnit            = 1 << 15,
+        PeekObjective       = 1 << 16,
     }
 }

@@ -14,6 +14,8 @@ namespace ProjectAstra.Core.Grid
 
         [SerializeField] private string mapName;
         [SerializeField] private string mapId;
+        [SerializeField, TextArea] private string winConditionText;
+        [SerializeField, TextArea] private string loseConditionText;
         [SerializeField] private int width = 4;
         [SerializeField] private int height = 4;
         [SerializeField] private Sprite baseArt;
@@ -23,6 +25,8 @@ namespace ProjectAstra.Core.Grid
 
         public string MapName => mapName;
         public string MapId => mapId;
+        public string WinConditionText => winConditionText;
+        public string LoseConditionText => loseConditionText;
         public int Width => width;
         public int Height => height;
         public Sprite BaseArt => baseArt;

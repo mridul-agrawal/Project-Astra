@@ -16,16 +16,14 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public TextMeshProUGUI HealValue;
 
         private const float EdgePad = 56f;
-        private static readonly Vector2 LeftPos  = new Vector2( EdgePad, EdgePad);
-        private static readonly Vector2 RightPos = new Vector2(-EdgePad, EdgePad);
 
         private RectTransform rect;
-        private bool onLeft;
+        private HudCorner corner;
+        private bool cornerInit;
 
         private void Awake()
         {
             rect = Root != null ? Root.GetComponent<RectTransform>() : GetComponent<RectTransform>();
-            onLeft = false; // build-time default sits bottom-right
         }
 
         public void SetVisible(bool visible)
@@ -49,7 +47,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             ShowHeal(model.Heal);
             ShowDivider(model);
 
-            ApplySide(model.PanelOnLeft);
+            ApplyCorner(model.Corner);
         }
 
         // A terrain bonus only earns a line when it actually does something.
@@ -76,22 +74,14 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             StatDivider.SetActive(anyBonus);
         }
 
-        private void ApplySide(bool panelOnLeft)
+        // Tile info always sits on the bottom row; the composition root picks which
+        // bottom corner. Docking is the shared corner-layout used by every HUD panel.
+        private void ApplyCorner(HudCorner target)
         {
-            if (rect == null || panelOnLeft == onLeft) return;
-            onLeft = panelOnLeft;
-            if (panelOnLeft)
-            {
-                rect.anchorMin = rect.anchorMax = new Vector2(0, 0);
-                rect.pivot = new Vector2(0, 0);
-                rect.anchoredPosition = LeftPos;
-            }
-            else
-            {
-                rect.anchorMin = rect.anchorMax = new Vector2(1, 0);
-                rect.pivot = new Vector2(1, 0);
-                rect.anchoredPosition = RightPos;
-            }
+            if (rect == null || (cornerInit && target == corner)) return;
+            corner = target;
+            cornerInit = true;
+            HudCornerLayout.Apply(rect, target, EdgePad);
         }
 
         private static string FormatStat(int v) => v >= 0 ? "+" + v : v.ToString();

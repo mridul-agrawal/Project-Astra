@@ -21,20 +21,20 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             this.tileInfoModel = new TileInfoModel();
         }
 
-        public void HandleCursorMoved(Vector2Int pos) => UpdateTileInfoView(pos);
+        public void HandleCursorMoved(Vector2Int pos, HudCorner corner) => UpdateTileInfoView(pos, corner);
 
-        public void HandlePhaseStarted(BattlePhase phase, Vector2Int pos) => UpdateTileInfoView(pos);
+        public void HandlePhaseStarted(BattlePhase phase, Vector2Int pos, HudCorner corner) => UpdateTileInfoView(pos, corner);
 
-        private void UpdateTileInfoView(Vector2Int pos)
+        private void UpdateTileInfoView(Vector2Int pos, HudCorner corner)
         {
             if (!IsPlayerPhase) return;
 
-            tileInfoModel = BuildModel(pos);
-            if (tileInfoView != null) 
+            tileInfoModel = BuildModel(pos, corner);
+            if (tileInfoView != null)
                 tileInfoView.Render(tileInfoModel);
         }
 
-        private TileInfoModel BuildModel(Vector2Int pos)
+        private TileInfoModel BuildModel(Vector2Int pos, HudCorner corner)
         {
             TerrainType terrainType = MapService.Instance.GetTerrainType(pos);
             TerrainStats terrainStats = MapService.Instance.GetStats(pos);
@@ -45,16 +45,8 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
                 Defense = terrainStats.defenceBonus,
                 Avoid = terrainStats.avoidBonus,
                 Heal = terrainStats.healPerTurn,
-                PanelOnLeft = ComputePanelOnLeft(pos)
+                Corner = corner
             };
-        }
-
-        // FE GBA: panel goes to the side opposite the cursor.
-        private bool ComputePanelOnLeft(Vector2Int cursorGridPos)
-        {
-            int mapWidth = MapService.Instance.CurrentMap.Width;
-            bool cursorOnLeft = cursorGridPos.x < mapWidth / 2;
-            return !cursorOnLeft;
         }
 
         private bool IsPlayerPhase

@@ -17,18 +17,20 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             unitCardModel = new UnitCardModel();
         }
 
-        public void HandleCursorMoved(Vector2Int pos) => UpdateUnitCardView(pos);
+        public void HandleCursorMoved(Vector2Int pos, HudCorner corner) => UpdateUnitCardView(pos, corner);
 
-        public void HandlePhaseStarted(BattlePhase phase, Vector2Int pos) => UpdateUnitCardView(pos);
+        public void HandlePhaseStarted(BattlePhase phase, Vector2Int pos, HudCorner corner) => UpdateUnitCardView(pos, corner);
 
 
-        private void UpdateUnitCardView(Vector2Int pos)
+        private void UpdateUnitCardView(Vector2Int pos, HudCorner corner)
         {
             if (!IsPlayerPhase)
                 return;
 
             unitCardModel = BuildModel(pos);
-            if (unitCardView != null) 
+            if (unitCardModel != null)
+                unitCardModel.Corner = corner;
+            if (unitCardView != null)
                 unitCardView.Render(unitCardModel);
         }
 

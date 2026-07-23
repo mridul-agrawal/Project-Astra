@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.Input
         private const GameInputAction CursorAndMenu = Cursor | GameInputAction.Confirm | GameInputAction.Cancel;
         private const GameInputAction Dialogue =
             Cursor | GameInputAction.Confirm | GameInputAction.Cancel | GameInputAction.SkipDialogue | GameInputAction.HoldAdvanceDialogue;
-        private const GameInputAction All = (GameInputAction)0xFFFF;   // bits 0..15 = every defined action
+        private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every defined action
 
         [SerializeField] private List<StateInputRule> rules = new()
         {

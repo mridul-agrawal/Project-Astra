@@ -15,5 +15,6 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public int MaxHP;
         public float HpFraction => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
         public Faction UnitFaction;
+        public HudCorner Corner;
     }
 }
