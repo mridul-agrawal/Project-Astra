@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.UI.BattleMap.HUD
 {
-    // Presentation for the Tile Info panel. Maps terrain bonuses onto the widgets
-    // and flips the panel between bottom-left and bottom-right (FE GBA: the panel
-    // sits opposite the cursor). Public fields are wired by BattleMapHUDBuilder.
     public sealed class TileInfoView : MonoBehaviour
     {
         [Header("Widgets")]
         public GameObject Root;
         public TextMeshProUGUI TileName;
+        public GameObject StatDef;            // row: "Def" label + value together
         public TextMeshProUGUI StatValueDef;
+        public GameObject StatAvo;            // row: "Avo" label + value together
         public TextMeshProUGUI StatValueAvo;
+        public GameObject StatDivider;
         public TextMeshProUGUI HealValue;
 
         private const float EdgePad = 56f;
@@ -42,18 +42,38 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             }
             if (Root != null) Root.SetActive(true);
 
-            if (TileName != null)     TileName.text     = model.TerrainName;
-            if (StatValueDef != null) StatValueDef.text = FormatStat(model.Defense);
-            if (StatValueAvo != null) StatValueAvo.text = FormatStat(model.Avoid);
+            if (TileName != null) TileName.text = model.TerrainName;
 
-            if (HealValue != null)
-            {
-                bool heals = model.Heal > 0;
-                HealValue.gameObject.SetActive(heals);
-                if (heals) HealValue.text = "Heal " + FormatStat(model.Heal) + " / turn";
-            }
+            ShowStat(StatDef, StatValueDef, model.Defense);
+            ShowStat(StatAvo, StatValueAvo, model.Avoid);
+            ShowHeal(model.Heal);
+            ShowDivider(model);
 
             ApplySide(model.PanelOnLeft);
+        }
+
+        // A terrain bonus only earns a line when it actually does something.
+        private static void ShowStat(GameObject row, TextMeshProUGUI value, int amount)
+        {
+            bool applies = amount != 0;
+            if (row != null) row.SetActive(applies);
+            if (applies && value != null) value.text = FormatStat(amount);
+        }
+
+        private void ShowHeal(int heal)
+        {
+            if (HealValue == null) return;
+            bool heals = heal > 0;
+            HealValue.gameObject.SetActive(heals);
+            if (heals) HealValue.text = "Heal " + FormatStat(heal) + " / turn";
+        }
+
+        // The divider only belongs there when a bonus sits under it.
+        private void ShowDivider(TileInfoModel model)
+        {
+            if (StatDivider == null) return;
+            bool anyBonus = model.Defense != 0 || model.Avoid != 0 || model.Heal > 0;
+            StatDivider.SetActive(anyBonus);
         }
 
         private void ApplySide(bool panelOnLeft)
