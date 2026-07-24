@@ -9,7 +9,7 @@ namespace ProjectAstra.Core.UI.Forecast
     {
         public SideModel Attacker;
         public SideModel Defender;
-        public int WeaponTriangle;       // +1 attacker advantage, -1 defender, 0 none
+        public TriangleAdvantage TriangleAdvantage;
         public bool AttackerEffective;
         public bool DefenderEffective;
     }

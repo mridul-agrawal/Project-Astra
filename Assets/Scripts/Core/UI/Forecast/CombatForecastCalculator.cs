@@ -30,7 +30,7 @@ namespace ProjectAstra.Core.UI.Forecast
 
             return new CombatForecastModel
             {
-                WeaponTriangle = triangle,
+                TriangleAdvantage = ToAdvantage(triangle),
                 AttackerEffective = attackerEffective,
                 DefenderEffective = defenderEffective,
                 Attacker = BuildSide(attacker, forecast.AttackerDamage, forecast.AttackerHit,
@@ -153,6 +153,11 @@ namespace ProjectAstra.Core.UI.Forecast
             }
             return f;
         }
+
+        private static TriangleAdvantage ToAdvantage(int sign) =>
+            sign > 0 ? TriangleAdvantage.Attacker
+          : sign < 0 ? TriangleAdvantage.Defender
+          : TriangleAdvantage.None;
 
         private static WeaponData EffectiveWeapon(WeaponData w, bool effective)
         {
