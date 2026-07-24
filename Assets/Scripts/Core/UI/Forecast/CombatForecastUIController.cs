@@ -31,10 +31,10 @@ namespace ProjectAstra.Core.UI.Forecast
             }
 
             if (leftSide != null)  
-                leftSide.Render(model.Attacker);
+                leftSide.Render(model.AttackerSideModel);
             
             if (rightSide != null) 
-                rightSide.Render(model.Defender);
+                rightSide.Render(model.DefenderSideModel);
             
             Activate();
         }

@@ -7,8 +7,8 @@ namespace ProjectAstra.Core.UI.Forecast
     // Presentation data for the Combat Forecast panel — one SideModel per combatant.
     public sealed class CombatForecastModel
     {
-        public SideModel Attacker;
-        public SideModel Defender;
+        public SideModel AttackerSideModel;
+        public SideModel DefenderSideModel;
         public TriangleAdvantage TriangleAdvantage;
         public bool AttackerEffective;
         public bool DefenderEffective;

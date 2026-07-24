@@ -25,18 +25,15 @@ namespace ProjectAstra.Core.UI.Forecast
             int distance = Mathf.Abs(attacker.gridPosition.x - defender.gridPosition.x)
                          + Mathf.Abs(attacker.gridPosition.y - defender.gridPosition.y);
 
-            var forecast = BuildForecast(attacker, defender, distance,
-                out int triangle, out bool attackerEffective, out bool defenderEffective);
+            CombatForecast forecast = BuildForecast(attacker, defender, distance, out int triangle, out bool attackerEffective, out bool defenderEffective);
 
             return new CombatForecastModel
             {
                 TriangleAdvantage = ToAdvantage(triangle),
                 AttackerEffective = attackerEffective,
                 DefenderEffective = defenderEffective,
-                Attacker = BuildSide(attacker, forecast.AttackerDamage, forecast.AttackerHit,
-                    forecast.AttackerCritRate, forecast.AttackerCanDouble, true, true),
-                Defender = BuildSide(defender, forecast.DefenderDamage, forecast.DefenderHit,
-                    forecast.DefenderCritRate, forecast.DefenderCanDouble, forecast.DefenderCanCounter, false),
+                AttackerSideModel = BuildSide(attacker, forecast.AttackerDamage, forecast.AttackerHit, forecast.AttackerCritRate, forecast.AttackerCanDouble, true, true),
+                DefenderSideModel = BuildSide(defender, forecast.DefenderDamage, forecast.DefenderHit, forecast.DefenderCritRate, forecast.DefenderCanDouble, forecast.DefenderCanCounter, false),
             };
         }
 
@@ -51,8 +48,8 @@ namespace ProjectAstra.Core.UI.Forecast
 
             return new CombatForecastModel
             {
-                Attacker = BuildSide(healer, heal, 100, 0, false, true, true),
-                Defender = BuildSide(target, 0, 0, 0, false, false, false),
+                AttackerSideModel = BuildSide(healer, heal, 100, 0, false, true, true),
+                DefenderSideModel = BuildSide(target, 0, 0, 0, false, false, false),
             };
         }
 
@@ -66,13 +63,12 @@ namespace ProjectAstra.Core.UI.Forecast
 
             return new CombatForecastModel
             {
-                Attacker = BuildSide(caster, 0, hit, 0, false, true, true),
-                Defender = BuildSide(target, 0, 0, 0, false, false, false),
+                AttackerSideModel = BuildSide(caster, 0, hit, 0, false, true, true),
+                DefenderSideModel = BuildSide(target, 0, 0, 0, false, false, false),
             };
         }
 
-        private static SideModel BuildSide(TestUnit unit, int atk, int hit, int crit,
-            bool canDouble, bool showOffense, bool flipPortrait)
+        private static SideModel BuildSide(TestUnit unit, int atk, int hit, int crit, bool canDouble, bool showOffense, bool flipPortrait)
         {
             var weapon = unit.Inventory.GetEquippedWeapon();
             return new SideModel
@@ -108,14 +104,13 @@ namespace ProjectAstra.Core.UI.Forecast
             return def.Portrait;
         }
 
-        private static CombatForecast BuildForecast(TestUnit attacker, TestUnit defender, int distance,
-            out int weaponTriangle, out bool attackerEffective, out bool defenderEffective)
+        private static CombatForecast BuildForecast(TestUnit attacker, TestUnit defender, int distance, out int weaponTriangle, out bool attackerEffective, out bool defenderEffective)
         {
-            var atkWeapon = attacker.Inventory.GetEquippedWeapon();
-            var defWeapon = defender.Inventory.GetEquippedWeapon();
+            WeaponData atkWeapon = attacker.Inventory.GetEquippedWeapon();
+            WeaponData defWeapon = defender.Inventory.GetEquippedWeapon();
 
-            var defClass = defender.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
-            var atkClass = attacker.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
+            ClassType defClass = defender.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
+            ClassType atkClass = attacker.UnitInstance?.CurrentClass?.ClassType ?? ClassType.Infantry;
             attackerEffective = !atkWeapon.IsEmpty && atkWeapon.IsEffectiveAgainst(defClass);
             defenderEffective = !defWeapon.IsEmpty && defWeapon.IsEffectiveAgainst(atkClass);
 
@@ -123,35 +118,29 @@ namespace ProjectAstra.Core.UI.Forecast
                 ? 0
                 : WeaponTriangle.ComputeAdvantage(atkWeapon, defWeapon);
 
-            var atkStats = attacker.UnitInstance != null ? attacker.UnitInstance.Stats : StatArray.From(20, 10, 8, 8, 8, 8, 8, 5, 5);
-            var defStats = defender.UnitInstance != null ? defender.UnitInstance.Stats : StatArray.From(20, 10, 8, 8, 8, 8, 8, 5, 5);
+            StatArray atkStats = attacker.UnitInstance != null ? attacker.UnitInstance.Stats : StatArray.From(20, 10, 8, 8, 8, 8, 8, 5, 5);
+            StatArray defStats = defender.UnitInstance != null ? defender.UnitInstance.Stats : StatArray.From(20, 10, 8, 8, 8, 8, 8, 5, 5);
 
-            var atkData = CombatantData.FromStats(atkStats,
-                attacker.UnitInstance?.CurrentHP ?? attacker.currentHP,
-                attacker.UnitInstance?.MaxHP ?? attacker.maxHP,
-                EffectiveWeapon(atkWeapon, attackerEffective), distance);
-            var defData = CombatantData.FromStats(defStats,
-                defender.UnitInstance?.CurrentHP ?? defender.currentHP,
-                defender.UnitInstance?.MaxHP ?? defender.maxHP,
-                EffectiveWeapon(defWeapon, defenderEffective), distance);
+            CombatantData atkData = CombatantData.FromStats(atkStats, attacker.UnitInstance?.CurrentHP ?? attacker.currentHP, attacker.UnitInstance?.MaxHP ?? attacker.maxHP, EffectiveWeapon(atkWeapon, attackerEffective), distance);
+            CombatantData defData = CombatantData.FromStats(defStats, defender.UnitInstance?.CurrentHP ?? defender.currentHP, defender.UnitInstance?.MaxHP ?? defender.maxHP, EffectiveWeapon(defWeapon, defenderEffective), distance);
 
-            var f = CombatForecast.Compute(atkData, defData, 0, 0, 0, 0);
+            CombatForecast combatForecast = CombatForecast.Compute(atkData, defData, 0, 0, 0, 0);
 
             if (weaponTriangle == 1)
             {
-                f.AttackerHit = Mathf.Clamp(f.AttackerHit + 15, 0, 100);
-                f.AttackerDamage = Mathf.Max(0, f.AttackerDamage + 1);
-                f.DefenderHit = Mathf.Clamp(f.DefenderHit - 15, 0, 100);
-                f.DefenderDamage = Mathf.Max(0, f.DefenderDamage - 1);
+                combatForecast.AttackerHit = Mathf.Clamp(combatForecast.AttackerHit + 15, 0, 100);
+                combatForecast.AttackerDamage = Mathf.Max(0, combatForecast.AttackerDamage + 1);
+                combatForecast.DefenderHit = Mathf.Clamp(combatForecast.DefenderHit - 15, 0, 100);
+                combatForecast.DefenderDamage = Mathf.Max(0, combatForecast.DefenderDamage - 1);
             }
             else if (weaponTriangle == -1)
             {
-                f.AttackerHit = Mathf.Clamp(f.AttackerHit - 15, 0, 100);
-                f.AttackerDamage = Mathf.Max(0, f.AttackerDamage - 1);
-                f.DefenderHit = Mathf.Clamp(f.DefenderHit + 15, 0, 100);
-                f.DefenderDamage = Mathf.Max(0, f.DefenderDamage + 1);
+                combatForecast.AttackerHit = Mathf.Clamp(combatForecast.AttackerHit - 15, 0, 100);
+                combatForecast.AttackerDamage = Mathf.Max(0, combatForecast.AttackerDamage - 1);
+                combatForecast.DefenderHit = Mathf.Clamp(combatForecast.DefenderHit + 15, 0, 100);
+                combatForecast.DefenderDamage = Mathf.Max(0, combatForecast.DefenderDamage + 1);
             }
-            return f;
+            return combatForecast;
         }
 
         private static TriangleAdvantage ToAdvantage(int sign) =>
