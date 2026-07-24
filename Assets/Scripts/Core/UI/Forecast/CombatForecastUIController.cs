@@ -8,6 +8,7 @@ namespace ProjectAstra.Core.UI.Forecast
     {
         [Header("Screen")]
         [SerializeField] private GameObject panelRoot;
+        [SerializeField] private GameObject battleHudRoot;   // hidden while the forecast is up
 
         [Header("Sides")]
         [SerializeField] private CombatForecastSideView leftSide;   // attacker
@@ -44,7 +45,10 @@ namespace ProjectAstra.Core.UI.Forecast
             if (panelRoot == null) return;
             bool wasVisible = panelRoot.activeSelf;
             panelRoot.SetActive(false);
-            if (wasVisible) AudioManager.Instance?.Play(SoundId.UiPanelClose);
+            if (!wasVisible) return;
+
+            if (battleHudRoot != null) battleHudRoot.SetActive(true);
+            AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
 
         private void Activate()
@@ -53,8 +57,10 @@ namespace ProjectAstra.Core.UI.Forecast
             bool wasActive = panelRoot.activeSelf;
             panelRoot.SetActive(true);
             panelRoot.transform.SetAsLastSibling();
-            if (!wasActive) 
-                AudioManager.Instance?.Play(SoundId.UiPanelOpen);
+            if (wasActive) return;
+
+            if (battleHudRoot != null) battleHudRoot.SetActive(false);
+            AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
     }
 }

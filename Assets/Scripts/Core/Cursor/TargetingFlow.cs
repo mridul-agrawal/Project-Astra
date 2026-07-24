@@ -148,6 +148,7 @@ namespace ProjectAstra.Core.Cursor
             targetTiles = null;
             selectedUnit = null;
             rangeHighlighter?.ClearAll();
+            combatForecastUI?.Hide();
         }
 
         // Used by Cancel/cleanup paths outside the targeting flow itself

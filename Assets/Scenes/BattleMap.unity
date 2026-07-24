@@ -34344,6 +34344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Forecast.CombatForecastUIController
   panelRoot: {fileID: 687535470}
+  battleHudRoot: {fileID: 1396608092}
   leftSide: {fileID: 774738714}
   rightSide: {fileID: 1819268191}
 --- !u!224 &1175962427
