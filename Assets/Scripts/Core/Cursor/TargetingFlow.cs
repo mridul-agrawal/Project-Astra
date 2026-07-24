@@ -23,7 +23,7 @@ namespace ProjectAstra.Core.Cursor
         private readonly PathfindingService pathfindingService;
         private readonly MapRenderer mapRenderer;
         private readonly RangeHighlighter rangeHighlighter;
-        private readonly CombatForecastUI combatForecastUI;
+        private readonly CombatForecastUIController combatForecastUI;
         private readonly GridCursor cursor;
 
         private TestUnit selectedUnit;
@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.Cursor
             PathfindingService pathfindingService,
             MapRenderer mapRenderer,
             RangeHighlighter rangeHighlighter,
-            CombatForecastUI combatForecastUI,
+            CombatForecastUIController combatForecastUI,
             GridCursor cursor)
         {
             this.pathfindingService = pathfindingService;
@@ -171,13 +171,8 @@ namespace ProjectAstra.Core.Cursor
             var target = FindUnitAt(cursor.GridPosition);
             if (target == null) { combatForecastUI.Hide(); return; }
 
-            int distance = Mathf.Abs(selectedUnit.gridPosition.x - target.gridPosition.x)
-                         + Mathf.Abs(selectedUnit.gridPosition.y - target.gridPosition.y);
-
-            if (isHealTargeting)
-                combatForecastUI.ShowStaffHeal(selectedUnit, target);
-            else
-                combatForecastUI.ShowCombat(selectedUnit, target, distance);
+            combatForecastUI.Show(isHealTargeting ? ForecastKind.StaffHeal : ForecastKind.Attack,
+                selectedUnit, target);
         }
 
         private static List<Vector2Int> SortedByGridPosition(List<Vector2Int> source)

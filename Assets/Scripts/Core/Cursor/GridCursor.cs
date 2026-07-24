@@ -53,7 +53,7 @@ namespace ProjectAstra.Core.Cursor
         [SerializeField] private TradeScreenUI tradeUI;
         [SerializeField] private ConvoyUI convoyUI;
         [SerializeField] private UnitInfoPanelUI unitInfoPanelUI;
-        [SerializeField] private CombatForecastUI combatForecastUI;
+        [SerializeField] private CombatForecastUIController combatForecastUI;
 
         [Header("Combat Animation")]
         [SerializeField] private SkipModePlaybackController skipModeController;

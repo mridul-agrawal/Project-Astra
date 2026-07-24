@@ -18,10 +18,10 @@ namespace ProjectAstra.Core.Cursor
     // for Heal and OnActionSelected.Fortify for Fortify).
     public class StaffExecutor
     {
-        private readonly CombatForecastUI combatForecastUI;
+        private readonly CombatForecastUIController combatForecastUI;
         private readonly ToastNotificationUI toastUI;
 
-        public StaffExecutor(CombatForecastUI combatForecastUI, ToastNotificationUI toastUI)
+        public StaffExecutor(CombatForecastUIController combatForecastUI, ToastNotificationUI toastUI)
         {
             this.combatForecastUI = combatForecastUI;
             this.toastUI = toastUI;

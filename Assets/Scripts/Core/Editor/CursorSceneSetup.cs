@@ -376,44 +376,9 @@ namespace ProjectAstra.Core.Editor
                     "'Project Astra/Build Supply Convoy (prefab)' to generate it.");
             }
 
-            // Combat Forecast — CombatForecastUI controller lives on its own GameObject.
-            // Prefab is instantiated once into the canvas; _popupInstance points at it.
-            var forecastUI = Object.FindAnyObjectByType<CombatForecastUI>();
-            if (forecastUI == null)
-            {
-                var fgo = new GameObject("CombatForecastUI");
-                fgo.transform.SetParent(canvas.transform, false);
-                forecastUI = fgo.AddComponent<CombatForecastUI>();
-                Undo.RegisterCreatedObjectUndo(fgo, "Create CombatForecastUI");
-            }
-
-            var forecastPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/UI/CombatForecast/CombatForecast.prefab");
-            GameObject forecastInstance = null;
-            var existingForecast = canvas.transform.Find("CombatForecast");
-            if (existingForecast != null) forecastInstance = existingForecast.gameObject;
-            if (forecastInstance == null && forecastPrefab != null)
-            {
-                forecastInstance = (GameObject)PrefabUtility.InstantiatePrefab(forecastPrefab, canvas.transform);
-                forecastInstance.name = "CombatForecast";
-                forecastInstance.SetActive(false);
-                Undo.RegisterCreatedObjectUndo(forecastInstance, "Create CombatForecast instance");
-            }
-            if (forecastInstance != null)
-            {
-                var so = new SerializedObject(forecastUI);
-                var prop = so.FindProperty("popupInstance");
-                if (prop != null && prop.objectReferenceValue != forecastInstance)
-                {
-                    prop.objectReferenceValue = forecastInstance;
-                    so.ApplyModifiedPropertiesWithoutUndo();
-                }
-            }
-            else if (forecastPrefab == null)
-            {
-                Debug.LogWarning("CursorSceneSetup: CombatForecast prefab missing — run " +
-                    "'Project Astra/Build Combat Forecast (prefab)' to generate it.");
-            }
+            // Combat Forecast — the screen is hand-authored in the scene; just resolve the
+            // controller so GridCursor can be wired to it below.
+            var forecastCtrl = Object.FindAnyObjectByType<CombatForecastUIController>(FindObjectsInactive.Include);
 
             // War's Ledger — persistent prefab instance driven by GameState.WarLedger.
             var ledgerUI = Object.FindAnyObjectByType<WarLedgerUI>();
@@ -477,7 +442,7 @@ namespace ProjectAstra.Core.Editor
                     so.FindProperty("tradeUI").objectReferenceValue = tradeUI;
                 so.FindProperty("convoyUI").objectReferenceValue = convoyUI;
                 var forecastProp = so.FindProperty("combatForecastUI");
-                if (forecastProp != null) forecastProp.objectReferenceValue = forecastUI;
+                if (forecastProp != null) forecastProp.objectReferenceValue = forecastCtrl;
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
         }

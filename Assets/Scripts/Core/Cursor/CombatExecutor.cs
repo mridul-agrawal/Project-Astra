@@ -23,14 +23,14 @@ namespace ProjectAstra.Core.Cursor
     {
         private readonly MapRenderer mapRenderer;
         private readonly TerrainStatTable terrainStatTable;
-        private readonly CombatForecastUI combatForecastUI;
+        private readonly CombatForecastUIController combatForecastUI;
         private readonly ToastNotificationUI toastUI;
         private readonly CombatPlaybackDispatcher dispatcher;
 
         public CombatExecutor(
             MapRenderer mapRenderer,
             TerrainStatTable terrainStatTable,
-            CombatForecastUI combatForecastUI,
+            CombatForecastUIController combatForecastUI,
             ToastNotificationUI toastUI,
             CombatPlaybackDispatcher dispatcher)
         {

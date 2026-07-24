@@ -23,7 +23,7 @@ namespace ProjectAstra.Core.Cursor
         private readonly UnitMover unitMover;
         private readonly RangeHighlighter rangeHighlighter;
         private readonly PathArrowRenderer pathArrowRenderer;
-        private readonly CombatForecastUI combatForecastUI;
+        private readonly CombatForecastUIController combatForecastUI;
         private readonly GridCursor cursor;
         private readonly CantoFlow cantoFlow;
         private readonly ActionMenuFlow actionMenuFlow;
@@ -48,7 +48,7 @@ namespace ProjectAstra.Core.Cursor
             UnitMover unitMover,
             RangeHighlighter rangeHighlighter,
             PathArrowRenderer pathArrowRenderer,
-            CombatForecastUI combatForecastUI,
+            CombatForecastUIController combatForecastUI,
             GridCursor cursor,
             CantoFlow cantoFlow,
             ActionMenuFlow actionMenuFlow)
