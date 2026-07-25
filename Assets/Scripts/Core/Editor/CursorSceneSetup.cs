@@ -11,6 +11,7 @@ using ProjectAstra.Core.Progression;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.ActionMenu;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Convoy;
 using ProjectAstra.Core.UI.Forecast;
@@ -100,34 +101,16 @@ namespace ProjectAstra.Core.Editor
             var highlighter = cursorGO.AddComponent<RangeHighlighter>();
             var pathArrow = cursorGO.AddComponent<PathArrowRenderer>();
             var unitMover = cursorGO.AddComponent<UnitMover>();
-            var actionMenu = cursorGO.AddComponent<UnitActionMenuUI>();
-            WireActionMenuAssets(actionMenu);
 
             var cursor = cursorGO.AddComponent<GridCursor>();
-            WireGridCursorReferences(cursor, mapRenderer, assets, spriteRenderer, highlighter, pathArrow, unitMover, actionMenu);
+            WireGridCursorReferences(cursor, mapRenderer, assets, spriteRenderer, highlighter, pathArrow, unitMover);
 
             Undo.RegisterCreatedObjectUndo(cursorGO, "Create GridCursor");
         }
 
-        private static void WireActionMenuAssets(UnitActionMenuUI actionMenu)
-        {
-            var so = new SerializedObject(actionMenu);
-            so.FindProperty("bgSprite").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/action_menu_bg.png");
-            so.FindProperty("cursorSprite").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/trishul_cursor.png");
-            so.FindProperty("dividerSprite").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/UI/UnitActionMenu/Sprites/ember_divider.png");
-            so.FindProperty("optionFont").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/UI/UnitInfoPanel/Fonts/Cinzel SDF.asset");
-            so.FindProperty("selectedGlowMat").objectReferenceValue =
-                AssetDatabase.LoadAssetAtPath<Material>("Assets/UI/BattleMapHUD/Materials/CinzelGoldGlow.mat");
-            so.ApplyModifiedPropertiesWithoutUndo();
-        }
-
         private static void WireGridCursorReferences(GridCursor cursor, MapRenderer mapRenderer,
             SceneAssets assets, SpriteRenderer spriteRenderer,
-            RangeHighlighter highlighter, PathArrowRenderer pathArrow, UnitMover unitMover, UnitActionMenuUI actionMenu)
+            RangeHighlighter highlighter, PathArrowRenderer pathArrow, UnitMover unitMover)
         {
             var so = new SerializedObject(cursor);
             so.FindProperty("mapRenderer").objectReferenceValue = mapRenderer;
@@ -139,7 +122,9 @@ namespace ProjectAstra.Core.Editor
             so.FindProperty("rangeHighlighter").objectReferenceValue = highlighter;
             so.FindProperty("pathArrowRenderer").objectReferenceValue = pathArrow;
             so.FindProperty("unitMover").objectReferenceValue = unitMover;
-            so.FindProperty("actionMenuUI").objectReferenceValue = actionMenu;
+            // Wire to the authored SelectionMenu prefab instance already placed in the Canvas.
+            so.FindProperty("actionMenuUI").objectReferenceValue =
+                UnityEngine.Object.FindAnyObjectByType<SelectionMenuView>(FindObjectsInactive.Include);
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 

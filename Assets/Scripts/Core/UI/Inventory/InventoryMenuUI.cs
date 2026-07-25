@@ -7,6 +7,7 @@ using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Input;
+using ProjectAstra.Core.UI.ActionMenu;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.Units;
@@ -19,12 +20,13 @@ namespace ProjectAstra.Core.UI.Inventory
     // from the InventoryPopup.prefab built by InventoryPopupBuilder; this
     // controller only binds live data and handles input. Navigation
     // semantics match the original primitive UI, so GridCursor,
-    // UnitActionMenuUI, and ConfirmDialogUI integrations are unchanged.
+    // SelectionMenuView, and ConfirmDialogUI integrations are unchanged.
     public class InventoryMenuUI : MonoBehaviour
     {
         public static bool HasInputFocus { get; private set; }
 
         [SerializeField] private GameObject popupInstance;
+        [SerializeField] private SelectionMenuView slotSubMenuPrefab;   // Indigo Codex parchment variant
 
         // Row-state text colors — empty/depleted cases use distinct palette entries
         // matching the mockup JSX so rows in the same list feel visually coherent.
@@ -43,7 +45,7 @@ namespace ProjectAstra.Core.UI.Inventory
         private UnitInventory inventory;
         private TestUnit unit;
         private ConfirmDialogUI confirmDialog;
-        private UnitActionMenuUI slotSubMenu;
+        private SelectionMenuView slotSubMenu;
         private Action onConsumableUsed;
         private Action onClose;
 
@@ -103,27 +105,13 @@ namespace ProjectAstra.Core.UI.Inventory
             if (slotSubMenu != null) Destroy(slotSubMenu.gameObject);
         }
 
+        // Spawns the Indigo Codex parchment variant of the shared selection menu
+        // as a child, reskinned entirely by the prefab — no runtime recolouring.
         private void EnsureSlotSubMenu()
         {
-            if (slotSubMenu != null) return;
-            var go = new GameObject("InventorySlotSubMenu");
-            go.transform.SetParent(transform, false);
-            slotSubMenu = go.AddComponent<UnitActionMenuUI>();
-
-            // Borrow the cursor/divider/font/glow material from the scene-wired
-            // Warrior's Command action menu — without a font the sub-menu's TMP
-            // fontMaterial reset NRE's. Then tint the panel into Indigo Codex
-            // parchment so the sub-menu matches the popup that spawned it, instead
-            // of inheriting Warrior's Command ember chrome.
-            var template = FindAnyObjectByType<UnitActionMenuUI>(FindObjectsInactive.Include);
-            if (template != null && template != slotSubMenu)
-                slotSubMenu.CopyAssetsFrom(template);
-
-            slotSubMenu.ApplyPalette(
-                bgTint:       new Color(0.95f, 0.90f, 0.77f, 1f),  // parchment #f2e6c4
-                textDefault:  new Color(0.24f, 0.16f, 0.10f, 1f),  // inkDeep #3d2a1a
-                textSelected: new Color(0.69f, 0.22f, 0.16f, 1f),  // vermillion #b0382a
-                accentBar:    new Color(0.79f, 0.60f, 0.23f, 1f)); // brass #c9993a
+            if (slotSubMenu != null || slotSubMenuPrefab == null) return;
+            slotSubMenu = Instantiate(slotSubMenuPrefab, transform, false);
+            slotSubMenu.name = "InventorySlotSubMenu";
         }
 
         #region Input handling
