@@ -37,7 +37,9 @@ namespace ProjectAstra.Core.Input
         private const GameInputAction CursorAndMenu = Cursor | GameInputAction.Confirm | GameInputAction.Cancel;
         private const GameInputAction Dialogue =
             Cursor | GameInputAction.Confirm | GameInputAction.Cancel | GameInputAction.SkipDialogue | GameInputAction.HoldAdvanceDialogue;
-        private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every defined action
+        private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every map-relevant action (HoldInspect, bit 17, is UnitInfoScreen-only)
+        private const GameInputAction UnitInfo =
+            Cursor | GameInputAction.Cancel | GameInputAction.NextUnit | GameInputAction.PrevUnit | GameInputAction.HoldInspect;
 
         [SerializeField] private List<StateInputRule> rules = new()
         {
@@ -56,6 +58,7 @@ namespace ProjectAstra.Core.Input
             new(GameState.SaveMenu, CursorAndMenu),
             new(GameState.SettingsMenu, CursorAndMenu),
             new(GameState.LevelUpScreen, GameInputAction.Confirm),
+            new(GameState.UnitInfoScreen, UnitInfo),
         };
 
         // The allowed-action mask for a state — first matching rule wins; None if the state is

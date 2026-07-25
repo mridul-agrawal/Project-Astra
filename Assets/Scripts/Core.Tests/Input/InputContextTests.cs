@@ -32,15 +32,16 @@ namespace ProjectAstra.Core.Tests.Input
         }
 
         [Test]
-        public void ActionEnum_Defines16Actions()
+        public void ActionEnum_Defines18Actions()
         {
-            Assert.AreEqual(16, Enum.GetValues(typeof(GameInputAction)).Length - 1); // minus None
+            Assert.AreEqual(18, Enum.GetValues(typeof(GameInputAction)).Length - 1); // minus None
         }
 
         [Test]
-        public void BattleMap_AllowsAll16Actions()
+        public void BattleMap_AllowsAll17MapActions()
         {
-            Assert.AreEqual(16, table.GetAllowedActionNames(GameState.BattleMap).Count);
+            // HoldInspect (bit 17) is UnitInfoScreen-only, so the map grants the other 17.
+            Assert.AreEqual(17, table.GetAllowedActionNames(GameState.BattleMap).Count);
         }
 
         [Test]

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 349a204564adf8947a5f5fabb5adadaf, type: 3}
+  m_Name: StatInfoTable
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.UnitInfo.StatInfoTable
+  entries:
+  - key: 0
+    label: STRENGTH
+    icon: {fileID: 0}
+    description: Physical attack power. Raises damage dealt with swords, lances,
+      axes, and bows.
+  - key: 1
+    label: MAGIC
+    icon: {fileID: 0}
+    description: Magical attack power. Raises damage dealt with tomes and the potency
+      of staves.
+  - key: 2
+    label: SKILL
+    icon: {fileID: 0}
+    description: Accuracy and critical potential. Higher skill lands more hits and
+      more criticals.
+  - key: 3
+    label: SPEED
+    icon: {fileID: 0}
+    description: How fast the unit acts. Enough speed over a foe lets this unit strike
+      twice.
+  - key: 4
+    label: DEFENSE
+    icon: {fileID: 0}
+    description: Reduces damage taken from physical attacks.
+  - key: 5
+    label: RESIST
+    icon: {fileID: 0}
+    description: Reduces damage taken from magical attacks.
+  - key: 6
+    label: CON
+    icon: {fileID: 0}
+    description: Build. Heavier weapons weigh a unit down less the higher their constitution.
+  - key: 7
+    label: LUCK
+    icon: {fileID: 0}
+    description: Fortune. Improves hit and avoid, and lowers the enemy's chance to
+      land a critical.
+  - key: 8
+    label: MOVE
+    icon: {fileID: 0}
+    description: The distance this unit can move on the map. Higher values allow
+      movement across more tiles.

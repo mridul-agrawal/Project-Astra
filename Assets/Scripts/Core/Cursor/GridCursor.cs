@@ -14,6 +14,7 @@ using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI;
+using ProjectAstra.Core.UI.ActionMenu;
 using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Convoy;
 using ProjectAstra.Core.UI.Forecast;
@@ -46,13 +47,13 @@ namespace ProjectAstra.Core.Cursor
         [SerializeField] private RangeHighlighter rangeHighlighter;
         [SerializeField] private PathArrowRenderer pathArrowRenderer;
         [SerializeField] private UnitMover unitMover;
-        [SerializeField] private UnitActionMenuUI actionMenuUI;
+        [SerializeField] private SelectionMenuView actionMenuUI;
         [SerializeField] private InventoryMenuUI inventoryMenuUI;
         [SerializeField] private ConfirmDialogUI confirmDialogUI;
         [SerializeField] private ToastNotificationUI toastUI;
         [SerializeField] private TradeScreenUI tradeUI;
         [SerializeField] private ConvoyUI convoyUI;
-        [SerializeField] private UnitInfoPanelUI unitInfoPanelUI;
+        [SerializeField] private UnitInfoUIController unitInfoUIController;
         [SerializeField] private CombatForecastUIController combatForecastUI;
 
         [Header("Combat Animation")]
@@ -80,7 +81,7 @@ namespace ProjectAstra.Core.Cursor
         private CombatExecutor combatExecutor;
         private StaffExecutor staffExecutor;
         private TargetingFlow targetingFlow;
-        private ActionMenuFlow actionMenuFlow;
+        private ActionMenuController actionMenuController;
         private CantoFlow cantoFlow;
         private UnitSelectionFlow unitSelectionFlow;
 
@@ -125,7 +126,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeCombatExecutor();
             InitializeStaffExecutor();
             InitializeTargetingFlow();
-            InitializeActionMenuFlow();
+            InitializeActionMenuController();
             InitializeCantoFlow();
             InitializeUnitSelectionFlow();
             SetPosition(Vector2Int.zero);
@@ -262,14 +263,14 @@ namespace ProjectAstra.Core.Cursor
 
         private void HandleNextUnit()
         {
-            if (currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            if (!IsBattleMapState() || currentMode != CursorMode.Free || TurnManager.Instance == null) return;
             var next = TurnManager.Instance.UnitRegistry.GetNextUnactedUnit(Faction.Player, FindUnitAt(gridPosition));
             if (next != null) SetPosition(next.gridPosition);
         }
 
         private void HandlePrevUnit()
         {
-            if (currentMode != CursorMode.Free || TurnManager.Instance == null) return;
+            if (!IsBattleMapState() || currentMode != CursorMode.Free || TurnManager.Instance == null) return;
             var prev = TurnManager.Instance.UnitRegistry.GetPrevUnactedUnit(Faction.Player, FindUnitAt(gridPosition));
             if (prev != null) SetPosition(prev.gridPosition);
         }
@@ -282,7 +283,7 @@ namespace ProjectAstra.Core.Cursor
             TestUnit unit = FindUnitAt(gridPosition);
             if (unit == null) return;
 
-            unitInfoPanelUI?.Show(unit, UnitInfoContext.BattleMap);
+            unitInfoUIController?.Open(unit);
         }
 
         // --- Initialization helpers ---
@@ -327,10 +328,10 @@ namespace ProjectAstra.Core.Cursor
                 rangeHighlighter, combatForecastUI, this);
         }
 
-        private void InitializeActionMenuFlow()
+        private void InitializeActionMenuController()
         {
-            if (actionMenuFlow != null) return;
-            actionMenuFlow = new ActionMenuFlow(
+            if (actionMenuController != null) return;
+            actionMenuController = new ActionMenuController(
                 actionMenuUI, inventoryMenuUI, confirmDialogUI,
                 tradeUI, convoyUI, toastUI,
                 targetingFlow, staffExecutor, this);
@@ -339,7 +340,7 @@ namespace ProjectAstra.Core.Cursor
         private void InitializeCantoFlow()
         {
             if (cantoFlow != null) return;
-            cantoFlow = new CantoFlow(this, actionMenuFlow);
+            cantoFlow = new CantoFlow(this, actionMenuController);
         }
 
         private void InitializeUnitSelectionFlow()
@@ -348,7 +349,7 @@ namespace ProjectAstra.Core.Cursor
             unitSelectionFlow = new UnitSelectionFlow(
                 pathfindingService, unitMover,
                 rangeHighlighter, pathArrowRenderer, combatForecastUI,
-                this, cantoFlow, actionMenuFlow);
+                this, cantoFlow, actionMenuController);
         }
 
         private void AddListenersToInputEvents()
@@ -445,15 +446,20 @@ namespace ProjectAstra.Core.Cursor
             if (currentMode == CursorMode.Locked) return false;
             if (currentMode == CursorMode.ActionMenu) return false;
             if (BattleMapUI.HasInputFocus) return false;
-            if (UnitActionMenuUI.HasInputFocus) return false;
+            if (SelectionMenuView.HasInputFocus) return false;
             if (InventoryMenuUI.HasInputFocus) return false;
             if (ConfirmDialogUI.HasInputFocus) return false;
             if (TradeScreenUI.HasInputFocus) return false;
             if (ConvoyUI.HasInputFocus) return false;
-            if (UnitInfoPanelUI.HasInputFocus) return false;
+            if (!IsBattleMapState()) return false;
             if (unitMover != null && unitMover.IsMoving) return false;
             return true;
         }
+
+        // The map cursor + unit-cycling only act while on the battle map; a dedicated
+        // GameState (e.g. UnitInfoScreen) suppresses them without a per-screen focus flag.
+        private static bool IsBattleMapState() =>
+            GameStateManager.Instance == null || GameStateManager.Instance.CurrentState == GameState.BattleMap;
 
         // --- Selection-flow seams (forward to _unitSelectionFlow) ---
 
@@ -532,7 +538,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeCombatExecutor();
             InitializeStaffExecutor();
             InitializeTargetingFlow();
-            InitializeActionMenuFlow();
+            InitializeActionMenuController();
             InitializeCantoFlow();
             InitializeUnitSelectionFlow();
         }
@@ -540,7 +546,7 @@ namespace ProjectAstra.Core.Cursor
         internal void SetSpriteRenderer(SpriteRenderer sr) => spriteRenderer = sr;
         internal void SetRangeHighlighter(RangeHighlighter rh) => rangeHighlighter = rh;
         internal void SetPathArrowRenderer(PathArrowRenderer par) => pathArrowRenderer = par;
-        internal void SetActionMenuUI(UnitActionMenuUI ui) => actionMenuUI = ui;
+        internal void SetActionMenuUI(SelectionMenuView ui) => actionMenuUI = ui;
         internal void SetUnitMover(UnitMover mover) => unitMover = mover;
 
         internal void SetModeSprites(Sprite idle, Sprite selected, Sprite targeting)

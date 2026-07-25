@@ -64,6 +64,7 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.Splash, GameState.TitleScreen),
 
                 new TransitionEntry(GameState.TitleScreen, GameState.MainMenu),
+                new TransitionEntry(GameState.TitleScreen, GameState.Cutscene),
 
                 new TransitionEntry(GameState.MainMenu, GameState.Cutscene),
                 new TransitionEntry(GameState.MainMenu, GameState.PreBattlePrep),
@@ -90,6 +91,7 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.BattleMapPaused, GameState.BattleMap),
                 new TransitionEntry(GameState.BattleMapPaused, GameState.SaveMenu),
                 new TransitionEntry(GameState.BattleMapPaused, GameState.SettingsMenu),
+                new TransitionEntry(GameState.BattleMapPaused, GameState.TitleScreen),
 
                 new TransitionEntry(GameState.CombatAnimation, GameState.BattleMap),
 
@@ -101,6 +103,7 @@ namespace ProjectAstra.Core.State
 
                 new TransitionEntry(GameState.GameOver, GameState.MainMenu),
                 new TransitionEntry(GameState.GameOver, GameState.SaveMenu),
+                new TransitionEntry(GameState.GameOver, GameState.TitleScreen),
 
                 new TransitionEntry(GameState.SaveMenu, GameState.BattleMapPaused),
                 new TransitionEntry(GameState.SaveMenu, GameState.ChapterClear),
@@ -111,6 +114,9 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.SettingsMenu, GameState.MainMenu),
 
                 new TransitionEntry(GameState.LevelUpScreen, GameState.BattleMap),
+
+                new TransitionEntry(GameState.BattleMap, GameState.UnitInfoScreen),
+                new TransitionEntry(GameState.UnitInfoScreen, GameState.BattleMap),
             };
         }
     }
