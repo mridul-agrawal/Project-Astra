@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Turn;
+using ProjectAstra.Core.UI.ActionMenu;
 using ProjectAstra.Core.UI.Forecast;
 using ProjectAstra.Core.Units;
 
@@ -15,7 +16,7 @@ namespace ProjectAstra.Core.Cursor
     //
     // Selection-flow state (selected unit, reachability, valid move tiles,
     // memorized cursor position) lives here. Other flows (TargetingFlow,
-    // ActionMenuFlow, CantoFlow) read or mutate it through this class's
+    // ActionMenuController, CantoFlow) read or mutate it through this class's
     // public API rather than holding their own copies.
     public class UnitSelectionFlow
     {
@@ -26,7 +27,7 @@ namespace ProjectAstra.Core.Cursor
         private readonly CombatForecastUIController combatForecastUI;
         private readonly GridCursor cursor;
         private readonly CantoFlow cantoFlow;
-        private readonly ActionMenuFlow actionMenuFlow;
+        private readonly ActionMenuController actionMenuController;
 
         private TestUnit selectedUnit;
         private Pathfinder.ReachabilityResult currentReachability;
@@ -51,7 +52,7 @@ namespace ProjectAstra.Core.Cursor
             CombatForecastUIController combatForecastUI,
             GridCursor cursor,
             CantoFlow cantoFlow,
-            ActionMenuFlow actionMenuFlow)
+            ActionMenuController actionMenuController)
         {
             this.pathfindingService = pathfindingService;
             this.unitMover = unitMover;
@@ -60,7 +61,7 @@ namespace ProjectAstra.Core.Cursor
             this.combatForecastUI = combatForecastUI;
             this.cursor = cursor;
             this.cantoFlow = cantoFlow;
-            this.actionMenuFlow = actionMenuFlow;
+            this.actionMenuController = actionMenuController;
         }
 
         // --- Entry points (HandleConfirm dispatches here) ---
@@ -108,7 +109,7 @@ namespace ProjectAstra.Core.Cursor
             pathArrowRenderer.ShowPath(path);
         }
 
-        // --- Mutation seams used by ActionMenuFlow + CantoFlow ---
+        // --- Mutation seams used by ActionMenuController + CantoFlow ---
 
         public void SetValidMoveTiles(HashSet<Vector2Int> tiles) => validMoveTiles = tiles;
 
@@ -204,7 +205,7 @@ namespace ProjectAstra.Core.Cursor
         public void ResetState()
         {
             cantoFlow?.ResetState();
-            actionMenuFlow?.ClearLastChoice();
+            actionMenuController?.ClearLastChoice();
             selectedUnit = null;
             validMoveTiles = null;
             rangeHighlighter?.ClearAll();
@@ -264,9 +265,7 @@ namespace ProjectAstra.Core.Cursor
 
         public void ShowActionMenu()
         {
-            actionMenuFlow.Show(selectedUnit, committedDestination,
-                onComplete: CompleteAction,
-                onCancelToUnitSelected: RestoreFromActionCancel);
+            actionMenuController.Show(selectedUnit, committedDestination, onComplete: CompleteAction, onCancelToUnitSelected: RestoreFromActionCancel);
         }
 
         private void ClearOverlay()

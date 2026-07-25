@@ -159,7 +159,7 @@ namespace ProjectAstra.Core.Tests.Cursor
 
             // Simulate entering a constrained mode by injecting the
             // valid-tile set through the cursor's internal SetValidMoveTiles
-            // seam (used in production by ActionMenuFlow to swap from move
+            // seam (used in production by ActionMenuController to swap from move
             // to attack/heal targeting).
             cursor.SetValidMoveTiles(new HashSet<Vector2Int>
             {

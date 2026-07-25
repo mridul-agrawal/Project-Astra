@@ -2,35 +2,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Stats;
-using ProjectAstra.Core.UI.BattleMap;
 using ProjectAstra.Core.UI.Convoy;
 using ProjectAstra.Core.UI.Inventory;
 using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.UI.Trade;
 using ProjectAstra.Core.Units;
 
-namespace ProjectAstra.Core.Cursor
+namespace ProjectAstra.Core.UI.ActionMenu
 {
-    // Choice the player picked from the post-movement action menu. Cached on
-    // ActionMenuFlow so CantoFlow can decide later whether canto applies
-    // (Wait and "no choice" don't trigger canto).
-    public enum ActionChoice { Attack, Heal, Fortify, Item, Trade, Supply, Wait }
-
-    // Builds and drives the post-movement action menu (Attack / Heal /
-    // Fortify / Item / Trade / Supply / Wait). Owns:
-    //   • the eligibility checks that decide which entries appear
-    //   • the cached lists those checks produce (enemy / heal / adjacent-ally
-    //     tiles), passed downstream to TargetingFlow / TradeSession
-    //   • the dispatcher that routes the chosen entry to its handler
-    //   • the sub-action UI openers (Inventory popup, Trade picker, Convoy)
-    //
-    // Cancel routes back through a caller-supplied callback because undoing
-    // the unit's movement and restoring the UnitSelected overlay are
-    // GridCursor's selection-flow concerns, not ActionMenu's.
-    public class ActionMenuFlow
+    public class ActionMenuController
     {
-        private readonly UnitActionMenuUI actionMenuUI;
+        // External References for game workflow:
+        private readonly SelectionMenuView menuView;
         private readonly InventoryMenuUI inventoryMenuUI;
         private readonly ConfirmDialogUI confirmDialogUI;
         private readonly TradeScreenUI tradeUI;
@@ -40,35 +25,28 @@ namespace ProjectAstra.Core.Cursor
         private readonly StaffExecutor staffExecutor;
         private readonly GridCursor cursor;
 
+        // Internal references for the current menu session:
         private TestUnit selectedUnit;
         private Vector2Int committedDestination;
-        private Action onComplete;
-        private Action onCancelToUnitSelected;
-
-        private readonly List<ActionChoice> choices = new();
+        private ActionMenuModel currentModel;
         private List<Vector2Int> enemyTiles = new();
         private List<Vector2Int> healTiles = new();
         private List<TestUnit> adjacentAllies = new();
         private ActionChoice? lastChoice;
 
+        // Events:
+        private Action onComplete;
+        private Action onCancelToUnitSelected;
+
         public ActionChoice? LastChoice => lastChoice;
 
-        // Cleared by GridCursor at end of turn / unit deselect so the next
-        // selection starts fresh.
+        // Cleared by GridCursor at end of turn / unit deselect so the next selection starts fresh.
         public void ClearLastChoice() => lastChoice = null;
 
-        public ActionMenuFlow(
-            UnitActionMenuUI actionMenuUI,
-            InventoryMenuUI inventoryMenuUI,
-            ConfirmDialogUI confirmDialogUI,
-            TradeScreenUI tradeUI,
-            ConvoyUI convoyUI,
-            ToastNotificationUI toastUI,
-            TargetingFlow targetingFlow,
-            StaffExecutor staffExecutor,
-            GridCursor cursor)
+        public ActionMenuController(SelectionMenuView menuView, InventoryMenuUI inventoryMenuUI, ConfirmDialogUI confirmDialogUI, TradeScreenUI tradeUI,
+            ConvoyUI convoyUI, ToastNotificationUI toastUI, TargetingFlow targetingFlow, StaffExecutor staffExecutor, GridCursor cursor)
         {
-            this.actionMenuUI = actionMenuUI;
+            this.menuView = menuView;
             this.inventoryMenuUI = inventoryMenuUI;
             this.confirmDialogUI = confirmDialogUI;
             this.tradeUI = tradeUI;
@@ -83,43 +61,39 @@ namespace ProjectAstra.Core.Cursor
         // onComplete fires on Wait / Item-use / Supply-close.
         // onCancelToUnitSelected fires when the player cancels the menu and
         // the unit needs to be unwound back to its pre-move tile.
-        public void Show(TestUnit unit, Vector2Int committedDestination,
-            Action onComplete, Action onCancelToUnitSelected)
+        public void Show(TestUnit unit, Vector2Int committedDestination, Action onComplete, Action onCancelToUnitSelected)
         {
             selectedUnit = unit;
             this.committedDestination = committedDestination;
             this.onComplete = onComplete;
             this.onCancelToUnitSelected = onCancelToUnitSelected;
 
-            var labels = new List<string>();
-            choices.Clear();
+            currentModel = new ActionMenuModel();
             enemyTiles = targetingFlow.GetEnemiesInAttackRange(selectedUnit, committedDestination);
 
-            TryAddAttackAction(labels);
-            TryAddStaffAction(labels);
-            TryAddItemAction(labels);
-            TryAddTradeAction(labels);
-            TryAddSupplyAction(labels);
+            TryAddAttackAction(currentModel);
+            TryAddStaffAction(currentModel);
+            TryAddItemAction(currentModel);
+            TryAddTradeAction(currentModel);
+            TryAddSupplyAction(currentModel);
 
-            labels.Add("Wait");
-            choices.Add(ActionChoice.Wait);
+            currentModel.Add("Wait", ActionChoice.Wait);
 
-            cursor.SetMode(CursorMode.ActionMenu);
-            actionMenuUI?.Show(labels, OnActionSelected, OnActionCancelled);
+            cursor.SetMode(ProjectAstra.Core.Cursor.CursorMode.ActionMenu);
+            menuView?.Show(currentModel.ToLabels(), OnActionSelected, OnActionCancelled);
         }
 
         // --- Per-action eligibility ---
 
-        private void TryAddAttackAction(List<string> labels)
+        private void TryAddAttackAction(ActionMenuModel model)
         {
             if (enemyTiles.Count == 0) return;
             if (selectedUnit == null || selectedUnit.Inventory.IsUnarmed) return;
 
-            labels.Add("Attack");
-            choices.Add(ActionChoice.Attack);
+            model.Add("Attack", ActionChoice.Attack);
         }
 
-        private void TryAddStaffAction(List<string> labels)
+        private void TryAddStaffAction(ActionMenuModel model)
         {
             if (selectedUnit == null) return;
 
@@ -128,12 +102,12 @@ namespace ProjectAstra.Core.Cursor
             if (staff.staffEffect == StaffEffect.None || staff.IsBroken) return;
 
             if (staff.staffEffect == StaffEffect.AreaOfEffect)
-                TryAddFortifyAction(labels);
+                TryAddFortifyAction(model);
             else
-                TryAddHealAction(labels);
+                TryAddHealAction(model);
         }
 
-        private void TryAddFortifyAction(List<string> labels)
+        private void TryAddFortifyAction(ActionMenuModel model)
         {
             var staff = selectedUnit.equippedWeapon;
             int mag = GetMagStat(selectedUnit);
@@ -144,31 +118,28 @@ namespace ProjectAstra.Core.Cursor
                 if (u == selectedUnit) continue;
                 if (!StaffEffects.CanHealTarget(selectedUnit, u, staff, mag, out _)) continue;
 
-                labels.Add("Fortify");
-                choices.Add(ActionChoice.Fortify);
+                model.Add("Fortify", ActionChoice.Fortify);
                 return;
             }
         }
 
-        private void TryAddHealAction(List<string> labels)
+        private void TryAddHealAction(ActionMenuModel model)
         {
             healTiles = targetingFlow.GetAlliesInHealRange(
                 selectedUnit, committedDestination, GetMagStat(selectedUnit));
             if (healTiles.Count == 0) return;
 
-            labels.Add("Heal");
-            choices.Add(ActionChoice.Heal);
+            model.Add("Heal", ActionChoice.Heal);
         }
 
-        private void TryAddItemAction(List<string> labels)
+        private void TryAddItemAction(ActionMenuModel model)
         {
             if (selectedUnit == null || selectedUnit.Inventory.OccupiedCount == 0) return;
 
-            labels.Add("Item");
-            choices.Add(ActionChoice.Item);
+            model.Add("Item", ActionChoice.Item);
         }
 
-        private void TryAddTradeAction(List<string> labels)
+        private void TryAddTradeAction(ActionMenuModel model)
         {
             adjacentAllies = selectedUnit != null
                 ? AdjacentAllyFinder.FindAdjacentAllies(
@@ -177,33 +148,32 @@ namespace ProjectAstra.Core.Cursor
 
             if (adjacentAllies.Count == 0) return;
 
-            labels.Add("Trade");
-            choices.Add(ActionChoice.Trade);
+            model.Add("Trade", ActionChoice.Trade);
         }
 
-        private void TryAddSupplyAction(List<string> labels)
+        private void TryAddSupplyAction(ActionMenuModel model)
         {
             if (selectedUnit == null || !selectedUnit.isLord) return;
-            if (!Convoy.Current.IsAvailable) return;
+            if (!ProjectAstra.Core.Convoy.Current.IsAvailable) return;
 
-            labels.Add("Supply");
-            choices.Add(ActionChoice.Supply);
+            model.Add("Supply", ActionChoice.Supply);
         }
 
         // --- Dispatch ---
 
         private void OnActionSelected(int index)
         {
-            if (index < 0 || index >= choices.Count)
+            IReadOnlyList<ActionMenuEntry> entries = currentModel.Entries;
+            if (index < 0 || index >= entries.Count)
             {
                 lastChoice = ActionChoice.Wait;
                 onComplete?.Invoke();
                 return;
             }
 
-            lastChoice = choices[index];
+            lastChoice = entries[index].Choice;
 
-            switch (choices[index])
+            switch (entries[index].Choice)
             {
                 case ActionChoice.Attack: EnterAttackTargeting(); break;
                 case ActionChoice.Heal: EnterHealTargeting(); break;
@@ -260,7 +230,7 @@ namespace ProjectAstra.Core.Cursor
             foreach (var ally in adjacentAllies)
                 names.Add(ally.name);
 
-            actionMenuUI?.Show(names,
+            menuView?.Show(names,
                 index => OpenTrade(adjacentAllies[index]),
                 ReShow);
         }
@@ -279,7 +249,7 @@ namespace ProjectAstra.Core.Cursor
         {
             if (selectedUnit == null || convoyUI == null) { ReShow(); return; }
 
-            var convoy = Convoy.Current as SupplyConvoy;
+            var convoy = ProjectAstra.Core.Convoy.Current as SupplyConvoy;
             if (convoy == null) { ReShow(); return; }
 
             convoyUI.Show(convoy, selectedUnit, toastUI, onClose: () => onComplete?.Invoke());
@@ -291,12 +261,11 @@ namespace ProjectAstra.Core.Cursor
 
         // --- Static helpers ---
 
-        private static int GetMagStat(TestUnit unit) =>
-            unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
+        private static int GetMagStat(TestUnit unit) => unit.UnitInstance != null ? unit.UnitInstance.Stats[StatIndex.Mag] : 0;
 
         private static TestUnit FindUnitAt(Vector2Int pos)
         {
-            foreach (var unit in UnityEngine.Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+            foreach (var unit in UnityEngine.Object.FindObjectsByType<TestUnit>())
                 if (unit.gridPosition == pos)
                     return unit;
             return null;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Pathfinding;
+using ProjectAstra.Core.UI.ActionMenu;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Cursor
@@ -18,17 +19,17 @@ namespace ProjectAstra.Core.Cursor
     public class CantoFlow
     {
         private readonly GridCursor cursor;
-        private readonly ActionMenuFlow actionMenuFlow;
+        private readonly ActionMenuController actionMenuController;
 
         private bool isCantoMode;
         private int preCantoMovementPoints;
 
         public bool IsCantoMode => isCantoMode;
 
-        public CantoFlow(GridCursor cursor, ActionMenuFlow actionMenuFlow)
+        public CantoFlow(GridCursor cursor, ActionMenuController actionMenuController)
         {
             this.cursor = cursor;
-            this.actionMenuFlow = actionMenuFlow;
+            this.actionMenuController = actionMenuController;
         }
 
         // Returns true and re-enters UnitSelected if canto applies; false
@@ -43,7 +44,7 @@ namespace ProjectAstra.Core.Cursor
             if (isCantoMode) return false;
             if (selectedUnit == null) return false;
 
-            var lastChoice = actionMenuFlow?.LastChoice;
+            var lastChoice = actionMenuController?.LastChoice;
             if (lastChoice == ActionChoice.Wait || lastChoice == null) return false;
 
             var cls = selectedUnit.UnitInstance?.CurrentClass;
@@ -76,7 +77,7 @@ namespace ProjectAstra.Core.Cursor
             isCantoMode = false;
             if (selectedUnit != null)
                 selectedUnit.movementPoints = preCantoMovementPoints;
-            actionMenuFlow?.ClearLastChoice();
+            actionMenuController?.ClearLastChoice();
         }
 
         public void ResetState() => isCantoMode = false;
