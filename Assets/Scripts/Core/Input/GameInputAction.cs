@@ -27,6 +27,5 @@ namespace ProjectAstra.Core.Input
         NextUnit            = 1 << 14,
         PrevUnit            = 1 << 15,
         PeekObjective       = 1 << 16,
-        HoldInspect         = 1 << 17,
     }
 }

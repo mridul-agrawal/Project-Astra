@@ -37,9 +37,9 @@ namespace ProjectAstra.Core.Input
         private const GameInputAction CursorAndMenu = Cursor | GameInputAction.Confirm | GameInputAction.Cancel;
         private const GameInputAction Dialogue =
             Cursor | GameInputAction.Confirm | GameInputAction.Cancel | GameInputAction.SkipDialogue | GameInputAction.HoldAdvanceDialogue;
-        private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every map-relevant action (HoldInspect, bit 17, is UnitInfoScreen-only)
+        private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every defined action
         private const GameInputAction UnitInfo =
-            Cursor | GameInputAction.Cancel | GameInputAction.NextUnit | GameInputAction.PrevUnit | GameInputAction.HoldInspect;
+            Cursor | GameInputAction.Cancel | GameInputAction.NextUnit | GameInputAction.PrevUnit;
 
         [SerializeField] private List<StateInputRule> rules = new()
         {

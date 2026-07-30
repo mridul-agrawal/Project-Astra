@@ -14,6 +14,8 @@ namespace ProjectAstra.Core.UI.UnitInfo
     //
     // Lives on an always-woken Canvas child (like the Battle HUD / Combat Forecast roots) so
     // Awake runs and it hears the state transition; panelRoot is the visible content it toggles.
+    // The footer is the inspector — it always shows the selected row's details, so there is no
+    // separate inspect action.
     public class UnitInfoUIController : MonoBehaviour
     {
         [Header("Screen")]
@@ -25,7 +27,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
         [SerializeField] private UnitGearView gearView;
         [SerializeField] private UnitInfoTabBarView tabBarView;
         [SerializeField] private UnitInfoFooterView footerView;
-        [SerializeField] private UnitInspectView inspectView;
 
         [Header("Data")]
         [SerializeField] private StatInfoTable statInfo;
@@ -37,7 +38,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
         private TestUnit unit;
         private UnitInfoTab currentTab;
         private int selectedIndex;
-        private bool inspecting;
         private bool active;
 
         private void Awake()
@@ -70,14 +70,12 @@ namespace ProjectAstra.Core.UI.UnitInfo
             if (unit == null) return;
             currentTab = UnitInfoTab.Stats;
             selectedIndex = 0;
-            inspecting = false;
 
             summaryController.Render(unit);
             statsController.Render(unit);
             gearController.Render(unit);
 
             if (panelRoot != null) panelRoot.SetActive(true);
-            inspectView?.Hide();
             ApplyTab();
             ApplySelection();
 
@@ -91,7 +89,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
             if (!active) return;
             active = false;
             UnsubscribeInput();
-            inspectView?.Hide();
             if (panelRoot != null) panelRoot.SetActive(false);
             AudioManager.Instance?.Play(SoundId.UiPanelClose);
         }
@@ -105,7 +102,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
             im.OnCursorMove += HandleCursorMove;
             im.OnNextUnit += ToggleTab;
             im.OnPrevUnit += ToggleTab;
-            im.OnHoldInspect += HandleInspect;
             im.OnCancel += HandleCancel;
         }
 
@@ -116,13 +112,11 @@ namespace ProjectAstra.Core.UI.UnitInfo
             im.OnCursorMove -= HandleCursorMove;
             im.OnNextUnit -= ToggleTab;
             im.OnPrevUnit -= ToggleTab;
-            im.OnHoldInspect -= HandleInspect;
             im.OnCancel -= HandleCancel;
         }
 
         private void HandleCursorMove(Vector2Int dir)
         {
-            if (inspecting) return;
             if (dir.x != 0) { ToggleTab(); return; }   // Left/Right also flips tabs
             if (dir.y == 0) return;
             int step = dir.y > 0 ? -1 : 1;              // Unity +y is up; rows flow downward
@@ -135,7 +129,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
 
         private void ToggleTab()
         {
-            if (inspecting) return;
             currentTab = currentTab == UnitInfoTab.Stats ? UnitInfoTab.Gear : UnitInfoTab.Stats;
             selectedIndex = 0;
             ApplyTab();
@@ -143,23 +136,8 @@ namespace ProjectAstra.Core.UI.UnitInfo
             AudioManager.Instance?.Play(SoundId.UiTab);
         }
 
-        private void HandleInspect(bool held)
-        {
-            if (!active) return;
-            inspecting = held;
-            if (held)
-            {
-                var f = BuildFooter();
-                inspectView?.Show(f != null ? f.Title : "", f != null ? f.Description : "");
-            }
-            else inspectView?.Hide();
-        }
-
-        private void HandleCancel()
-        {
-            if (inspecting) { inspecting = false; inspectView?.Hide(); return; }
+        private void HandleCancel() =>
             GameStateManager.Instance?.RequestTransition(GameState.BattleMap, nameof(UnitInfoUIController));
-        }
 
         // --- Presentation ---
 

@@ -71,7 +71,6 @@ namespace ProjectAstra.EditorTools
             var stats    = BuildStatsTab(content.transform);
             var gear     = BuildGearTab(content.transform);
             var footer   = BuildFooter(content.transform);
-            var inspect  = BuildInspect(panel.transform);
 
             // Wire the composition root's serialized refs.
             var so = new SerializedObject(controller);
@@ -81,7 +80,6 @@ namespace ProjectAstra.EditorTools
             so.FindProperty("gearView").objectReferenceValue = gear;
             so.FindProperty("tabBarView").objectReferenceValue = tabBar;
             so.FindProperty("footerView").objectReferenceValue = footer;
-            so.FindProperty("inspectView").objectReferenceValue = inspect;
             so.FindProperty("statInfo").objectReferenceValue =
                 AssetDatabase.LoadAssetAtPath<StatInfoTable>(StatInfoPath);
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -318,24 +316,7 @@ namespace ProjectAstra.EditorTools
             v.Title = Text(NewText("Title", f.transform, "", 26, Ink, TextAlignmentOptions.MidlineLeft), 96, 8, 500, 34);
             v.Description = Text(NewText("Desc", f.transform, "", 20, Ink, TextAlignmentOptions.TopLeft), 96, 44, 1100, 40);
 
-            Text(NewText("Hints", f.transform, "Y  INSPECT (Hold)      B  BACK", 22, Ink, TextAlignmentOptions.MidlineRight), 1250, 28, 570, 40);
-            return v;
-        }
-
-        // ---------------- inspect overlay ----------------
-
-        static UnitInspectView BuildInspect(Transform parent)
-        {
-            var dim = NewImage("InspectOverlay", parent, new Color(0, 0, 0, 0.6f));
-            SetStretch(dim.GetComponent<RectTransform>());
-            var v = dim.gameObject.AddComponent<UnitInspectView>();
-            v.Root = dim;
-
-            var box = NewImage("Box", dim.transform, Parchment);
-            SetTopLeftBox(box.GetComponent<RectTransform>(), 560, 320, 800, 440);
-            v.Title = Text(NewText("Title", box.transform, "", 36, Ink, TextAlignmentOptions.Center), 40, 30, 720, 60);
-            v.Body = Text(NewText("Body", box.transform, "", 24, Ink, TextAlignmentOptions.TopLeft), 40, 120, 720, 280);
-            dim.SetActive(false);
+            Text(NewText("Hints", f.transform, "B  BACK", 22, Ink, TextAlignmentOptions.MidlineRight), 1250, 28, 570, 40);
             return v;
         }
 
