@@ -5,7 +5,8 @@
         "ProjectAstra.Core",
         "Unity.TextMeshPro",
         "Unity.InputSystem",
-        "Unity.Recorder.Editor"
+        "Unity.Recorder.Editor",
+        "Unity.2D.Sprite.Editor"
     ],
     "includePlatforms": [
         "Editor"

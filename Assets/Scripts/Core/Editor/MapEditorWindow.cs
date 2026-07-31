@@ -15,7 +15,9 @@ namespace ProjectAstra.Core.Editor
     // repaint) and written back only on Save, so typing and painting stay responsive.
     public class MapEditorWindow : EditorWindow
     {
-        private enum Tool { Terrain, Units, Objects }
+        private enum Tool { Terrain, Units, Objects, Environment }
+
+        private enum EnvLayer { GroundDeco, BaseLayer, AboveUnits }
 
         private const int CellPixels = 32;
 
@@ -43,6 +45,15 @@ namespace ProjectAstra.Core.Editor
         private int unitTeam;
         private string objectId = "";
         private Sprite objectSprite;
+
+        private List<EnvironmentDecoration> decorations = new();
+        private int selectedDeco = -1;
+        private RuntimeAnimatorController envAnimator;
+        private Sprite envPreview;
+        private EnvLayer envLayer = EnvLayer.GroundDeco;
+        private float envPhase;
+        private bool envUnscaled;
+        private bool envMoves;
 
         private float zoom = 44f;
         private Vector2 scroll;
@@ -122,6 +133,8 @@ namespace ProjectAstra.Core.Editor
 
             units = new List<UnitStartPosition>(target.UnitStartPositions ?? new UnitStartPosition[0]);
             objects = new List<MapObject>(target.Objects ?? new MapObject[0]);
+            decorations = new List<EnvironmentDecoration>(target.Decorations ?? new EnvironmentDecoration[0]);
+            selectedDeco = -1;
             dirty = false;
         }
 
@@ -242,7 +255,7 @@ namespace ProjectAstra.Core.Editor
         private void DrawToolbar()
         {
             EditorGUILayout.Space(6);
-            tool = (Tool)GUILayout.Toolbar((int)tool, new[] { "Terrain", "Units", "Objects" });
+            tool = (Tool)GUILayout.Toolbar((int)tool, new[] { "Terrain", "Units", "Objects", "Environment" });
         }
 
         private void DrawPalette()
@@ -252,6 +265,7 @@ namespace ProjectAstra.Core.Editor
                 case Tool.Terrain: DrawTerrainPalette(); break;
                 case Tool.Units: DrawUnitPalette(); break;
                 case Tool.Objects: DrawObjectPalette(); break;
+                case Tool.Environment: DrawEnvironmentPalette(); break;
             }
         }
 
@@ -316,6 +330,7 @@ namespace ProjectAstra.Core.Editor
             DrawGridLines(rect);
             DrawUnitMarkers(rect);
             DrawObjectMarkers(rect);
+            if (tool == Tool.Environment) DrawDecorationSprites(rect);
             HandleCanvasInput(rect);
         }
 
@@ -383,15 +398,16 @@ namespace ProjectAstra.Core.Editor
                     {
                         GUIUtility.hotControl = id;
                         GUIUtility.keyboardControl = 0;
-                        ApplyToolAt(CellUnder(rect, e.mousePosition));
+                        if (tool == Tool.Environment) EnvironmentMouseDown(rect, e.mousePosition);
+                        else ApplyToolAt(CellUnder(rect, e.mousePosition));
                         e.Use();
                     }
                     break;
                 case EventType.MouseDrag:
-                    if (GUIUtility.hotControl == id && tool == Tool.Terrain && rect.Contains(e.mousePosition))
+                    if (GUIUtility.hotControl == id && rect.Contains(e.mousePosition))
                     {
-                        ApplyToolAt(CellUnder(rect, e.mousePosition));
-                        e.Use();
+                        if (tool == Tool.Terrain) { ApplyToolAt(CellUnder(rect, e.mousePosition)); e.Use(); }
+                        else if (tool == Tool.Environment) { EnvironmentMouseDrag(rect, e.mousePosition); e.Use(); }
                     }
                     break;
                 case EventType.MouseUp:
@@ -492,6 +508,7 @@ namespace ProjectAstra.Core.Editor
             WriteTerrain(so);
             WriteUnits(so);
             WriteObjects(so);
+            WriteEnvironment(so);
             so.ApplyModifiedProperties();
 
             EditorUtility.SetDirty(target);
@@ -534,6 +551,202 @@ namespace ProjectAstra.Core.Editor
                 e.FindPropertyRelative("overridesTerrain").boolValue = objects[i].overridesTerrain;
                 e.FindPropertyRelative("terrainOverride").enumValueIndex = (int)objects[i].terrainOverride;
             }
+        }
+
+        private void WriteEnvironment(SerializedObject so)
+        {
+            var p = so.FindProperty("decorations");
+            p.arraySize = decorations.Count;
+            for (int i = 0; i < decorations.Count; i++)
+            {
+                var e = p.GetArrayElementAtIndex(i);
+                var d = decorations[i];
+                e.FindPropertyRelative("id").stringValue = d.id;
+                e.FindPropertyRelative("position").vector2Value = d.position;
+                e.FindPropertyRelative("animator").objectReferenceValue = d.animator;
+                e.FindPropertyRelative("previewSprite").objectReferenceValue = d.previewSprite;
+                e.FindPropertyRelative("sortingLayer").stringValue = d.sortingLayer;
+                e.FindPropertyRelative("sortingOrder").intValue = d.sortingOrder;
+                e.FindPropertyRelative("phaseOffset").floatValue = d.phaseOffset;
+                e.FindPropertyRelative("useUnscaledTime").boolValue = d.useUnscaledTime;
+                e.FindPropertyRelative("tileSize").vector2Value = d.tileSize;
+                e.FindPropertyRelative("moves").boolValue = d.moves;
+                e.FindPropertyRelative("waypointOffset").vector2Value = d.waypointOffset;
+                e.FindPropertyRelative("moveSpeed").floatValue = d.moveSpeed;
+                e.FindPropertyRelative("flipToFaceTravel").boolValue = d.flipToFaceTravel;
+            }
+        }
+
+        // --- Environment tab -------------------------------------------
+
+        private void DrawEnvironmentPalette()
+        {
+            var picked = (RuntimeAnimatorController)EditorGUILayout.ObjectField(
+                "Animator", envAnimator, typeof(RuntimeAnimatorController), false);
+            if (picked != envAnimator) { envAnimator = picked; envPreview = AnimationPreviewUtil.FirstFrame(envAnimator); }
+
+            envLayer = (EnvLayer)EditorGUILayout.EnumPopup("Layer", envLayer);
+            if (envLayer == EnvLayer.AboveUnits && !SkyLayerExists())
+                EditorGUILayout.HelpBox("Add a 'Sky' sorting layer to render above units.", MessageType.Warning);
+
+            envPhase = EditorGUILayout.Slider("Phase Offset", envPhase, 0f, 1f);
+            envUnscaled = EditorGUILayout.Toggle("Unscaled Time", envUnscaled);
+            envMoves = EditorGUILayout.ToggleLeft("Flies point-to-point (bird)", envMoves);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Add River Base-Layer Patch")) AddRiverPatch();
+            using (new EditorGUI.DisabledScope(selectedDeco < 0))
+                if (GUILayout.Button("Delete Selected")) DeleteSelectedDecoration();
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.HelpBox("Click the art to place; click a placed deco to select; drag to move.", MessageType.None);
+        }
+
+        private void EnvironmentMouseDown(Rect canvas, Vector2 mouse)
+        {
+            int hit = DecorationUnder(canvas, mouse);
+            if (hit >= 0) selectedDeco = hit;
+            else if (envAnimator != null) PlaceDecoration(PointUnder(canvas, mouse));
+            Repaint();
+        }
+
+        private void EnvironmentMouseDrag(Rect canvas, Vector2 mouse)
+        {
+            if (selectedDeco < 0 || selectedDeco >= decorations.Count) return;
+            var d = decorations[selectedDeco];
+            d.position = PointUnder(canvas, mouse);
+            decorations[selectedDeco] = d;
+            dirty = true;
+            Repaint();
+        }
+
+        private void PlaceDecoration(Vector2 position)
+        {
+            (string layer, int order) = LayerPreset(envLayer);
+            decorations.Add(new EnvironmentDecoration
+            {
+                id = envAnimator.name,
+                position = position,
+                animator = envAnimator,
+                previewSprite = envPreview,
+                sortingLayer = layer,
+                sortingOrder = order,
+                phaseOffset = envPhase,
+                useUnscaledTime = envUnscaled,
+                moves = envMoves,
+                waypointOffset = envMoves ? new Vector2(6f, 0f) : Vector2.zero,
+                moveSpeed = envMoves ? 2f : 0f,
+                flipToFaceTravel = true,
+            });
+            selectedDeco = decorations.Count - 1;
+            dirty = true;
+        }
+
+        private void AddRiverPatch()
+        {
+            if (envAnimator == null)
+            {
+                EditorUtility.DisplayDialog("Pick an animator", "Assign a river animator first.", "OK");
+                return;
+            }
+
+            WaterBand band = WaterBand.Detect(terrain, width, height);
+            decorations.Add(new EnvironmentDecoration
+            {
+                id = "River",
+                position = new Vector2(width / 2f, band.CenterY),
+                animator = envAnimator,
+                previewSprite = envPreview,
+                sortingLayer = "Ground",
+                sortingOrder = 10,
+                tileSize = new Vector2(width, band.Height),
+                phaseOffset = envPhase,
+                useUnscaledTime = envUnscaled,
+                flipToFaceTravel = true,
+            });
+            selectedDeco = decorations.Count - 1;
+            dirty = true;
+        }
+
+        private void DeleteSelectedDecoration()
+        {
+            if (selectedDeco < 0 || selectedDeco >= decorations.Count) return;
+            decorations.RemoveAt(selectedDeco);
+            selectedDeco = -1;
+            dirty = true;
+        }
+
+        private void DrawDecorationSprites(Rect canvas)
+        {
+            for (int i = 0; i < decorations.Count; i++)
+            {
+                Rect r = DecorationCanvasRect(canvas, decorations[i]);
+                if (decorations[i].previewSprite != null)
+                    AnimationPreviewUtil.DrawSprite(r, decorations[i].previewSprite, fitAspect: false);
+                else
+                    EditorGUI.DrawRect(r, new Color(1f, 0.4f, 0.8f, 0.5f));
+                if (i == selectedDeco) DrawSelectionOutline(r);
+            }
+        }
+
+        private int DecorationUnder(Rect canvas, Vector2 mouse)
+        {
+            int best = -1, bestOrder = int.MinValue;
+            for (int i = 0; i < decorations.Count; i++)
+                if (DecorationCanvasRect(canvas, decorations[i]).Contains(mouse) && decorations[i].sortingOrder >= bestOrder)
+                { best = i; bestOrder = decorations[i].sortingOrder; }
+            return best;
+        }
+
+        private Rect DecorationCanvasRect(Rect canvas, EnvironmentDecoration d)
+        {
+            Vector2 size = DecorationSizeTiles(d);
+            Vector2 pivot = PivotNormalized(d.previewSprite);
+            Vector2 bottomLeft = d.position - Vector2.Scale(pivot, size);
+            float cx = canvas.x + bottomLeft.x * zoom;
+            float cyTop = canvas.y + (height - (bottomLeft.y + size.y)) * zoom;
+            return new Rect(cx, cyTop, size.x * zoom, size.y * zoom);
+        }
+
+        private static Vector2 DecorationSizeTiles(EnvironmentDecoration d)
+        {
+            if (d.tileSize != Vector2.zero) return d.tileSize;
+            if (d.previewSprite != null) return d.previewSprite.rect.size / d.previewSprite.pixelsPerUnit;
+            return Vector2.one;
+        }
+
+        private static Vector2 PivotNormalized(Sprite s)
+        {
+            if (s == null || s.rect.width <= 0 || s.rect.height <= 0) return new Vector2(0.5f, 0.5f);
+            return new Vector2(s.pivot.x / s.rect.width, s.pivot.y / s.rect.height);
+        }
+
+        // Float tile position under the mouse, keeping the bottom-left origin Y-flip.
+        private Vector2 PointUnder(Rect rect, Vector2 mouse) =>
+            new((mouse.x - rect.x) / zoom, height - (mouse.y - rect.y) / zoom);
+
+        private static (string layer, int order) LayerPreset(EnvLayer layer) => layer switch
+        {
+            EnvLayer.BaseLayer => ("Ground", 10),
+            EnvLayer.AboveUnits => ("Sky", 0),
+            _ => ("Object", 0),
+        };
+
+        private static bool SkyLayerExists()
+        {
+            foreach (var layer in SortingLayer.layers)
+                if (layer.name == "Sky") return true;
+            return false;
+        }
+
+        private static void DrawSelectionOutline(Rect r)
+        {
+            var c = new Color(1f, 0.95f, 0.3f, 0.95f);
+            const float t = 2f;
+            EditorGUI.DrawRect(new Rect(r.x, r.y, r.width, t), c);
+            EditorGUI.DrawRect(new Rect(r.x, r.yMax - t, r.width, t), c);
+            EditorGUI.DrawRect(new Rect(r.x, r.y, t, r.height), c);
+            EditorGUI.DrawRect(new Rect(r.xMax - t, r.y, t, r.height), c);
         }
 
         private void RegisterInCatalog()

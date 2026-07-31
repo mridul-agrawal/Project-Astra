@@ -14,6 +14,13 @@ namespace ProjectAstra.Core.Animation
         private Vector3 start;
         private SpriteRenderer spriteRenderer;
 
+        public void Configure(Vector3 offset, float speed, bool flip)
+        {
+            this.offset = offset;
+            this.speed = speed;
+            flipToFaceTravel = flip;
+        }
+
         private void Start()
         {
             start = transform.localPosition;
