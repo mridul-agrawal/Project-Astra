@@ -23,6 +23,7 @@ using ProjectAstra.Core.UI.Overlays;
 using ProjectAstra.Core.UI.Trade;
 using ProjectAstra.Core.UI.UnitInfo;
 using ProjectAstra.Core.Units;
+using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Cursor
 {
@@ -84,6 +85,7 @@ namespace ProjectAstra.Core.Cursor
         private ActionMenuController actionMenuController;
         private CantoFlow cantoFlow;
         private UnitSelectionFlow unitSelectionFlow;
+        private HoverSelectionDriver hoverSelectionDriver;
 
 
         public Vector2Int GridPosition => gridPosition;
@@ -118,6 +120,7 @@ namespace ProjectAstra.Core.Cursor
         {
             RemoveListenersFromInputEvents();
             RemoveListenersFromGameStateEvents();
+            OnCursorMoved -= RefreshHoverSelection;
         }
 
         private void Start()
@@ -129,6 +132,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeActionMenuController();
             InitializeCantoFlow();
             InitializeUnitSelectionFlow();
+            InitializeHoverSelection();
             SetPosition(Vector2Int.zero);
             UpdateModeFromGameState();
         }
@@ -145,6 +149,7 @@ namespace ProjectAstra.Core.Cursor
             currentMode = mode;
             ToggleSpriteRendererBasedOnCursorMode();
             UpdateSpriteForMode();
+            hoverSelectionDriver?.Refresh();
         }
 
         public void SetPosition(Vector2Int position)
@@ -351,6 +356,24 @@ namespace ProjectAstra.Core.Cursor
                 rangeHighlighter, pathArrowRenderer, combatForecastUI,
                 this, cantoFlow, actionMenuController);
         }
+
+        // Runtime-only (Start, not the test Initialize): lights up the unit under
+        // the cursor — or the picked-up unit — with its selected animation.
+        private void InitializeHoverSelection()
+        {
+            hoverSelectionDriver = new HoverSelectionDriver(
+                () => currentMode,
+                () => gridPosition,
+                () => unitSelectionFlow.SelectedUnit,
+                FindUnitForHover,
+                UnitSelectionFlow.IsUnitSelectable);
+            OnCursorMoved += RefreshHoverSelection;
+        }
+
+        private TestUnit FindUnitForHover(Vector2Int pos) =>
+            TurnManager.Instance != null ? TurnManager.Instance.UnitRegistry.GetUnitAt(pos) : FindUnitAt(pos);
+
+        private void RefreshHoverSelection(Vector2Int _) => hoverSelectionDriver?.Refresh();
 
         private void AddListenersToInputEvents()
         {

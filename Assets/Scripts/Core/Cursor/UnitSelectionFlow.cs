@@ -287,7 +287,7 @@ namespace ProjectAstra.Core.Cursor
             return null;
         }
 
-        private static bool IsUnitSelectable(TestUnit unit)
+        public static bool IsUnitSelectable(TestUnit unit)
         {
             if (unit == null) return false;
 

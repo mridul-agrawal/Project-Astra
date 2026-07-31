@@ -11,9 +11,11 @@ namespace ProjectAstra.Core.Grid
     {
         [SerializeField] private SpriteRenderer baseArtRenderer;
         [SerializeField] private Transform objectContainer;
+        [SerializeField] private Transform environmentContainer;   // optional; defaults to this transform
 
         private MapData currentMap;
         private readonly List<GameObject> spawnedObjects = new();
+        private GameObject environmentInstance;
 
         public MapData CurrentMap => currentMap;
 
@@ -31,6 +33,7 @@ namespace ProjectAstra.Core.Grid
             currentMap = mapData;
             DrawBaseArt(mapData);
             SpawnObjects(mapData);
+            SpawnEnvironment(mapData);
         }
 
         public TerrainType GetTerrainType(int x, int y)
@@ -84,6 +87,25 @@ namespace ProjectAstra.Core.Grid
             foreach (var go in spawnedObjects)
                 if (go != null) Destroy(go);
             spawnedObjects.Clear();
+        }
+
+        // Drops in the map's animated environment (deco + base-layer patches). The
+        // prefab's children own their placement and animators; the base PNG under a
+        // river patch is authored so a missing prefab still reads as a river.
+        private void SpawnEnvironment(MapData mapData)
+        {
+            ClearEnvironment();
+            if (mapData.EnvironmentPrefab == null) return;
+
+            Transform parent = environmentContainer != null ? environmentContainer : transform;
+            environmentInstance = Instantiate(mapData.EnvironmentPrefab, parent);
+            environmentInstance.transform.localPosition = Vector3.zero;
+        }
+
+        private void ClearEnvironment()
+        {
+            if (environmentInstance != null) Destroy(environmentInstance);
+            environmentInstance = null;
         }
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Pathfinding;
 
@@ -93,6 +94,7 @@ namespace ProjectAstra.Core.Units
             BindUnitInstanceFromDefinitionIfNeeded();
             SyncLordFlagFromDefinition();
             EnsureFlyingHoverAnimator();
+            EnsureUnitAnimator();
             SnapToGridPosition();
         }
 
@@ -186,6 +188,24 @@ namespace ProjectAstra.Core.Units
             if (spriteRenderer.GetComponent<FlyingHoverAnimator>() != null) return;
 
             spriteRenderer.gameObject.AddComponent<FlyingHoverAnimator>();
+        }
+
+        // Wires up the Animator-driven map animation when the definition supplies
+        // an override controller; otherwise the static Map sprite stays as-is.
+        private void EnsureUnitAnimator()
+        {
+            if (spriteRenderer == null) return;
+            RuntimeAnimatorController controller = unitDefinition != null ? unitDefinition.MapAnimator : null;
+            if (controller == null) return;
+
+            GameObject spriteObject = spriteRenderer.gameObject;
+            if (spriteObject.GetComponent<UnitAnimator>() != null) return;
+
+            Animator animator = spriteObject.GetComponent<Animator>();
+            if (animator == null) animator = spriteObject.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
+            animator.applyRootMotion = false;
+            spriteObject.AddComponent<UnitAnimator>();
         }
 
         private void SetSpriteColor(Color color)

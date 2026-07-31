@@ -46,3 +46,4 @@ MonoBehaviour:
     team: 2
     loadoutOverride: {fileID: 0}
   objects: []
+  environmentPrefab: {fileID: 6703951503454524333, guid: 716be6fafc76b434183858d5e6372f66, type: 3}

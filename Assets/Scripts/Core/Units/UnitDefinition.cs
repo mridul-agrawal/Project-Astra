@@ -34,6 +34,10 @@ namespace ProjectAstra.Core.Units
         [Header("Map sprite (on-grid token)")]
         [SerializeField] private Sprite mapSprite;
 
+        [Header("Map animation (optional — falls back to Map sprite when empty)")]
+        [Tooltip("Override controller built from this character's frames (idle / run x4 / selected) via the Unit Animator Builder. Leave empty to render the static Map sprite instead.")]
+        [SerializeField] private RuntimeAnimatorController mapAnimator;
+
         [Header("Portrait (full HP)")]
         [SerializeField] private Sprite portrait;
 
@@ -75,6 +79,7 @@ namespace ProjectAstra.Core.Units
         public int BaseLevel => baseLevel;
         public StatArray PersonalGrowths => personalGrowths;
         public Sprite MapSprite => mapSprite;
+        public RuntimeAnimatorController MapAnimator => mapAnimator;
         public Sprite Portrait => portrait;
         public Sprite WoundedPortrait => woundedPortrait;
         public Sprite CriticalPortrait => criticalPortrait;

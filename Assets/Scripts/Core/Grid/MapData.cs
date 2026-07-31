@@ -23,6 +23,9 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private UnitStartPosition[] unitStartPositions = Array.Empty<UnitStartPosition>();
         [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
 
+        [Tooltip("Optional prefab of animated environment — decorations (trees, grass, birds) and base-layer patches (a flowing river). Instantiated on load; each child carries its own SpriteRenderer + Animator.")]
+        [SerializeField] private GameObject environmentPrefab;
+
         public string MapName => mapName;
         public string MapId => mapId;
         public string WinConditionText => winConditionText;
@@ -33,6 +36,7 @@ namespace ProjectAstra.Core.Grid
         public TerrainType[] Terrain => terrain;
         public UnitStartPosition[] UnitStartPositions => unitStartPositions;
         public MapObject[] Objects => objects;
+        public GameObject EnvironmentPrefab => environmentPrefab;
 
         // Terrain for a cell, read straight from the painted grid. The single gameplay seam.
         public TerrainType TerrainAt(int x, int y)
