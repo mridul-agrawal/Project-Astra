@@ -46,5 +46,83 @@ MonoBehaviour:
     team: 2
     loadoutOverride: {fileID: 0}
   objects: []
-  environmentPrefab: {fileID: 6703951503454524333, guid: 716be6fafc76b434183858d5e6372f66, type: 3}
-  decorations: []
+  environmentPrefab: {fileID: 0}
+  decorations:
+  - id: River
+    position: {x: 7.5, y: 5.5}
+    animator: {fileID: 9100000, guid: 459e4b4fd720d8948988a8c9b363028c, type: 2}
+    previewSprite: {fileID: 21300000, guid: 4e59cc186c2c9b2499646570fbcf0380, type: 3}
+    sortingLayer: Ground
+    sortingOrder: 10
+    phaseOffset: 0.2
+    useUnscaledTime: 0
+    tileSize: {x: 15, y: 1}
+    moves: 0
+    waypointOffset: {x: 0, y: 0}
+    moveSpeed: 0
+    flipToFaceTravel: 1
+  - id: Flower_A
+    position: {x: 3.5, y: 3}
+    animator: {fileID: 9100000, guid: e47ac65363e668840b9e78fe30d610ad, type: 2}
+    previewSprite: {fileID: 21300000, guid: e07e0b4e5925dce41ab4000b81f74302, type: 3}
+    sortingLayer: Object
+    sortingOrder: 5
+    phaseOffset: 0
+    useUnscaledTime: 0
+    tileSize: {x: 0, y: 0}
+    moves: 0
+    waypointOffset: {x: 0, y: 0}
+    moveSpeed: 0
+    flipToFaceTravel: 1
+  - id: Flower_B
+    position: {x: 6.5, y: 3}
+    animator: {fileID: 9100000, guid: e47ac65363e668840b9e78fe30d610ad, type: 2}
+    previewSprite: {fileID: 21300000, guid: e07e0b4e5925dce41ab4000b81f74302, type: 3}
+    sortingLayer: Object
+    sortingOrder: 5
+    phaseOffset: 0.33
+    useUnscaledTime: 0
+    tileSize: {x: 0, y: 0}
+    moves: 0
+    waypointOffset: {x: 0, y: 0}
+    moveSpeed: 0
+    flipToFaceTravel: 1
+  - id: Flower_C
+    position: {x: 9.5, y: 3}
+    animator: {fileID: 9100000, guid: e47ac65363e668840b9e78fe30d610ad, type: 2}
+    previewSprite: {fileID: 21300000, guid: e07e0b4e5925dce41ab4000b81f74302, type: 3}
+    sortingLayer: Object
+    sortingOrder: 5
+    phaseOffset: 0.66
+    useUnscaledTime: 0
+    tileSize: {x: 0, y: 0}
+    moves: 0
+    waypointOffset: {x: 0, y: 0}
+    moveSpeed: 0
+    flipToFaceTravel: 1
+  - id: Tree
+    position: {x: 13.5, y: 2}
+    animator: {fileID: 9100000, guid: cbe124439743ff34aa9d29105bda6d27, type: 2}
+    previewSprite: {fileID: 21300000, guid: a6108b2518dc6884c8236500b8c69c11, type: 3}
+    sortingLayer: Object
+    sortingOrder: 0
+    phaseOffset: 0
+    useUnscaledTime: 0
+    tileSize: {x: 0, y: 0}
+    moves: 0
+    waypointOffset: {x: 0, y: 0}
+    moveSpeed: 0
+    flipToFaceTravel: 1
+  - id: Bird
+    position: {x: 2, y: 7}
+    animator: {fileID: 9100000, guid: 4122567ff81a25c4a8f6b697ed000bf6, type: 2}
+    previewSprite: {fileID: 21300000, guid: a8da7bbac80d8414189fbea1f2f37409, type: 3}
+    sortingLayer: Sky
+    sortingOrder: 0
+    phaseOffset: 0
+    useUnscaledTime: 0
+    tileSize: {x: 0, y: 0}
+    moves: 1
+    waypointOffset: {x: 7, y: 0}
+    moveSpeed: 2
+    flipToFaceTravel: 1
