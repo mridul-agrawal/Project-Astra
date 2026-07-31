@@ -28,26 +28,26 @@ namespace ProjectAstra.Core.UI.UnitInfo
         public GameObject StatusRow;
         public TextMeshProUGUI StatusText;
 
-        public void Render(UnitSummaryModel m)
+        public void Render(UnitSummaryModel model)
         {
-            if (m == null) return;
-            if (UnitName != null) UnitName.text = m.UnitName;
-            if (Portrait != null && m.Portrait != null) Portrait.sprite = m.Portrait;
-            if (ClassLabel != null) ClassLabel.text = m.ClassName;
-            if (ClassIcon != null && m.ClassIcon != null) ClassIcon.sprite = m.ClassIcon;
-            if (Level != null) Level.text = "Lv " + m.Level;
-            if (HpValue != null) HpValue.text = m.CurrentHP + " / " + m.MaxHP;
-            if (HpFill != null) HpFill.fillAmount = m.HpFraction;
+            if (model == null) return;
+            if (UnitName != null) UnitName.text = model.UnitName;
+            if (Portrait != null && model.Portrait != null) Portrait.sprite = model.Portrait;
+            if (ClassLabel != null) ClassLabel.text = model.ClassName;
+            if (ClassIcon != null && model.ClassIcon != null) ClassIcon.sprite = model.ClassIcon;
+            if (Level != null) Level.text = "Lv " + model.Level;
+            if (HpValue != null) HpValue.text = model.CurrentHP + " / " + model.MaxHP;
+            if (HpFill != null) HpFill.fillAmount = model.HpFraction;
 
-            if (ExpRow != null) ExpRow.SetActive(m.ShowExp);
-            if (m.ShowExp)
+            if (ExpRow != null) ExpRow.SetActive(model.ShowExp);
+            if (model.ShowExp)
             {
-                if (ExpValue != null) ExpValue.text = m.ExpText;
-                if (ExpFill != null) ExpFill.fillAmount = m.ExpFraction;
+                if (ExpValue != null) ExpValue.text = model.ExpText;
+                if (ExpFill != null) ExpFill.fillAmount = model.ExpFraction;
             }
 
-            if (StatusRow != null) StatusRow.SetActive(m.ShowStatus);
-            if (m.ShowStatus && StatusText != null) StatusText.text = m.StatusText;
+            if (StatusRow != null) StatusRow.SetActive(model.ShowStatus);
+            if (model.ShowStatus && StatusText != null) StatusText.text = model.StatusText;
         }
     }
 }
