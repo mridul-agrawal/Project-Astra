@@ -13,7 +13,12 @@ namespace ProjectAstra.Core.Units
     [RequireComponent(typeof(UnitInventory))]
     public class TestUnit : MonoBehaviour
     {
-        private static readonly Color ActedColor = new(0.4f, 0.4f, 0.4f, 0.7f);
+        // Used only when no UnitVisualSettings is wired (tests, bare scenes).
+        private static readonly Color DefaultActedTint = new(0.4f, 0.4f, 0.4f, 0.7f);
+
+        // The acted-unit tint, sourced from the designer-tunable settings asset.
+        private static Color ActedTint =>
+            UnitVisualSettingsRef.Current != null ? UnitVisualSettingsRef.Current.ActedTint : DefaultActedTint;
 
         [Header("Unit Identity")]
         public Faction faction = Faction.Player;
@@ -125,7 +130,7 @@ namespace ProjectAstra.Core.Units
         public void MarkActed()
         {
             hasActed = true;
-            SetSpriteColor(ActedColor);
+            SetSpriteColor(ActedTint);
         }
 
         public void ResetActed()

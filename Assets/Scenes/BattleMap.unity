@@ -29234,6 +29234,7 @@ GameObject:
   - component: {fileID: 1745841787}
   - component: {fileID: 1745841786}
   - component: {fileID: 1745841785}
+  - component: {fileID: 1745841789}
   m_Layer: 0
   m_Name: CombatRuntime
   m_TagString: Untagged
@@ -29312,6 +29313,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1745841789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745841784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f81e53a33e33e7c4f81a4cb7f6327839, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.UnitVisualSettingsRef
+  asset: {fileID: 11400000, guid: 4fe90082c1f298d498b38014e286a25f, type: 2}
 --- !u!1 &1748524131
 GameObject:
   m_ObjectHideFlags: 0
