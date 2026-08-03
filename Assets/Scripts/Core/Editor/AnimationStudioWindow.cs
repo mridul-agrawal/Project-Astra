@@ -33,6 +33,7 @@ namespace ProjectAstra.Core.Editor
         private DefaultAsset framesFolder;
         private string controllerName = "";
         private int fps = 8;
+        private bool decoEach;   // deco mode: one controller per variation in the folder
 
         // Preview
         private Sprite[] previewFrames;
@@ -128,15 +129,21 @@ namespace ProjectAstra.Core.Editor
 
         private void DrawBuild(bool unit)
         {
-            EditorGUILayout.LabelField(unit ? "Build a unit override controller" : "Build a looping decoration controller",
+            EditorGUILayout.LabelField(unit ? "Build a unit override controller" : "Build looping decoration controllers",
                 EditorStyles.boldLabel);
-            controllerName = EditorGUILayout.TextField(unit ? "Character Name" : "Deco Name", controllerName);
+            string nameLabel = unit ? "Character Name" : (decoEach ? "Category (subfolder)" : "Deco Name");
+            controllerName = EditorGUILayout.TextField(nameLabel, controllerName);
             framesFolder = (DefaultAsset)EditorGUILayout.ObjectField("Frames Folder", framesFolder, typeof(DefaultAsset), false);
             fps = Mathf.Max(1, EditorGUILayout.IntField("Frame Rate (fps)", fps));
 
+            if (!unit)
+                decoEach = EditorGUILayout.ToggleLeft("Folder holds several decorations — one controller per variation", decoEach);
+
             EditorGUILayout.HelpBox(unit
                 ? "Folder must hold frames named idle_*, run_n_*, run_e_*, run_s_*, run_w_*, selected_*."
-                : "Folder must hold frames named <name>_0, <name>_1, … (one looping animation).",
+                : decoEach
+                    ? "One controller per base name (tree_green_*, tree_red_* → tree_green, tree_red). Each is its own asset; output lands under the Category subfolder."
+                    : "Folder must hold frames named <name>_0, <name>_1, … (a single looping animation).",
                 MessageType.Info);
 
             using (new EditorGUI.DisabledScope(!CanBuild()))
@@ -159,7 +166,15 @@ namespace ProjectAstra.Core.Editor
             else
             {
                 string output = $"{DecoOutputRoot}/{controllerName}";
-                LoopingAnimatorBuilder.BuildFromFolder(controllerName, folder, fps, output);
+                if (decoEach)
+                {
+                    var built = LoopingAnimatorBuilder.BuildEachFromFolder(folder, fps, output);
+                    Debug.Log($"[Animation] Built {built.Count} decoration controllers under {output}.");
+                }
+                else
+                {
+                    LoopingAnimatorBuilder.BuildFromFolder(controllerName, folder, fps, output);
+                }
             }
             LoadPreviewFromFolder();
         }

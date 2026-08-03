@@ -23,11 +23,8 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private UnitStartPosition[] unitStartPositions = Array.Empty<UnitStartPosition>();
         [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
 
-        [Tooltip("Optional prefab of animated environment — decorations (trees, grass, birds) and base-layer patches (a flowing river). Instantiated on load; each child carries its own SpriteRenderer + Animator.")]
+        [Tooltip("Per-map animated environment, authored as a prefab in the Environment Builder. Its children (trees, grass, birds, a flowing river) carry their own SpriteRenderer + Animator + behaviour components. Instantiated on load.")]
         [SerializeField] private GameObject environmentPrefab;
-
-        [Tooltip("Authored animated decorations (deco + base-layer river patches), placed by the Map Editor's Environment tab and spawned at load.")]
-        [SerializeField] private EnvironmentDecoration[] decorations = Array.Empty<EnvironmentDecoration>();
 
         public string MapName => mapName;
         public string MapId => mapId;
@@ -40,7 +37,6 @@ namespace ProjectAstra.Core.Grid
         public UnitStartPosition[] UnitStartPositions => unitStartPositions;
         public MapObject[] Objects => objects;
         public GameObject EnvironmentPrefab => environmentPrefab;
-        public EnvironmentDecoration[] Decorations => decorations;
 
         // Terrain for a cell, read straight from the painted grid. The single gameplay seam.
         public TerrainType TerrainAt(int x, int y)
@@ -85,27 +81,5 @@ namespace ProjectAstra.Core.Grid
         public string objectId;
         public bool overridesTerrain;
         public TerrainType terrainOverride;
-    }
-
-    // An authored animated decoration: a looping animator at a free pixel position,
-    // with sorting, phase, optional tiling (base-layer river patches), and optional
-    // point-to-point motion (birds). Spawned by MapRenderer at load; previewSprite
-    // is its first frame, cached by the editor so the runtime needs no AnimationUtility.
-    [Serializable]
-    public struct EnvironmentDecoration
-    {
-        public string id;
-        public Vector2 position;
-        public RuntimeAnimatorController animator;
-        public Sprite previewSprite;
-        public string sortingLayer;
-        public int sortingOrder;
-        [Range(0f, 1f)] public float phaseOffset;
-        public bool useUnscaledTime;
-        public Vector2 tileSize;
-        public bool moves;
-        public Vector2 waypointOffset;
-        public float moveSpeed;
-        public bool flipToFaceTravel;
     }
 }

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animating a New Map · Project Astra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f6f0e2; --card:#fdfaf2; --ink:#221d3d; --ink-soft:#544d70;
+    --indigo:#403185; --indigo-bright:#5647ad; --gold:#a9781f; --gold-bright:#c79a35;
+    --line:#e4d9c0; --line-soft:#efe7d4;
+    --code-bg:#efe7d3; --river:#2f6fd0;
+    --serif:"EB Garamond",Georgia,"Times New Roman",serif;
+    --display:"Cinzel",Georgia,serif;
+    --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:19px; line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 12% -8%, rgba(86,71,173,.06), transparent 42%),
+                     radial-gradient(circle at 96% 4%, rgba(199,154,53,.08), transparent 40%);
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:0 26px 120px;}
+
+  /* ---- masthead ---- */
+  header.masthead{padding:64px 0 30px; text-align:center; position:relative;}
+  .rule-top{height:3px; background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--indigo) 50%,var(--gold) 80%,transparent); border:0; margin:0;}
+  .kicker{font-family:var(--mono); font-size:12px; letter-spacing:.42em; text-transform:uppercase; color:var(--gold); margin:0 0 20px;}
+  h1{font-family:var(--display); font-weight:600; font-size:clamp(38px,7vw,64px); line-height:1.04; margin:0 0 6px; color:var(--ink); letter-spacing:.01em;}
+  h1 .sub{display:block; font-family:var(--serif); font-style:italic; font-weight:400; font-size:clamp(20px,3.4vw,27px); color:var(--indigo); margin-top:12px; letter-spacing:0;}
+  .lede{max-width:620px; margin:26px auto 0; color:var(--ink-soft); font-size:20px;}
+  .ornament{margin:34px auto 0; width:120px; height:22px; color:var(--gold); opacity:.7;}
+
+  /* ---- overview strip ---- */
+  .acts{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:40px 0 8px;}
+  .acts a{display:block; text-decoration:none; padding:15px 16px; background:var(--card); border:1px solid var(--line); border-radius:9px; color:var(--ink); transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
+  .acts a:hover{transform:translateY(-3px); border-color:var(--gold); box-shadow:0 10px 26px -14px rgba(64,49,133,.45);}
+  .acts .n{font-family:var(--mono); font-size:12px; color:var(--gold); letter-spacing:.2em;}
+  .acts .t{font-family:var(--display); font-size:17px; margin-top:5px;}
+  .acts .d{font-size:15.5px; color:var(--ink-soft); line-height:1.45; margin-top:3px;}
+
+  /* ---- section (act) ---- */
+  section.act{margin-top:64px;}
+  .act-head{display:flex; align-items:baseline; gap:16px; border-bottom:2px solid var(--line); padding-bottom:12px; margin-bottom:10px;}
+  .act-head .roman{font-family:var(--display); font-size:15px; letter-spacing:.3em; color:var(--gold); text-transform:uppercase;}
+  .act-head h2{font-family:var(--display); font-weight:600; font-size:clamp(26px,4vw,34px); margin:0; color:var(--ink);}
+
+  /* ---- step ---- */
+  .step{display:grid; grid-template-columns:52px 1fr; gap:20px; padding:26px 0; border-bottom:1px solid var(--line-soft);}
+  .step:last-child{border-bottom:0;}
+  .step .num{font-family:var(--display); font-weight:700; font-size:34px; color:var(--indigo); line-height:1; text-align:center; padding-top:2px;
+    border-right:1px solid var(--line);}
+  .step h3{font-family:var(--serif); font-weight:600; font-size:23px; margin:0 0 6px; color:var(--ink); letter-spacing:.005em;}
+  .step p{margin:0 0 10px;}
+  .step p:last-child{margin-bottom:0;}
+  ul,ol{margin:8px 0 12px; padding-left:22px;}
+  li{margin:5px 0;}
+  b,strong{font-weight:600; color:#171331;}
+  a{color:var(--indigo-bright); text-decoration:none; border-bottom:1px solid rgba(86,71,173,.3);}
+
+  /* ---- code / path chips ---- */
+  code{font-family:var(--mono); font-size:14.5px; background:var(--code-bg); color:#3a2f6e; padding:2px 7px; border-radius:5px; white-space:nowrap;}
+  .menu{font-family:var(--mono); font-size:14.5px; background:transparent; color:var(--gold); border:1px solid var(--line); padding:2px 8px; border-radius:5px; white-space:nowrap;}
+  .field{font-weight:600; color:var(--indigo);}
+
+  /* ---- callouts ---- */
+  .call{margin:16px 0; padding:16px 20px 16px 22px; border-radius:10px; position:relative; background:var(--card); border:1px solid var(--line);}
+  .call::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px; border-radius:10px 0 0 10px;}
+  .call .lbl{font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase; margin:0 0 6px; font-weight:500;}
+  .call p{margin:0;} .call p+p{margin-top:8px;}
+  .call.rule::before{background:var(--indigo);} .call.rule .lbl{color:var(--indigo);}
+  .call.warn::before{background:var(--gold);} .call.warn .lbl{color:var(--gold);}
+  .call.tip::before{background:#3f8f5e;} .call.tip .lbl{color:#3f8f5e;}
+
+  /* ---- mapping table ---- */
+  table{width:100%; border-collapse:collapse; margin:14px 0 6px; font-size:17px; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  th,td{text-align:left; padding:10px 16px; border-bottom:1px solid var(--line-soft);}
+  th{font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); background:rgba(64,49,133,.04);}
+  tr:last-child td{border-bottom:0;}
+  td .arrow{color:var(--gold);}
+
+  /* ---- footer ---- */
+  footer{margin-top:70px; padding-top:24px; border-top:2px solid var(--line); color:var(--ink-soft); font-size:15.5px; text-align:center;}
+  footer .mono{font-family:var(--mono); font-size:12px; letter-spacing:.15em;}
+
+  @media (max-width:560px){
+    body{font-size:18px;}
+    .step{grid-template-columns:38px 1fr; gap:14px;}
+    .step .num{font-size:26px; border-right:0;}
+    code,.menu{white-space:normal;}
+  }
+</style>
+</head>
+<body>
+<hr class="rule-top">
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="kicker">Project Astra · Field Guide</p>
+    <h1>Animating a Map<span class="sub">from bare sprite sheets to a living, breathing battlefield</span></h1>
+    <p class="lede">Follow this top to bottom and you'll produce a new map where units stride and turn, foliage sways, birds cross the sky, and the river flows — all playable in the real game.</p>
+    <svg class="ornament" viewBox="0 0 120 22" fill="none" stroke="currentColor" stroke-width="1.4">
+      <path d="M2 11 H44 M76 11 H118"/><circle cx="60" cy="11" r="5"/><path d="M52 11 L60 4 L68 11 L60 18 Z" fill="currentColor" stroke="none" opacity=".55"/>
+    </svg>
+  </header>
+
+  <nav class="acts">
+    <a href="#act1"><span class="n">ACT I</span><div class="t">Prepare Animations</div><div class="d">Slice sheets · build controllers · wire units</div></a>
+    <a href="#act2"><span class="n">ACT II</span><div class="t">Build the Map</div><div class="d">Base art · terrain · unit placement</div></a>
+    <a href="#act3"><span class="n">ACT III</span><div class="t">Bring it to Life</div><div class="d">Environment Builder · decorations · river · full freedom</div></a>
+    <a href="#act4"><span class="n">ACT IV</span><div class="t">Play It</div><div class="d">Save · register · load in-game</div></a>
+  </nav>
+
+  <div class="call tip" style="margin-top:34px;">
+    <p class="lbl">Before you begin</p>
+    <p>The shared unit graph must exist once per project: <span class="menu">Project Astra ▸ Animation ▸ Build Unit Locomotion Controller</span> (creates <code>Assets/Animation/UnitLocomotion.controller</code>). Already built here — skip it. Every character you place also needs a <b>UnitDefinition</b> registered in the <b>UnitDatabase</b> (via <span class="menu">Project Astra ▸ Data Hub</span>).</p>
+  </div>
+
+  <!-- ================= ACT I ================= -->
+  <section class="act" id="act1">
+    <div class="act-head"><span class="roman">Act I</span><h2>Prepare your animations</h2></div>
+
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <h3>Put your art in the right folder</h3>
+        <p>Drop every sheet under <code>Assets/Art/Animation/…</code> (any subfolders). Anything there imports automatically crisp — Point filter, 32 pixels-per-unit, uncompressed. Keep your <b>base-ground PNG</b> aside for now; it goes in through the Map Editor in Step&nbsp;5.</p>
+        <p><b>Sheet rules that matter:</b></p>
+        <ul>
+          <li><b>Base ground PNG</b> — width &amp; height must be <b>multiples of 32</b> (1 tile = 32&nbsp;px) and at least <b>15 tiles (480&nbsp;px) wide</b>. Paint the river region into it as a still.</li>
+          <li><b>Unit frames</b> — one direction/state per row or per sheet; frame counts may differ per state.</li>
+          <li><b>Decoration / river</b> — a single strip or grid of frames.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <h3>Slice each sheet into named frames</h3>
+        <p>Open <span class="menu">Project Astra ▸ Animation ▸ Animation Studio</span> → <b>Slice</b> tab. Drag in a sheet, then:</p>
+        <ul>
+          <li>Set <span class="field">Columns / Rows</span> (or tick <i>Size by cell pixels</i>).</li>
+          <li><b>River:</b> tick <span class="field">Tileable (FullRect)</span>. <b>Trees / flowers:</b> set <span class="field">Pivot → Bottom-Center</span> so they sit on the ground.</li>
+          <li>Set the <span class="field">Base Name</span> — <b>this is the part everything hinges on</b> (see the rule below).</li>
+          <li>Click <b>Slice</b>.</li>
+        </ul>
+
+        <div class="call rule">
+          <p class="lbl">The naming rule — read this</p>
+          <p>The frame names <em>are</em> the wiring. A unit's frames must be named <b>exactly</b> by state, and a decoration's frames by one base word. The <b>Base Name</b> you type when slicing becomes that prefix. If you name an idle sheet <code>protagonist_idle</code>, the builder won't find it — it's looking for <code>idle</code>.</p>
+        </div>
+
+        <p><b>Unit direction → state name.</b> Slice each of a unit's six sheets with these exact base names:</p>
+        <table>
+          <tr><th>Your sheet</th><th>Base Name to type</th><th>Produces</th></tr>
+          <tr><td>Idle</td><td><code>idle</code></td><td><code>idle_0, idle_1…</code></td></tr>
+          <tr><td>Running <b>Up</b></td><td><code>run_n</code></td><td><code>run_n_0…</code></td></tr>
+          <tr><td>Running <b>Right</b></td><td><code>run_e</code></td><td><code>run_e_0…</code></td></tr>
+          <tr><td>Running <b>Down</b></td><td><code>run_s</code></td><td><code>run_s_0…</code></td></tr>
+          <tr><td>Running <b>Left</b></td><td><code>run_w</code></td><td><code>run_w_0…</code></td></tr>
+          <tr><td>Selected</td><td><code>selected</code></td><td><code>selected_0…</code></td></tr>
+        </table>
+        <p style="font-size:16.5px;color:var(--ink-soft);">Six separate single-row sheets are perfectly fine — the builder scans the whole folder and groups by these prefixes, so mixed frame counts (say 5 / 10 / 6…) work. It's the <em>names</em>, never the arrangement, that matter. <i>(One 6-row sheet? Tick <span class="field">Unit sheet</span> and it labels the rows for you.)</i></p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <h3>Build the animators</h3>
+        <p>Still in <b>Animation Studio</b>:</p>
+        <ul>
+          <li><b>Unit Controller</b> tab → <span class="field">Character Name</span>, <span class="field">Frames Folder</span> = the folder holding that unit's six sliced sheets, <span class="field">fps</span> → <b>Build</b>. Out comes the six clips + an <b>override controller</b> in <code>Assets/Animation/Units/&lt;name&gt;/</code>.</li>
+          <li><b>Deco Controller</b> tab → one per tree / flower / bird / river: <span class="field">Name</span>, <span class="field">Frames Folder</span>, <span class="field">fps</span> → <b>Build</b> → a looping controller in <code>Assets/Animation/Environment/&lt;name&gt;/</code>.</li>
+        </ul>
+        <p>Watch the <b>Preview</b> panel loop each one before you move on.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <div>
+        <h3>Give each unit its animation</h3>
+        <p>Open a character's <b>UnitDefinition</b> (Data Hub or Inspector) and set <span class="field">Map Animation</span> to that character's override controller. Leave it empty and the unit simply uses its static sprite — nothing breaks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACT II ================= -->
+  <section class="act" id="act2">
+    <div class="act-head"><span class="roman">Act II</span><h2>Build the map</h2></div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div>
+        <h3>Create it &amp; lay the ground</h3>
+        <p>Open <span class="menu">Project Astra ▸ Map ▸ Map Editor</span>:</p>
+        <ol>
+          <li><b>New…</b> → save the <b>MapData</b> (default <code>Assets/ScriptableObjects/Map/Maps</code>).</li>
+          <li><b>Identity</b> — a <span class="field">Name</span> and a unique <span class="field">Map Id</span> (no spaces, e.g. <code>map2_riverford</code>).</li>
+          <li><b>Base Art</b> — <b>Import PNG…</b> your ground, then <b>Fit Size To Art</b>.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">6</div>
+      <div>
+        <h3>Paint terrain &amp; place units</h3>
+        <ul>
+          <li><b>Terrain</b> tab — paint every cell. Paint the river cells <b>Water / River</b> — that's what pathfinding reads <em>and</em> what the river auto-fit detects later. Border the map with <b>Wall</b>.</li>
+          <li><b>Units</b> tab — pick a <span class="field">Unit</span> (from the database) + a <span class="field">Team</span>, then click cells to place. Click a placed unit to remove it.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACT III ================= -->
+  <section class="act" id="act3">
+    <div class="act-head"><span class="roman">Act III</span><h2>Bring it to life</h2></div>
+
+    <div class="call rule">
+      <p class="lbl">Why this act works differently — read once</p>
+      <p>Terrain and units are a <em>fixed</em> shape, so the Map Editor handles them as data. Decorations are the opposite — an <em>open</em> creative domain (a bird on a random arc, a leaf that falls now and then, a per-map glow, a bespoke script). So you don't paint them into data; you build them as a normal <b>prefab</b>, in a real scene, with full Unity freedom — and the map just points to that prefab. The <b>Environment Builder</b> is that scene, with your actual map shown underneath as a backdrop so placement is exactly what the player will see.</p>
+    </div>
+
+    <div class="step">
+      <div class="num">7</div>
+      <div>
+        <h3>Open the builder &amp; load your map as a backdrop</h3>
+        <p>Open <span class="menu">Project Astra ▸ Map ▸ Environment Builder</span>, then:</p>
+        <ol>
+          <li>Set <span class="field">Map</span> to the MapData you just built (it's remembered next time).</li>
+          <li>Click <b>Open Builder Scene</b> — the first time, this creates <code>Assets/Scenes/MapEnvironmentBuilder.unity</code> and opens it; after that it just re-opens it.</li>
+          <li>Click <b>Load Backdrop</b>. Your map's real base art, a grid overlay, and colored unit markers appear. This backdrop is <em>view-only</em> — it's never saved into your prefab; it's just there so you author against the true map, edges and all.</li>
+        </ol>
+        <div class="call warn" style="margin-top:12px;">
+          <p class="lbl">If a pivot warning appears — fix it before placing anything</p>
+          <p>The base art needs a <b>Bottom-Left</b> pivot to sit on the grid. If the builder warns it's <b>Center</b>, click <b>Fix base-art pivot to BottomLeft</b>, then <b>Load Backdrop</b> again. (If you skip this, the art — and everything you place against it — will be offset in the real game.)</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">8</div>
+      <div>
+        <h3>Place one decoration — the core loop</h3>
+        <p>Click <b>New</b> to create the empty <b>Environment</b> root. Everything you add lives <em>under</em> it. To add one animated decoration (a tree, a flower, a bird):</p>
+        <ol>
+          <li>Right-click <b>Environment ▸ Create Empty</b> (or drag a sliced sprite into the scene and parent it under Environment). Name it (e.g. <code>Tree_A</code>).</li>
+          <li>Add a <b>Sprite Renderer</b>; set its <span class="field">Sprite</span> to the deco's first frame and its <span class="field">Sorting Layer</span> from the table below.</li>
+          <li>Add an <b>Animator</b>; set its <span class="field">Controller</span> to that deco's controller (built in Act I, Deco Controller tab).</li>
+          <li>Position it anywhere — drag it in the Scene view. Off-map is fine: a tree can hang 20% past the edge and only the on-screen part shows.</li>
+          <li>Add any behaviour components from the recipe table to give it life.</li>
+        </ol>
+        <p>Duplicate the object (Ctrl+D) for more of the same kind, then reposition — that's how you fill a meadow fast.</p>
+
+        <p style="margin-top:14px;"><b>Sorting layer — which layer for what:</b></p>
+        <table>
+          <tr><th>Decoration</th><th>Sorting Layer</th><th>Order</th></tr>
+          <tr><td>Base-layer river / animated ground</td><td><code>Ground</code></td><td>10 <span style="color:var(--ink-soft)">(above the base art)</span></td></tr>
+          <tr><td>Trees, flowers, grass, rocks</td><td><code>Object</code></td><td>0–5</td></tr>
+          <tr><td>Birds, anything over the fighters</td><td><code>Sky</code></td><td>0</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">9</div>
+      <div>
+        <h3>Give it character — the freedom kit</h3>
+        <p>These are small drag-on components (Add Component ▸ search the name). Mix and match; the prefab is a normal hierarchy, so a coder can add anything else too.</p>
+        <table>
+          <tr><th>Add this</th><th>To get</th><th>Key fields</th></tr>
+          <tr><td><code>AmbientAnimator</code></td><td>identical loops that <b>don't</b> play in unison (a row of flowers swaying off-beat)</td><td><span class="field">maxStartOffset</span></td></tr>
+          <tr><td><code>AnimatorSpeed</code></td><td>a per-object playback speed, fixed or a random range</td><td><span class="field">speed</span>, <span class="field">randomize</span>, <span class="field">speedRange</span></td></tr>
+          <tr><td><code>PathFollower</code></td><td>a bird gliding an <b>arc</b> A→B→C, re-shaped a little each pass so it never repeats</td><td><span class="field">waypoints</span>, <span class="field">speed</span>, <span class="field">mode</span> (Loop/PingPong/Once), <span class="field">jitterAmplitude</span></td></tr>
+          <tr><td><code>RandomIntervalTrigger</code></td><td>an <b>occasional</b> one-shot — a leaf that falls every few seconds instead of looping forever</td><td><span class="field">intervalRange</span>, + an Animator trigger / ParticleSystem / <span class="field">onFire</span> event</td></tr>
+        </table>
+        <div class="call tip" style="margin-top:12px;">
+          <p class="lbl">The base-layer river — one click</p>
+          <p>With the <b>Environment</b> root present, click <b>Add River Patch (auto-size to water band)</b>. It creates a tiled sprite on <code>Ground</code> (order 10) sized to the <b>Water/River</b> cells you painted in Step&nbsp;6. Select it and assign your <b>tileable</b> river sprite + its animator controller. Because it's tiled and on Ground, it reads as the ground itself flowing.</p>
+        </div>
+        <div class="call tip" style="margin-top:10px;">
+          <p class="lbl">Particles, effects &amp; per-map post-processing</p>
+          <p>It's a normal prefab — add a Shuriken <code>ParticleSystem</code> (fireflies, mist, embers; set its Renderer's Sorting Layer to match). For a map-wide look, add a URP <b>Volume</b> (Global) as a child, pointing at a cloned <code>VolumeProfile</code> with Bloom/Vignette dialed in — it only affects the map while this prefab is loaded. <b>One catch:</b> turn the BattleMap camera's <b>Post Processing</b> toggle <em>on</em> (off by default) or no Volume shows.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">10</div>
+      <div>
+        <h3>Preview, then save it to the map</h3>
+        <ol>
+          <li><b>Press Play</b> right in the builder scene — everything animates (loops, arcs, one-shots, particles) with no game boot needed. Tune and repeat until it feels right.</li>
+          <li>Click <b>Save → MapData.environmentPrefab</b>. The <b>Environment</b> root is saved to <code>Assets/Prefabs/Environment/&lt;mapId&gt;.prefab</code> and wired into your MapData; the backdrop is left out automatically.</li>
+        </ol>
+        <p>Come back any time: pick the map, <b>Load Backdrop</b>, <b>Load Existing</b> — your prefab re-opens for editing. One prefab per map.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ACT IV ================= -->
+  <section class="act" id="act4">
+    <div class="act-head"><span class="roman">Act IV</span><h2>Play it</h2></div>
+
+    <div class="step">
+      <div class="num">11</div>
+      <div>
+        <h3>Register &amp; load in-game</h3>
+        <p>Back in the <b>Map Editor</b>, make sure the map is <b>Saved</b>, its <b>Validation</b> is clear (empty id, off-map units, unresolved unit ids), and it's <b>Registered In Catalog</b>. Then choose how to load it:</p>
+        <ul>
+          <li><b>Quick look</b> — open <code>Assets/Scenes/BattleMap.unity</code>, select the <b>MapBootstrapper</b> object, set its <span class="field">Fallback Map Data</span> to your new map, and press <b>Play</b>. <span style="color:var(--ink-soft);font-size:16px;">(A few harmless singleton warnings log when the scene runs standalone — ignore them.)</span></li>
+          <li><b>Real campaign play</b> — open the <b>Campaign</b> asset, add a step with <span class="field">kind = Battle</span> and <span class="field">Map Id</span> = your map's id, then play from the front end to reach it cleanly.</li>
+        </ul>
+        <p>Press Play and it all comes together: units idle, run in four directions, and glow when hovered; foliage sways out of sync; a bird crosses the sky over the fighters; and the river flows across the ground.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TROUBLESHOOTING ================= -->
+  <section class="act">
+    <div class="act-head"><span class="roman">Appendix</span><h2>When something won't animate</h2></div>
+
+    <div class="call warn">
+      <p class="lbl">Build does nothing / "no frames found"</p>
+      <p>Almost always the frame <b>names</b>. The builder needs a unit's sprites named <code>idle_N</code> / <code>run_n_N</code> / <code>run_e_N</code> / <code>run_s_N</code> / <code>run_w_N</code> / <code>selected_N</code>, and a deco's named <code>&lt;base&gt;_N</code>. A character prefix (<code>hero_idle_0</code>) or a friendly word (<code>running_down</code> instead of <code>run_s</code>) both break the match. Re-slice with the exact <b>Base Name</b> from the table in Step&nbsp;2.</p>
+    </div>
+    <div class="call warn">
+      <p class="lbl">Unit shows a static sprite in play</p>
+      <p>Its <b>UnitDefinition ▸ Map Animation</b> is empty, or the override controller wasn't built. Do Steps&nbsp;3–4.</p>
+    </div>
+    <div class="call warn">
+      <p class="lbl">River renders as one stretched frame, not tiling</p>
+      <p>The river sheet wasn't sliced with <span class="field">Tileable (FullRect)</span> ticked. Re-slice it that way and rebuild the controller. On the River object, the <code>SpriteRenderer</code> Draw Mode must be <b>Tiled</b> (the <b>Add River Patch</b> button sets this for you).</p>
+    </div>
+    <div class="call warn">
+      <p class="lbl">Bird renders behind units</p>
+      <p>Set the bird's <code>SpriteRenderer</code> <b>Sorting Layer</b> to <span class="field">Sky</span> (it sits above Units).</p>
+    </div>
+    <div class="call warn">
+      <p class="lbl">Environment doesn't appear in the real battle</p>
+      <p>Confirm <b>Save → MapData.environmentPrefab</b> wired the prefab (check the MapData's <span class="field">Environment Prefab</span> field). A new map grid built via <span class="menu">Create Map Grid</span> already has its Environment container; older scenes may need it wired once.</p>
+    </div>
+  </section>
+
+  <div class="call tip" style="margin-top:44px;">
+    <p class="lbl">Two honest caveats</p>
+    <p><b>Combat-screen animations aren't built yet.</b> Everything here is <em>on-map</em> animation; the Fire-Emblem-style battle screen still uses a placeholder.</p>
+    <p><b>Placeholder art is currently wired</b> to the protagonist and to Map&nbsp;1. When you author real content, just overwrite those fields — nothing else changes.</p>
+  </div>
+
+  <footer>
+    <p>Every animator here is a plain asset you can open, preview, and swap — build once, reuse across maps.</p>
+    <p class="mono">PROJECT ASTRA · MAP ANIMATION · AUTHORING GUIDE</p>
+  </footer>
+
+</div>
+</body>
+</html>

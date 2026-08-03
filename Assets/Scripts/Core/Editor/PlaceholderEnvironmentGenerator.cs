@@ -1,28 +1,28 @@
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Grid;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Builds placeholder animated environment DATA and writes it onto Map 1's
-    // decorations[] (the tool-authored model), proving the pipeline end to end
-    // without real art:
+    // Builds a placeholder animated environment PREFAB and wires it onto Map 1,
+    // proving the prefab pipeline end to end without real art:
     //   - a flowing RIVER: a seamless tile on Ground, tiled across the water band
     //     (a base-layer animation that occludes the painted river),
-    //   - swaying FLOWERS sharing one clip, phase-offset so they don't sway in sync,
+    //   - swaying FLOWERS sharing one clip, phase-desynced by AmbientAnimator,
     //   - a swaying TREE (a non-tile-sized decoration, bottom-anchored),
     //   - a flapping BIRD on the Sky layer flying point-to-point over units.
-    // Swap any controller for real PixelLab art later; the data wiring stays.
+    // A stand-in the designer replaces by authoring the real prefab in the
+    // Environment Builder; the wiring (MapData.environmentPrefab) stays the same.
     public static class PlaceholderEnvironmentGenerator
     {
         private const string ArtRoot = "Assets/Art/Animation/Environment/Placeholder";
         private const string AnimRoot = "Assets/Animation/Environment/Placeholder";
-        private const string OldPrefabPath = "Assets/Animation/Environment/PlaceholderEnvironment.prefab";
+        private const string PrefabPath = "Assets/Prefabs/Environment/map1_bridge.prefab";
 
-        [MenuItem("Project Astra/Animation/Generate Placeholder Environment (Map 1)")]
+        [MenuItem("Project Astra/Animation/Generate Placeholder Environment PREFAB (Map 1)")]
         public static void Generate()
         {
             MapData map = FindMap1();
@@ -30,19 +30,18 @@ namespace ProjectAstra.Core.Editor
 
             WaterBand band = WaterBand.Detect(map);
             var controllers = BuildAllControllers();
-            List<EnvironmentDecoration> decorations = BuildDecorations(controllers, map.Width, band);
-            WriteDecorations(map, decorations);
-            RetireOldPrefab();
+            GameObject prefab = BuildPrefab(controllers, map.Width, band);
+            WirePrefabToMap(map, prefab);
 
             AssetDatabase.SaveAssets();
-            Selection.activeObject = map;
-            Debug.Log($"[Animation] Placeholder environment: {decorations.Count} decorations on '{map.MapName}' " +
-                      $"(river band y={band.MinY}..{band.MaxY}).");
+            Selection.activeObject = prefab;
+            Debug.Log($"[Animation] Placeholder environment prefab built for '{map.MapName}' " +
+                      $"(river band y={band.MinY}..{band.MaxY}) → {PrefabPath}");
         }
 
         // ---- frame generation + controllers ----
 
-        private static Dictionary<string, AnimatorController> BuildAllControllers()
+        private static System.Collections.Generic.Dictionary<string, AnimatorController> BuildAllControllers()
         {
             WriteFrames("river", RiverFrame, 4);
             WriteFrames("flower", FlowerFrame, 4);
@@ -55,7 +54,7 @@ namespace ProjectAstra.Core.Editor
             ConfigureFrames($"{ArtRoot}/tree", SpriteAlignment.BottomCenter, false);
             ConfigureFrames($"{ArtRoot}/bird", SpriteAlignment.Center, false);
 
-            return new Dictionary<string, AnimatorController>
+            return new System.Collections.Generic.Dictionary<string, AnimatorController>
             {
                 ["river"] = LoopingAnimatorBuilder.BuildFromFolder("river", $"{ArtRoot}/river", 6, $"{AnimRoot}/river"),
                 ["flower"] = LoopingAnimatorBuilder.BuildFromFolder("flower", $"{ArtRoot}/flower", 4, $"{AnimRoot}/flower"),
@@ -87,75 +86,54 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
-        // ---- decorations (data) ----
+        // ---- prefab assembly ----
 
-        private static List<EnvironmentDecoration> BuildDecorations(
-            Dictionary<string, AnimatorController> c, int mapWidth, WaterBand band)
+        private static GameObject BuildPrefab(
+            System.Collections.Generic.Dictionary<string, AnimatorController> c, int mapWidth, WaterBand band)
         {
-            return new List<EnvironmentDecoration>
-            {
-                Deco("River", c["river"], new Vector2(mapWidth / 2f, band.CenterY), "Ground", 10,
-                    new Vector2(mapWidth, band.Height), 0.2f, false, Vector2.zero),
-                Deco("Flower_A", c["flower"], new Vector2(3.5f, 3f), "Object", 5, Vector2.zero, 0.00f, false, Vector2.zero),
-                Deco("Flower_B", c["flower"], new Vector2(6.5f, 3f), "Object", 5, Vector2.zero, 0.33f, false, Vector2.zero),
-                Deco("Flower_C", c["flower"], new Vector2(9.5f, 3f), "Object", 5, Vector2.zero, 0.66f, false, Vector2.zero),
-                Deco("Tree", c["tree"], new Vector2(13.5f, 2f), "Object", 0, Vector2.zero, 0.00f, false, Vector2.zero),
-                Deco("Bird", c["bird"], new Vector2(2f, 7f), "Sky", 0, Vector2.zero, 0.00f, true, new Vector2(7f, 0f)),
-            };
+            var root = new GameObject("Environment");
+
+            MakeDeco("River", root, c["river"], "Ground", 10,
+                new Vector2(mapWidth / 2f, band.CenterY), new Vector2(mapWidth, band.Height), false);
+            MakeDeco("Flower_A", root, c["flower"], "Object", 5, new Vector2(3.5f, 3f), Vector2.zero, false);
+            MakeDeco("Flower_B", root, c["flower"], "Object", 5, new Vector2(6.5f, 3f), Vector2.zero, false);
+            MakeDeco("Flower_C", root, c["flower"], "Object", 5, new Vector2(9.5f, 3f), Vector2.zero, false);
+            MakeDeco("Tree", root, c["tree"], "Object", 0, new Vector2(13.5f, 2f), Vector2.zero, false);
+            MakeDeco("Bird", root, c["bird"], "Sky", 0, new Vector2(2f, 7f), Vector2.zero, moves: true);
+
+            EnsureFolder("Assets/Prefabs/Environment");
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
+            Object.DestroyImmediate(root);
+            return prefab;
         }
 
-        private static EnvironmentDecoration Deco(string id, AnimatorController ctrl, Vector2 pos,
-            string layer, int order, Vector2 tileSize, float phase, bool moves, Vector2 waypoint)
+        private static void MakeDeco(string name, GameObject parent, AnimatorController controller,
+            string sortingLayer, int order, Vector2 localPos, Vector2 tileSize, bool moves)
         {
-            return new EnvironmentDecoration
-            {
-                id = id,
-                position = pos,
-                animator = ctrl,
-                previewSprite = FirstSprite(ctrl),
-                sortingLayer = layer,
-                sortingOrder = order,
-                tileSize = tileSize,
-                phaseOffset = phase,
-                moves = moves,
-                waypointOffset = waypoint,
-                moveSpeed = moves ? 2f : 0f,
-                flipToFaceTravel = true,
-            };
+            var go = new GameObject(name);
+            go.transform.SetParent(parent.transform, false);
+            go.transform.localPosition = new Vector3(localPos.x, localPos.y, 0f);
+
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = FirstSprite(controller);
+            sr.sortingLayerName = sortingLayer;
+            sr.sortingOrder = order;
+            if (tileSize != Vector2.zero) { sr.drawMode = SpriteDrawMode.Tiled; sr.size = tileSize; }
+
+            var animator = go.AddComponent<Animator>();
+            animator.runtimeAnimatorController = controller;
+            animator.applyRootMotion = false;
+
+            go.AddComponent<AmbientAnimator>();                          // random phase → desynced loops
+            if (moves) go.AddComponent<WaypointMover>();                 // straight A→B (bird)
         }
 
-        private static void WriteDecorations(MapData map, List<EnvironmentDecoration> decorations)
+        private static void WirePrefabToMap(MapData map, GameObject prefab)
         {
             var so = new SerializedObject(map);
-            var p = so.FindProperty("decorations");
-            p.arraySize = decorations.Count;
-            for (int i = 0; i < decorations.Count; i++)
-            {
-                var e = p.GetArrayElementAtIndex(i);
-                var d = decorations[i];
-                e.FindPropertyRelative("id").stringValue = d.id;
-                e.FindPropertyRelative("position").vector2Value = d.position;
-                e.FindPropertyRelative("animator").objectReferenceValue = d.animator;
-                e.FindPropertyRelative("previewSprite").objectReferenceValue = d.previewSprite;
-                e.FindPropertyRelative("sortingLayer").stringValue = d.sortingLayer;
-                e.FindPropertyRelative("sortingOrder").intValue = d.sortingOrder;
-                e.FindPropertyRelative("phaseOffset").floatValue = d.phaseOffset;
-                e.FindPropertyRelative("useUnscaledTime").boolValue = d.useUnscaledTime;
-                e.FindPropertyRelative("tileSize").vector2Value = d.tileSize;
-                e.FindPropertyRelative("moves").boolValue = d.moves;
-                e.FindPropertyRelative("waypointOffset").vector2Value = d.waypointOffset;
-                e.FindPropertyRelative("moveSpeed").floatValue = d.moveSpeed;
-                e.FindPropertyRelative("flipToFaceTravel").boolValue = d.flipToFaceTravel;
-            }
-            so.FindProperty("environmentPrefab").objectReferenceValue = null;   // migrated to data
+            so.FindProperty("environmentPrefab").objectReferenceValue = prefab;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(map);
-        }
-
-        private static void RetireOldPrefab()
-        {
-            if (AssetDatabase.LoadAssetAtPath<GameObject>(OldPrefabPath) != null)
-                AssetDatabase.DeleteAsset(OldPrefabPath);
         }
 
         private static Sprite FirstSprite(AnimatorController controller)
@@ -177,6 +155,15 @@ namespace ProjectAstra.Core.Editor
                     return map;
             }
             return null;
+        }
+
+        private static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            string parent = Path.GetDirectoryName(path).Replace("\\", "/");
+            string leaf = Path.GetFileName(path);
+            if (!AssetDatabase.IsValidFolder(parent)) EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, leaf);
         }
 
         // ---- placeholder pixel art ----

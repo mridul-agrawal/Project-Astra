@@ -35,6 +35,35 @@ namespace ProjectAstra.Core.Editor
             return rects.Length;
         }
 
+        // Renames a sheet's existing sub-sprites to "<state>_<index>" in place —
+        // keeping their rects and file ids — for fixing sheets sliced with the
+        // wrong base name, without re-cutting them.
+        public static int Rename(string assetPath, string state)
+        {
+            if (AssetImporter.GetAtPath(assetPath) is not TextureImporter importer) return 0;
+
+            var factory = new SpriteDataProviderFactories();
+            factory.Init();
+            ISpriteEditorDataProvider provider = factory.GetSpriteEditorDataProviderFromObject(importer);
+            provider.InitSpriteEditorDataProvider();
+
+            SpriteRect[] rects = provider.GetSpriteRects();
+            foreach (SpriteRect r in rects)
+                r.name = $"{state}_{TrailingNumber(r.name)}";
+            provider.SetSpriteRects(rects);
+            RegisterNameFileIds(provider, rects);
+
+            provider.Apply();
+            importer.SaveAndReimport();
+            return rects.Length;
+        }
+
+        private static int TrailingNumber(string name)
+        {
+            int underscore = name.LastIndexOf('_');
+            return underscore >= 0 && int.TryParse(name.Substring(underscore + 1), out int n) ? n : 0;
+        }
+
         private static SpriteRect[] BuildRects(SpriteSlice[] slices, SpriteAlignment alignment)
         {
             Vector2 pivot = PivotFor(alignment);

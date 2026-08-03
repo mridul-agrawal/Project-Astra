@@ -16,7 +16,6 @@ namespace ProjectAstra.Core.Grid
         private MapData currentMap;
         private readonly List<GameObject> spawnedObjects = new();
         private GameObject environmentInstance;
-        private readonly List<GameObject> spawnedDecorations = new();
 
         public MapData CurrentMap => currentMap;
 
@@ -35,7 +34,6 @@ namespace ProjectAstra.Core.Grid
             DrawBaseArt(mapData);
             SpawnObjects(mapData);
             SpawnEnvironment(mapData);
-            SpawnDecorations(mapData);
         }
 
         public TerrainType GetTerrainType(int x, int y)
@@ -91,9 +89,9 @@ namespace ProjectAstra.Core.Grid
             spawnedObjects.Clear();
         }
 
-        // Drops in the map's animated environment (deco + base-layer patches). The
-        // prefab's children own their placement and animators; the base PNG under a
-        // river patch is authored so a missing prefab still reads as a river.
+        // Drops in the map's animated environment: the per-map prefab authored in the
+        // Environment Builder. Its children own their own placement, animators, and
+        // behaviour components (paths, timers, particles, a base-layer river patch).
         private void SpawnEnvironment(MapData mapData)
         {
             ClearEnvironment();
@@ -108,25 +106,6 @@ namespace ProjectAstra.Core.Grid
         {
             if (environmentInstance != null) Destroy(environmentInstance);
             environmentInstance = null;
-        }
-
-        // Builds the authored data-driven decorations — the tool-friendly path that
-        // spawns alongside (or instead of) the escape-hatch environment prefab.
-        private void SpawnDecorations(MapData mapData)
-        {
-            ClearDecorations();
-            if (mapData.Decorations == null) return;
-
-            Transform parent = environmentContainer != null ? environmentContainer : transform;
-            foreach (EnvironmentDecoration deco in mapData.Decorations)
-                spawnedDecorations.Add(EnvironmentDecorationSpawner.Spawn(deco, parent));
-        }
-
-        private void ClearDecorations()
-        {
-            foreach (var go in spawnedDecorations)
-                if (go != null) Destroy(go);
-            spawnedDecorations.Clear();
         }
     }
 }

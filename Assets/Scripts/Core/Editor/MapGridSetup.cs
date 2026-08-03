@@ -20,15 +20,19 @@ namespace ProjectAstra.Core.Editor
             var objectsGO = new GameObject("Objects");
             objectsGO.transform.SetParent(gridGO.transform, false);
 
+            var environmentGO = new GameObject("Environment");
+            environmentGO.transform.SetParent(gridGO.transform, false);
+
             var mapRenderer = gridGO.AddComponent<MapRenderer>();
             var so = new SerializedObject(mapRenderer);
             so.FindProperty("baseArtRenderer").objectReferenceValue = baseRenderer;
             so.FindProperty("objectContainer").objectReferenceValue = objectsGO.transform;
+            so.FindProperty("environmentContainer").objectReferenceValue = environmentGO.transform;
             so.ApplyModifiedPropertiesWithoutUndo();
 
             Selection.activeGameObject = gridGO;
             Undo.RegisterCreatedObjectUndo(gridGO, "Create Map Grid");
-            Debug.Log("Map Grid created with base-art renderer and object container.");
+            Debug.Log("Map Grid created with base-art renderer, object container, and environment container.");
         }
     }
 }

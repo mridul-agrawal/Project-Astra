@@ -16,12 +16,13 @@ MonoBehaviour:
   unitId: rakshasa_raider
   defaultClass: {fileID: 11400000, guid: 9d0103cce8d303e42ad4fac689a27e5f, type: 2}
   defaultLoadout: {fileID: 11400000, guid: b60422b9cf97451aa2ed97e34e3cf539, type: 2}
+  baseLevel: 1
   baseStats:
     values: 0c0000000700000000000000050000000600000006000000010000000900000004000000
-  baseLevel: 1
   personalGrowths:
     values: 410000002d000000050000002300000028000000230000000f000000000000001e000000
   mapSprite: {fileID: 21300000, guid: 5c951e84a9805c247aee5d674f15af62, type: 3}
+  mapAnimator: {fileID: 22100000, guid: 81d808a7278975645a97433c2ac78d6c, type: 2}
   portrait: {fileID: 21300000, guid: 2b6392d2491586646801df49de61bb15, type: 3}
   woundedPortrait: {fileID: 0}
   criticalPortrait: {fileID: 0}
@@ -33,3 +34,5 @@ MonoBehaviour:
   oneLineIdentity: 
   isLord: 0
   lastWordsLines: []
+  startingWeaponRanks: []
+  speaker: {fileID: 0}

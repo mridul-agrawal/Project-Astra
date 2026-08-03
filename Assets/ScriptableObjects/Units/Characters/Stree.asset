@@ -22,6 +22,7 @@ MonoBehaviour:
   personalGrowths:
     values: 000000000000000000000000000000000000000000000000000000000000000000000000
   mapSprite: {fileID: 0}
+  mapAnimator: {fileID: 22100000, guid: 835ec0065b7bd7946a2415b9e8a3ac1d, type: 2}
   portrait: {fileID: 0}
   woundedPortrait: {fileID: 0}
   criticalPortrait: {fileID: 0}
