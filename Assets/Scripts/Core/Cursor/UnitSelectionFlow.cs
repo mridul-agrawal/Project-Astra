@@ -166,7 +166,23 @@ namespace ProjectAstra.Core.Cursor
         {
             validMoveTiles = new HashSet<Vector2Int>(currentReachability.Destinations);
             validMoveTiles.UnionWith(currentReachability.PassThrough);
-            rangeHighlighter?.ShowMovementRange(currentReachability.Destinations, currentReachability.PassThrough);
+
+            var attackTiles = ComputeSelectionAttackFringe();
+            rangeHighlighter?.ShowMovementAndAttackRange(
+                currentReachability.Destinations, currentReachability.PassThrough, attackTiles);
+        }
+
+        // The red fringe shown alongside the blue move range: everything the unit
+        // could attack from any tile it can stop on, minus the tiles it can move
+        // onto — so a tile that's both movable and attackable shows blue, not red.
+        private HashSet<Vector2Int> ComputeSelectionAttackFringe()
+        {
+            if (pathfindingService == null || selectedUnit == null) return null;
+
+            selectedUnit.GetAttackRange(out int min, out int max);
+            var attack = pathfindingService.ComputeAttackRange(currentReachability.Destinations, min, max);
+            attack.ExceptWith(validMoveTiles);
+            return attack;
         }
 
         // --- Cancel/cleanup paths ---

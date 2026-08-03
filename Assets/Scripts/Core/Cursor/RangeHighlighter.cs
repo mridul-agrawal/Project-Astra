@@ -55,6 +55,29 @@ namespace ProjectAstra.Core.Cursor
         public void ShowAttackRange(HashSet<Vector2Int> attackable) =>
             ShowSingleColorRange(attackable, AttackColor);
 
+        // The FE-style selection view: blue where the unit can move, red on the
+        // attack fringe around it. Painted in one pass because each Show* clears
+        // first, so two separate calls would wipe each other. Callers pass an
+        // attack set already stripped of move tiles, so nothing double-paints.
+        public void ShowMovementAndAttackRange(
+            HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough, HashSet<Vector2Int> attack)
+        {
+            ClearAll();
+
+            if (attack != null)
+                foreach (var tile in attack)
+                    PlaceOverlay(tile, AttackColor);
+
+            foreach (var tile in destinations)
+                PlaceOverlay(tile, MovementColor);
+
+            if (passThrough != null)
+                foreach (var tile in passThrough)
+                    PlaceOverlay(tile, PassThroughColor);
+
+            StartShimmer();
+        }
+
         public void ShowHealRange(HashSet<Vector2Int> healable) =>
             ShowSingleColorRange(healable, HealColor);
 
