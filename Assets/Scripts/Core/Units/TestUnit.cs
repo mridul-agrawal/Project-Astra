@@ -112,12 +112,14 @@ namespace ProjectAstra.Core.Units
             currentHP = instance.CurrentHP;
         }
 
-        // Runtime injection used by UnitSpawner: sets the authored definition before Start so
-        // TestUnit's own binding step builds the UnitInstance from it.
+        // Runtime injection used by UnitSpawner: sets the authored definition and binds
+        // the UnitInstance immediately, so the instance is ready for anything that reads
+        // it at battle start (e.g. the HUD's unit card) before this unit's own Start runs.
         public void InitializeFromDefinition(UnitDefinition definition, ClassDefinition classOverride = null)
         {
             unitDefinition = definition;
             if (classOverride != null) this.classOverride = classOverride;
+            BindUnitInstanceFromDefinitionIfNeeded();
         }
 
         public void MarkActed()

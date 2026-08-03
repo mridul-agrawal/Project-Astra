@@ -133,7 +133,7 @@ namespace ProjectAstra.Core.Cursor
             InitializeCantoFlow();
             InitializeUnitSelectionFlow();
             InitializeHoverSelection();
-            SetPosition(Vector2Int.zero);
+            SetPosition(FindInitialCursorCell());
             UpdateModeFromGameState();
         }
 
@@ -524,6 +524,25 @@ namespace ProjectAstra.Core.Cursor
                     return unit;
             return null;
         }
+
+        // Where the cursor rests when the battle map first loads: the player's
+        // commander (Lord) if one is marked, else the first player unit — the
+        // Fire-Emblem "start on your lord" convention. Falls back to the origin.
+        private static Vector2Int FindInitialCursorCell()
+        {
+            TestUnit lord = null, firstPlayer = null;
+            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+            {
+                if (unit.faction != Faction.Player) continue;
+                firstPlayer ??= unit;
+                if (IsLord(unit)) { lord = unit; break; }
+            }
+            TestUnit start = lord != null ? lord : firstPlayer;
+            return start != null ? start.gridPosition : Vector2Int.zero;
+        }
+
+        private static bool IsLord(TestUnit unit) =>
+            (unit.UnitDefinition != null && unit.UnitDefinition.IsLord) || unit.isLord;
 
         // --- Game state events ---
 

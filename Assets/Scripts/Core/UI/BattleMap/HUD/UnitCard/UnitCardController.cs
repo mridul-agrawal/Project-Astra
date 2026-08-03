@@ -44,8 +44,8 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
             return new UnitCardModel
             {
-                UnitName = unitInstance.Definition.name,
-                unitCardPortriat = unitInstance.Definition.Portrait,
+                UnitName = unitInstance != null ? unitInstance.Definition.name : unit.name,
+                unitCardPortriat = unitInstance != null ? unitInstance.Definition.Portrait : null,
                 UnitLevel = unitInstance != null ? unitInstance.Level : 0,
                 UnitExp = unitInstance != null ? unitInstance.CurrentEXP : 0,
                 CurrentHP = unitInstance != null ? unitInstance.CurrentHP : unit.currentHP,
