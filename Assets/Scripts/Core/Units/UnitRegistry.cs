@@ -127,6 +127,16 @@ namespace ProjectAstra.Core.Units
             }
         }
 
+        // Clears the "acted" look from every OTHER faction's units, so a unit only
+        // appears used during its own phase (enemies shouldn't look spent on your
+        // turn). Visual only — each faction's turn flags stay owned by ResetPhaseFlags.
+        public void ClearActedVisualForOthers(Faction activeFaction)
+        {
+            foreach (var entry in units)
+                if (entry.Faction != activeFaction && entry.Unit != null)
+                    entry.Unit.ResetActed();
+        }
+
         public TestUnit GetNextUnactedUnit(Faction faction, TestUnit current) =>
             CycleUnactedUnit(faction, current, 1);
 

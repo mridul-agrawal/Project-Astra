@@ -143,7 +143,9 @@ namespace ProjectAstra.Core.Turn
         private void BeginPhase()
         {
             var phase = phaseManager.CurrentPhase;
-            unitRegistry.ResetPhaseFlags(PhaseToFaction(phase));
+            var faction = PhaseToFaction(phase);
+            unitRegistry.ResetPhaseFlags(faction);
+            unitRegistry.ClearActedVisualForOthers(faction);   // enemies/allies look normal on your turn
             EventService.Instance?.RaisePhaseStarted(phase, turnCounter);
 
             if (phase != BattlePhase.PlayerPhase)
