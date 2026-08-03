@@ -16,10 +16,10 @@ namespace ProjectAstra.Core.Editor
     // this is the open, creative half.
     public sealed class MapEnvironmentBuilderWindow : EditorWindow
     {
-        private const string BuilderScenePath = "Assets/Scenes/MapEnvironmentBuilder.unity";
+        private const string BuilderScenePath = EnvironmentBackdropGuard.BuilderScenePath;
         private const string PrefabFolder = "Assets/Prefabs/Environment";
         private const string LastMapKey = "ProjectAstra.EnvBuilder.LastMap";
-        private const string BackdropName = "__Backdrop (editor only)";
+        private const string BackdropName = EnvironmentBackdropGuard.BackdropName;
         private const string EnvironmentName = "Environment";
         private const string CameraName = "Builder Camera";
         private const int MapPPU = 32;
@@ -124,14 +124,10 @@ namespace ProjectAstra.Core.Editor
             SceneView.RepaintAll();
         }
 
-        // Destroys any existing backdrop — including a scene-less stray from an older
-        // build that GameObject.Find would miss — so nothing lingers or leaks.
-        private static void ClearBackdrops()
-        {
-            foreach (var go in Resources.FindObjectsOfTypeAll<GameObject>())
-                if (go.name == BackdropName && !EditorUtility.IsPersistent(go))
-                    DestroyImmediate(go);
-        }
+        // Clears any existing backdrop before painting a fresh one. The always-on
+        // EnvironmentBackdropGuard owns the actual sweep (and also runs it on scene
+        // change / play-enter, which is what stops the backdrop leaking).
+        private static void ClearBackdrops() => EnvironmentBackdropGuard.ClearAllBackdrops();
 
         // Grid lines + unit markers, drawn in the scene view (no runtime component needed).
         private void DrawSceneOverlay(SceneView view)
