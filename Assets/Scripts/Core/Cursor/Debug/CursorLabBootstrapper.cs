@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Turn;
@@ -6,23 +7,28 @@ using ProjectAstra.Core.Units;
 namespace ProjectAstra.Core.Cursor.Debugging
 {
     // Stands up the cursor evaluation scenario: five allies, three of them already spent, and
-    // two enemies. The point is the 3-of-5 read — whether ready and acted allies are telling
-    // apart at a glance from the unit treatment plus the cursor's response alone.
+    // two enemies. The point is the 3-of-5 read — whether ready and acted allies tell apart at
+    // a glance from the unit treatment plus the cursor's response alone.
+    //
+    // The lab is a copy of BattleMap, which spawns its own roster from the map asset and then
+    // starts a battle that resets everyone's acted flag. So this waits for all of that to
+    // finish, clears the board, and puts its own roster down — otherwise the two fight and the
+    // spent units come back to life on the first phase start.
     //
     // Lives only in CursorLab. Nothing in the shipped game references it.
     public class CursorLabBootstrapper : MonoBehaviour
     {
         [Header("Roster")]
-        [Tooltip("Where the five player units start. The first three are pre-marked as having already acted.")]
+        [Tooltip("Where the five player units start. The first few are marked as already having acted.")]
         [SerializeField] private Vector2Int[] allyPositions =
         {
-            new(3, 3), new(4, 3), new(5, 3), new(6, 3), new(7, 3),
+            new(4, 4), new(5, 4), new(6, 4), new(7, 4), new(8, 4),
         };
 
         [Tooltip("How many of the allies start spent. Kept separate from the position list so you can retune the mix without moving anyone.")]
         [Range(0, 5)][SerializeField] private int actedAllyCount = 3;
 
-        [SerializeField] private Vector2Int[] enemyPositions = { new(10, 5), new(11, 5) };
+        [SerializeField] private Vector2Int[] enemyPositions = { new(6, 6), new(8, 6) };
 
         [Header("Definitions")]
         [Tooltip("Unit definition given to every spawned ally. Any definition works — this scenario is about the cursor, not the units.")]
@@ -30,36 +36,53 @@ namespace ProjectAstra.Core.Cursor.Debugging
 
         [SerializeField] private UnitDefinition enemyDefinition;
 
-        [Tooltip("Sprite used when a definition has no map art. Leave empty to spawn units with no visible sprite.")]
+        [Tooltip("Sprite used when a definition has no map art.")]
         [SerializeField] private Sprite placeholderSprite;
 
         private readonly List<TestUnit> spawned = new();
 
-        private void Start() => Rebuild();
+        private void Start() => StartCoroutine(BuildAfterSceneSettles());
 
         [ContextMenu("Rebuild scenario")]
-        public void Rebuild()
-        {
-            Clear();
+        public void Rebuild() => StartCoroutine(BuildAfterSceneSettles());
 
+        // Two frames: one for the map's own spawner, one for TurnManager.StartBattle and the
+        // phase-start flag reset it triggers.
+        private IEnumerator BuildAfterSceneSettles()
+        {
+            yield return null;
+            yield return null;
+
+            ClearEveryUnitInTheScene();
+            SpawnRoster();
+            RegisterWithTurnManager();
+
+            // Last, so nothing downstream resets the flags we just set.
+            yield return null;
+            ApplyActedFlags();
+
+            PointCursorAtTheRoster();
+        }
+
+        private void ClearEveryUnitInTheScene()
+        {
+            foreach (var unit in FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
+                Destroy(unit.gameObject);
+
+            spawned.Clear();
+            TurnManager.Instance?.UnitRegistry.Clear();
+        }
+
+        private void SpawnRoster()
+        {
             for (int i = 0; i < allyPositions.Length; i++)
-                spawned.Add(Spawn($"Ally_{i}", allyPositions[i], Faction.Player, allyDefinition, i < actedAllyCount));
+                spawned.Add(Spawn($"Ally_{i}", allyPositions[i], Faction.Player, allyDefinition));
 
             for (int i = 0; i < enemyPositions.Length; i++)
-                spawned.Add(Spawn($"Enemy_{i}", enemyPositions[i], Faction.Enemy, enemyDefinition, false));
-
-            RegisterWithTurnManager();
+                spawned.Add(Spawn($"Enemy_{i}", enemyPositions[i], Faction.Enemy, enemyDefinition));
         }
 
-        public void Clear()
-        {
-            foreach (var unit in spawned)
-                if (unit != null) Destroy(unit.gameObject);
-            spawned.Clear();
-        }
-
-        private TestUnit Spawn(string name, Vector2Int position, Faction faction,
-            UnitDefinition definition, bool startsActed)
+        private TestUnit Spawn(string name, Vector2Int position, Faction faction, UnitDefinition definition)
         {
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
@@ -71,7 +94,7 @@ namespace ProjectAstra.Core.Cursor.Debugging
                 ? definition.MapSprite
                 : placeholderSprite;
             renderer.sortingLayerName = "Units";
-            renderer.color = faction == Faction.Enemy ? new Color(1f, 0.7f, 0.7f) : Color.white;
+            renderer.color = faction == Faction.Enemy ? new Color(1f, 0.62f, 0.62f) : Color.white;
 
             var unit = go.AddComponent<TestUnit>();
             unit.faction = faction;
@@ -81,26 +104,29 @@ namespace ProjectAstra.Core.Cursor.Debugging
             if (definition != null) unit.InitializeFromDefinition(definition, null);
             unit.SnapToGridPosition();
 
-            // Deferred a frame's worth of setup: MarkActed needs the sprite renderer cached,
-            // which TestUnit does in Start.
-            if (startsActed) pendingActed.Add(unit);
-
             return unit;
         }
 
-        private readonly List<TestUnit> pendingActed = new();
-
-        private void LateUpdate()
+        private void ApplyActedFlags()
         {
-            if (pendingActed.Count == 0) return;
-
-            foreach (var unit in pendingActed)
+            for (int i = 0; i < allyPositions.Length && i < actedAllyCount; i++)
             {
+                var unit = spawned.Count > i ? spawned[i] : null;
                 if (unit == null) continue;
+
                 if (TurnManager.Instance != null) TurnManager.Instance.UnitRegistry.MarkActed(unit);
                 else unit.MarkActed();
             }
-            pendingActed.Clear();
+        }
+
+        // Opens on the first ready ally, so the lab starts on the state worth looking at
+        // rather than on an empty corner tile.
+        private void PointCursorAtTheRoster()
+        {
+            var cursor = FindAnyObjectByType<GridCursor>();
+            if (cursor == null || actedAllyCount >= allyPositions.Length) return;
+
+            cursor.SetPosition(allyPositions[actedAllyCount]);
         }
 
         private void RegisterWithTurnManager()

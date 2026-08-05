@@ -24,20 +24,23 @@ namespace ProjectAstra.Core.Cursor
 
         // Corners first, then edges, both counter-clockwise from the top — so a morph from
         // slot i's corner to slot i's edge is always a quarter turn in a consistent direction.
+        //
+        // Corners are deliberately not normalised: (±1, ±1) × inset puts them at the corners
+        // of a square, which is what frames a square tile. Normalising would arrange all
+        // eight on a circle and the brackets would sit inside the tile edge.
         private static readonly Vector2[] Directions =
         {
             new(1f, 1f), new(-1f, 1f), new(-1f, -1f), new(1f, -1f),
             new(0f, 1f), new(-1f, 0f), new(0f, -1f), new(1f, 0f),
         };
 
-        // Sprites are authored pointing up; this is the spin that aims each one outward.
-        private static readonly float[] Rotations = { -45f, 45f, 135f, 225f, 0f, 90f, 180f, 270f };
+        // Both sprites are authored for the first slot in their group — the bracket as a
+        // top-right corner, the arrow pointing up — so every slot is a quarter-turn multiple.
+        private static readonly float[] Rotations = { 0f, 90f, 180f, 270f, 0f, 90f, 180f, 270f };
 
         public static bool IsCorner(int slot) => slot < CornerCount;
 
-        // Normalised so a corner piece and an edge piece sit the same distance from the
-        // centre for a given inset, instead of the corner flying out to 1.41x.
-        public static Vector2 DirectionOf(int slot) => Directions[slot].normalized;
+        public static Vector2 DirectionOf(int slot) => Directions[slot];
 
         public static float RotationOf(int slot) => Rotations[slot];
 

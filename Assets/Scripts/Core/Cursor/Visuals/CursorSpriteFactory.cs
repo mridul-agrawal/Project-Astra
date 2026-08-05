@@ -11,11 +11,14 @@ namespace ProjectAstra.Core.Cursor
     // never touches this.
     public static class CursorSpriteFactory
     {
-        private const int TextureSize = 32;
-        private const int PixelsPerUnit = 32;
+        // 24px at 96 PPU makes each piece a quarter of a tile, so four brackets frame a tile
+        // instead of swamping it. Authored above the 32 PPU map scale to stay crisp when a
+        // profile scales a piece up.
+        private const int TextureSize = 24;
+        private const int PixelsPerUnit = 96;
         private const int Outline = 2;
-        private const int ArmLength = 13;
-        private const int ArmThickness = 5;
+        private const int ArmLength = 20;
+        private const int ArmThickness = 6;
 
         private static readonly Color32 Fill = new(255, 255, 255, 255);
         private static readonly Color32 Edge = new(18, 16, 22, 255);
@@ -100,12 +103,12 @@ namespace ProjectAstra.Core.Cursor
 
         private static bool ArrowMask(int x, int y)
         {
-            const int baseY = 10;
-            const int tipY = TextureSize - Outline - 2;
+            const int baseY = 6;
+            const int tipY = TextureSize - Outline - 1;
             if (y < baseY || y > tipY) return false;
 
             float t = (float)(y - baseY) / (tipY - baseY);
-            float halfWidth = Mathf.Lerp(9f, 0.5f, t);
+            float halfWidth = Mathf.Lerp(7f, 0.5f, t);
             return Mathf.Abs(x - (TextureSize - 1) * 0.5f) <= halfWidth;
         }
     }

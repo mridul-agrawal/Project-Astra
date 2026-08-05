@@ -61,6 +61,8 @@ namespace ProjectAstra.Core.Editor
             if (cursor != null) AttachVisuals(cursor);
 
             StripAuthoredUnits();
+            StripMap1Scripting();
+            AddStandaloneServices();
             AddLabHarness();
 
             EditorSceneManager.MarkSceneDirty(scene);
@@ -117,6 +119,51 @@ namespace ProjectAstra.Core.Editor
         {
             foreach (var unit in Object.FindObjectsByType<TestUnit>(FindObjectsSortMode.None))
                 Object.DestroyImmediate(unit.gameObject);
+        }
+
+        // Map 1's scripted beats and its enemy-intent arrow have nothing to say about the
+        // cursor, and the telegraph keeps drawing a red path at a boar that no longer exists.
+        private static void StripMap1Scripting()
+        {
+            StripComponent<Battle.Map1.Map1BattleDirector>();
+            StripComponent<Battle.EnemyIntentTelegraph>();
+        }
+
+        private static void StripComponent<T>() where T : Component
+        {
+            foreach (var component in Object.FindObjectsByType<T>(FindObjectsSortMode.None))
+                Object.DestroyImmediate(component);
+        }
+
+        // BattleMap relies on BootScene for its services, so a copy of it can't be played on
+        // its own — every EventService.Instance subscriber throws. The lab carries its own
+        // copy, wired to the same channel assets, so it's a one-click Play.
+        private static void AddStandaloneServices()
+        {
+            if (Object.FindAnyObjectByType<Events.EventService>() != null) return;
+
+            var go = new GameObject("EventService");
+            var service = go.AddComponent<Events.EventService>();
+
+            var so = new SerializedObject(service);
+            AssignChannel(so, "gameState", "c681c1bf46b841648b698da4fe6330b6");
+            AssignChannel(so, "turn", "9139d9fdc4b0e044db72af109ed48cac");
+            AssignChannel(so, "unitDeath", "c7f9861c4e2c7de4a8c9dc275bef25a3");
+            AssignChannel(so, "battleDialogue", "fa0cd771d97aa2f45a4ee64c38df9fa2");
+            AssignChannel(so, "cursor", "54ebab6bf79551d418e6cd003a953838");
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void AssignChannel(SerializedObject so, string field, string guid)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+            if (asset == null)
+            {
+                Debug.LogWarning($"[CursorLabSceneBuilder] Channel asset for '{field}' not found at {path}.");
+                return;
+            }
+            so.FindProperty(field).objectReferenceValue = asset;
         }
 
         private static void AddLabHarness()

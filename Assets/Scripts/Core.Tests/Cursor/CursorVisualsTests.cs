@@ -39,14 +39,27 @@ namespace ProjectAstra.Core.Tests.Cursor
 
         // --- Slot geometry ---
 
+        // The pieces frame a square tile, so corners belong at the corners of a square, not on
+        // a circle through the edge midpoints.
         [Test]
-        public void CornersAndEdges_SitTheSameDistanceFromCentre()
+        public void CornerPieces_FormASquareWithTheEdgePieces()
         {
-            float cornerDistance = CursorSlotGeometry.DirectionOf((int)CursorSlot.CornerNE).magnitude;
-            float edgeDistance = CursorSlotGeometry.DirectionOf((int)CursorSlot.EdgeN).magnitude;
+            Vector2 corner = CursorSlotGeometry.DirectionOf((int)CursorSlot.CornerNE);
+            Vector2 edge = CursorSlotGeometry.DirectionOf((int)CursorSlot.EdgeN);
 
-            Assert.AreEqual(edgeDistance, cornerDistance, 0.0001f,
-                "A corner piece must not fly out further than an edge piece for the same inset.");
+            Assert.AreEqual(edge.y, corner.y, 0.0001f, "The NE corner must sit level with the N edge.");
+            Assert.AreEqual(1f, corner.x, 0.0001f, "The NE corner must sit level with the E edge.");
+        }
+
+        [Test]
+        public void EveryPieceIsAQuarterTurnFromTheNext()
+        {
+            for (int slot = 0; slot < CursorSlotGeometry.SlotCount; slot++)
+            {
+                float rotation = CursorSlotGeometry.RotationOf(slot);
+                Assert.AreEqual(0f, rotation % 90f, 0.0001f,
+                    $"Slot {slot} is at {rotation}deg; both sprites are authored on an axis.");
+            }
         }
 
         [Test]
