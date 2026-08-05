@@ -88,6 +88,7 @@ namespace ProjectAstra.Core.Cursor
         private HoverSelectionDriver hoverSelectionDriver;
         private readonly CursorStateMachine stateMachine = new();
         private bool moveInFlight;
+        private TestUnit hoveredUnit;
 
 
         public Vector2Int GridPosition => gridPosition;
@@ -107,6 +108,7 @@ namespace ProjectAstra.Core.Cursor
         private void Awake()
         {
             InitializeCursorAnimator();
+            stateMachine.HoverChanged += OnHoverChanged;
         }
 
         private void OnEnable()
@@ -129,6 +131,7 @@ namespace ProjectAstra.Core.Cursor
             RemoveListenersFromInputEvents();
             RemoveListenersFromGameStateEvents();
             OnCursorMoved -= RefreshHoverSelection;
+            stateMachine.HoverChanged -= OnHoverChanged;
         }
 
         private void Start()
@@ -228,6 +231,7 @@ namespace ProjectAstra.Core.Cursor
             SnapToGridPosition();
             RefreshHover();
             OnCursorMoved?.Invoke(gridPosition);
+            EventService.Instance?.RaiseCursorStepped(gridPosition);
             AudioManager.Instance?.Play(SoundId.CursorMove);
 
             if (currentMode == CursorMode.UnitSelected)
@@ -247,8 +251,17 @@ namespace ProjectAstra.Core.Cursor
                         AudioManager.Instance?.Play(SoundId.ConfirmUnitSelect);
                         EventService.Instance?.RaiseBattleDialogue(BattleDialogueEventType.UnitSelected);
                     }
+                    else
+                    {
+                        EventService.Instance?.RaiseCursorError(CursorHoverClassifier.ErrorFor(stateMachine.CurrentHover));
+                    }
                     break;
                 case CursorMode.UnitSelected:
+                    if (!unitSelectionFlow.CanCommitMovementTo(gridPosition))
+                    {
+                        EventService.Instance?.RaiseCursorError(CursorErrorKind.InvalidTile);
+                        break;
+                    }
                     AudioManager.Instance?.Play(SoundId.ConfirmMove);
                     unitSelectionFlow.TryCommitMovement(gridPosition);
                     EventService.Instance?.RaiseBattleDialogue(BattleDialogueEventType.MoveConfirmed);
@@ -455,13 +468,19 @@ namespace ProjectAstra.Core.Cursor
         {
             if (stateMachine.CurrentState != CursorState.Free)
             {
+                hoveredUnit = null;
                 stateMachine.SetHover(CursorHover.Empty);
                 return;
             }
 
-            TestUnit unit = FindUnitForHover(gridPosition);
-            stateMachine.SetHover(CursorHoverClassifier.Classify(FactionOf(unit), CanUnitAct(unit)));
+            hoveredUnit = FindUnitForHover(gridPosition);
+            stateMachine.SetHover(CursorHoverClassifier.Classify(FactionOf(hoveredUnit), CanUnitAct(hoveredUnit)));
         }
+
+        // Re-raised on the event bus so audio and the visual variants don't have to know
+        // the state machine exists.
+        private void OnHoverChanged(CursorHover hover) =>
+            EventService.Instance?.RaiseHoverChanged(hover, hoveredUnit);
 
         private static Faction? FactionOf(TestUnit unit)
         {

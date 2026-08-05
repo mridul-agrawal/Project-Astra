@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 using ProjectAstra.Core.State;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.Combat;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Events
 {
@@ -24,6 +27,7 @@ namespace ProjectAstra.Core.Events
         [SerializeField] private TurnEventChannel turn;
         [SerializeField] private UnitDeathEventChannel unitDeath;
         [SerializeField] private BattleDialogueEventChannel battleDialogue;
+        [SerializeField] private CursorEventChannel cursor;
 
         // Publish/subscribe facade. Callers ask the service to raise or listen; the
         // channel assets stay sealed behind here so nothing else ever names a channel.
@@ -61,6 +65,43 @@ namespace ProjectAstra.Core.Events
         public void SubscribeBattleDialogue(Action<BattleDialogueEventType> handler) => battleDialogue?.Register(handler);
         public void UnsubscribeBattleDialogue(Action<BattleDialogueEventType> handler) => battleDialogue?.Unregister(handler);
 
+        // Grid cursor
+        public void RaiseCursorStepped(Vector2Int position) => cursor?.RaiseCursorStepped(position);
+        public void SubscribeCursorStepped(Action<Vector2Int> handler) => cursor?.RegisterCursorStepped(handler);
+        public void UnsubscribeCursorStepped(Action<Vector2Int> handler) => cursor?.UnregisterCursorStepped(handler);
+
+        public void RaiseHoverChanged(CursorHover hover, TestUnit unit) => cursor?.RaiseHoverChanged(hover, unit);
+        public void SubscribeHoverChanged(Action<CursorHover, TestUnit> handler) => cursor?.RegisterHoverChanged(handler);
+        public void UnsubscribeHoverChanged(Action<CursorHover, TestUnit> handler) => cursor?.UnregisterHoverChanged(handler);
+
+        public void RaiseUnitSelected(TestUnit unit) => cursor?.RaiseUnitSelected(unit);
+        public void SubscribeUnitSelected(Action<TestUnit> handler) => cursor?.RegisterUnitSelected(handler);
+        public void UnsubscribeUnitSelected(Action<TestUnit> handler) => cursor?.UnregisterUnitSelected(handler);
+
+        public void RaisePathPreviewChanged(IReadOnlyList<Vector2Int> path) => cursor?.RaisePathPreviewChanged(path);
+        public void SubscribePathPreviewChanged(Action<IReadOnlyList<Vector2Int>> handler) => cursor?.RegisterPathPreviewChanged(handler);
+        public void UnsubscribePathPreviewChanged(Action<IReadOnlyList<Vector2Int>> handler) => cursor?.UnregisterPathPreviewChanged(handler);
+
+        public void RaiseMoveConfirmed(TestUnit unit, Vector2Int destination) => cursor?.RaiseMoveConfirmed(unit, destination);
+        public void SubscribeMoveConfirmed(Action<TestUnit, Vector2Int> handler) => cursor?.RegisterMoveConfirmed(handler);
+        public void UnsubscribeMoveConfirmed(Action<TestUnit, Vector2Int> handler) => cursor?.UnregisterMoveConfirmed(handler);
+
+        public void RaiseMoveCancelled(TestUnit unit) => cursor?.RaiseMoveCancelled(unit);
+        public void SubscribeMoveCancelled(Action<TestUnit> handler) => cursor?.RegisterMoveCancelled(handler);
+        public void UnsubscribeMoveCancelled(Action<TestUnit> handler) => cursor?.UnregisterMoveCancelled(handler);
+
+        public void RaiseSelectionCancelled() => cursor?.RaiseSelectionCancelled();
+        public void SubscribeSelectionCancelled(Action handler) => cursor?.RegisterSelectionCancelled(handler);
+        public void UnsubscribeSelectionCancelled(Action handler) => cursor?.UnregisterSelectionCancelled(handler);
+
+        public void RaiseUnitSpentTurn(TestUnit unit) => cursor?.RaiseUnitSpentTurn(unit);
+        public void SubscribeUnitSpentTurn(Action<TestUnit> handler) => cursor?.RegisterUnitSpentTurn(handler);
+        public void UnsubscribeUnitSpentTurn(Action<TestUnit> handler) => cursor?.UnregisterUnitSpentTurn(handler);
+
+        public void RaiseCursorError(CursorErrorKind kind) => cursor?.RaiseErrorFeedback(kind);
+        public void SubscribeCursorError(Action<CursorErrorKind> handler) => cursor?.RegisterErrorFeedback(handler);
+        public void UnsubscribeCursorError(Action<CursorErrorKind> handler) => cursor?.UnregisterErrorFeedback(handler);
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -81,16 +122,19 @@ namespace ProjectAstra.Core.Events
             if (turn == null) Debug.LogError("[EventService] Turn channel is not wired.");
             if (unitDeath == null) Debug.LogError("[EventService] UnitDeath channel is not wired.");
             if (battleDialogue == null) Debug.LogError("[EventService] BattleDialogue channel is not wired.");
+            if (cursor == null) Debug.LogError("[EventService] Cursor channel is not wired.");
         }
 
         // Awake doesn't run in EditMode tests; this lets a fixture stand the service up by hand.
         internal void InitializeForTest(GameStateEventChannel gameState, TurnEventChannel turn,
-            UnitDeathEventChannel unitDeath, BattleDialogueEventChannel battleDialogue)
+            UnitDeathEventChannel unitDeath, BattleDialogueEventChannel battleDialogue,
+            CursorEventChannel cursor = null)
         {
             this.gameState = gameState;
             this.turn = turn;
             this.unitDeath = unitDeath;
             this.battleDialogue = battleDialogue;
+            this.cursor = cursor;
             Instance = this;
         }
     }

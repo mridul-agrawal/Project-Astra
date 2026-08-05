@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Pathfinding;
 using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.UI.ActionMenu;
@@ -73,11 +74,17 @@ namespace ProjectAstra.Core.Cursor
 
             selectedUnit = unit;
             EnterUnitSelectedMode();
+            EventService.Instance?.RaiseUnitSelected(unit);
         }
+
+        // Lets the caller tell a refused confirm from an accepted one before it commits, so
+        // the move sound and dialogue beat only fire on a real move.
+        public bool CanCommitMovementTo(Vector2Int destination) =>
+            currentReachability.Destinations != null && currentReachability.Destinations.Contains(destination);
 
         public void TryCommitMovement(Vector2Int destination)
         {
-            if (!currentReachability.Destinations.Contains(destination)) return;
+            if (!CanCommitMovementTo(destination)) return;
 
             committedDestination = destination;
             selectedUnit.preMovementPosition = selectedUnit.gridPosition;
@@ -86,6 +93,7 @@ namespace ProjectAstra.Core.Cursor
 
             ClearOverlay();
             cursor.BeginMove();
+            EventService.Instance?.RaiseMoveConfirmed(selectedUnit, committedDestination);
 
             if (PathExists(path))
                 unitMover.MoveAlongPath(selectedUnit, path, OnMovementComplete);
@@ -102,11 +110,13 @@ namespace ProjectAstra.Core.Cursor
             if (!currentReachability.Destinations.Contains(cursorPos))
             {
                 pathArrowRenderer.Clear();
+                EventService.Instance?.RaisePathPreviewChanged(null);
                 return;
             }
 
             var path = Pathfinder.ReconstructPath(selectedUnit.gridPosition, cursorPos, currentReachability);
             pathArrowRenderer.ShowPath(path);
+            EventService.Instance?.RaisePathPreviewChanged(path);
         }
 
         // --- Mutation seams used by ActionMenuController + CantoFlow ---
@@ -210,12 +220,14 @@ namespace ProjectAstra.Core.Cursor
             RestoreMovementConstraintsAndOverlay();
             cursor.SetPosition(selectedUnit.gridPosition);
             cursor.SetMode(CursorMode.UnitSelected);
+            EventService.Instance?.RaiseMoveCancelled(selectedUnit);
         }
 
         public void DeselectUnit()
         {
             ResetState();
             cursor.ReturnToMemorizedPosition();
+            EventService.Instance?.RaiseSelectionCancelled();
         }
 
         public void ResetState()
@@ -247,6 +259,8 @@ namespace ProjectAstra.Core.Cursor
                     TurnManager.Instance.UnitRegistry.MarkActed(selectedUnit);
                 else
                     selectedUnit.MarkActed();
+
+                EventService.Instance?.RaiseUnitSpentTurn(selectedUnit);
             }
 
             memorizedPosition = null;
