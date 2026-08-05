@@ -85,7 +85,7 @@ namespace ProjectAstra.Core.Cursor
             var path = Pathfinder.ReconstructPath(selectedUnit.gridPosition, committedDestination, currentReachability);
 
             ClearOverlay();
-            cursor.SetMode(CursorMode.Locked);
+            cursor.BeginMove();
 
             if (PathExists(path))
                 unitMover.MoveAlongPath(selectedUnit, path, OnMovementComplete);

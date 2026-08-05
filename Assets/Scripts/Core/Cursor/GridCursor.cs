@@ -86,10 +86,18 @@ namespace ProjectAstra.Core.Cursor
         private CantoFlow cantoFlow;
         private UnitSelectionFlow unitSelectionFlow;
         private HoverSelectionDriver hoverSelectionDriver;
+        private readonly CursorStateMachine stateMachine = new();
+        private bool moveInFlight;
 
 
         public Vector2Int GridPosition => gridPosition;
         public CursorMode CurrentMode => currentMode;
+
+        // The richer state the visual variants subscribe to. CursorMode stays the input
+        // contract; this says what the player is actually doing.
+        public CursorStateMachine StateMachine => stateMachine;
+        public CursorState CurrentState => stateMachine.CurrentState;
+        public CursorHover CurrentHover => stateMachine.CurrentHover;
 
         // Fires after the cursor moves to a new tile.
         public event Action<Vector2Int> OnCursorMoved;
@@ -146,10 +154,23 @@ namespace ProjectAstra.Core.Cursor
 
         public void SetMode(CursorMode mode)
         {
+            CursorState target = ToState(mode);
             currentMode = mode;
+            if (mode != CursorMode.Locked) moveInFlight = false;
+
+            stateMachine.TryTransition(target);
+            RefreshHover();
             ToggleSpriteRendererBasedOnCursorMode();
             UpdateSpriteForMode();
             hoverSelectionDriver?.Refresh();
+        }
+
+        // A walking unit and a cursor parked for a cutscene both sit in CursorMode.Locked.
+        // UnitSelectionFlow calls this instead so the two stay distinguishable downstream.
+        internal void BeginMove()
+        {
+            moveInFlight = true;
+            SetMode(CursorMode.Locked);
         }
 
         public void SetPosition(Vector2Int position)
@@ -159,6 +180,7 @@ namespace ProjectAstra.Core.Cursor
 
             gridPosition = newClampedPosition;
             SnapToGridPosition();
+            RefreshHover();
 
             if (hasCursorPositionActuallyChanged)
                 OnCursorMoved?.Invoke(gridPosition);
@@ -204,6 +226,7 @@ namespace ProjectAstra.Core.Cursor
 
             gridPosition = targetGridPosition;
             SnapToGridPosition();
+            RefreshHover();
             OnCursorMoved?.Invoke(gridPosition);
             AudioManager.Instance?.Play(SoundId.CursorMove);
 
@@ -408,6 +431,54 @@ namespace ProjectAstra.Core.Cursor
                 EventService.Instance.UnsubscribeGameStateChanged(OnGameStateChanged);
         }
 
+        // --- State machine internals ---
+
+        private CursorState ToState(CursorMode mode) => mode switch
+        {
+            CursorMode.Free => CursorState.Free,
+            CursorMode.UnitSelected => CursorState.Selected,
+            CursorMode.ActionMenu => CursorState.ActionMenu,
+            CursorMode.Targeting => CursorState.Targeting,
+            _ => moveInFlight ? CursorState.Moving : CursorState.Suspended,
+        };
+
+        private static CursorMode ToMode(CursorState state) => state switch
+        {
+            CursorState.Free => CursorMode.Free,
+            CursorState.Selected => CursorMode.UnitSelected,
+            CursorState.ActionMenu => CursorMode.ActionMenu,
+            CursorState.Targeting => CursorMode.Targeting,
+            _ => CursorMode.Locked,
+        };
+
+        private void RefreshHover()
+        {
+            if (stateMachine.CurrentState != CursorState.Free)
+            {
+                stateMachine.SetHover(CursorHover.Empty);
+                return;
+            }
+
+            TestUnit unit = FindUnitForHover(gridPosition);
+            stateMachine.SetHover(CursorHoverClassifier.Classify(FactionOf(unit), CanUnitAct(unit)));
+        }
+
+        private static Faction? FactionOf(TestUnit unit)
+        {
+            if (unit == null) return null;
+            return TurnManager.Instance != null
+                ? TurnManager.Instance.UnitRegistry.GetFaction(unit) ?? unit.faction
+                : unit.faction;
+        }
+
+        private static bool CanUnitAct(TestUnit unit)
+        {
+            if (unit == null) return false;
+            return TurnManager.Instance != null
+                ? TurnManager.Instance.UnitRegistry.CanAct(unit)
+                : !unit.hasActed;
+        }
+
         // --- Mode/position internals ---
 
         private void ToggleSpriteRendererBasedOnCursorMode()
@@ -549,9 +620,33 @@ namespace ProjectAstra.Core.Cursor
         private void OnGameStateChanged(StateChangeArgs args)
         {
             if (args.NewState == GameState.BattleMap)
-                SetMode(CursorMode.Free);
+                ResumeCursor();
             else
-                SetMode(CursorMode.Locked);
+                SuspendCursor();
+        }
+
+        private void SuspendCursor()
+        {
+            moveInFlight = false;
+            currentMode = CursorMode.Locked;
+            stateMachine.TryTransition(CursorState.Suspended);
+            stateMachine.SetHover(CursorHover.Empty);
+            ToggleSpriteRendererBasedOnCursorMode();
+        }
+
+        // Coming back from combat, dialogue or the unit-info screen used to force Free,
+        // which silently dropped a unit the player had already picked up. Only a live
+        // selection is worth restoring — a menu or reticle that was up before the detour
+        // is gone from the UI, so those resolve to Free.
+        private void ResumeCursor()
+        {
+            stateMachine.RestoreFromSuspend();
+
+            bool selectionSurvived = stateMachine.CurrentState == CursorState.Selected
+                && unitSelectionFlow?.SelectedUnit != null;
+
+            stateMachine.TryTransition(selectionSurvived ? CursorState.Selected : CursorState.Free);
+            SetMode(ToMode(stateMachine.CurrentState));
         }
 
         private void UpdateModeFromGameState()
