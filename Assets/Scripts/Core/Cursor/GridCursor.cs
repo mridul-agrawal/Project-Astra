@@ -60,24 +60,15 @@ namespace ProjectAstra.Core.Cursor
         [Header("Combat Animation")]
         [SerializeField] private SkipModePlaybackController skipModeController;
 
+        // Kept only so the cursor can be hidden wholesale while locked. Everything else about
+        // how the cursor looks now lives on CursorVisualDirector and its variant profile.
         [Header("Rendering")]
         [SerializeField] private SpriteRenderer spriteRenderer;
-        [SerializeField] private Sprite idleSprite;
-        [SerializeField] private Sprite selectedSprite;
-        [SerializeField] private Sprite targetingSprite;
-
-        [Header("Animation")]
-        [SerializeField] private float pulseSpeed = 3f;
-        [SerializeField] private float alphaMin = 0.85f;
-        [SerializeField] private float alphaMax = 1.0f;
-        [SerializeField] private float scaleMin = 1f;
-        [SerializeField] private float scaleMax = 1.04f;
 
         // --- Runtime state ---
 
         private Vector2Int gridPosition;
         private CursorMode currentMode = CursorMode.Locked;
-        private CursorAnimator animator;
         private PathfindingService pathfindingService;
         private CombatExecutor combatExecutor;
         private StaffExecutor staffExecutor;
@@ -107,7 +98,6 @@ namespace ProjectAstra.Core.Cursor
 
         private void Awake()
         {
-            InitializeCursorAnimator();
             stateMachine.HoverChanged += OnHoverChanged;
         }
 
@@ -148,11 +138,6 @@ namespace ProjectAstra.Core.Cursor
             UpdateModeFromGameState();
         }
 
-        private void Update()
-        {
-            animator?.UpdatePulse(pulseSpeed, alphaMin, alphaMax, scaleMin, scaleMax);
-        }
-
         // --- Public API: mode and position ---
 
         public void SetMode(CursorMode mode)
@@ -164,7 +149,6 @@ namespace ProjectAstra.Core.Cursor
             stateMachine.TryTransition(target);
             RefreshHover();
             ToggleSpriteRendererBasedOnCursorMode();
-            UpdateSpriteForMode();
             hoverSelectionDriver?.Refresh();
         }
 
@@ -328,12 +312,6 @@ namespace ProjectAstra.Core.Cursor
         }
 
         // --- Initialization helpers ---
-
-        private void InitializeCursorAnimator()
-        {
-            if (spriteRenderer != null)
-                animator = new CursorAnimator(spriteRenderer);
-        }
 
         // Init methods are idempotent — both Start() and the Initialize()
         // test seam call them. Already-constructed sub-controllers are not
@@ -504,23 +482,6 @@ namespace ProjectAstra.Core.Cursor
         {
             if (spriteRenderer == null) return;
             spriteRenderer.enabled = (currentMode != CursorMode.Locked);
-        }
-
-        private void UpdateSpriteForMode()
-        {
-            if (spriteRenderer == null) return;
-
-            Sprite target = currentMode switch
-            {
-                CursorMode.Free => idleSprite,
-                CursorMode.UnitSelected => selectedSprite,
-                CursorMode.Targeting => targetingSprite,
-                CursorMode.ActionMenu => selectedSprite,
-                _ => idleSprite,
-            };
-
-            if (target != null)
-                spriteRenderer.sprite = target;
         }
 
         // Hold SkipAnimation while confirming a target to flip the combat-anim
@@ -704,12 +665,5 @@ namespace ProjectAstra.Core.Cursor
         internal void SetPathArrowRenderer(PathArrowRenderer par) => pathArrowRenderer = par;
         internal void SetActionMenuUI(SelectionMenuView ui) => actionMenuUI = ui;
         internal void SetUnitMover(UnitMover mover) => unitMover = mover;
-
-        internal void SetModeSprites(Sprite idle, Sprite selected, Sprite targeting)
-        {
-            idleSprite = idle;
-            selectedSprite = selected;
-            targetingSprite = targeting;
-        }
     }
 }
