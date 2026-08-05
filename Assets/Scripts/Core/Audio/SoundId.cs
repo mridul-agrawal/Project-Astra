@@ -77,5 +77,17 @@ namespace ProjectAstra.Core.Audio
 
         // Grid cursor
         CursorMove,
+
+        // Cursor variants — one slot per cursor event so a variant profile can voice any of
+        // them. All optional; a profile leaves a slot at None for silence.
+        CursorStepped,
+        CursorHoverSelectable,
+        CursorHoverEnemy,
+        CursorUnitSelected,
+        CursorMoveConfirmed,
+        CursorMoveCancelled,
+        CursorSelectionCancelled,
+        CursorUnitSpentTurn,
+        CursorError,
     }
 }

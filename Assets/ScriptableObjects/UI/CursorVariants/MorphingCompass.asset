@@ -63,12 +63,12 @@ MonoBehaviour:
   heldRepeatDelay: 0.4
   heldRepeatStep: 0.1
   rangeFloodDuration: 0.2
-  steppedSound: 0
-  hoverSelectableSound: 0
-  hoverEnemySound: 0
-  unitSelectedSound: 0
-  moveConfirmedSound: 0
-  moveCancelledSound: 0
-  selectionCancelledSound: 0
-  unitSpentTurnSound: 0
-  errorSound: 0
+  steppedSound: 48
+  hoverSelectableSound: 49
+  hoverEnemySound: 50
+  unitSelectedSound: 51
+  moveConfirmedSound: 52
+  moveCancelledSound: 53
+  selectionCancelledSound: 54
+  unitSpentTurnSound: 55
+  errorSound: 56
