@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
 
@@ -109,8 +110,22 @@ namespace ProjectAstra.Core.Input
 
         private void Update()
         {
+            ApplyCursorProfileTimings();
             das.Tick(Time.deltaTime, IsFastCursorHeld);
             ResolveSameFramePriority();
+        }
+
+        // Held repeat is a cursor feel parameter, so it lives on the cursor variant profile
+        // alongside the slide and the breath. The serialized fields above stay as the
+        // fallback for scenes with no cursor in them.
+        private void ApplyCursorProfileTimings()
+        {
+            var profile = CursorVisualDirector.Current != null
+                ? CursorVisualDirector.Current.ActiveProfile
+                : null;
+            if (profile == null) return;
+
+            das.SetTimings(profile.HeldRepeatDelay, profile.HeldRepeatStep, dasFastRepeatRate);
         }
 
         private void LateUpdate()

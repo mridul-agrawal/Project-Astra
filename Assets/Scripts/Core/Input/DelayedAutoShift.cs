@@ -24,15 +24,25 @@ namespace ProjectAstra.Core.Input
             Vector2Int.right  // CursorDirection.Right
         };
 
-        private readonly float initialDelay;
-        private readonly float repeatRate;
-        private readonly float fastRepeatRate;
+        private float initialDelay;
+        private float repeatRate;
+        private float fastRepeatRate;
 
         private readonly float[] timers = new float[DirectionCount];
         private readonly bool[] inInitialDelay = new bool[DirectionCount];
         private readonly bool[] held = new bool[DirectionCount];
 
         public DelayedAutoShift(float initialDelay, float repeatRate, float fastRepeatRate)
+        {
+            this.initialDelay = initialDelay;
+            this.repeatRate = repeatRate;
+            this.fastRepeatRate = fastRepeatRate;
+        }
+
+        // Rates are re-applied every frame from the active cursor profile, so a designer
+        // dragging the slider in play mode feels the change immediately. In-flight timers are
+        // left alone — retiming a held direction mid-repeat would stutter it.
+        public void SetTimings(float initialDelay, float repeatRate, float fastRepeatRate)
         {
             this.initialDelay = initialDelay;
             this.repeatRate = repeatRate;
