@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.Grid
     public class TerrainStatTable : ScriptableObject
     {
         // Must equal the number of TerrainType enum entries. A test asserts the drift.
-        public const int ExpectedTerrainCount = 19;
+        public const int ExpectedTerrainCount = 23;
 
         [SerializeField] private TerrainStats[] stats = new TerrainStats[ExpectedTerrainCount];
 

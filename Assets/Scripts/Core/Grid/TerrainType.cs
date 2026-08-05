@@ -24,6 +24,12 @@ namespace ProjectAstra.Core.Grid
         Rubble,
         Sand,
         Void,
-        Throne
+        Throne,
+        // Props that block the ground but that a flier can cross. They exist so the tile
+        // info panel names what the player is actually looking at instead of "Wall".
+        Rock,
+        Log,
+        Campfire,
+        Obstacle
     }
 }

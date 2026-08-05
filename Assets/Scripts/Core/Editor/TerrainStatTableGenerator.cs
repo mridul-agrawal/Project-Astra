@@ -24,7 +24,7 @@ namespace ProjectAstra.Core.Editor
 
             var so = new SerializedObject(table);
             var stats = so.FindProperty("stats");
-            stats.arraySize = 18;
+            stats.arraySize = TerrainStatTable.ExpectedTerrainCount;
 
             // 0 = impassable for that movement type
             //                                    Foot  Mount Armr  Fly   Pir   Thf   DEF  AVO  Heal  Interact
@@ -46,6 +46,11 @@ namespace ProjectAstra.Core.Editor
             SetStats(stats, TerrainType.Rubble,          2,    3,    3,    1,    2,    1,    0,  10,   0, false);
             SetStats(stats, TerrainType.Sand,            2,    3,    2,    1,    1,    2,    0,   5,   0, false);
             SetStats(stats, TerrainType.Void,            0,    0,    0,    0,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Throne,          1,    1,    1,    1,    1,    1,    3,  30,   5, false);
+            SetStats(stats, TerrainType.Rock,            0,    0,    0,    1,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Log,             0,    0,    0,    1,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Campfire,        0,    0,    0,    1,    0,    0,    0,   0,   0, false);
+            SetStats(stats, TerrainType.Obstacle,        0,    0,    0,    1,    0,    0,    0,   0,   0, false);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(table);

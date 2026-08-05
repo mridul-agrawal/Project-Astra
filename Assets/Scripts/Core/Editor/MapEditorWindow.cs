@@ -598,6 +598,7 @@ namespace ProjectAstra.Core.Editor
         {
             "PLN", "FOR", "MTN", "PEK", "WTR", "SEA", "RIV", "ROD", "VIL", "FRT",
             "GAT", "CHS", "DOR", "WAL", "DWL", "RUB", "SND", "VOI", "THR",
+            "ROK", "LOG", "FIR", "OBS",
         };
 
         private static readonly Color[] TerrainColors =
@@ -621,6 +622,10 @@ namespace ProjectAstra.Core.Editor
             new(0.93f, 0.79f, 0.69f), // Sand
             new(0.08f, 0.08f, 0.08f), // Void
             new(0.58f, 0.00f, 0.83f), // Throne
+            new(0.45f, 0.42f, 0.38f), // Rock
+            new(0.38f, 0.24f, 0.12f), // Log
+            new(0.95f, 0.35f, 0.05f), // Campfire
+            new(0.25f, 0.28f, 0.32f), // Obstacle
         };
     }
 }
