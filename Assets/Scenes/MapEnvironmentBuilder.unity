@@ -950,8 +950,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1638303362, guid: 4c895c9edf7e3e64b829c1f8d168c7d9, type: 3}
@@ -1448,8 +1448,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: 3
   m_MaskInteraction: 0
   m_Sprite: {fileID: 940972556, guid: 3d448f23811d4c24a949ce359498f0fe, type: 3}
@@ -2162,8 +2162,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1638303362, guid: 4c895c9edf7e3e64b829c1f8d168c7d9, type: 3}
@@ -3333,8 +3333,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: 7
   m_MaskInteraction: 0
   m_Sprite: {fileID: 545523589, guid: 611a788c83fa494449ae48eaa08e38bd, type: 3}
@@ -3501,8 +3501,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: -5
   m_MaskInteraction: 0
   m_Sprite: {fileID: -1638303362, guid: 4c895c9edf7e3e64b829c1f8d168c7d9, type: 3}
@@ -5141,8 +5141,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 3
-  m_SortingLayer: 3
+  m_SortingLayerID: 1937006650
+  m_SortingLayer: 5
   m_SortingOrder: -19
   m_MaskInteraction: 0
   m_Sprite: {fileID: 545523589, guid: 611a788c83fa494449ae48eaa08e38bd, type: 3}
