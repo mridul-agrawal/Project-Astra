@@ -178,8 +178,12 @@ namespace ProjectAstra.Core.Cursor
             validMoveTiles.UnionWith(currentReachability.PassThrough);
 
             var attackTiles = ComputeSelectionAttackFringe();
-            rangeHighlighter?.ShowMovementAndAttackRange(
-                currentReachability.Destinations, currentReachability.PassThrough, attackTiles);
+            rangeHighlighter?.ShowMovementAndAttackRangeStaggered(
+                currentReachability.Destinations, currentReachability.PassThrough, attackTiles,
+                currentReachability.CostMap, CursorVisualDirector.RangeFloodDuration);
+
+            // Let the cursor's directional arrows narrow to the steps this unit can still take.
+            CursorVisualDirector.Current?.SetReachabilityTest(validMoveTiles.Contains);
         }
 
         // The red fringe shown alongside the blue move range: everything the unit
@@ -238,6 +242,7 @@ namespace ProjectAstra.Core.Cursor
             validMoveTiles = null;
             rangeHighlighter?.ClearAll();
             pathArrowRenderer?.Clear();
+            CursorVisualDirector.Current?.SetReachabilityTest(null);
             cursor.SetMode(CursorMode.Free);
         }
 

@@ -44,11 +44,21 @@ namespace ProjectAstra.Core.Cursor
         // to steps the player can actually take. Null means "anything on the map".
         private Func<Vector2Int, bool> reachabilityTest;
 
+        // The selection flow and the debug overlay are plain C# and MonoBehaviours that don't
+        // own a reference to the director, so it publishes itself the same way
+        // UnitVisualSettingsRef and TurnManager do.
+        public static CursorVisualDirector Current { get; private set; }
+
         public CursorVariantProfile ActiveProfile => activeProfile;
         public IReadOnlyList<CursorVariantProfile> Profiles => profiles;
 
+        // Zero when no profile is loaded, which makes the range appear all at once.
+        public static float RangeFloodDuration =>
+            Current != null && Current.activeProfile != null ? Current.activeProfile.RangeFloodDuration : 0f;
+
         private void Awake()
         {
+            Current = this;
             if (cursor == null) cursor = GetComponentInParent<GridCursor>();
             BuildPieces();
             activeProfile = profiles.Count > 0 ? profiles[0] : null;
@@ -79,6 +89,7 @@ namespace ProjectAstra.Core.Cursor
 
         private void OnDestroy()
         {
+            if (Current == this) Current = null;
             if (pieces == null) return;
             foreach (var piece in pieces) piece.Destroy();
         }

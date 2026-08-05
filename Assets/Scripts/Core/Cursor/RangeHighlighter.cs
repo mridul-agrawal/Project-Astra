@@ -18,13 +18,20 @@ namespace ProjectAstra.Core.Cursor
         const float ShimmerFrequency = 1.5f;
         const float ShimmerAmplitude = 0.15f;
 
+        // How long a single tile takes to fade in once its turn in the flood comes round.
+        const float TileFadeSeconds = 0.12f;
+
         private readonly List<GameObject> activeOverlays = new();
+        private readonly List<SpriteRenderer> overlayRenderers = new();
         private readonly List<Color> baseColors = new();
+        private readonly List<float> revealDelays = new();
         private readonly Queue<GameObject> pool = new();
         private Sprite overlaySprite;
         private Transform overlayContainer;
         private Coroutine shimmerCoroutine;
         private float shimmerPhase;
+        private float floodElapsed;
+        private float floodDuration;
 
         private void Awake()
         {
@@ -78,6 +85,45 @@ namespace ProjectAstra.Core.Cursor
             StartShimmer();
         }
 
+        // Same picture, revealed outward from the unit in Dijkstra cost order instead of all
+        // at once, so the range reads as spreading rather than appearing. costMap comes
+        // straight off the reachability result; the attack fringe always lands last because
+        // it sits outside everything the unit can walk to.
+        public void ShowMovementAndAttackRangeStaggered(
+            HashSet<Vector2Int> destinations, HashSet<Vector2Int> passThrough, HashSet<Vector2Int> attack,
+            IReadOnlyDictionary<Vector2Int, int> costMap, float flood)
+        {
+            if (flood <= 0f || costMap == null)
+            {
+                ShowMovementAndAttackRange(destinations, passThrough, attack);
+                return;
+            }
+
+            ClearAll();
+            floodDuration = flood;
+
+            int maxCost = 1;
+            foreach (var cost in costMap.Values)
+                if (cost > maxCost) maxCost = cost;
+
+            if (attack != null)
+                foreach (var tile in attack)
+                    PlaceOverlay(tile, AttackColor, flood);
+
+            foreach (var tile in destinations)
+                PlaceOverlay(tile, MovementColor, DelayFor(tile, costMap, maxCost, flood));
+
+            if (passThrough != null)
+                foreach (var tile in passThrough)
+                    PlaceOverlay(tile, PassThroughColor, DelayFor(tile, costMap, maxCost, flood));
+
+            StartShimmer();
+        }
+
+        private static float DelayFor(Vector2Int tile, IReadOnlyDictionary<Vector2Int, int> costMap,
+            int maxCost, float flood) =>
+            costMap.TryGetValue(tile, out int cost) ? flood * cost / maxCost : 0f;
+
         public void ShowHealRange(HashSet<Vector2Int> healable) =>
             ShowSingleColorRange(healable, HealColor);
 
@@ -91,7 +137,11 @@ namespace ProjectAstra.Core.Cursor
                 pool.Enqueue(overlay);
             }
             activeOverlays.Clear();
+            overlayRenderers.Clear();
             baseColors.Clear();
+            revealDelays.Clear();
+            floodElapsed = 0f;
+            floodDuration = 0f;
         }
 
         private void ShowSingleColorRange(HashSet<Vector2Int> tiles, Color color)
@@ -104,17 +154,25 @@ namespace ProjectAstra.Core.Cursor
             StartShimmer();
         }
 
-        private void PlaceOverlay(Vector2Int tile, Color color)
+        private void PlaceOverlay(Vector2Int tile, Color color, float revealDelay = 0f)
         {
             GameObject overlay = GetOrCreateOverlay();
             overlay.transform.position = new Vector3(tile.x + 0.5f, tile.y + 0.5f, 0f);
             overlay.SetActive(true);
 
             var sr = overlay.GetComponent<SpriteRenderer>();
-            sr.color = color;
+            sr.color = revealDelay > 0f ? Transparent(color) : color;
 
             activeOverlays.Add(overlay);
+            overlayRenderers.Add(sr);
             baseColors.Add(color);
+            revealDelays.Add(revealDelay);
+        }
+
+        private static Color Transparent(Color color)
+        {
+            color.a = 0f;
+            return color;
         }
 
         private GameObject GetOrCreateOverlay()
@@ -150,24 +208,33 @@ namespace ProjectAstra.Core.Cursor
             }
         }
 
+        // One loop drives both the shimmer and the flood-in, over cached renderers rather
+        // than a GetComponent per tile per frame.
         private IEnumerator ShimmerLoop()
         {
             while (true)
             {
                 shimmerPhase += Time.deltaTime * ShimmerFrequency;
+                floodElapsed += Time.deltaTime;
                 float alphaMultiplier = 1.0f + ShimmerAmplitude * Mathf.Sin(shimmerPhase * Mathf.PI * 2f);
 
-                for (int i = 0; i < activeOverlays.Count; i++)
+                for (int i = 0; i < overlayRenderers.Count; i++)
                 {
                     if (!activeOverlays[i].activeSelf) continue;
-                    var sr = activeOverlays[i].GetComponent<SpriteRenderer>();
                     Color c = baseColors[i];
-                    c.a *= alphaMultiplier;
-                    sr.color = c;
+                    c.a *= alphaMultiplier * RevealFactor(i);
+                    overlayRenderers[i].color = c;
                 }
 
                 yield return null;
             }
+        }
+
+        private float RevealFactor(int index)
+        {
+            if (floodDuration <= 0f) return 1f;
+            float since = floodElapsed - revealDelays[index];
+            return since <= 0f ? 0f : Mathf.Clamp01(since / TileFadeSeconds);
         }
     }
 }
