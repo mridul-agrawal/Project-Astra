@@ -22,6 +22,7 @@ namespace ProjectAstra.Core.Animation
         private Vector3 lastRootPosition;
         private bool hasLastPosition;
         private bool selected;
+        private bool spent;
 
         private void Awake()
         {
@@ -34,10 +35,24 @@ namespace ProjectAstra.Core.Animation
 
         public void SetSelected(bool value) => selected = value;
 
+        // A spent unit holds its current frame instead of idling. Freezing the clock rather
+        // than disabling the Animator keeps the pose the unit already had, so the grey-out
+        // reads as "stopped" rather than "snapped to a different picture".
+        public void SetSpent(bool value)
+        {
+            spent = value;
+            if (animator != null) animator.speed = value ? 0f : 1f;
+        }
+
         private void LateUpdate()
         {
             Vector2 delta = SampleRootMovement();
             facing.Tick(delta, Time.deltaTime);
+
+            // Still sample position while spent, so the baseline stays current and a later
+            // refresh doesn't read the accumulated gap as a sprint.
+            if (spent) return;
+
             PushToAnimator(LocomotionState.Select(facing.Moving, facing.Facing, selected));
         }
 

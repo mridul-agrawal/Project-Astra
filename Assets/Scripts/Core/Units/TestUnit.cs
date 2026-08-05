@@ -131,12 +131,26 @@ namespace ProjectAstra.Core.Units
         {
             hasActed = true;
             SetSpriteColor(ActedTint);
+            SetIdleAnimationFrozen(true);
         }
 
         public void ResetActed()
         {
             hasActed = false;
             SetSpriteColor(normalColor);
+            SetIdleAnimationFrozen(false);
+        }
+
+        // A spent unit goes still as well as grey — motion is the cue that survives at a
+        // glance and without colour. The flyer's hover bob is a separate component from the
+        // Animator, so both have to be stopped.
+        private void SetIdleAnimationFrozen(bool frozen)
+        {
+            var unitAnimator = GetComponentInChildren<UnitAnimator>();
+            if (unitAnimator != null) unitAnimator.SetSpent(frozen);
+
+            var hover = GetComponentInChildren<FlyingHoverAnimator>();
+            if (hover != null) hover.enabled = !frozen;
         }
 
         public void SnapToGridPosition()

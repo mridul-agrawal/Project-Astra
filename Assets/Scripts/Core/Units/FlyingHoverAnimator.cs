@@ -23,6 +23,15 @@ namespace ProjectAstra.Core.Units
             phaseOffset = Random.Range(0f, 2f * Mathf.PI);
         }
 
+        // Settle back to neutral height when switched off, so a spent flyer rests instead of
+        // freezing mid-bob and snapping when its turn comes round again.
+        private void OnDisable()
+        {
+            var p = transform.localPosition;
+            p.y = baseLocalY;
+            transform.localPosition = p;
+        }
+
         private void Update()
         {
             if (periodSeconds <= 0f) return;
