@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c099e6fcbb453c740b409ebef889f162, type: 3}
+  m_Name: GBAHeirloom
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Cursor.CursorVariantProfile
+  displayName: GBA Heirloom
+  useCornerBrackets: 1
+  useEdgeArrows: 0
+  useMorph: 0
+  hideInvalidDirections: 0
+  bracketSprite: {fileID: 0}
+  arrowSprite: {fileID: 0}
+  idle:
+    tint: {r: 1, g: 0.97, b: 0.88, a: 0.92}
+    inset: 0.44
+    pieceScale: 1
+    breathAmplitude: 0.05
+    breathPeriod: 2.2
+    arrowsPointInward: 0
+  selectable:
+    tint: {r: 1, g: 0.86, b: 0.36, a: 1}
+    inset: 0.34
+    pieceScale: 1.05
+    breathAmplitude: 0.035
+    breathPeriod: 1.3
+    arrowsPointInward: 0
+  selected:
+    tint: {r: 0.5, g: 0.88, b: 1, a: 1}
+    inset: 0.27
+    pieceScale: 1.05
+    breathAmplitude: 0
+    breathPeriod: 1.3
+    arrowsPointInward: 0
+  acted:
+    tint: {r: 0.48, g: 0.48, b: 0.53, a: 0.7}
+    inset: 0.44
+    pieceScale: 0.95
+    breathAmplitude: 0
+    breathPeriod: 2.2
+    arrowsPointInward: 0
+  enemy:
+    tint: {r: 1, g: 0.32, b: 0.28, a: 1}
+    inset: 0.46
+    pieceScale: 1.05
+    breathAmplitude: 0.055
+    breathPeriod: 0.9
+    arrowsPointInward: 0
+  stepSlide: 0.08
+  stateBlend: 0.1
+  morphDuration: 0.1
+  morphRotation: 0
+  errorShakeDistance: 0.0625
+  errorShakeDuration: 0.09
+  heldRepeatDelay: 0.4
+  heldRepeatStep: 0.1
+  rangeFloodDuration: 0.2
+  steppedSound: 0
+  hoverSelectableSound: 0
+  hoverEnemySound: 0
+  unitSelectedSound: 0
+  moveConfirmedSound: 0
+  moveCancelledSound: 0
+  selectionCancelledSound: 0
+  unitSpentTurnSound: 0
+  errorSound: 0
