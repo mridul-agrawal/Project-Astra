@@ -39,6 +39,22 @@ namespace ProjectAstra.Core.Flow
         // Start a new game from the top of the campaign.
         public void Begin() => EnterStep(0);
 
+        // Entering the battle map without having walked the campaign to it — pressing Play on
+        // the scene, or a dev boot that skips the intro — used to leave the campaign unstarted,
+        // so the map bootstrapper silently loaded its editor fallback instead of the map the
+        // campaign actually points at. Snap to the first battle so what you get is what the
+        // real flow would have given you. A no-op once a battle step is already current.
+        public MapData EnsureBattleStepStarted()
+        {
+            if (CurrentMap != null) return CurrentMap;
+
+            int firstBattle = campaign != null ? campaign.IndexOfFirstBattle() : -1;
+            if (firstBattle < 0) return null;
+
+            stepIndex = firstBattle;
+            return CurrentMap;
+        }
+
         // The Cutscene scene calls this when its dialogue finishes.
         public void NotifyCutsceneFinished() => EnterStep(stepIndex + 1);
 

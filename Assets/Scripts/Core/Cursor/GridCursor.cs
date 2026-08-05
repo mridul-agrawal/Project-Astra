@@ -384,8 +384,17 @@ namespace ProjectAstra.Core.Cursor
             OnCursorMoved += RefreshHoverSelection;
         }
 
-        private TestUnit FindUnitForHover(Vector2Int pos) =>
-            TurnManager.Instance != null ? TurnManager.Instance.UnitRegistry.GetUnitAt(pos) : FindUnitAt(pos);
+        // The registry is the fast path, but it is empty until TurnManager starts the battle —
+        // and the cursor is already sitting on a unit before that happens. Falling through to a
+        // scene scan on a miss is what keeps the opening hover from reading as an empty tile.
+        private TestUnit FindUnitForHover(Vector2Int pos)
+        {
+            var registered = TurnManager.Instance != null
+                ? TurnManager.Instance.UnitRegistry.GetUnitAt(pos)
+                : null;
+
+            return registered != null ? registered : FindUnitAt(pos);
+        }
 
         private void RefreshHoverSelection(Vector2Int _) => hoverSelectionDriver?.Refresh();
 
@@ -460,20 +469,24 @@ namespace ProjectAstra.Core.Cursor
         private void OnHoverChanged(CursorHover hover) =>
             EventService.Instance?.RaiseHoverChanged(hover, hoveredUnit);
 
-        private static Faction? FactionOf(TestUnit unit)
-        {
-            if (unit == null) return null;
-            return TurnManager.Instance != null
-                ? TurnManager.Instance.UnitRegistry.GetFaction(unit) ?? unit.faction
-                : unit.faction;
-        }
+        private static Faction? FactionOf(TestUnit unit) =>
+            unit == null ? null : Registered(unit)?.GetFaction(unit) ?? unit.faction;
 
+        // Both the registry's CanAct and its GetFaction report a unit that was never registered
+        // exactly like one that has already acted, which would grey out every unit on the map
+        // before the battle starts. Fall back to the unit's own flag until it is registered.
         private static bool CanUnitAct(TestUnit unit)
         {
             if (unit == null) return false;
-            return TurnManager.Instance != null
+            return Registered(unit) != null
                 ? TurnManager.Instance.UnitRegistry.CanAct(unit)
                 : !unit.hasActed;
+        }
+
+        private static UnitRegistry Registered(TestUnit unit)
+        {
+            var registry = TurnManager.Instance != null ? TurnManager.Instance.UnitRegistry : null;
+            return registry != null && registry.GetFaction(unit) != null ? registry : null;
         }
 
         // --- Mode/position internals ---

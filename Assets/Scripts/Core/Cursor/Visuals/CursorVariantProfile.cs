@@ -29,14 +29,7 @@ namespace ProjectAstra.Core.Cursor
         [Tooltip("Hide arrows pointing at tiles the cursor can't actually reach — off the map edge in Idle, outside the movement range once a unit is selected. Recomputed every step.")]
         [SerializeField] private bool hideInvalidDirections = true;
 
-        [Header("Art — leave empty for the built-in placeholder shapes")]
-        [Tooltip("Corner bracket sprite. Authored pointing up-right; the cursor rotates it to each corner. Should be white so the state tints can colour it.")]
-        [SerializeField] private Sprite bracketSprite;
-
-        [Tooltip("Edge arrow sprite. Authored pointing up; the cursor rotates it to each edge.")]
-        [SerializeField] private Sprite arrowSprite;
-
-        [Header("Visual states")]
+        [Header("Visual states — each carries its own shape and art")]
         [SerializeField] private CursorStateVisual idle = CursorStateVisual.DefaultIdle;
         [SerializeField] private CursorStateVisual selectable = CursorStateVisual.DefaultSelectable;
         [SerializeField] private CursorStateVisual selected = CursorStateVisual.DefaultSelected;
@@ -91,9 +84,6 @@ namespace ProjectAstra.Core.Cursor
         public bool UseMorph => useMorph;
         public bool HideInvalidDirections => hideInvalidDirections;
 
-        public Sprite BracketSprite => bracketSprite != null ? bracketSprite : CursorSpriteFactory.GetBracketSprite();
-        public Sprite ArrowSprite => arrowSprite != null ? arrowSprite : CursorSpriteFactory.GetArrowSprite();
-
         public float StepSlide => stepSlide;
         public float StateBlend => stateBlend;
         public float MorphDuration => morphDuration;
@@ -120,6 +110,23 @@ namespace ProjectAstra.Core.Cursor
             _ => SoundId.None,
         };
 
+        // A profile authored before the shape settings existed deserialises them as zeros,
+        // which would draw nothing at all. Arm length has a 0.1 floor on its slider, so a zero
+        // can only mean "never set" — fill those in rather than letting the cursor vanish.
+        private void OnValidate()
+        {
+            MigrateShapeIfUnset(ref idle);
+            MigrateShapeIfUnset(ref selectable);
+            MigrateShapeIfUnset(ref selected);
+            MigrateShapeIfUnset(ref acted);
+            MigrateShapeIfUnset(ref enemy);
+        }
+
+        private static void MigrateShapeIfUnset(ref CursorStateVisual visual)
+        {
+            if (visual.shape.armLength < 0.1f) visual.shape = CursorShape.Default;
+        }
+
         public SoundId SteppedSound => steppedSound;
         public SoundId UnitSelectedSound => unitSelectedSound;
         public SoundId MoveConfirmedSound => moveConfirmedSound;
@@ -144,6 +151,15 @@ namespace ProjectAstra.Core.Cursor
         [Tooltip("Colour multiplied onto the piece sprites. Keep the sprites white so this reads true.")]
         public Color tint;
 
+        [Tooltip("The silhouette this state draws. Leave the sprite slots below empty and tune these instead — the shapes redraw live while the game is running.")]
+        public CursorShape shape;
+
+        [Tooltip("Optional. A hand-authored bracket for this state, replacing the shape settings above. Authored as a top-right corner; the cursor rotates it to the other three.")]
+        public Sprite bracketSprite;
+
+        [Tooltip("Optional. A hand-authored arrow for this state. Authored pointing up.")]
+        public Sprite arrowSprite;
+
         [Tooltip("Distance from the tile centre to each piece, in world units. One tile is 1.0, so 0.5 sits a piece exactly on the tile edge. Smaller values pull the pieces in toward the unit.")]
         [Range(0f, 0.9f)] public float inset;
 
@@ -162,6 +178,7 @@ namespace ProjectAstra.Core.Cursor
         public static CursorStateVisual DefaultIdle => new()
         {
             tint = new Color(1f, 0.98f, 0.9f, 0.9f),
+            shape = CursorShape.Default,
             inset = 0.42f,
             pieceScale = 1f,
             breathAmplitude = 0.045f,
@@ -172,6 +189,7 @@ namespace ProjectAstra.Core.Cursor
         public static CursorStateVisual DefaultSelectable => new()
         {
             tint = new Color(1f, 0.85f, 0.35f, 1f),
+            shape = CursorShape.Default,
             inset = 0.34f,
             pieceScale = 1.05f,
             breathAmplitude = 0.03f,
@@ -182,6 +200,7 @@ namespace ProjectAstra.Core.Cursor
         public static CursorStateVisual DefaultSelected => new()
         {
             tint = new Color(0.45f, 0.85f, 1f, 1f),
+            shape = CursorShape.Default,
             inset = 0.3f,
             pieceScale = 1.05f,
             breathAmplitude = 0f,
@@ -192,6 +211,7 @@ namespace ProjectAstra.Core.Cursor
         public static CursorStateVisual DefaultActed => new()
         {
             tint = new Color(0.5f, 0.5f, 0.55f, 0.75f),
+            shape = CursorShape.Default,
             inset = 0.42f,
             pieceScale = 0.95f,
             breathAmplitude = 0f,
@@ -202,6 +222,7 @@ namespace ProjectAstra.Core.Cursor
         public static CursorStateVisual DefaultEnemy => new()
         {
             tint = new Color(1f, 0.3f, 0.28f, 1f),
+            shape = CursorShape.Default,
             inset = 0.44f,
             pieceScale = 1.05f,
             breathAmplitude = 0.05f,

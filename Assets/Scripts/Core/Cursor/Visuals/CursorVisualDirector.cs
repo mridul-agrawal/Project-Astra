@@ -26,6 +26,7 @@ namespace ProjectAstra.Core.Cursor
 
         private readonly CursorPose[] targets = new CursorPose[CursorSlotGeometry.SlotCount];
         private readonly bool[] validDirections = new bool[DirectionalHintModule.DirectionCount];
+        private readonly CursorShapeRenderer shapes = new();
         private CursorPiece[] pieces;
 
         private CursorVariantProfile activeProfile;
@@ -90,6 +91,7 @@ namespace ProjectAstra.Core.Cursor
         private void OnDestroy()
         {
             if (Current == this) Current = null;
+            shapes.Dispose();
             if (pieces == null) return;
             foreach (var piece in pieces) piece.Destroy();
         }
@@ -171,6 +173,12 @@ namespace ProjectAstra.Core.Cursor
             if (pieces == null || activeProfile == null) return;
 
             CursorStateVisual visual = activeProfile.VisualFor(visualState);
+
+            // Cheap when nothing changed, so this is also what picks up a shape slider being
+            // dragged in the Inspector mid-play.
+            shapes.Refresh(visual.shape);
+            RefreshSprites();
+
             AdvanceBreath(dt, visual);
 
             float breath = BreathValue(visual);
@@ -268,17 +276,21 @@ namespace ProjectAstra.Core.Cursor
                 pieces[i] = new CursorPiece(transform, $"CursorPiece_{(CursorSlot)i}", i);
         }
 
+        // Per-state authored art wins over the parametric shape; empty slots fall back to it.
         private void RefreshSprites()
         {
             if (pieces == null || activeProfile == null) return;
 
+            CursorStateVisual visual = activeProfile.VisualFor(visualState);
+            Sprite bracket = visual.bracketSprite != null ? visual.bracketSprite : shapes.BracketSprite;
+            Sprite arrow = visual.arrowSprite != null ? visual.arrowSprite : shapes.ArrowSprite;
+
             for (int i = 0; i < pieces.Length; i++)
             {
-                bool wantsArrow = CursorSlotGeometry.IsCorner(i)
-                    ? activeProfile.UseMorph && MorphDriver.ShouldShowArrowSprite(morphedToEdges)
-                    : true;
+                bool wantsArrow = !CursorSlotGeometry.IsCorner(i)
+                    || (activeProfile.UseMorph && MorphDriver.ShouldShowArrowSprite(morphedToEdges));
 
-                pieces[i].SetSprite(wantsArrow ? activeProfile.ArrowSprite : activeProfile.BracketSprite);
+                pieces[i].SetSprite(wantsArrow ? arrow : bracket);
             }
         }
 

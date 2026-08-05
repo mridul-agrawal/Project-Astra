@@ -25,13 +25,14 @@ namespace ProjectAstra.Core.Grid
                 unitSpawner.SpawnUnits(map);
         }
 
-        // The campaign's current map wins; otherwise use the serialized editor fallback.
+        // The campaign's map wins, starting the campaign at its first battle if something
+        // skipped straight here. The serialized fallback is only for a scene with no GameFlow
+        // alive at all.
         private MapData ResolveMap()
         {
             GameFlow flow = GameFlow.Instance;
-            if (flow != null && flow.CurrentMap != null)
-                return flow.CurrentMap;
-            return fallbackMapData;
+            MapData campaignMap = flow != null ? flow.EnsureBattleStepStarted() : null;
+            return campaignMap != null ? campaignMap : fallbackMapData;
         }
     }
 }

@@ -17,10 +17,17 @@ MonoBehaviour:
   useEdgeArrows: 1
   useMorph: 0
   hideInvalidDirections: 1
-  bracketSprite: {fileID: 0}
-  arrowSprite: {fileID: 0}
   idle:
     tint: {r: 1, g: 0.97, b: 0.88, a: 0.9}
+    shape:
+      armLength: 0.72
+      thickness: 0.2
+      outlineWeight: 0.08
+      cornerRadius: 0.1
+      arrowWidth: 0.5
+      arrowSharpness: 0.78
+    bracketSprite: {fileID: 0}
+    arrowSprite: {fileID: 0}
     inset: 0.46
     pieceScale: 0.9
     breathAmplitude: 0.05
@@ -28,6 +35,15 @@ MonoBehaviour:
     arrowsPointInward: 0
   selectable:
     tint: {r: 1, g: 0.86, b: 0.36, a: 1}
+    shape:
+      armLength: 0.72
+      thickness: 0.2
+      outlineWeight: 0.08
+      cornerRadius: 0.15
+      arrowWidth: 0.66
+      arrowSharpness: 0.55
+    bracketSprite: {fileID: 0}
+    arrowSprite: {fileID: 0}
     inset: 0.42
     pieceScale: 0.95
     breathAmplitude: 0.03
@@ -35,6 +51,15 @@ MonoBehaviour:
     arrowsPointInward: 1
   selected:
     tint: {r: 0.5, g: 0.88, b: 1, a: 1}
+    shape:
+      armLength: 0.72
+      thickness: 0.2
+      outlineWeight: 0.08
+      cornerRadius: 0.1
+      arrowWidth: 0.5
+      arrowSharpness: 0.78
+    bracketSprite: {fileID: 0}
+    arrowSprite: {fileID: 0}
     inset: 0.46
     pieceScale: 0.9
     breathAmplitude: 0.02
@@ -42,6 +67,15 @@ MonoBehaviour:
     arrowsPointInward: 0
   acted:
     tint: {r: 0.5, g: 0.5, b: 0.55, a: 0}
+    shape:
+      armLength: 0.72
+      thickness: 0.2
+      outlineWeight: 0.05
+      cornerRadius: 0.1
+      arrowWidth: 0.2
+      arrowSharpness: 0.9
+    bracketSprite: {fileID: 0}
+    arrowSprite: {fileID: 0}
     inset: 0.1
     pieceScale: 0.6
     breathAmplitude: 0
@@ -49,6 +83,15 @@ MonoBehaviour:
     arrowsPointInward: 0
   enemy:
     tint: {r: 1, g: 0.32, b: 0.28, a: 1}
+    shape:
+      armLength: 0.72
+      thickness: 0.2
+      outlineWeight: 0.09
+      cornerRadius: 0.05
+      arrowWidth: 0.44
+      arrowSharpness: 0.88
+    bracketSprite: {fileID: 0}
+    arrowSprite: {fileID: 0}
     inset: 0.48
     pieceScale: 1
     breathAmplitude: 0.06
