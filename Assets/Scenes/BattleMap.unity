@@ -21499,6 +21499,7 @@ GameObject:
   - component: {fileID: 1312707234}
   - component: {fileID: 1312707233}
   - component: {fileID: 1312707235}
+  - component: {fileID: 1312707236}
   m_Layer: 0
   m_Name: CursorDevOverlay
   m_TagString: Untagged
@@ -21550,6 +21551,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Rendering.CrtCaptureProbe
   outputPath: Temp/crt_capture.png
   framesToWait: 60
+--- !u!114 &1312707236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312707232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64b1dcbacd18b8e42bc19997367dc753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Rendering.CrtProfileBinder
+  profile: {fileID: 11400000, guid: 89376e4107e9a0e46849c347ac2b4116, type: 2}
+  crtMaterial: {fileID: 2100000, guid: 1f43b6dac5262584ca50868bd0f9fae3, type: 2}
 --- !u!1 &1320838010
 GameObject:
   m_ObjectHideFlags: 0
