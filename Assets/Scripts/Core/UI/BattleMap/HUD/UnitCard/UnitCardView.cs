@@ -34,6 +34,11 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             rect = Root != null ? Root.GetComponent<RectTransform>() : GetComponent<RectTransform>();
         }
 
+        public void SetVisible(bool visible)
+        {
+            if (Root != null) Root.SetActive(visible);
+        }
+
         public void Render(UnitCardModel model)
         {
             if (model == null)

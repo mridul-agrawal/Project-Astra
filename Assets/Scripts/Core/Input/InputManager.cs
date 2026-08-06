@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Events;
 using ProjectAstra.Core.State;
+using ProjectAstra.Core.Turn;
 
 namespace ProjectAstra.Core.Input
 {
@@ -58,6 +59,7 @@ namespace ProjectAstra.Core.Input
         // firing stale handlers into already-destroyed objects.
         private readonly List<Action> actionUnbinders = new();
 
+        private bool phaseIntroWasPlaying;
         private bool confirmPendingThisFrame;
         private bool cancelPendingThisFrame;
         private bool stateSubscribed;
@@ -111,8 +113,19 @@ namespace ProjectAstra.Core.Input
         private void Update()
         {
             ApplyCursorProfileTimings();
+            ReArmRepeatAfterPhaseIntro();
             das.Tick(Time.deltaTime, IsFastCursorHeld);
             ResolveSameFramePriority();
+        }
+
+        // A direction held through a phase announcement has long since passed its initial
+        // delay, so control returning would dash the cursor across the map. Re-arm on the way
+        // out so the hold has to earn its repeat again.
+        private void ReArmRepeatAfterPhaseIntro()
+        {
+            bool playing = PhaseIntro.IsPlaying;
+            if (phaseIntroWasPlaying && !playing) das.Reset();
+            phaseIntroWasPlaying = playing;
         }
 
         // Held repeat is a cursor feel parameter, so it lives on the cursor variant profile

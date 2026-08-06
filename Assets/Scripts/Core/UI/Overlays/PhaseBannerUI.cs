@@ -45,6 +45,8 @@ namespace ProjectAstra.Core.UI.Overlays
         [SerializeField, Range(0f, 1f)] private float dimAlpha = 0.55f;
         static readonly Color DimColor = new(0.0196f, 0.0118f, 0.0196f, 0f);
 
+        private Coroutine bannerRoutine;
+
         private void Awake()
         {
             if (bannerRoot != null)
@@ -65,13 +67,24 @@ namespace ProjectAstra.Core.UI.Overlays
         {
             if (EventService.Instance != null)
                 EventService.Instance.UnsubscribePhaseStarted(OnPhaseStarted);
+
+            // A banner killed by a disable or a scene unload would otherwise leave the intro
+            // flag stuck on, and with it the cursor permanently dead.
+            bannerRoutine = null;
+            PhaseIntro.End();
         }
 
         private void OnPhaseStarted(BattlePhase phase, int turnNumber)
         {
             PlayPhaseCue(phase);
-            StopAllCoroutines();
-            StartCoroutine(ShowBanner(phase, turnNumber));
+
+            // Stop only our own banner. StopAllCoroutines would also kill the slide/dim
+            // helpers mid-frame, and a superseded banner never reaches its finish, so the flag
+            // has to be owned here rather than by the coroutine that got cut short.
+            if (bannerRoutine != null) StopCoroutine(bannerRoutine);
+
+            PhaseIntro.Begin();
+            bannerRoutine = StartCoroutine(ShowBanner(phase, turnNumber));
         }
 
         private static void PlayPhaseCue(BattlePhase phase)
@@ -101,12 +114,15 @@ namespace ProjectAstra.Core.UI.Overlays
             bannerRoot.gameObject.SetActive(false);
             if (dimOverlay != null) dimOverlay.gameObject.SetActive(false);
 
+            bannerRoutine = null;
             RaiseBannerFinished(phase, turnNumber);
         }
 
-        // Lets phase-start dialogue wait until the banner is gone instead of overlapping it.
+        // The gate everything else waits on: phase-start dialogue, the enemy AI's first move,
+        // and the cursor and HUD coming back.
         private void RaiseBannerFinished(BattlePhase phase, int turnNumber)
         {
+            PhaseIntro.End();
             if (EventService.Instance != null) EventService.Instance.RaisePhaseBannerFinished(phase, turnNumber);
         }
 

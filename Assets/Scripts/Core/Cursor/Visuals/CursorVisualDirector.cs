@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Events;
+using ProjectAstra.Core.Turn;
 using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Cursor
@@ -172,6 +173,14 @@ namespace ProjectAstra.Core.Cursor
         {
             if (pieces == null || activeProfile == null) return;
 
+            // Nothing of the cursor draws over a phase announcement. Checked here rather than
+            // on a state change so it holds however the intro starts or ends.
+            if (PhaseIntro.IsPlaying)
+            {
+                HideAllPieces();
+                return;
+            }
+
             CursorStateVisual visual = activeProfile.VisualFor(visualState);
 
             // Cheap when nothing changed, so this is also what picks up a shape slider being
@@ -192,6 +201,12 @@ namespace ProjectAstra.Core.Cursor
                 Vector2 breathOffset = outward * (breath * visual.breathAmplitude);
                 pieces[i].Apply(breathOffset + (Vector2)slideOffset + (Vector2)shake, 1f);
             }
+        }
+
+        private void HideAllPieces()
+        {
+            for (int i = 0; i < pieces.Length; i++)
+                pieces[i].SetVisible(false);
         }
 
         // One shared phase for all eight pieces — a composite variant only reads as a single

@@ -532,6 +532,7 @@ namespace ProjectAstra.Core.Cursor
         {
             if (currentMode == CursorMode.Locked) return false;
             if (currentMode == CursorMode.ActionMenu) return false;
+            if (PhaseIntro.IsPlaying) return false;
             if (BattleMapUI.HasInputFocus) return false;
             if (SelectionMenuView.HasInputFocus) return false;
             if (InventoryMenuUI.HasInputFocus) return false;

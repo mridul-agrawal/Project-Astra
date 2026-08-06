@@ -18,6 +18,9 @@ namespace ProjectAstra.Core.Turn
         // Placeholder: how long an AI phase visibly lingers before auto-ending. Replace once real AI exists.
         [SerializeField] private float aiPhaseDelaySeconds = 1f;
 
+        // Safety net only — the banner normally clears in well under this.
+        private const float MaxPhaseIntroWaitSeconds = 5f;
+
         private BattlePhaseManager phaseManager;
         private UnitRegistry unitRegistry;
         private int turnCounter;
@@ -156,11 +159,26 @@ namespace ProjectAstra.Core.Turn
         // the phase visible. EndCurrentPhase auto-marks any units that didn't act either way.
         private IEnumerator RunAIPhase(BattlePhase phase)
         {
+            yield return WaitForPhaseIntro();
+
             if (scriptedPhase != null && scriptedPhase.TryBuildPhaseScript(phase, turnCounter, out var routine))
                 yield return StartCoroutine(routine);
             else
                 yield return new WaitForSeconds(aiPhaseDelaySeconds);
             EndCurrentPhase();
+        }
+
+        // The banner is an announcement — acting underneath it means the player misses the
+        // opening move. Bounded, so a scene with no banner (the flag never sets) falls straight
+        // through and a wedged one can't stall the battle forever.
+        private IEnumerator WaitForPhaseIntro()
+        {
+            float waited = 0f;
+            while (PhaseIntro.IsPlaying && waited < MaxPhaseIntroWaitSeconds)
+            {
+                waited += Time.deltaTime;
+                yield return null;
+            }
         }
 
         private void RegisterSceneUnits()

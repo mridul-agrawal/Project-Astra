@@ -21,6 +21,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         private ObjectiveController objectiveController;
 
         private GridCursor cursor;
+        private bool hudHiddenForIntro;
 
         private void Awake()
         {
@@ -43,6 +44,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             if (cursor != null)
                 cursor.OnCursorMoved += HandleCursorMoved;
             EventService.Instance.SubscribePhaseStarted(HandlePhaseStarted);
+            EventService.Instance.SubscribePhaseBannerFinished(HandlePhaseBannerFinished);
             EventService.Instance.SubscribeUnitDeath(HandleUnitDeath);
             if (InputManager.Instance != null)
                 InputManager.Instance.OnPeekObjective += HandlePeek;
@@ -56,13 +58,42 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             objectiveController.HandleCursorMoved(place.Objective);
         }
 
-        private void HandlePhaseStarted(BattlePhase phase, int turnNumber)
+        private void HandlePhaseStarted(BattlePhase phase, int turnNumber) =>
+            RenderPhasePanels(phase, turnNumber);
+
+        // Re-rendered when the banner clears as well as when the phase starts, so the panels
+        // carry current data at the moment they come back into view.
+        private void HandlePhaseBannerFinished(BattlePhase phase, int turnNumber) =>
+            RenderPhasePanels(phase, turnNumber);
+
+        private void RenderPhasePanels(BattlePhase phase, int turnNumber)
         {
+            if (cursor == null) return;
+
             Vector2Int pos = cursor.GridPosition;
             HudPlacement place = ResolvePlacement(pos);
             unitCardController.HandlePhaseStarted(phase, pos, place.Unit);
             tileInfoController.HandlePhaseStarted(phase, pos, place.Tile);
             objectiveController.HandlePhaseStarted(phase, turnNumber, place.Objective);
+        }
+
+        // The HUD steps aside while a phase is being announced. Driven off the flag rather than
+        // the start/finish event pair so it is self-healing: a scene with no banner never sets
+        // the flag and so never hides, and a banner cut short clears it on the way out.
+        private void Update()
+        {
+            bool announcing = PhaseIntro.IsPlaying;
+            if (announcing == hudHiddenForIntro) return;
+
+            hudHiddenForIntro = announcing;
+            SetHudVisible(!announcing);
+        }
+
+        private void SetHudVisible(bool visible)
+        {
+            if (unitCardView != null) unitCardView.SetVisible(visible);
+            if (tileInfoView != null) tileInfoView.SetVisible(visible);
+            if (objectiveView != null) objectiveView.SetVisible(visible);
         }
 
         private void HandleUnitDeath(UnitDeathEventArgs args) => objectiveController.HandleUnitDeath();
@@ -100,6 +131,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             if (EventService.Instance != null)
             {
                 EventService.Instance.UnsubscribePhaseStarted(HandlePhaseStarted);
+                EventService.Instance.UnsubscribePhaseBannerFinished(HandlePhaseBannerFinished);
                 EventService.Instance.UnsubscribeUnitDeath(HandleUnitDeath);
             }
             if (InputManager.Instance != null)

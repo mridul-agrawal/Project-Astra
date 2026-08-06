@@ -43,6 +43,14 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             Expanded.SetActive(false);
         }
 
+        // Toggles the content rather than the GameObject: this view runs its own slide
+        // coroutine, and a disabled object would kill it mid-peek.
+        public void SetVisible(bool visible)
+        {
+            if (Nub != null) Nub.SetActive(visible);
+            if (!visible && Expanded != null) Expanded.SetActive(false);
+        }
+
         public void Render(ObjectiveModel model)
         {
             if (model == null) return;
