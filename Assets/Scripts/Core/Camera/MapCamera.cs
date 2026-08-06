@@ -15,6 +15,13 @@ namespace ProjectAstra.Core.Camera
         [SerializeField] private int referenceResolutionX = 480;
         [SerializeField] private int referenceResolutionY = 270;
 
+        [Tooltip("Render the world into a 480x270 buffer and upscale it, instead of rendering at "
+            + "window resolution with snapped sprites. Both look the same, but the buffer leaves "
+            + "a full-screen pass only one pixel per source pixel to work with — which is not "
+            + "enough room to draw a scanline gap or a phosphor mask. Leave this off for the CRT "
+            + "filter to have anything to draw into.")]
+        [SerializeField] private bool upscaleRenderTexture;
+
         private PixelPerfectCamera pixelPerfect;
         private UnityEngine.Camera cam;
 
@@ -45,7 +52,7 @@ namespace ProjectAstra.Core.Camera
             pixelPerfect.assetsPPU = assetsPPU;
             pixelPerfect.refResolutionX = referenceResolutionX;
             pixelPerfect.refResolutionY = referenceResolutionY;
-            pixelPerfect.upscaleRT = true;       // Render at ref resolution, then upscale to window.
+            pixelPerfect.upscaleRT = upscaleRenderTexture;
             pixelPerfect.pixelSnapping = true;   // Snap sprites to the pixel grid — prevents blur.
         }
     }
