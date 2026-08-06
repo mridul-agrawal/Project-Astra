@@ -6,7 +6,9 @@
         "Unity.TextMeshPro",
         "Unity.InputSystem",
         "Unity.Recorder.Editor",
-        "Unity.2D.Sprite.Editor"
+        "Unity.2D.Sprite.Editor",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Core.Runtime"
     ],
     "includePlatforms": [
         "Editor"

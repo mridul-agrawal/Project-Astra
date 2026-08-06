@@ -21498,6 +21498,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1312707234}
   - component: {fileID: 1312707233}
+  - component: {fileID: 1312707235}
   m_Layer: 0
   m_Name: CursorDevOverlay
   m_TagString: Untagged
@@ -21535,6 +21536,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1312707235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312707232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94376798dd83ad34cb9bfe4820f02986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Rendering.CrtCaptureProbe
+  outputPath: Temp/crt_capture.png
+  framesToWait: 60
 --- !u!1 &1320838010
 GameObject:
   m_ObjectHideFlags: 0
@@ -31232,7 +31247,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -31268,6 +31283,7 @@ MonoBehaviour:
   assetsPPU: 32
   referenceResolutionX: 480
   referenceResolutionY: 270
+  upscaleRenderTexture: 0
 --- !u!114 &1830605496
 MonoBehaviour:
   m_ObjectHideFlags: 0
