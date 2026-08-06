@@ -18,6 +18,7 @@ Shader "ProjectAstra/CRT"
     // quietly draws nothing for the first frames, which is indistinguishable from a broken effect.
     Properties
     {
+        _Enabled ("Enabled", Float) = 1
         _SourceResolution ("Source Resolution", Vector) = (480, 270, 0, 0)
         _ScanlineStrength ("Scanline Strength", Range(0, 1)) = 0.35
         _BeamWidth ("Beam Width", Range(0.15, 1)) = 0.4
@@ -43,6 +44,7 @@ Shader "ProjectAstra/CRT"
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
         #include "Packages/com.unity.render-pipelines.core/Runtime/Utilities/Blit.hlsl"
 
+        float _Enabled;
         float4 _SourceResolution;
         float _ScanlineStrength;
         float _BeamWidth;
@@ -174,6 +176,11 @@ Shader "ProjectAstra/CRT"
         half4 FragCrt(Varyings input) : SV_Target
         {
             UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+            // Switched off, the pass still runs but hands the image straight back. One sample is
+            // cheaper than reaching into the renderer data at runtime to disable the feature.
+            if (_Enabled < 0.5)
+                return SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_PointClamp, input.texcoord);
 
             float2 uv = CurveUv(input.texcoord);
 

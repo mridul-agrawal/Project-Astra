@@ -25,8 +25,23 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _ScanlineStrength: 0.35
+    - _BeamWidth: 0.32
+    - _BloomAmount: 1
+    - _Curvature: 0
+    - _Enabled: 1
+    - _Gain: 1.45
+    - _Gamma: 1.25
+    - _HalationRadius: 0.012
+    - _HalationStrength: 0.3
+    - _HalationThreshold: 0.4
+    - _HorizontalBleed: 0.7
+    - _MaskPitch: 3
+    - _MaskStrength: 0.3
+    - _MaskType: 1
+    - _ScanlineStrength: 0.6
+    - _VignetteStrength: 0.2
     m_Colors:
+    - _HalationTint: {r: 1, g: 0.82, b: 0.7, a: 1}
     - _SourceResolution: {r: 480, g: 270, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

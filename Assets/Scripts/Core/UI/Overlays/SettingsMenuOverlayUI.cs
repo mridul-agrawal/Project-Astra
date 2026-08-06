@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using ProjectAstra.Core.Audio;
 using ProjectAstra.Core.Combat.Playback;
 using ProjectAstra.Core.Input;
+using ProjectAstra.Core.Rendering;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Overlays
@@ -20,6 +21,11 @@ namespace ProjectAstra.Core.UI.Overlays
         [Tooltip("Optional tooltip line shown below the dropdown.")]
         [SerializeField] private TMP_Text combatSpeedHint;
 
+        [Header("CRT filter")]
+        [Tooltip("Off / Subtle / Full. Leave unassigned until the dropdown exists in the prefab.")]
+        [SerializeField] private TMP_Dropdown crtDropdown;
+        [SerializeField] private CrtSettings crtSettings;
+
         [SerializeField] private Color Selected = new(0.4f, 0.4f, 0.6f, 1f);
 
         private const string SpeedHintText =
@@ -31,6 +37,7 @@ namespace ProjectAstra.Core.UI.Overlays
             AddListenerToGameplayInputs();
             returnButton.image.color = Selected;
             PopulateSpeedDropdown();
+            PopulateCrtDropdown();
             AudioManager.Instance?.Play(SoundId.UiPanelOpen);
         }
 
@@ -39,6 +46,8 @@ namespace ProjectAstra.Core.UI.Overlays
             returnButton.onClick.AddListener(Return);
             if (combatSpeedDropdown != null)
                 combatSpeedDropdown.onValueChanged.AddListener(OnSpeedChanged);
+            if (crtDropdown != null)
+                crtDropdown.onValueChanged.AddListener(OnCrtChanged);
         }
 
         private void AddListenerToGameplayInputs()
@@ -58,6 +67,8 @@ namespace ProjectAstra.Core.UI.Overlays
             returnButton.onClick.RemoveListener(Return);
             if (combatSpeedDropdown != null)
                 combatSpeedDropdown.onValueChanged.RemoveListener(OnSpeedChanged);
+            if (crtDropdown != null)
+                crtDropdown.onValueChanged.RemoveListener(OnCrtChanged);
         }
 
         private void RemoveListenerToGameplayInputs()
@@ -80,6 +91,25 @@ namespace ProjectAstra.Core.UI.Overlays
             // Enum order: Normal=0, Fast=1, Skip=2 — matches dropdown index.
             combatSpeedDropdown.SetValueWithoutNotify((int)settings.Persisted);
             if (combatSpeedHint != null) combatSpeedHint.text = SpeedHintText;
+        }
+
+        private void PopulateCrtDropdown()
+        {
+            if (crtDropdown == null || crtSettings == null) return;
+
+            crtDropdown.ClearOptions();
+            crtDropdown.AddOptions(new System.Collections.Generic.List<string>
+            {
+                "Off", "Subtle", "Full"
+            });
+            // Enum order: Off=0, Subtle=1, Full=2 — matches dropdown index.
+            crtDropdown.SetValueWithoutNotify((int)crtSettings.Persisted);
+        }
+
+        private void OnCrtChanged(int index)
+        {
+            if (crtSettings == null) return;
+            crtSettings.Persisted = (CrtQuality)index;
         }
 
         private void OnSpeedChanged(int index)

@@ -10,11 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5f3299c1e09ccfa45b796a70c6d0786c, type: 3}
-  m_Name: CrtProfile_Default
+  m_Name: CrtProfile_Full
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Rendering.CrtProfile
   sourceResolution: {x: 480, y: 270}
-  scanlineStrength: 0.35
-  beamWidth: 0.4
-  horizontalBleed: 0.4
-  gamma: 1.1
-  gain: 1.2
+  scanlineStrength: 0.6
+  beamWidth: 0.32
+  horizontalBleed: 0.7
+  gamma: 1.25
+  gain: 1.45
+  bloomAmount: 1
+  halationStrength: 0.3
+  halationRadius: 0.012
+  halationThreshold: 0.4
+  halationTint: {r: 1, g: 0.82, b: 0.7, a: 1}
+  maskType: 1
+  maskStrength: 0.3
+  maskPitch: 3
+  curvature: 0
+  vignetteStrength: 0.2
