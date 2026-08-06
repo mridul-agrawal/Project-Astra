@@ -42,11 +42,40 @@ namespace ProjectAstra.Core.Rendering
             + "reason.")]
         [Range(0.5f, 2.5f)][SerializeField] private float gain = 1.2f;
 
+        [Header("Bloom")]
+        [Tooltip("How much a bright pixel widens the beam. This is the biggest single reason CRT "
+            + "images look like they have depth: highlights physically spread and spill across "
+            + "the scanline gaps while dark areas stay tight. A flat panel cannot do it at all — "
+            + "there, a bright pixel is exactly the same size as a dark one.")]
+        [Range(0f, 2f)][SerializeField] private float bloomAmount = 0.6f;
+
+        [Header("Halation")]
+        [Tooltip("Light scattering inside the glass, haloing bright areas. Small amounts read as "
+            + "a lit screen; large amounts read as fog.")]
+        [Range(0f, 1f)][SerializeField] private float halationStrength = 0.15f;
+
+        [Tooltip("How far the glow spreads, as a fraction of screen height. Corrected for aspect "
+            + "so it stays round.")]
+        [Range(0f, 0.03f)][SerializeField] private float halationRadius = 0.008f;
+
+        [Tooltip("How bright something must be before it starts to glow. Lower values make the "
+            + "whole image hazy; higher values keep the glow on true highlights.")]
+        [Range(0f, 1f)][SerializeField] private float halationThreshold = 0.5f;
+
+        [Tooltip("Colour of the scattered light. Warm by default, because the glass and the red "
+            + "phosphor scatter most — real CRT highlights glow slightly amber, not white.")]
+        [SerializeField] private Color halationTint = new(1f, 0.82f, 0.7f, 1f);
+
         public Vector2Int SourceResolution => sourceResolution;
         public float ScanlineStrength => scanlineStrength;
         public float BeamWidth => beamWidth;
         public float HorizontalBleed => horizontalBleed;
         public float Gamma => gamma;
         public float Gain => gain;
+        public float BloomAmount => bloomAmount;
+        public float HalationStrength => halationStrength;
+        public float HalationRadius => halationRadius;
+        public float HalationThreshold => halationThreshold;
+        public Color HalationTint => halationTint;
     }
 }

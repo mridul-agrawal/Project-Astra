@@ -29,6 +29,11 @@ namespace ProjectAstra.Core.Rendering
         private static readonly int HorizontalBleedId = Shader.PropertyToID("_HorizontalBleed");
         private static readonly int GammaId = Shader.PropertyToID("_Gamma");
         private static readonly int GainId = Shader.PropertyToID("_Gain");
+        private static readonly int BloomAmountId = Shader.PropertyToID("_BloomAmount");
+        private static readonly int HalationStrengthId = Shader.PropertyToID("_HalationStrength");
+        private static readonly int HalationRadiusId = Shader.PropertyToID("_HalationRadius");
+        private static readonly int HalationThresholdId = Shader.PropertyToID("_HalationThreshold");
+        private static readonly int HalationTintId = Shader.PropertyToID("_HalationTint");
 
         private void Awake() => Current = this;
 
@@ -56,6 +61,11 @@ namespace ProjectAstra.Core.Rendering
             crtMaterial.SetFloat(HorizontalBleedId, profile.HorizontalBleed);
             crtMaterial.SetFloat(GammaId, profile.Gamma);
             crtMaterial.SetFloat(GainId, profile.Gain);
+            crtMaterial.SetFloat(BloomAmountId, profile.BloomAmount);
+            crtMaterial.SetFloat(HalationStrengthId, profile.HalationStrength);
+            crtMaterial.SetFloat(HalationRadiusId, profile.HalationRadius);
+            crtMaterial.SetFloat(HalationThresholdId, profile.HalationThreshold);
+            crtMaterial.SetColor(HalationTintId, profile.HalationTint);
         }
     }
 }

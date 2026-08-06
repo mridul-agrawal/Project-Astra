@@ -24,6 +24,11 @@ Shader "ProjectAstra/CRT"
         _HorizontalBleed ("Horizontal Bleed", Range(0, 2)) = 0.4
         _Gamma ("Gamma", Range(1, 2.5)) = 1.1
         _Gain ("Gain", Range(0.5, 2.5)) = 1.2
+        _BloomAmount ("Bloom Amount", Range(0, 2)) = 0.6
+        _HalationStrength ("Halation Strength", Range(0, 1)) = 0.15
+        _HalationRadius ("Halation Radius", Range(0, 0.03)) = 0.008
+        _HalationThreshold ("Halation Threshold", Range(0, 1)) = 0.5
+        _HalationTint ("Halation Tint", Color) = (1, 0.82, 0.7, 1)
     }
 
     HLSLINCLUDE
@@ -39,6 +44,11 @@ Shader "ProjectAstra/CRT"
         float _HorizontalBleed;
         float _Gamma;
         float _Gain;
+        float _BloomAmount;
+        float _HalationStrength;
+        float _HalationRadius;
+        float _HalationThreshold;
+        float4 _HalationTint;
 
         // The analog sweep. Five taps across neighbouring source pixels, Gaussian weighted, so a
         // pixel's light bleeds sideways into its neighbours the way a moving beam's does. This is
@@ -66,13 +76,51 @@ Shader "ProjectAstra/CRT"
 
         // Where this output pixel falls within its scanline, shaped as a Gaussian centred on the
         // line. Narrow beams leave dark gaps; wide ones fill the line until the lines vanish.
-        float BeamProfile(float2 uv)
+        //
+        // The width grows with luminance because a brighter signal drives more electrons and the
+        // spot physically spreads. Highlights therefore spill across the scanline gaps while dark
+        // areas stay tight — which is the single biggest reason CRT images read as having depth.
+        // A flat panel cannot do this: a bright pixel is exactly the same size as a dark one.
+        float BeamProfile(float2 uv, float luminance)
         {
             float offsetInLine = frac(uv.y * _SourceResolution.y) - 0.5;
-            float sigma = max(_BeamWidth, 0.0001);
+            float sigma = max(_BeamWidth * (1.0 + _BloomAmount * luminance), 0.0001);
             float beam = exp(-(offsetInLine * offsetInLine) / (2.0 * sigma * sigma));
 
             return lerp(1.0, beam, _ScanlineStrength);
+        }
+
+        // Light scattering inside the thick glass faceplate and reflecting between the phosphor
+        // layer and the front surface, wrapping a soft halo around bright regions. Sampled as a
+        // ring rather than a real blur — it only has to be soft, not accurate.
+        //
+        // Warm by default because the glass and the red phosphor scatter most, which is why CRT
+        // highlights glow slightly amber rather than white.
+        half3 Halation(float2 uv)
+        {
+            if (_HalationStrength <= 0.0 || _HalationRadius <= 0.0) return 0.0;
+
+            // Screens are wider than they are tall, so an equal uv offset would give an oval.
+            float2 radius = _HalationRadius * float2(_ScreenParams.y / max(_ScreenParams.x, 1.0), 1.0);
+
+            const float diagonal = 0.7071;
+            float2 ring[8] =
+            {
+                float2(1, 0), float2(-1, 0), float2(0, 1), float2(0, -1),
+                float2(diagonal, diagonal), float2(-diagonal, diagonal),
+                float2(diagonal, -diagonal), float2(-diagonal, -diagonal)
+            };
+
+            half3 sum = 0.0;
+            [unroll]
+            for (int i = 0; i < 8; i++)
+            {
+                float2 tapUv = uv + ring[i] * radius;
+                half3 tap = SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, tapUv).rgb;
+                sum += max(tap - _HalationThreshold, 0.0);
+            }
+
+            return (sum / 8.0) * _HalationStrength * _HalationTint.rgb;
         }
 
         half4 FragCrt(Varyings input) : SV_Target
@@ -83,11 +131,18 @@ Shader "ProjectAstra/CRT"
             float sourcePixelWidth = 1.0 / max(_SourceResolution.x, 1.0);
 
             half3 colour = SweepHorizontally(uv, sourcePixelWidth);
+            float luminance = saturate(dot(colour, half3(0.2126, 0.7152, 0.0722)));
 
             // Tone first, then the beam. The beam is a physical modulation of light, so it has to
             // land after the response curve rather than be shaped by it.
             colour = pow(max(colour, 0.0), _Gamma);
-            colour *= BeamProfile(uv);
+            colour *= BeamProfile(uv, luminance);
+
+            // Halation is added after the beam, not multiplied by it. Scattered light crosses the
+            // scanline gaps, which is exactly why a glow fills them in and reads as a lamp behind
+            // glass rather than a brighter pixel.
+            colour += Halation(uv);
+
             colour *= _Gain;
 
             return half4(colour, 1.0);
