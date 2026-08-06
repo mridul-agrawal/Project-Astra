@@ -34,6 +34,11 @@ namespace ProjectAstra.Core.Rendering
         private static readonly int HalationRadiusId = Shader.PropertyToID("_HalationRadius");
         private static readonly int HalationThresholdId = Shader.PropertyToID("_HalationThreshold");
         private static readonly int HalationTintId = Shader.PropertyToID("_HalationTint");
+        private static readonly int MaskTypeId = Shader.PropertyToID("_MaskType");
+        private static readonly int MaskStrengthId = Shader.PropertyToID("_MaskStrength");
+        private static readonly int MaskPitchId = Shader.PropertyToID("_MaskPitch");
+        private static readonly int CurvatureId = Shader.PropertyToID("_Curvature");
+        private static readonly int VignetteStrengthId = Shader.PropertyToID("_VignetteStrength");
 
         private void Awake() => Current = this;
 
@@ -66,6 +71,11 @@ namespace ProjectAstra.Core.Rendering
             crtMaterial.SetFloat(HalationRadiusId, profile.HalationRadius);
             crtMaterial.SetFloat(HalationThresholdId, profile.HalationThreshold);
             crtMaterial.SetColor(HalationTintId, profile.HalationTint);
+            crtMaterial.SetFloat(MaskTypeId, (float)profile.MaskType);
+            crtMaterial.SetFloat(MaskStrengthId, profile.MaskStrength);
+            crtMaterial.SetFloat(MaskPitchId, profile.MaskPitch);
+            crtMaterial.SetFloat(CurvatureId, profile.Curvature);
+            crtMaterial.SetFloat(VignetteStrengthId, profile.VignetteStrength);
         }
     }
 }

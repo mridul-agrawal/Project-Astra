@@ -66,6 +66,31 @@ namespace ProjectAstra.Core.Rendering
             + "phosphor scatter most — real CRT highlights glow slightly amber, not white.")]
         [SerializeField] private Color halationTint = new(1f, 0.82f, 0.7f, 1f);
 
+        [Header("Phosphor mask")]
+        [Tooltip("The perforated sheet in front of the phosphors. Aperture grille is vertical "
+            + "stripes (Trinitron), slot mask staggers alternate rows (most consumer TVs), triad "
+            + "is a finer dot pattern.")]
+        [SerializeField] private CrtMaskType maskType = CrtMaskType.ApertureGrille;
+
+        [Tooltip("How strongly the mask tints. Keep this LOW. Photographs of CRTs badly overstate "
+            + "the mask, because a camera resolves individual phosphor dots your eye would blend "
+            + "at viewing distance — tuning against reference photos is the classic way to end up "
+            + "with a screen-door effect nobody ever actually saw.")]
+        [Range(0f, 1f)][SerializeField] private float maskStrength = 0.15f;
+
+        [Tooltip("Width of one full RGB cell in screen pixels. Smaller is finer. Below about 3 "
+            + "the stripes start to alias against the display's own pixels.")]
+        [Range(2f, 12f)][SerializeField] private float maskPitch = 3f;
+
+        [Header("Geometry")]
+        [Tooltip("Barrel distortion. Off by default, and worth leaving off: the HUD is drawn as a "
+            + "screen overlay and does not bend with the world, so any real amount of curvature "
+            + "puts a straight-edged panel over a curved picture.")]
+        [Range(0f, 0.3f)][SerializeField] private float curvature;
+
+        [Tooltip("Darkening toward the corners. Off by default.")]
+        [Range(0f, 1f)][SerializeField] private float vignetteStrength;
+
         public Vector2Int SourceResolution => sourceResolution;
         public float ScanlineStrength => scanlineStrength;
         public float BeamWidth => beamWidth;
@@ -77,5 +102,19 @@ namespace ProjectAstra.Core.Rendering
         public float HalationRadius => halationRadius;
         public float HalationThreshold => halationThreshold;
         public Color HalationTint => halationTint;
+        public CrtMaskType MaskType => maskType;
+        public float MaskStrength => maskStrength;
+        public float MaskPitch => maskPitch;
+        public float Curvature => curvature;
+        public float VignetteStrength => vignetteStrength;
+    }
+
+    // Order matters — the shader reads this as a float and branches on it.
+    public enum CrtMaskType
+    {
+        None = 0,
+        ApertureGrille = 1,
+        SlotMask = 2,
+        Triad = 3,
     }
 }

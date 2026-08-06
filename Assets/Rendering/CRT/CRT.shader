@@ -29,6 +29,11 @@ Shader "ProjectAstra/CRT"
         _HalationRadius ("Halation Radius", Range(0, 0.03)) = 0.008
         _HalationThreshold ("Halation Threshold", Range(0, 1)) = 0.5
         _HalationTint ("Halation Tint", Color) = (1, 0.82, 0.7, 1)
+        [Enum(None,0,ApertureGrille,1,SlotMask,2,Triad,3)] _MaskType ("Mask Type", Float) = 1
+        _MaskStrength ("Mask Strength", Range(0, 1)) = 0.15
+        _MaskPitch ("Mask Pitch", Range(2, 12)) = 3
+        _Curvature ("Curvature", Range(0, 0.3)) = 0
+        _VignetteStrength ("Vignette Strength", Range(0, 1)) = 0
     }
 
     HLSLINCLUDE
@@ -49,6 +54,11 @@ Shader "ProjectAstra/CRT"
         float _HalationRadius;
         float _HalationThreshold;
         float4 _HalationTint;
+        float _MaskType;
+        float _MaskStrength;
+        float _MaskPitch;
+        float _Curvature;
+        float _VignetteStrength;
 
         // The analog sweep. Five taps across neighbouring source pixels, Gaussian weighted, so a
         // pixel's light bleeds sideways into its neighbours the way a moving beam's does. This is
@@ -123,11 +133,53 @@ Shader "ProjectAstra/CRT"
             return (sum / 8.0) * _HalationStrength * _HalationTint.rgb;
         }
 
+        // The perforated metal sheet in front of the phosphors, tinting successive columns of
+        // OUTPUT pixels red, green and blue. Deliberately computed in output pixels, not source
+        // pixels: the mask was a physical lattice with no relationship to the incoming signal,
+        // which is exactly why it never lined up with the picture.
+        //
+        // Kept subtle by default. The mask is far less visible to the eye than photographs of
+        // CRTs suggest — a camera resolves individual phosphor dots that you would never pick out
+        // at viewing distance, so tuning against reference photos overstates it badly.
+        half3 PhosphorMask(float2 uv)
+        {
+            if (_MaskType < 0.5 || _MaskStrength <= 0.0) return 1.0;
+
+            float2 pixel = uv * _ScreenParams.xy;
+            float column = floor(pixel.x / max(_MaskPitch, 1.0) * 3.0);
+
+            // A slot mask staggers alternate rows; a triad staggers on a finer vertical beat.
+            float rowsPerStagger = _MaskType > 2.5 ? max(_MaskPitch, 1.0) : max(_MaskPitch, 1.0) * 2.0;
+            float stagger = _MaskType > 1.5 ? floor(pixel.y / rowsPerStagger) : 0.0;
+
+            float phase = fmod(column + stagger, 3.0);
+
+            half3 tint = half3(phase < 0.5, phase >= 0.5 && phase < 1.5, phase >= 1.5);
+            return lerp(1.0, tint * 3.0, _MaskStrength);
+        }
+
+        // Barrel distortion, off by default. The screen-space HUD does not bend with it, so any
+        // real amount of curvature puts a straight-edged panel over a curved world.
+        float2 CurveUv(float2 uv)
+        {
+            if (_Curvature <= 0.0) return uv;
+
+            float2 centred = uv * 2.0 - 1.0;
+            float radiusSquared = dot(centred, centred);
+            centred *= 1.0 + _Curvature * radiusSquared;
+
+            return centred * 0.5 + 0.5;
+        }
+
         half4 FragCrt(Varyings input) : SV_Target
         {
             UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-            float2 uv = input.texcoord;
+            float2 uv = CurveUv(input.texcoord);
+
+            // Curvature pushes the corners off the texture; show the tube's dark surround rather
+            // than a smeared edge pixel.
+            if (any(uv < 0.0) || any(uv > 1.0)) return half4(0, 0, 0, 1);
             float sourcePixelWidth = 1.0 / max(_SourceResolution.x, 1.0);
 
             half3 colour = SweepHorizontally(uv, sourcePixelWidth);
@@ -143,7 +195,17 @@ Shader "ProjectAstra/CRT"
             // glass rather than a brighter pixel.
             colour += Halation(uv);
 
+            // The mask sits between the beam and the eye, so it multiplies whatever light has
+            // already been produced — including the halation glowing through it.
+            colour *= PhosphorMask(uv);
             colour *= _Gain;
+
+            if (_VignetteStrength > 0.0)
+            {
+                float2 centred = uv * 2.0 - 1.0;
+                float falloff = 1.0 - _VignetteStrength * dot(centred, centred) * 0.5;
+                colour *= saturate(falloff);
+            }
 
             return half4(colour, 1.0);
         }
