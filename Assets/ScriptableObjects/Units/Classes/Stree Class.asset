@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0225395c3174e14d8e53b88290daa05, type: 3}
-  m_Name: New ClassDefinition
+  m_Name: Stree Class
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.ClassDefinition
   className: Stree Class
   classType: 0
@@ -18,10 +18,10 @@ MonoBehaviour:
   movementType: 0
   weaponWhitelist: 03000000
   statGrowthModifiers:
-    values: 000000000000000000000000000000000000000000000000000000000000000000000000
+    values: f6ffffff0a0000000a000000140000000a00000000000000000000000000000014000000
   statCaps:
-    values: 000000000000000000000000000000000000000000000000000000000000000000000000
-  hpGainOnLevelUp: 2
+    values: 3c0000001900000019000000190000001900000019000000190000001900000019000000
+  hpGainOnLevelUp: 1
   critBonus: 0
   canPromote: 0
   isPromoted: 0

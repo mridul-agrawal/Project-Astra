@@ -25,7 +25,7 @@ MonoBehaviour:
   weight: 2
   minRange: 1
   maxRange: 1
-  maxUses: 25
+  maxUses: 15
   indestructible: 0
   brave: 0
   effectivenessTargets: 

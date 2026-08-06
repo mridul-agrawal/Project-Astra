@@ -15,3 +15,4 @@ MonoBehaviour:
   loadoutName: Stree_Kit
   items:
   - {fileID: 11400000, guid: 9d6b813e8f3898f478935c545287b6c7, type: 2}
+  - {fileID: 11400000, guid: 5d62457b53db680419fb73cf4a801664, type: 2}
