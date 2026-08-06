@@ -11,7 +11,9 @@ no sandbox scene.
    opening cutscene, which otherwise cost you a minute per iteration.
 2. Press Play from BootScene. You land on the campaign's battle map with the real art and the
    real units.
-3. **1–4** switches variant live, in any state, including mid-selection. **F1** hides the panel.
+3. **F1** brings up the debug panel — it starts hidden so the map is unobstructed, and F1
+   again puts it away. **1–4** switches variant live, in any state including mid-selection,
+   and works whether the panel is showing or not.
 4. Select the profile asset in `Assets/ScriptableObjects/UI/CursorVariants/` and tune it in the
    Inspector **while the game is running**. Everything redraws immediately, including the
    shapes themselves.

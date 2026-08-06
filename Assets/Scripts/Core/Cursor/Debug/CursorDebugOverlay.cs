@@ -20,8 +20,8 @@ namespace ProjectAstra.Core.Cursor.Debugging
         [SerializeField] private GridCursor cursor;
         [SerializeField] private CursorVisualDirector director;
 
-        [Tooltip("Whether the panel is showing when the map loads. The hotkeys work either way.")]
-        [SerializeField] private bool panelVisible = true;
+        [Tooltip("Whether the panel is showing when the map loads. Off by default so the map is unobstructed until you ask for it — press F1 to bring it up. The 1-4 variant hotkeys work whether the panel is showing or not.")]
+        [SerializeField] private bool panelVisible;
 
         private const int PanelWidth = 230;
 

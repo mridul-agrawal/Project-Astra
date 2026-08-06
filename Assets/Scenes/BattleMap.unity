@@ -21519,7 +21519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Cursor.Debugging.CursorDebugOverlay
   cursor: {fileID: 0}
   director: {fileID: 0}
-  panelVisible: 1
+  panelVisible: 0
 --- !u!4 &1312707234
 Transform:
   m_ObjectHideFlags: 0
