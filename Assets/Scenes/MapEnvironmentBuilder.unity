@@ -162,7 +162,8 @@ GameObject:
   - component: {fileID: 26371380}
   - component: {fileID: 26371379}
   - component: {fileID: 26371378}
-  - component: {fileID: 26371377}
+  - component: {fileID: 26371382}
+  - component: {fileID: 26371381}
   m_Layer: 0
   m_Name: tree_green_0 (6)
   m_TagString: Untagged
@@ -170,20 +171,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &26371377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 26371376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &26371378
 Animator:
   serializedVersion: 7
@@ -280,6 +267,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &26371381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26371376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &26371382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 26371376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &31085762
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,6 +307,7 @@ GameObject:
   - component: {fileID: 31085763}
   - component: {fileID: 31085765}
   - component: {fileID: 31085764}
+  - component: {fileID: 31085766}
   m_Layer: 0
   m_Name: flower_yellow_0 (1)
   m_TagString: Untagged
@@ -394,6 +411,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &31085766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31085762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &93400982
 GameObject:
   m_ObjectHideFlags: 0
@@ -405,6 +437,7 @@ GameObject:
   - component: {fileID: 93400985}
   - component: {fileID: 93400984}
   - component: {fileID: 93400983}
+  - component: {fileID: 93400986}
   m_Layer: 0
   m_Name: grass_type01_0 (12)
   m_TagString: Untagged
@@ -508,6 +541,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &93400986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93400982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &95112739
 GameObject:
   m_ObjectHideFlags: 0
@@ -519,6 +567,7 @@ GameObject:
   - component: {fileID: 95112740}
   - component: {fileID: 95112742}
   - component: {fileID: 95112741}
+  - component: {fileID: 95112743}
   m_Layer: 0
   m_Name: flower_purple_0
   m_TagString: Untagged
@@ -622,6 +671,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &95112743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 95112739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &131459337
 GameObject:
   m_ObjectHideFlags: 0
@@ -633,6 +697,7 @@ GameObject:
   - component: {fileID: 131459340}
   - component: {fileID: 131459339}
   - component: {fileID: 131459338}
+  - component: {fileID: 131459341}
   m_Layer: 0
   m_Name: grass_type03_0
   m_TagString: Untagged
@@ -736,6 +801,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &131459341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 131459337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &132451605
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,6 +827,7 @@ GameObject:
   - component: {fileID: 132451606}
   - component: {fileID: 132451608}
   - component: {fileID: 132451607}
+  - component: {fileID: 132451609}
   m_Layer: 0
   m_Name: flower_white_type01_0 (2)
   m_TagString: Untagged
@@ -850,6 +931,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &132451609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 132451605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &142638324
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,7 +957,8 @@ GameObject:
   - component: {fileID: 142638328}
   - component: {fileID: 142638327}
   - component: {fileID: 142638326}
-  - component: {fileID: 142638325}
+  - component: {fileID: 142638330}
+  - component: {fileID: 142638329}
   m_Layer: 0
   m_Name: tree_green_0 (2)
   m_TagString: Untagged
@@ -869,20 +966,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &142638325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142638324}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &142638326
 Animator:
   serializedVersion: 7
@@ -979,6 +1062,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &142638329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142638324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &142638330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 142638324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &163077020
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,7 +1102,8 @@ GameObject:
   - component: {fileID: 163077024}
   - component: {fileID: 163077023}
   - component: {fileID: 163077022}
-  - component: {fileID: 163077021}
+  - component: {fileID: 163077026}
+  - component: {fileID: 163077025}
   m_Layer: 0
   m_Name: tree_green_0 (5)
   m_TagString: Untagged
@@ -998,20 +1111,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &163077021
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 163077020}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &163077022
 Animator:
   serializedVersion: 7
@@ -1108,6 +1207,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &163077025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163077020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &163077026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 163077020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &190426971
 GameObject:
   m_ObjectHideFlags: 0
@@ -1245,6 +1373,7 @@ GameObject:
   - component: {fileID: 263488852}
   - component: {fileID: 263488851}
   - component: {fileID: 263488850}
+  - component: {fileID: 263488853}
   m_Layer: 0
   m_Name: grass_type04_0 (5)
   m_TagString: Untagged
@@ -1348,6 +1477,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &263488853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263488849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &267855418
 GameObject:
   m_ObjectHideFlags: 0
@@ -1359,7 +1503,8 @@ GameObject:
   - component: {fileID: 267855422}
   - component: {fileID: 267855421}
   - component: {fileID: 267855420}
-  - component: {fileID: 267855419}
+  - component: {fileID: 267855424}
+  - component: {fileID: 267855423}
   m_Layer: 0
   m_Name: tree_red_0 (1)
   m_TagString: Untagged
@@ -1367,20 +1512,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &267855419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 267855418}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &267855420
 Animator:
   serializedVersion: 7
@@ -1477,6 +1608,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &267855423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267855418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &267855424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267855418}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &300063043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1488,6 +1648,7 @@ GameObject:
   - component: {fileID: 300063046}
   - component: {fileID: 300063045}
   - component: {fileID: 300063044}
+  - component: {fileID: 300063047}
   m_Layer: 0
   m_Name: grass_type01_0 (7)
   m_TagString: Untagged
@@ -1591,6 +1752,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &300063047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300063043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &313469380
 GameObject:
   m_ObjectHideFlags: 0
@@ -1602,6 +1778,7 @@ GameObject:
   - component: {fileID: 313469383}
   - component: {fileID: 313469382}
   - component: {fileID: 313469381}
+  - component: {fileID: 313469385}
   - component: {fileID: 313469384}
   m_Layer: 0
   m_Name: tree_green_0 (1)
@@ -1715,6 +1892,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 313469380}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &313469385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313469380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
@@ -1731,6 +1923,7 @@ GameObject:
   - component: {fileID: 347065712}
   - component: {fileID: 347065711}
   - component: {fileID: 347065710}
+  - component: {fileID: 347065713}
   m_Layer: 0
   m_Name: grass_type01_0 (5)
   m_TagString: Untagged
@@ -1834,6 +2027,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &347065713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 347065709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &361222878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1845,6 +2053,7 @@ GameObject:
   - component: {fileID: 361222881}
   - component: {fileID: 361222880}
   - component: {fileID: 361222879}
+  - component: {fileID: 361222882}
   m_Layer: 0
   m_Name: grass_type02_0 (9)
   m_TagString: Untagged
@@ -1948,6 +2157,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &361222882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361222878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &426081235
 GameObject:
   m_ObjectHideFlags: 0
@@ -1959,6 +2183,7 @@ GameObject:
   - component: {fileID: 426081236}
   - component: {fileID: 426081238}
   - component: {fileID: 426081237}
+  - component: {fileID: 426081239}
   m_Layer: 0
   m_Name: flower_white_type02_0
   m_TagString: Untagged
@@ -2062,6 +2287,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &426081239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 426081235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &438907236
 GameObject:
   m_ObjectHideFlags: 0
@@ -2073,7 +2313,8 @@ GameObject:
   - component: {fileID: 438907240}
   - component: {fileID: 438907239}
   - component: {fileID: 438907238}
-  - component: {fileID: 438907237}
+  - component: {fileID: 438907242}
+  - component: {fileID: 438907241}
   m_Layer: 0
   m_Name: tree_green_0 (3)
   m_TagString: Untagged
@@ -2081,20 +2322,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &438907237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 438907236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &438907238
 Animator:
   serializedVersion: 7
@@ -2191,6 +2418,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &438907241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438907236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &438907242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438907236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &445620288
 GameObject:
   m_ObjectHideFlags: 0
@@ -2325,6 +2581,7 @@ GameObject:
   - component: {fileID: 453098851}
   - component: {fileID: 453098850}
   - component: {fileID: 453098849}
+  - component: {fileID: 453098852}
   m_Layer: 0
   m_Name: grass_type04_0 (6)
   m_TagString: Untagged
@@ -2428,6 +2685,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &453098852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453098848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &493842257
 GameObject:
   m_ObjectHideFlags: 0
@@ -2439,6 +2711,7 @@ GameObject:
   - component: {fileID: 493842260}
   - component: {fileID: 493842259}
   - component: {fileID: 493842258}
+  - component: {fileID: 493842261}
   m_Layer: 0
   m_Name: grass_type01_0 (11)
   m_TagString: Untagged
@@ -2542,6 +2815,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &493842261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493842257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &515756635
 GameObject:
   m_ObjectHideFlags: 0
@@ -2553,6 +2841,7 @@ GameObject:
   - component: {fileID: 515756638}
   - component: {fileID: 515756637}
   - component: {fileID: 515756636}
+  - component: {fileID: 515756639}
   m_Layer: 0
   m_Name: grass_type04_0 (1)
   m_TagString: Untagged
@@ -2656,6 +2945,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &515756639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515756635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &525565455
 GameObject:
   m_ObjectHideFlags: 0
@@ -2667,6 +2971,7 @@ GameObject:
   - component: {fileID: 525565458}
   - component: {fileID: 525565457}
   - component: {fileID: 525565456}
+  - component: {fileID: 525565460}
   - component: {fileID: 525565459}
   m_Layer: 0
   m_Name: tree_green_0
@@ -2772,6 +3077,21 @@ Transform:
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &525565459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525565455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &525565460
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2887,6 +3207,7 @@ GameObject:
   - component: {fileID: 538601509}
   - component: {fileID: 538601508}
   - component: {fileID: 538601507}
+  - component: {fileID: 538601510}
   m_Layer: 0
   m_Name: grass_type02_0 (1)
   m_TagString: Untagged
@@ -2990,6 +3311,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &538601510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 538601506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &594805781
 GameObject:
   m_ObjectHideFlags: 0
@@ -3001,6 +3337,7 @@ GameObject:
   - component: {fileID: 594805784}
   - component: {fileID: 594805783}
   - component: {fileID: 594805782}
+  - component: {fileID: 594805785}
   m_Layer: 0
   m_Name: grass_type04_0 (3)
   m_TagString: Untagged
@@ -3104,6 +3441,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &594805785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 594805781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &619008461
 GameObject:
   m_ObjectHideFlags: 0
@@ -3115,7 +3467,8 @@ GameObject:
   - component: {fileID: 619008465}
   - component: {fileID: 619008464}
   - component: {fileID: 619008463}
-  - component: {fileID: 619008462}
+  - component: {fileID: 619008467}
+  - component: {fileID: 619008466}
   m_Layer: 0
   m_Name: tree_yellow_0 (3)
   m_TagString: Untagged
@@ -3123,20 +3476,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &619008462
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 619008461}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &619008463
 Animator:
   serializedVersion: 7
@@ -3233,6 +3572,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &619008466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619008461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &619008467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619008461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &621808258
 GameObject:
   m_ObjectHideFlags: 0
@@ -3244,7 +3612,8 @@ GameObject:
   - component: {fileID: 621808262}
   - component: {fileID: 621808261}
   - component: {fileID: 621808260}
-  - component: {fileID: 621808259}
+  - component: {fileID: 621808264}
+  - component: {fileID: 621808263}
   m_Layer: 0
   m_Name: tree_yellow_0 (1)
   m_TagString: Untagged
@@ -3252,20 +3621,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &621808259
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 621808258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &621808260
 Animator:
   serializedVersion: 7
@@ -3362,6 +3717,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &621808263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621808258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &621808264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621808258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &713647654
 GameObject:
   m_ObjectHideFlags: 0
@@ -3412,7 +3796,8 @@ GameObject:
   - component: {fileID: 752423991}
   - component: {fileID: 752423990}
   - component: {fileID: 752423989}
-  - component: {fileID: 752423988}
+  - component: {fileID: 752423993}
+  - component: {fileID: 752423992}
   m_Layer: 0
   m_Name: tree_green_0 (4)
   m_TagString: Untagged
@@ -3420,20 +3805,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &752423988
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752423987}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &752423989
 Animator:
   serializedVersion: 7
@@ -3530,6 +3901,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &752423992
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752423987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &752423993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752423987}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &755397393
 GameObject:
   m_ObjectHideFlags: 0
@@ -3541,6 +3941,7 @@ GameObject:
   - component: {fileID: 755397394}
   - component: {fileID: 755397396}
   - component: {fileID: 755397395}
+  - component: {fileID: 755397397}
   m_Layer: 0
   m_Name: flower_yellow_0 (2)
   m_TagString: Untagged
@@ -3644,6 +4045,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &755397397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755397393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &862587941
 GameObject:
   m_ObjectHideFlags: 0
@@ -3655,6 +4071,7 @@ GameObject:
   - component: {fileID: 862587942}
   - component: {fileID: 862587944}
   - component: {fileID: 862587943}
+  - component: {fileID: 862587945}
   m_Layer: 0
   m_Name: flower_yellow_0
   m_TagString: Untagged
@@ -3758,6 +4175,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &862587945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862587941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &865292865
 GameObject:
   m_ObjectHideFlags: 0
@@ -3813,6 +4245,7 @@ GameObject:
   - component: {fileID: 881433131}
   - component: {fileID: 881433130}
   - component: {fileID: 881433129}
+  - component: {fileID: 881433132}
   m_Layer: 0
   m_Name: grass_type04_0 (8)
   m_TagString: Untagged
@@ -3916,6 +4349,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &881433132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 881433128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &889735078
 GameObject:
   m_ObjectHideFlags: 0
@@ -3927,6 +4375,7 @@ GameObject:
   - component: {fileID: 889735081}
   - component: {fileID: 889735080}
   - component: {fileID: 889735079}
+  - component: {fileID: 889735082}
   m_Layer: 0
   m_Name: grass_type04_0 (2)
   m_TagString: Untagged
@@ -4030,6 +4479,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &889735082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889735078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &889970311
 GameObject:
   m_ObjectHideFlags: 0
@@ -4041,6 +4505,7 @@ GameObject:
   - component: {fileID: 889970314}
   - component: {fileID: 889970313}
   - component: {fileID: 889970312}
+  - component: {fileID: 889970316}
   - component: {fileID: 889970315}
   m_Layer: 0
   m_Name: tree_red_0
@@ -4154,6 +4619,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 889970311}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &889970316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889970311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
@@ -4170,6 +4650,7 @@ GameObject:
   - component: {fileID: 900575153}
   - component: {fileID: 900575152}
   - component: {fileID: 900575151}
+  - component: {fileID: 900575154}
   m_Layer: 0
   m_Name: grass_type01_0 (14)
   m_TagString: Untagged
@@ -4273,6 +4754,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &900575154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900575150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &933363943
 GameObject:
   m_ObjectHideFlags: 0
@@ -4284,6 +4780,7 @@ GameObject:
   - component: {fileID: 933363944}
   - component: {fileID: 933363946}
   - component: {fileID: 933363945}
+  - component: {fileID: 933363947}
   m_Layer: 0
   m_Name: flower_white_type01_0
   m_TagString: Untagged
@@ -4387,6 +4884,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &933363947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933363943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &945272729
 GameObject:
   m_ObjectHideFlags: 0
@@ -4451,7 +4963,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 877b40e60a48aff4c981b663ea063a0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.RandomIntervalTrigger
-  intervalRange: {x: 5, y: 10}
+  intervalRange: {x: 2, y: 10}
   useUnscaledTime: 0
   animator: {fileID: 945605234}
   animatorTrigger: Fall
@@ -4580,6 +5092,7 @@ GameObject:
   - component: {fileID: 957623878}
   - component: {fileID: 957623877}
   - component: {fileID: 957623876}
+  - component: {fileID: 957623879}
   m_Layer: 0
   m_Name: grass_type02_0
   m_TagString: Untagged
@@ -4683,6 +5196,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &957623879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957623875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &959125903
 GameObject:
   m_ObjectHideFlags: 0
@@ -4694,6 +5222,7 @@ GameObject:
   - component: {fileID: 959125906}
   - component: {fileID: 959125905}
   - component: {fileID: 959125904}
+  - component: {fileID: 959125907}
   m_Layer: 0
   m_Name: grass_type01_0 (3)
   m_TagString: Untagged
@@ -4797,6 +5326,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &959125907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959125903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &999975872
 GameObject:
   m_ObjectHideFlags: 0
@@ -4924,9 +5468,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
-  speed: 2
-  randomize: 0
-  speedRange: {x: 0.8, y: 1.2}
+  speed: 1
+  randomize: 1
+  speedRange: {x: 1, y: 1.5}
 --- !u!1 &1004945232
 GameObject:
   m_ObjectHideFlags: 0
@@ -4938,6 +5482,7 @@ GameObject:
   - component: {fileID: 1004945235}
   - component: {fileID: 1004945234}
   - component: {fileID: 1004945233}
+  - component: {fileID: 1004945236}
   m_Layer: 0
   m_Name: grass_type01_0
   m_TagString: Untagged
@@ -5041,6 +5586,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1004945236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1004945232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1019649170
 GameObject:
   m_ObjectHideFlags: 0
@@ -5052,7 +5612,8 @@ GameObject:
   - component: {fileID: 1019649174}
   - component: {fileID: 1019649173}
   - component: {fileID: 1019649172}
-  - component: {fileID: 1019649171}
+  - component: {fileID: 1019649176}
+  - component: {fileID: 1019649175}
   m_Layer: 0
   m_Name: tree_yellow_0 (2)
   m_TagString: Untagged
@@ -5060,20 +5621,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1019649171
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1019649170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
-  maxStartOffset: 1
-  useUnscaledTime: 0
 --- !u!95 &1019649172
 Animator:
   serializedVersion: 7
@@ -5170,6 +5717,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 865292866}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1019649175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019649170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &1019649176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019649170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
+  maxStartOffset: 1
+  useUnscaledTime: 0
 --- !u!1 &1026751686
 GameObject:
   m_ObjectHideFlags: 0
@@ -5181,6 +5757,7 @@ GameObject:
   - component: {fileID: 1026751689}
   - component: {fileID: 1026751688}
   - component: {fileID: 1026751687}
+  - component: {fileID: 1026751690}
   m_Layer: 0
   m_Name: grass_type02_0 (8)
   m_TagString: Untagged
@@ -5284,6 +5861,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1026751690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026751686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1037661029
 GameObject:
   m_ObjectHideFlags: 0
@@ -5295,6 +5887,7 @@ GameObject:
   - component: {fileID: 1037661032}
   - component: {fileID: 1037661031}
   - component: {fileID: 1037661030}
+  - component: {fileID: 1037661033}
   m_Layer: 0
   m_Name: grass_type03_0 (4)
   m_TagString: Untagged
@@ -5398,6 +5991,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1037661033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1037661029}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1047905854
 GameObject:
   m_ObjectHideFlags: 0
@@ -5644,6 +6252,7 @@ GameObject:
   - component: {fileID: 1128201162}
   - component: {fileID: 1128201161}
   - component: {fileID: 1128201160}
+  - component: {fileID: 1128201163}
   m_Layer: 0
   m_Name: grass_type02_0 (7)
   m_TagString: Untagged
@@ -5747,6 +6356,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1128201163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128201159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1149300141
 GameObject:
   m_ObjectHideFlags: 0
@@ -5758,6 +6382,7 @@ GameObject:
   - component: {fileID: 1149300144}
   - component: {fileID: 1149300143}
   - component: {fileID: 1149300142}
+  - component: {fileID: 1149300145}
   m_Layer: 0
   m_Name: grass_type02_0 (5)
   m_TagString: Untagged
@@ -5861,6 +6486,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1149300145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149300141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1172792205
 GameObject:
   m_ObjectHideFlags: 0
@@ -5872,6 +6512,7 @@ GameObject:
   - component: {fileID: 1172792208}
   - component: {fileID: 1172792207}
   - component: {fileID: 1172792206}
+  - component: {fileID: 1172792209}
   m_Layer: 0
   m_Name: grass_type01_0 (10)
   m_TagString: Untagged
@@ -5975,6 +6616,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1172792209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172792205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1206299460
 GameObject:
   m_ObjectHideFlags: 0
@@ -5986,6 +6642,7 @@ GameObject:
   - component: {fileID: 1206299461}
   - component: {fileID: 1206299463}
   - component: {fileID: 1206299462}
+  - component: {fileID: 1206299464}
   m_Layer: 0
   m_Name: River
   m_TagString: Untagged
@@ -6089,6 +6746,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1206299464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206299460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.75
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1238157671
 GameObject:
   m_ObjectHideFlags: 0
@@ -6100,6 +6772,7 @@ GameObject:
   - component: {fileID: 1238157674}
   - component: {fileID: 1238157673}
   - component: {fileID: 1238157672}
+  - component: {fileID: 1238157675}
   m_Layer: 0
   m_Name: grass_type04_0
   m_TagString: Untagged
@@ -6203,6 +6876,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1238157675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238157671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1251682535
 GameObject:
   m_ObjectHideFlags: 0
@@ -6214,6 +6902,7 @@ GameObject:
   - component: {fileID: 1251682538}
   - component: {fileID: 1251682537}
   - component: {fileID: 1251682536}
+  - component: {fileID: 1251682539}
   m_Layer: 0
   m_Name: grass_type03_0 (5)
   m_TagString: Untagged
@@ -6317,6 +7006,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1251682539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1251682535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1292255631
 GameObject:
   m_ObjectHideFlags: 0
@@ -6328,6 +7032,7 @@ GameObject:
   - component: {fileID: 1292255634}
   - component: {fileID: 1292255633}
   - component: {fileID: 1292255632}
+  - component: {fileID: 1292255635}
   m_Layer: 0
   m_Name: grass_type03_0 (3)
   m_TagString: Untagged
@@ -6431,6 +7136,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1292255635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292255631}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1323828804
 GameObject:
   m_ObjectHideFlags: 0
@@ -6512,7 +7232,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 877b40e60a48aff4c981b663ea063a0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.RandomIntervalTrigger
-  intervalRange: {x: 5, y: 10}
+  intervalRange: {x: 2, y: 10}
   useUnscaledTime: 0
   animator: {fileID: 1384190520}
   animatorTrigger: Fall
@@ -6627,6 +7347,7 @@ GameObject:
   - component: {fileID: 1392865125}
   - component: {fileID: 1392865124}
   - component: {fileID: 1392865123}
+  - component: {fileID: 1392865126}
   m_Layer: 0
   m_Name: grass_type01_0 (2)
   m_TagString: Untagged
@@ -6730,6 +7451,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1392865126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392865122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1414145391
 GameObject:
   m_ObjectHideFlags: 0
@@ -6741,6 +7477,7 @@ GameObject:
   - component: {fileID: 1414145392}
   - component: {fileID: 1414145394}
   - component: {fileID: 1414145393}
+  - component: {fileID: 1414145395}
   m_Layer: 0
   m_Name: flower_white_type01_0 (1)
   m_TagString: Untagged
@@ -6844,6 +7581,21 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!114 &1414145395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1414145391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 1
+  speedRange: {x: 0.4, y: 0.6}
 --- !u!1 &1455303630
 GameObject:
   m_ObjectHideFlags: 0
@@ -6946,6 +7698,7 @@ GameObject:
   - component: {fileID: 1512756223}
   - component: {fileID: 1512756222}
   - component: {fileID: 1512756221}
+  - component: {fileID: 1512756224}
   m_Layer: 0
   m_Name: grass_type02_0 (3)
   m_TagString: Untagged
@@ -7049,6 +7802,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1512756224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1512756220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1524674242
 GameObject:
   m_ObjectHideFlags: 0
@@ -7169,7 +7937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 877b40e60a48aff4c981b663ea063a0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.RandomIntervalTrigger
-  intervalRange: {x: 5, y: 10}
+  intervalRange: {x: 2, y: 10}
   useUnscaledTime: 0
   animator: {fileID: 1603514210}
   animatorTrigger: Fall
@@ -7284,6 +8052,7 @@ GameObject:
   - component: {fileID: 1647197884}
   - component: {fileID: 1647197883}
   - component: {fileID: 1647197882}
+  - component: {fileID: 1647197885}
   m_Layer: 0
   m_Name: grass_type03_0 (2)
   m_TagString: Untagged
@@ -7387,6 +8156,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1647197885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647197881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1664359532
 GameObject:
   m_ObjectHideFlags: 0
@@ -7398,6 +8182,7 @@ GameObject:
   - component: {fileID: 1664359535}
   - component: {fileID: 1664359534}
   - component: {fileID: 1664359533}
+  - component: {fileID: 1664359536}
   m_Layer: 0
   m_Name: grass_type02_0 (2)
   m_TagString: Untagged
@@ -7501,6 +8286,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1664359536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664359532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1693642279
 GameObject:
   m_ObjectHideFlags: 0
@@ -7677,6 +8477,7 @@ GameObject:
   - component: {fileID: 1760209845}
   - component: {fileID: 1760209844}
   - component: {fileID: 1760209843}
+  - component: {fileID: 1760209846}
   m_Layer: 0
   m_Name: grass_type01_0 (15)
   m_TagString: Untagged
@@ -7780,6 +8581,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1760209846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760209842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1806110785
 GameObject:
   m_ObjectHideFlags: 0
@@ -7791,6 +8607,7 @@ GameObject:
   - component: {fileID: 1806110787}
   - component: {fileID: 1806110786}
   - component: {fileID: 1806110788}
+  - component: {fileID: 1806110790}
   - component: {fileID: 1806110789}
   m_Layer: 0
   m_Name: tree_yellow_0
@@ -7904,6 +8721,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1806110785}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
+--- !u!114 &1806110790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1806110785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41c0e95864853ed4cae9073d1dcc7cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Animation.AmbientAnimator
@@ -7920,6 +8752,7 @@ GameObject:
   - component: {fileID: 1810429985}
   - component: {fileID: 1810429984}
   - component: {fileID: 1810429983}
+  - component: {fileID: 1810429986}
   m_Layer: 0
   m_Name: grass_type02_0 (10)
   m_TagString: Untagged
@@ -8023,6 +8856,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1810429986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810429982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1833377645
 GameObject:
   m_ObjectHideFlags: 0
@@ -8034,6 +8882,7 @@ GameObject:
   - component: {fileID: 1833377648}
   - component: {fileID: 1833377647}
   - component: {fileID: 1833377646}
+  - component: {fileID: 1833377649}
   m_Layer: 0
   m_Name: grass_type01_0 (4)
   m_TagString: Untagged
@@ -8137,6 +8986,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1833377649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833377645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1846536587
 GameObject:
   m_ObjectHideFlags: 0
@@ -8148,6 +9012,7 @@ GameObject:
   - component: {fileID: 1846536590}
   - component: {fileID: 1846536589}
   - component: {fileID: 1846536588}
+  - component: {fileID: 1846536591}
   m_Layer: 0
   m_Name: grass_type01_0 (1)
   m_TagString: Untagged
@@ -8251,6 +9116,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1846536591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846536587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1853812023
 GameObject:
   m_ObjectHideFlags: 0
@@ -8262,6 +9142,7 @@ GameObject:
   - component: {fileID: 1853812026}
   - component: {fileID: 1853812025}
   - component: {fileID: 1853812024}
+  - component: {fileID: 1853812027}
   m_Layer: 0
   m_Name: grass_type02_0 (4)
   m_TagString: Untagged
@@ -8365,6 +9246,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1853812027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1853812023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1859079658
 GameObject:
   m_ObjectHideFlags: 0
@@ -8513,6 +9409,7 @@ GameObject:
   - component: {fileID: 1866126265}
   - component: {fileID: 1866126264}
   - component: {fileID: 1866126263}
+  - component: {fileID: 1866126266}
   m_Layer: 0
   m_Name: grass_type02_0 (6)
   m_TagString: Untagged
@@ -8616,6 +9513,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1866126266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1866126262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1869052921
 GameObject:
   m_ObjectHideFlags: 0
@@ -8627,6 +9539,7 @@ GameObject:
   - component: {fileID: 1869052924}
   - component: {fileID: 1869052923}
   - component: {fileID: 1869052922}
+  - component: {fileID: 1869052925}
   m_Layer: 0
   m_Name: grass_type01_0 (6)
   m_TagString: Untagged
@@ -8730,6 +9643,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1869052925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1869052921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1910631947
 GameObject:
   m_ObjectHideFlags: 0
@@ -8741,6 +9669,7 @@ GameObject:
   - component: {fileID: 1910631950}
   - component: {fileID: 1910631949}
   - component: {fileID: 1910631948}
+  - component: {fileID: 1910631951}
   m_Layer: 0
   m_Name: grass_type03_0 (1)
   m_TagString: Untagged
@@ -8844,6 +9773,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1910631951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1910631947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1937045514
 GameObject:
   m_ObjectHideFlags: 0
@@ -8855,6 +9799,7 @@ GameObject:
   - component: {fileID: 1937045517}
   - component: {fileID: 1937045516}
   - component: {fileID: 1937045515}
+  - component: {fileID: 1937045518}
   m_Layer: 0
   m_Name: grass_type04_0 (7)
   m_TagString: Untagged
@@ -8958,6 +9903,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1937045518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1937045514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1983447563
 GameObject:
   m_ObjectHideFlags: 0
@@ -8969,6 +9929,7 @@ GameObject:
   - component: {fileID: 1983447566}
   - component: {fileID: 1983447565}
   - component: {fileID: 1983447564}
+  - component: {fileID: 1983447567}
   m_Layer: 0
   m_Name: grass_type01_0 (13)
   m_TagString: Untagged
@@ -9072,6 +10033,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1983447567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983447563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &1997805141
 GameObject:
   m_ObjectHideFlags: 0
@@ -9083,6 +10059,7 @@ GameObject:
   - component: {fileID: 1997805144}
   - component: {fileID: 1997805143}
   - component: {fileID: 1997805142}
+  - component: {fileID: 1997805145}
   m_Layer: 0
   m_Name: grass_type04_0 (4)
   m_TagString: Untagged
@@ -9186,6 +10163,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1997805145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997805141}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &2006021383
 GameObject:
   m_ObjectHideFlags: 0
@@ -9197,6 +10189,7 @@ GameObject:
   - component: {fileID: 2006021386}
   - component: {fileID: 2006021385}
   - component: {fileID: 2006021384}
+  - component: {fileID: 2006021387}
   m_Layer: 0
   m_Name: grass_type01_0 (8)
   m_TagString: Untagged
@@ -9273,7 +10266,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 3
   m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 730335131, guid: 7943bf7ce7ae88749949a0e7f3939523, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -9294,12 +10287,27 @@ Transform:
   m_GameObject: {fileID: 2006021383}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14.13, y: 3.5, z: 0}
+  m_LocalPosition: {x: 14.117, y: 3.54, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2006021387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2006021383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &2023803461
 GameObject:
   m_ObjectHideFlags: 0
@@ -9311,6 +10319,7 @@ GameObject:
   - component: {fileID: 2023803464}
   - component: {fileID: 2023803463}
   - component: {fileID: 2023803462}
+  - component: {fileID: 2023803465}
   m_Layer: 0
   m_Name: grass_type02_0 (11)
   m_TagString: Untagged
@@ -9414,6 +10423,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2023803465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023803461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &2070943840
 GameObject:
   m_ObjectHideFlags: 0
@@ -9425,6 +10449,7 @@ GameObject:
   - component: {fileID: 2070943843}
   - component: {fileID: 2070943842}
   - component: {fileID: 2070943841}
+  - component: {fileID: 2070943844}
   m_Layer: 0
   m_Name: grass_type01_0 (9)
   m_TagString: Untagged
@@ -9528,6 +10553,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1524674243}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2070943844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2070943840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2779d408ca648f48afb29c24d4f32bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.AnimatorSpeed
+  speed: 0.5
+  randomize: 0
+  speedRange: {x: 0.8, y: 1.2}
 --- !u!1 &2096966391
 GameObject:
   m_ObjectHideFlags: 0
@@ -9665,7 +10705,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 877b40e60a48aff4c981b663ea063a0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Environment.RandomIntervalTrigger
-  intervalRange: {x: 5, y: 10}
+  intervalRange: {x: 2, y: 10}
   useUnscaledTime: 0
   animator: {fileID: 2121788073}
   animatorTrigger: Fall
