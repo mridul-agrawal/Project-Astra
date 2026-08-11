@@ -22,6 +22,9 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public void HandlePhaseStarted(BattlePhase phase, Vector2Int pos, HudCorner corner) => UpdateUnitCardView(pos, corner);
 
 
+        // Deliberate deviation from spec §2 ("reflects the unit under the cursor in every
+        // state"): the cursor only moves on the player's turn, and TileInfoController guards
+        // the same way, so the two panels stay consistent.
         private void UpdateUnitCardView(Vector2Int pos, HudCorner corner)
         {
             if (!IsPlayerPhase)
@@ -36,7 +39,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private UnitCardModel BuildModel(Vector2Int pos)
         {
-            TestUnit unit = TurnManager.Instance.UnitRegistry.GetUnitAt(pos);
+            TestUnit unit = TurnManager.Instance?.UnitRegistry?.GetUnitAt(pos);
             UnitInstance unitInstance = unit?.UnitInstance;
 
             if (unit == null)
@@ -50,16 +53,13 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
                 UnitExp = unitInstance != null ? unitInstance.CurrentEXP : 0,
                 CurrentHP = unitInstance != null ? unitInstance.CurrentHP : unit.currentHP,
                 MaxHP = unitInstance != null ? unitInstance.MaxHP : unit.maxHP,
-                UnitFaction = unit.faction
+                UnitFaction = unit.faction,
+                HasActed = unit.hasActed
             };
         }
 
-        private bool IsPlayerPhase
-        {
-            get
-            {
-                return TurnManager.Instance.CurrentPhase == BattlePhase.PlayerPhase;
-            }
-        }
+        private bool IsPlayerPhase =>
+            TurnManager.Instance != null &&
+            TurnManager.Instance.CurrentPhase == BattlePhase.PlayerPhase;
     }
 }

@@ -1,7 +1,5 @@
-using Codice.Client.BaseCommands;
 using ProjectAstra.Core.Units;
 using UnityEngine;
-using static UnityEngine.UI.CanvasScaler;
 
 namespace ProjectAstra.Core.UI.BattleMap.HUD
 {
@@ -16,5 +14,8 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public float HpFraction => MaxHP > 0 ? (float)CurrentHP / MaxHP : 0f;
         public Faction UnitFaction;
         public HudCorner Corner;
+
+        // Greys the card out to match the on-map frozen grammar (spec §9).
+        public bool HasActed;
     }
 }

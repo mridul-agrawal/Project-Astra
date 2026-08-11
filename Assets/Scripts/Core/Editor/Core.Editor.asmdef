@@ -6,7 +6,8 @@
         "Unity.TextMeshPro",
         "Unity.InputSystem",
         "Unity.Recorder.Editor",
-        "Unity.2D.Sprite.Editor"
+        "Unity.2D.Sprite.Editor",
+        "MPUIKit"
     ],
     "includePlatforms": [
         "Editor"
