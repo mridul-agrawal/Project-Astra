@@ -143,12 +143,30 @@ namespace ProjectAstra.EditorTools
             StylePortraitBorder(view, frame);
         }
 
+        // Drawn as a hollow stroke rather than an outline. An outline is modulated by the
+        // graphic's own alpha, so an outlined-but-transparent square renders nothing at all;
+        // a stroke draws the ring in the graphic colour and leaves the middle empty, which is
+        // what a frame around the portrait needs. Radius 0 keeps it square per §5.
         static void StylePortraitBorder(UnitCardView view, RectTransform frame)
         {
-            var border = EnsureChildImage(view.Root, "PortraitBorder", frame.GetSiblingIndex() + 1);
+            var placeholder = EnsureChildImage(view.Root, "PortraitBorder", frame.GetSiblingIndex() + 1);
+            var border = EnsureMpImage(placeholder.gameObject);
+
             PlacePortraitBox(Rect(border.gameObject));
-            border.color = Color.clear;
-            SetOutline(border, Sc(1f), Border);
+            border.color = Border;
+            border.raycastTarget = false;
+            SetCornerRadius(border, 0f);
+            SetStroke(border, Sc(1f));
+            SetOutline(border, 0f, Color.clear);
+        }
+
+        static void SetStroke(Image image, float width)
+        {
+            if (!(image is MPImage procedural)) return;
+
+            procedural.StrokeWidth = width;
+            procedural.SetAllDirty();
+            EditorUtility.SetDirty(procedural);
         }
 
         static void PlacePortraitBox(RectTransform rect)
