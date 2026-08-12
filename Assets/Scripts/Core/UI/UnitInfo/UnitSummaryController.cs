@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Stats;
 using ProjectAstra.Core.Units;
@@ -33,7 +34,19 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 ExpFraction = unitInstance != null ? Mathf.Clamp01((float)unitInstance.CurrentEXP / UnitInstance.ExpPerLevel) : 0f,
                 ShowStatus = stressed,
                 StatusText = stressed ? "STRESSED" : "",
+                Statuses = BuildStatuses(stressed),
+                IsActed  = unit != null && unit.hasActed && unit.faction != Faction.Enemy,
+                IsEnemy  = unit != null && unit.faction == Faction.Enemy,
             };
+        }
+
+        // Stress is the only status the game tracks today. The §2 chip row holds four, so the
+        // rest fill in on their own once there is a status system to read.
+        private static List<UnitStatusKind> BuildStatuses(bool stressed)
+        {
+            var statuses = new List<UnitStatusKind>();
+            if (stressed) statuses.Add(UnitStatusKind.Stressed);
+            return statuses;
         }
 
         // "MAX" at the promoted cap; "--" for an unpromoted unit stuck at level 20.

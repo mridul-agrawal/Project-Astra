@@ -9,5 +9,6 @@ namespace ProjectAstra.Core.UI.UnitInfo
         public Sprite Icon;
         public string Title;
         public string Description;
+        public string Detail;           // §7 line two — the longer explanation under the summary
     }
 }

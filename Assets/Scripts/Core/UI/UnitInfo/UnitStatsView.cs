@@ -17,6 +17,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
             public TextMeshProUGUI Cap;
             public Image Fill;
             public GameObject Highlight;
+            public RectTransform RowRoot;       // what the §8 focus marker sizes itself to
         }
 
         [Header("Tab root")]
@@ -28,6 +29,7 @@ namespace ProjectAstra.Core.UI.UnitInfo
         public TextMeshProUGUI WeaponTypeLabel;
         public Image WeaponIcon;
         public TextMeshProUGUI Mt, Hit, Crt, Rng;
+        public GameObject WeaponHighlight;      // §5 makes the card the first focus stop
 
         [Header("Stat rows (STR…MOVE, 9)")]
         public StatRowWidgets[] Rows;
@@ -43,11 +45,31 @@ namespace ProjectAstra.Core.UI.UnitInfo
                 RenderRow(Rows[i], m.Rows[i]);
         }
 
+        // A row index of -1 means focus is parked on the weapon card instead.
         public void SetSelected(int index)
         {
             if (Rows == null) return;
             for (int i = 0; i < Rows.Length; i++)
                 if (Rows[i].Highlight != null) Rows[i].Highlight.SetActive(i == index);
+        }
+
+        public void SetWeaponSelected(bool selected)
+        {
+            if (WeaponHighlight != null) WeaponHighlight.SetActive(selected);
+        }
+
+        public RectTransform WeaponFocusRect =>
+            WeaponPanel != null ? WeaponPanel.GetComponent<RectTransform>() : null;
+
+        public RectTransform FocusRectFor(int index) =>
+            Rows != null && index >= 0 && index < Rows.Length ? Rows[index].RowRoot : null;
+
+        // §8 flips the focused row's label to white and leaves the rest muted.
+        public void ApplyLabelEmphasis(int index, Color focused, Color resting)
+        {
+            if (Rows == null) return;
+            for (int i = 0; i < Rows.Length; i++)
+                if (Rows[i].Label != null) Rows[i].Label.color = i == index ? focused : resting;
         }
 
         private void RenderWeapon(EquippedWeaponVM w)

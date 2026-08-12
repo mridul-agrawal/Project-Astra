@@ -33,7 +33,45 @@ namespace ProjectAstra.Core.UI.UnitInfo
         {
             if (Model == null || Model.Rows == null || index < 0 || index >= Model.Rows.Length) return null;
             var r = Model.Rows[index];
-            return new UnitInfoFooterModel { Icon = r.Icon, Title = r.Label, Description = r.Description };
+            return new UnitInfoFooterModel
+            {
+                Icon = r.Icon,
+                Title = r.Label,
+                Description = FirstSentence(r.Description),
+                Detail = AfterFirstSentence(r.Description),
+            };
+        }
+
+        // §5 makes the weapon card a focus stop, so it needs footer copy of its own.
+        public UnitInfoFooterModel WeaponFooter()
+        {
+            var w = Model != null ? Model.Weapon : null;
+            if (w == null || !w.HasWeapon)
+                return new UnitInfoFooterModel { Title = "NO WEAPON", Description = "Nothing is equipped." };
+
+            return new UnitInfoFooterModel
+            {
+                Icon = w.Sigil,
+                Title = w.Name.ToUpper(),
+                Description = $"Equipped {w.WeaponType.ToString().ToLower()}, range {w.RangeText}.",
+                Detail = $"Might {w.Mt} · Hit {w.Hit} · Crit {w.Crt}.",
+            };
+        }
+
+        // The stat copy is already written as a short claim followed by the longer explanation,
+        // which is exactly the two lines §7 asks for - so it is split rather than rewritten.
+        private static string FirstSentence(string description)
+        {
+            if (string.IsNullOrEmpty(description)) return "";
+            int stop = description.IndexOf('.');
+            return stop < 0 ? description : description.Substring(0, stop + 1);
+        }
+
+        private static string AfterFirstSentence(string description)
+        {
+            if (string.IsNullOrEmpty(description)) return "";
+            int stop = description.IndexOf('.');
+            return stop < 0 || stop + 1 >= description.Length ? "" : description.Substring(stop + 1).Trim();
         }
 
         private UnitStatsModel BuildModel(TestUnit unit)
