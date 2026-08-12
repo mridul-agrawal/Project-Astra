@@ -194,7 +194,7 @@
                 { "name": "", "id": "b0080001", "path": "<Keyboard>/m", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "OpenMapMenu", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0080002", "path": "<Gamepad>/start", "interactions": "", "processors": "", "groups": "Gamepad", "action": "OpenMapMenu", "isComposite": false, "isPartOfComposite": false },
 
-                { "name": "", "id": "b0090001", "path": "<Keyboard>/i", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "OpenUnitInfo", "isComposite": false, "isPartOfComposite": false },
+                { "name": "", "id": "b0090001", "path": "<Keyboard>/f", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "OpenUnitInfo", "isComposite": false, "isPartOfComposite": false },
                 { "name": "", "id": "b0090002", "path": "<Gamepad>/buttonNorth", "interactions": "", "processors": "", "groups": "Gamepad", "action": "OpenUnitInfo", "isComposite": false, "isPartOfComposite": false },
 
                 { "name": "", "id": "b0100001", "path": "<Keyboard>/tab", "interactions": "", "processors": "", "groups": "Keyboard&Mouse", "action": "ToggleMapOverlay", "isComposite": false, "isPartOfComposite": false },
