@@ -68,12 +68,20 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         // §B2 parks the banner fully past the edge: its own width plus the tab it hides behind.
         private const float TabWidth = 24f * 4f;
 
+        // §A4 corner-switch dressing, in canvas px and seconds.
+        private const float SwitchDistance = 230f * 4f;
+        private const float SwitchExitSeconds = 0.09f;
+        private const float SwitchEnterSeconds = 0.12f;
+
         private RectTransform panelRect;
         private RectTransform expandedRect;
         private HudCorner corner;
+        private HudCorner pendingCorner;
         private bool cornerInit;
         private Vector2 shownPos;
+        private Vector2 restPosition;
         private Coroutine slide;
+        private Coroutine switching;
         private bool peeking;
 
         private void Awake()
@@ -174,13 +182,88 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         // ---- placement -----------------------------------------------------------------------
 
+        // §A4's motion rule: an edge element may only move perpendicular to its own edge, never
+        // laterally across the screen. Corner docking is already an instant teleport, so what this
+        // adds is the dressing around it - slide into the current edge, teleport, slide in from the
+        // new one. The teleport itself is still HudCornerLayout's, untouched.
         private void ApplyCorner(HudCorner target)
         {
-            if (cornerInit && target == corner) return;
+            // First placement of the run: dock with no theatre.
+            if (!cornerInit)
+            {
+                cornerInit = true;
+                pendingCorner = target;
+                Dock(target);
+                return;
+            }
+
+            // Compared against the pending target, not the current corner: while a switch is in
+            // flight, a cursor that crosses back has to register as a revert rather than being
+            // swallowed as "no change".
+            if (target == pendingCorner) return;
+            pendingCorner = target;
+
+            if (!Application.isPlaying)
+            {
+                Dock(target);
+                return;
+            }
+
+            // A switch already running picks the new target up on its next lap; no queuing.
+            if (switching == null) switching = StartCoroutine(SwitchCorner());
+        }
+
+        private void Dock(HudCorner target)
+        {
             corner = target;
-            cornerInit = true;
             HudCornerLayout.Apply(panelRect, target, EdgePad);
+            restPosition = panelRect.anchoredPosition;
             HugSide(target);
+        }
+
+        // Loops rather than recursing, so a target that keeps changing mid-flight just earns another
+        // lap and the panel is never rendered between two anchors.
+        private IEnumerator SwitchCorner()
+        {
+            while (true)
+            {
+                yield return SlidePanel(restPosition, EdgeOffset(corner), SwitchExitSeconds, EaseIn);
+
+                // Reverted mid-exit: there is nowhere new to go, so re-enter the corner we left.
+                if (pendingCorner != corner)
+                {
+                    Dock(pendingCorner);
+                    panelRect.anchoredPosition = EdgeOffset(corner);
+                }
+
+                yield return SlidePanel(panelRect.anchoredPosition, restPosition,
+                                        SwitchEnterSeconds, EaseOut);
+                panelRect.anchoredPosition = restPosition;
+
+                if (pendingCorner == corner) break;
+            }
+            switching = null;
+        }
+
+        private IEnumerator SlidePanel(Vector2 from, Vector2 to, float seconds, Func<float, float> ease)
+        {
+            for (float t = 0f; t < seconds; t += Time.unscaledDeltaTime)
+            {
+                panelRect.anchoredPosition = Vector2.Lerp(from, to, ease(t / seconds));
+                yield return null;
+            }
+            panelRect.anchoredPosition = to;
+        }
+
+        // Off the panel's own screen edge — right corner exits right, left corner exits left.
+        private Vector2 EdgeOffset(HudCorner target) =>
+            restPosition + new Vector2(OnLeft(target) ? -SwitchDistance : SwitchDistance, 0f);
+
+        // cubic-bezier(0.4, 0, 1, 1) — §A4's ease-in.
+        private static float EaseIn(float t)
+        {
+            t = Mathf.Clamp01(t);
+            return t * t;
         }
 
         // Tab and banner hang from the docked corner and open inward, so their pivot follows
