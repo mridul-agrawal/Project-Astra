@@ -1,11 +1,3 @@
-# Prompt — Rewrite the Map 1 ending dialogue (ENDING_CH01)
-
-Hand everything below the line to another LLM. It is self-contained (the model needs no
-prior knowledge of the project). The goal: a complete, restrained post-battle dialogue
-sequence to replace the current over-written one.
-
----
-
 You are a senior game-narrative writer. Your trademark is **restraint** — you trust the
 player and never let a line *perform* emotion. You are writing one short dialogue sequence
 for a story-driven tactical RPG.
@@ -47,33 +39,6 @@ Short lines. One thought per line. Concrete over abstract — show a small real 
 of stating a feeling. **Never name the emotion. Never spell out the callback. Trust the player.**
 Fewer lines is better than more. If a line isn't doing real work, cut it.
 
-**Calibrate against these examples:**
-
-❌ Too forceful / pretentious (this is the current draft — do NOT write like this):
-- "The bridge held. By dusk, the smoke over Suvarnapur was from hearth-fires again."
-- "One raid turned aside. But they came from the northern dark, and the dark is deep."
-- "Rest tonight, Suvarnapur. Tomorrow, I follow their trail north."
-- "— To be continued —"
-
-✅ The register to aim for (plain, true, understated):
-- "The bridge held. No one else was taken."
-- "By dark, the children were back outside."
-- "Gajen's still at the temple. I should go."
-
-## Hard rules (do not break)
-- No similes or metaphors that announce themselves; no "the dark is deep"-style portent.
-- No image inversions (e.g. raid-smoke → hearth-smoke). No loaded adverbs ("only", "again").
-- No em-dashes used for drama. No addressing the village by name as a flourish
-  ("Rest tonight, Suvarnapur").
-- No grand abstractions, no restating the objective heroically, no generic
-  "— To be continued —".
-- Every line must read naturally if spoken aloud by a tired person. If it sounds "written," redo it.
-- Each line must fit a two-line on-screen box: aim for **under ~80 characters**, ideally less.
-
-## Length & shape
-- Target **4–6 lines total** (fewer is fine). Open on the quiet aftermath, hold one honest
-  human beat, and end with a soft, understated turn toward the north/temple.
-- It is acceptable — even good — to end on a small concrete image rather than a line of speech.
 
 ## Output format
 Return the sequence as a table with these columns, in play order:

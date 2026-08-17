@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Units.ClassDefinition
   className: Stree Class
   classType: 0
-  movementRange: 3
+  movementRange: 4
   movementType: 0
   weaponWhitelist: 03000000
   statGrowthModifiers:
