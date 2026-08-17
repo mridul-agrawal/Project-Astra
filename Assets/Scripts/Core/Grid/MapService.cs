@@ -43,5 +43,24 @@ namespace ProjectAstra.Core.Grid
         {
             return terrainStats != null ? terrainStats.GetStats(terrain) : TerrainStats.Default;
         }
+
+        // The prop standing on a tile, when it is a prop rather than a replacement. An object that
+        // overrides the terrain is already what GetTerrainType reports, so naming it a second time
+        // would read as "Wall + Wall"; only a non-overriding object adds to the tile's name.
+        public bool TryGetPropAt(Vector2Int position, out string objectId)
+        {
+            objectId = null;
+            if (map == null || map.Objects == null) return false;
+
+            foreach (MapObject candidate in map.Objects)
+            {
+                if (candidate.position != position || candidate.overridesTerrain) continue;
+                if (string.IsNullOrEmpty(candidate.objectId)) continue;
+
+                objectId = candidate.objectId;
+                return true;
+            }
+            return false;
+        }
     }
 }
