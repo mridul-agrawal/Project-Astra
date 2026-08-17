@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Grid.MapData
   mapName: tooltesting map
   mapId: tooltesting map
-  winConditionText: 
-  loseConditionText: 
+  winConditionText: Defeat All Enemies
+  loseConditionText: Stree Dies
   width: 15
   height: 8
   baseArt: {fileID: 21300000, guid: 72d5597885bba0a4baf82c59ebfdf119, type: 3}
@@ -30,4 +30,5 @@ MonoBehaviour:
     team: 0
     loadoutOverride: {fileID: 0}
   objects: []
+  secondaryObjectives: []
   environmentPrefab: {fileID: 5820523992109170885, guid: 77e54b8b51248e84ca8fef758cddd03a, type: 3}
