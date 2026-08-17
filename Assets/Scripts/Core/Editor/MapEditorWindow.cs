@@ -29,6 +29,7 @@ namespace ProjectAstra.Core.Editor
         private TerrainType[] terrain = new TerrainType[0];
         private List<UnitStartPosition> units = new();
         private List<MapObject> objects = new();
+        private List<SecondaryObjective> objectives = new();
         private bool dirty;
 
         // Cached project lookups (refreshed on target change / after register), never per repaint.
@@ -68,6 +69,7 @@ namespace ProjectAstra.Core.Editor
             scroll = EditorGUILayout.BeginScrollView(scroll);
             DrawIdentityFields();
             DrawBaseArtSection();
+            DrawObjectivesSection();
             DrawToolbar();
             DrawPalette();
             DrawView();
@@ -122,6 +124,7 @@ namespace ProjectAstra.Core.Editor
 
             units = new List<UnitStartPosition>(target.UnitStartPositions ?? new UnitStartPosition[0]);
             objects = new List<MapObject>(target.Objects ?? new MapObject[0]);
+            objectives = new List<SecondaryObjective>(target.SecondaryObjectives ?? new SecondaryObjective[0]);
             dirty = false;
         }
 
@@ -143,6 +146,55 @@ namespace ProjectAstra.Core.Editor
             AssetDatabase.CreateAsset(map, path);
             AssetDatabase.SaveAssets();
             SetTarget(map);
+        }
+
+        // --- Side objectives --------------------------------------------
+
+        // Feeds the objectives banner. An empty list is the normal case: the banner then shows the
+        // win and lose lines alone, and the checklist rows never appear.
+        private void DrawObjectivesSection()
+        {
+            EditorGUILayout.Space(6);
+            EditorGUILayout.LabelField($"Side Objectives ({objectives.Count})", EditorStyles.boldLabel);
+
+            for (int i = 0; i < objectives.Count; i++)
+                DrawObjectiveRow(i);
+
+            if (GUILayout.Button("Add Objective"))
+            {
+                objectives.Add(new SecondaryObjective());
+                dirty = true;
+            }
+        }
+
+        private void DrawObjectiveRow(int index)
+        {
+            SecondaryObjective row = objectives[index];
+
+            EditorGUILayout.BeginHorizontal();
+            string text = EditorGUILayout.TextField(row.text ?? "");
+            bool complete = EditorGUILayout.ToggleLeft("Done", row.complete, GUILayout.Width(52));
+            int current = EditorGUILayout.IntField(row.current, GUILayout.Width(36));
+            EditorGUILayout.LabelField("/", GUILayout.Width(10));
+            int max = EditorGUILayout.IntField(row.max, GUILayout.Width(36));
+            bool remove = GUILayout.Button("x", GUILayout.Width(22));
+            EditorGUILayout.EndHorizontal();
+
+            if (remove)
+            {
+                objectives.RemoveAt(index);
+                dirty = true;
+                return;
+            }
+
+            if (text == row.text && complete == row.complete && current == row.current && max == row.max) return;
+
+            row.text = text;
+            row.complete = complete;
+            row.current = Mathf.Max(0, current);
+            row.max = Mathf.Max(0, max);
+            objectives[index] = row;
+            dirty = true;
         }
 
         // --- Identity ---------------------------------------------------
@@ -492,6 +544,7 @@ namespace ProjectAstra.Core.Editor
             WriteTerrain(so);
             WriteUnits(so);
             WriteObjects(so);
+            WriteObjectives(so);
             so.ApplyModifiedProperties();
 
             EditorUtility.SetDirty(target);
@@ -533,6 +586,20 @@ namespace ProjectAstra.Core.Editor
                 e.FindPropertyRelative("objectId").stringValue = objects[i].objectId;
                 e.FindPropertyRelative("overridesTerrain").boolValue = objects[i].overridesTerrain;
                 e.FindPropertyRelative("terrainOverride").enumValueIndex = (int)objects[i].terrainOverride;
+            }
+        }
+
+        private void WriteObjectives(SerializedObject so)
+        {
+            var p = so.FindProperty("secondaryObjectives");
+            p.arraySize = objectives.Count;
+            for (int i = 0; i < objectives.Count; i++)
+            {
+                var e = p.GetArrayElementAtIndex(i);
+                e.FindPropertyRelative("text").stringValue = objectives[i].text ?? "";
+                e.FindPropertyRelative("complete").boolValue = objectives[i].complete;
+                e.FindPropertyRelative("current").intValue = objectives[i].current;
+                e.FindPropertyRelative("max").intValue = objectives[i].max;
             }
         }
 

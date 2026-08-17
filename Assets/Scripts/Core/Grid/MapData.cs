@@ -23,6 +23,9 @@ namespace ProjectAstra.Core.Grid
         [SerializeField] private UnitStartPosition[] unitStartPositions = Array.Empty<UnitStartPosition>();
         [SerializeField] private MapObject[] objects = Array.Empty<MapObject>();
 
+        [Tooltip("Optional side objectives shown in the objectives banner. Leave empty and the banner shows the win and lose lines alone.")]
+        [SerializeField] private SecondaryObjective[] secondaryObjectives = Array.Empty<SecondaryObjective>();
+
         [Tooltip("Per-map animated environment, authored as a prefab in the Environment Builder. Its children (trees, grass, birds, a flowing river) carry their own SpriteRenderer + Animator + behaviour components. Instantiated on load.")]
         [SerializeField] private GameObject environmentPrefab;
 
@@ -36,6 +39,7 @@ namespace ProjectAstra.Core.Grid
         public TerrainType[] Terrain => terrain;
         public UnitStartPosition[] UnitStartPositions => unitStartPositions;
         public MapObject[] Objects => objects;
+        public SecondaryObjective[] SecondaryObjectives => secondaryObjectives;
         public GameObject EnvironmentPrefab => environmentPrefab;
 
         // Terrain for a cell, read straight from the painted grid. The single gameplay seam.
@@ -68,6 +72,25 @@ namespace ProjectAstra.Core.Grid
 
         [Tooltip("Optional: overrides the unit definition's default loadout for this placement on this map.")]
         public InventoryLoadout loadoutOverride;
+    }
+
+    // One side objective for the objectives banner: what it asks for, whether it is done, and an
+    // optional progress pair. The authored values are the map's STARTING state — a running battle
+    // works on a copy, so ticking one off mid-map never writes back into the asset.
+    [Serializable]
+    public struct SecondaryObjective
+    {
+        [Tooltip("One terse line, e.g. \"Open every chest\".")]
+        public string text;
+
+        [Tooltip("Starts already complete. Normally left off.")]
+        public bool complete;
+
+        [Tooltip("Progress shown as current/max. Leave max at 0 for an objective with no counter.")]
+        public int current;
+        public int max;
+
+        public bool HasCounter => max > 0;
     }
 
     // A placed sprite above the base art for things that change appearance mid-game
