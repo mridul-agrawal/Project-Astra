@@ -6757,6 +6757,8 @@ MonoBehaviour:
       Label: {fileID: 1774922349}
       Value: {fileID: 1514359244}
   Fader: {fileID: 293287104}
+  LabelFont: {fileID: 11400000, guid: 646240145fd620c4e9fe4b95df6e3561, type: 2}
+  FlagFont: {fileID: 11400000, guid: b84e55931768e564e8a09257e5ec975d, type: 2}
   PositiveValue: {r: 0.30980393, g: 0.8392157, b: 0.96862745, a: 1}
   NegativeValue: {r: 1, g: 0.3529412, b: 0.3372549, a: 1}
   FlagText: {r: 1, g: 1, b: 1, a: 1}

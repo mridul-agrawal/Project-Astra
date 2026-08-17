@@ -55,6 +55,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public StripWidgets[] Strips;
         public CanvasGroup Fader;
 
+        [Header("§4 chip weights")]
+        public TMP_FontAsset LabelFont;      // stat labels, weight 500
+        public TMP_FontAsset FlagFont;       // flag words, weight 600
+
         [Header("§5 colours")]
         public Color PositiveValue = new Color32(0x4F, 0xD6, 0xF7, 0xFF);
         public Color NegativeValue = new Color32(0xFF, 0x5A, 0x56, 0xFF);
@@ -166,6 +170,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             {
                 ui.Label.text = chip.Label;
                 ui.Label.color = FlagText;
+
+                // §4 sets flag words a weight heavier than stat labels, 600 against 500.
+                TMP_FontAsset weight = chip.IsFlag ? FlagFont : LabelFont;
+                if (weight != null) ui.Label.font = weight;
             }
             if (ui.Value == null) return;
 

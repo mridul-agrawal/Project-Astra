@@ -352,6 +352,11 @@ namespace ProjectAstra.EditorTools
 
         static void WireColours(TileInfoView view)
         {
+            // §4 chip weights: the view swaps between these per chip, since a flag word is 600 and
+            // a stat label is 500.
+            view.LabelFont = Load<TMP_FontAsset>($"{FontDir}/NotoSans-Medium SDF.asset");
+            view.FlagFont = Load<TMP_FontAsset>($"{FontDir}/NotoSans-SemiBold SDF.asset");
+
             view.PositiveValue = PositiveValue;
             view.NegativeValue = NegativeValue;
             view.FlagText = White;
