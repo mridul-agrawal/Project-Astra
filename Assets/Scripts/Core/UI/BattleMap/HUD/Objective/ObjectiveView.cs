@@ -68,6 +68,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         // §B2 parks the banner fully past the edge: its own width plus the tab it hides behind.
         private const float TabWidth = 24f * 4f;
 
+        // §B2's 170px ceiling, less the plate padding — and, for a row, less the box, gaps and counter.
+        private const float EntryWidthCap = (170f - 16f) * 4f;
+        private const float RowTextWidthCap = (170f - 16f - 8f - 5f - 20f - 5f) * 4f;
+
         // §A4 corner-switch dressing, in canvas px and seconds.
         private const float SwitchDistance = 230f * 4f;
         private const float SwitchExitSeconds = 0.09f;
@@ -78,7 +82,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         private HudCorner corner;
         private HudCorner pendingCorner;
         private bool cornerInit;
-        private Vector2 shownPos;
+        private float bannerTop;
         private Vector2 restPosition;
         private Coroutine slide;
         private Coroutine switching;
@@ -86,13 +90,26 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private void Awake()
         {
-            panelRect = GetComponent<RectTransform>();
-            if (Expanded == null) return;
+            Bind();
+            if (expandedRect == null) return;
 
-            expandedRect = Expanded.GetComponent<RectTransform>();
-            shownPos = expandedRect.anchoredPosition;
             expandedRect.anchoredPosition = HiddenPos();
             Expanded.SetActive(false);
+        }
+
+        // Resolved on demand, not only in Awake. This panel starts inactive, so Awake does not run
+        // until something switches it on - and the first Render can arrive before that, when docking
+        // and the banner's resting position are both already needed.
+        private void Bind()
+        {
+            if (panelRect == null) panelRect = GetComponent<RectTransform>();
+            if (expandedRect != null || Expanded == null) return;
+
+            expandedRect = Expanded.GetComponent<RectTransform>();
+            // Only the vertical part of the authored position is kept: §B2 aligns the banner's top
+            // with the tab's, but its inset is one tab-width from whichever edge it is docked to, so
+            // the horizontal part has to be derived rather than remembered.
+            bannerTop = expandedRect.anchoredPosition.y;
         }
 
         // Toggles the content rather than the GameObject: this view runs its own slide
@@ -106,6 +123,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public void Render(ObjectiveModel model)
         {
             if (model == null) return;
+            Bind();
 
             RenderConditions(model);
             RenderObjectives(model);
@@ -116,12 +134,26 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private void RenderConditions(ObjectiveModel model)
         {
-            if (WinText != null) WinText.text = model.WinText;
-            if (LoseText != null) LoseText.text = model.LoseText;
+            SetWrapped(WinText, model.WinText, EntryWidthCap);
+            SetWrapped(LoseText, model.LoseText, EntryWidthCap);
 
             // §B3 fixes the header words; only the entry lines come from the map.
             if (WinHeader != null) WinHeader.text = "WIN";
             if (LoseHeader != null) LoseHeader.text = "LOSE";
+        }
+
+        // §B2 makes the plate exactly as wide as its widest line, with 170px only as a ceiling. A
+        // ContentSizeFitter has no maximum, so each wrapping line is clamped to the cap here and the
+        // plate hugs whatever the widest one turns out to be.
+        private static void SetWrapped(TextMeshProUGUI label, string text, float cap)
+        {
+            if (label == null) return;
+
+            label.text = text;
+            var sizer = label.GetComponent<LayoutElement>();
+            if (sizer == null) return;
+
+            sizer.preferredWidth = Mathf.Min(label.GetPreferredValues(text).x, cap);
         }
 
         // The whole section stands down on a map with no side objectives, header included.
@@ -151,7 +183,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         {
             if (ui.Text != null)
             {
-                ui.Text.text = row.Text;
+                SetWrapped(ui.Text, row.Text, RowTextWidthCap);
                 ui.Text.color = row.Complete ? CompleteText : IncompleteText;
             }
 
@@ -215,7 +247,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private void Dock(HudCorner target)
         {
+            Bind();
             corner = target;
+            if (panelRect == null) return;
+
             HudCornerLayout.Apply(panelRect, target, EdgePad);
             restPosition = panelRect.anchoredPosition;
             HugSide(target);
@@ -279,7 +314,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
             // Re-staged whether or not the banner is open: a corner switch mid-peek flips the pivot,
             // and leaving the old offset behind would drop the banner in the wrong place.
-            expandedRect.anchoredPosition = peeking ? shownPos : HiddenPos();
+            expandedRect.anchoredPosition = peeking ? ShownPos() : HiddenPos();
         }
 
         // §A2 pins the keycap to the tab's outer, screen-edge side, so it swaps with the corner.
@@ -302,6 +337,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         public void SetPeek(bool peek)
         {
+            Bind();
             if (expandedRect == null) return;
 
             peeking = peek;
@@ -316,7 +352,7 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             if (peek) Expanded.SetActive(true);
 
             Vector2 from = expandedRect.anchoredPosition;
-            Vector2 to = peek ? shownPos : HiddenPos();
+            Vector2 to = peek ? ShownPos() : HiddenPos();
 
             for (float t = 0f; t < SlideSeconds; t += Time.unscaledDeltaTime)
             {
@@ -329,11 +365,17 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
             slide = null;
         }
 
-        // Parked past the docked side edge, at the shown height, so it comes in sideways.
+        // §B2: the banner's inner edge sits one tab-width in from the screen edge it shares with the
+        // tab, so the offset flips sign with the corner.
+        private Vector2 ShownPos() =>
+            new Vector2(OnLeft(corner) ? TabWidth : -TabWidth, bannerTop);
+
+        // Parked fully past the docked edge - its own width plus the tab - so it comes in sideways.
         private Vector2 HiddenPos()
         {
             float dx = expandedRect.rect.width + TabWidth;
-            return new Vector2(shownPos.x + (OnLeft(corner) ? -dx : dx), shownPos.y);
+            Vector2 shown = ShownPos();
+            return new Vector2(shown.x + (OnLeft(corner) ? -dx : dx), shown.y);
         }
 
         // cubic-bezier(0, 0, 0.58, 1) — §B1's ease-out, close enough at this duration.
