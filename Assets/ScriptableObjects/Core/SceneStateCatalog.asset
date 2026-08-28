@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f5c34b0facda314a8a81a5f5840f640, type: 3}
   m_Name: SceneStateCatalog
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Scenes.SceneStateCatalog
-  sceneStates: 0e0000000000000001000000020000000300000004000000090000000a000000
+  sceneStates: 0e0000000000000001000000020000000300000004000000090000000a00000010000000

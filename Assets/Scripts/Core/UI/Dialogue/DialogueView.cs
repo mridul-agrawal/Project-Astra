@@ -31,9 +31,23 @@ namespace ProjectAstra.Core.UI.Dialogue
 
         private int lastVisibleCount;
 
+        // A hub conversation is several scripts in a row with choices between them. Left alone, each
+        // script would clear the portraits on the way in and switch the whole box off on the way
+        // out, so the presentation would blink at every choice point. Bracketing the run holds the
+        // box open and keeps the cast on screen until the conversation itself is over.
+        private bool inConversation;
+
+        public void BeginConversation() => inConversation = true;
+
+        public void EndConversation()
+        {
+            inConversation = false;
+            Hide();
+        }
+
         public void Show(DialogueTriggeringContext context)
         {
-            ResetPortraits();
+            if (!inConversation) ResetPortraits();
             if (root != null) root.SetActive(true);
         }
 
@@ -68,6 +82,7 @@ namespace ProjectAstra.Core.UI.Dialogue
 
         public void Hide()
         {
+            if (inConversation) return;
             if (root != null) root.SetActive(false);
         }
 

@@ -477,17 +477,24 @@ namespace ProjectAstra.Core.Editor
             EditorSceneManager.SaveScene(SceneManager.GetActiveScene(), bootPath);
         }
 
+        // Adds what this generator owns without dropping anything already registered. Rebuilding the
+        // list from SceneStates would silently unregister every scene with a dedicated builder —
+        // MainMenu, Cutscene, PreBattlePrep, ChapterClear, GameOver, Splash and Gurukul.
         private static void UpdateBuildSettings()
         {
-            var scenes = new List<EditorBuildSettingsScene>
-            {
-                new("Assets/Scenes/BootScene.unity", true)
-            };
+            var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
 
+            EnsureSceneRegistered(scenes, "Assets/Scenes/BootScene.unity");
             foreach (var state in SceneStates)
-                scenes.Add(new EditorBuildSettingsScene($"Assets/Scenes/{state}.unity", true));
+                EnsureSceneRegistered(scenes, $"Assets/Scenes/{state}.unity");
 
             EditorBuildSettings.scenes = scenes.ToArray();
+        }
+
+        private static void EnsureSceneRegistered(List<EditorBuildSettingsScene> scenes, string path)
+        {
+            if (scenes.Exists(scene => scene.path == path)) return;
+            scenes.Add(new EditorBuildSettingsScene(path, true));
         }
 
         // --- Helpers ---

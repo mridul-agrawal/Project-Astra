@@ -59,6 +59,14 @@ namespace ProjectAstra.Core.Dialogue
         // end its dialogue too (the input-driven skip path lives in OnSkip).
         public void Skip() => runner?.Skip();
 
+        // Advance and skip from code, for a caller that owns input itself. The hub routes every
+        // press through one place, so it drives the runner rather than letting the service
+        // subscribe alongside it.
+        public void Advance() => runner?.Confirm();
+        public void SkipCurrent() => runner?.Skip();
+
+        public bool IsPlaying => runner != null && runner.IsRunning;
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -102,7 +110,7 @@ namespace ProjectAstra.Core.Dialogue
 
             runner = new DialogueRunner(pending.Script, speakerRegistry, view, pending.Context, settings.CharsPerSecond);
             runner.OnComplete += HandleRunnerComplete;
-            BindInput();
+            if (pending.Context != DialogueTriggeringContext.Gurukul) BindInput();
             runner.Start();
         }
 

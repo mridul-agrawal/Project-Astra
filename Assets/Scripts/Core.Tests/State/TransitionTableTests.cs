@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.State;
@@ -9,6 +10,8 @@ namespace ProjectAstra.Core.Tests.State
     [TestFixture]
     public class TransitionTableTests
     {
+        private const string AssetPath = "Assets/ScriptableObjects/Core/TransitionTable.asset";
+
         private GameStateTransitionTable table;
 
         [SetUp]
@@ -67,6 +70,13 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.SettingsMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SettingsMenu, GameState.MainMenu)]
         [TestCase(GameState.LevelUpScreen, GameState.BattleMap)]
+        [TestCase(GameState.TitleScreen, GameState.Gurukul)]
+        [TestCase(GameState.MainMenu, GameState.Gurukul)]
+        [TestCase(GameState.Cutscene, GameState.Gurukul)]
+        [TestCase(GameState.ChapterClear, GameState.Gurukul)]
+        [TestCase(GameState.Gurukul, GameState.BattleMap)]
+        [TestCase(GameState.Gurukul, GameState.Cutscene)]
+        [TestCase(GameState.Gurukul, GameState.TitleScreen)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
             Assert.IsTrue(table.IsValid(from, to),
@@ -90,10 +100,29 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.GameOver, GameState.BattleMap)]
         [TestCase(GameState.ChapterClear, GameState.BattleMap)]
         [TestCase(GameState.PreBattlePrep, GameState.MainMenu)]
+        [TestCase(GameState.BattleMap, GameState.Gurukul)]
+        [TestCase(GameState.Gurukul, GameState.Dialogue)]
+        // Losing a battle must never walk the campaign forward into the next visit.
+        [TestCase(GameState.GameOver, GameState.Gurukul)]
         public void IllegalTransition_ReturnsFalse(GameState from, GameState to)
         {
             Assert.IsFalse(table.IsValid(from, to),
                 $"Expected transition {from} -> {to} to be invalid");
+        }
+
+        // The code defaults only seed a brand-new asset, so the shipped one has to be patched
+        // additively (Project Astra/Gurukul/Run Setup). This catches a state added in code but
+        // never wired into the asset — which the game reports only as an ILLEGAL transition.
+        [Test]
+        public void AuthoredAsset_ContainsEveryDefaultTransition()
+        {
+            var authored = AssetDatabase.LoadAssetAtPath<GameStateTransitionTable>(AssetPath);
+            Assert.IsNotNull(authored, $"TransitionTable asset not found at {AssetPath}");
+            authored.Initialize();
+
+            foreach (var entry in GameStateTransitionTable.CreateDefaultTransitions())
+                Assert.IsTrue(authored.IsValid(entry.From, entry.To),
+                    $"Authored asset is missing {entry.From} -> {entry.To}. Run Project Astra/Gurukul/Run Setup.");
         }
     }
 }

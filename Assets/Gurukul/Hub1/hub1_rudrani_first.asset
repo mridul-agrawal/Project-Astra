@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
+  m_Name: hub1_rudrani_first
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
+  scriptId: hub1_rudrani_first
+  segments:
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: Rudrani says something about the report cards.'
+  nodes: []

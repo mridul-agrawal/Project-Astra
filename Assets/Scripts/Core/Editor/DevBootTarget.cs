@@ -16,16 +16,25 @@ namespace ProjectAstra.Core.Editor
     {
         private const string BootScenePath = "Assets/Scenes/BootScene.unity";
         private const string SkipIntroMenu = "Project Astra/Dev/Boot Straight To Battle Map";
+        private const string GurukulMenu = "Project Astra/Dev/Boot Straight To Gurukul";
         private const string NormalBootMenu = "Project Astra/Dev/Restore Normal Boot";
 
         [MenuItem(SkipIntroMenu)]
         public static void BootToBattleMap() => SetInitialState(GameState.BattleMap);
+
+        // The hub only works booted from here, not by pressing Play on Gurukul.unity — InputManager
+        // and the rest of the persistent services live in BootScene, so walking would do nothing.
+        [MenuItem(GurukulMenu)]
+        public static void BootToGurukul() => SetInitialState(GameState.Gurukul);
 
         [MenuItem(NormalBootMenu)]
         public static void BootNormally() => SetInitialState(GameState.Splash);
 
         [MenuItem(SkipIntroMenu, validate = true)]
         private static bool CanBootToBattleMap() => CurrentInitialState() != GameState.BattleMap;
+
+        [MenuItem(GurukulMenu, validate = true)]
+        private static bool CanBootToGurukul() => CurrentInitialState() != GameState.Gurukul;
 
         [MenuItem(NormalBootMenu, validate = true)]
         private static bool CanBootNormally() => CurrentInitialState() != GameState.Splash;
@@ -51,14 +60,14 @@ namespace ProjectAstra.Core.Editor
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
 
-            if (state == GameState.BattleMap)
+            if (state == GameState.Splash)
             {
-                Debug.LogWarning("[DevBootTarget] Boot now lands on the battle map, skipping splash, title "
-                    + "and the opening cutscene. Run 'Restore Normal Boot' before you commit BootScene.");
+                Debug.Log("[DevBootTarget] Normal boot restored — splash first.");
             }
             else
             {
-                Debug.Log("[DevBootTarget] Normal boot restored — splash first.");
+                Debug.LogWarning($"[DevBootTarget] Boot now lands on {state}, skipping splash, title "
+                    + "and the opening cutscene. Run 'Restore Normal Boot' before you commit BootScene.");
             }
 
             if (!string.IsNullOrEmpty(previouslyOpen) && previouslyOpen != BootScenePath)

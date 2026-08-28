@@ -21,6 +21,7 @@ namespace ProjectAstra.Core.Scenes
             GameState.BattleMap,
             GameState.ChapterClear,
             GameState.GameOver,
+            GameState.Gurukul,
         };
 
         public bool HasScene(GameState state) => sceneStates.Contains(state);

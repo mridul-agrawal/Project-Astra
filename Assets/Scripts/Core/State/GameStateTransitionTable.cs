@@ -117,6 +117,17 @@ namespace ProjectAstra.Core.State
 
                 new TransitionEntry(GameState.BattleMap, GameState.UnitInfoScreen),
                 new TransitionEntry(GameState.UnitInfoScreen, GameState.BattleMap),
+
+                // The Gurukul hub sits between battles, so the campaign reaches it from wherever
+                // the previous step ended and leaves it for whatever the next step is. Its own six
+                // exploration sub-states live in GurukulStateMachine, not here.
+                new TransitionEntry(GameState.TitleScreen, GameState.Gurukul),
+                new TransitionEntry(GameState.MainMenu, GameState.Gurukul),
+                new TransitionEntry(GameState.Cutscene, GameState.Gurukul),
+                new TransitionEntry(GameState.ChapterClear, GameState.Gurukul),
+                new TransitionEntry(GameState.Gurukul, GameState.BattleMap),
+                new TransitionEntry(GameState.Gurukul, GameState.Cutscene),
+                new TransitionEntry(GameState.Gurukul, GameState.TitleScreen),
             };
         }
     }

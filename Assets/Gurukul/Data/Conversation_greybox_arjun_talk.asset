@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9300598a42e9d244bec9f7ff438c6e7, type: 3}
+  m_Name: Conversation_greybox_arjun_talk
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraph
+  conversationId: greybox_arjun_talk
+  entryNodeId: greeting
+  repeatEntryNodeId: menu
+  nodes:
+  - nodeId: greeting
+    kind: 0
+    script: {fileID: 11400000, guid: 091b740bbb9770c4a8812f5bb063f663, type: 2}
+    nextNodeId: menu
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: menu
+    kind: 2
+    script: {fileID: 0}
+    nextNodeId: 
+    options:
+    - optionId: training
+      label: Ask about training
+      nextNodeId: training
+      askOnce: 1
+      repeatNodeId: trainingAgain
+    - optionId: test
+      label: Ask to be tested
+      nextNodeId: question
+      askOnce: 0
+      repeatNodeId: 
+    - optionId: leave
+      label: Say nothing
+      nextNodeId: 
+      askOnce: 0
+      repeatNodeId: 
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: training
+    kind: 0
+    script: {fileID: 11400000, guid: e0db224128dc20940ad05a3e79b7c9b6, type: 2}
+    nextNodeId: menu
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: trainingAgain
+    kind: 0
+    script: {fileID: 11400000, guid: 010916a1d3d985449954376139bb45fc, type: 2}
+    nextNodeId: menu
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: question
+    kind: 0
+    script: {fileID: 11400000, guid: 9584cb2878affca4ea301afebcbae80b, type: 2}
+    nextNodeId: answers
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: answers
+    kind: 1
+    script: {fileID: 0}
+    nextNodeId: 
+    options:
+    - optionId: correct
+      label: The right answer
+      nextNodeId: right
+      askOnce: 0
+      repeatNodeId: 
+    - optionId: incorrect
+      label: The wrong answer
+      nextNodeId: wrong
+      askOnce: 0
+      repeatNodeId: 
+    allowCancel: 0
+    cancelNodeId: 
+    flagId: 
+  - nodeId: wrong
+    kind: 0
+    script: {fileID: 11400000, guid: f19d9afc8666b0b40b1aa939f7165e5c, type: 2}
+    nextNodeId: question
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: right
+    kind: 0
+    script: {fileID: 11400000, guid: a3a2b61569642c44aa88310c2b66a486, type: 2}
+    nextNodeId: passed
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: passed
+    kind: 3
+    script: {fileID: 0}
+    nextNodeId: menu
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: greybox_quiz_passed

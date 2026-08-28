@@ -14,12 +14,12 @@ namespace ProjectAstra.Core.Flow
 
         public CampaignStep StepAt(int index) => (index >= 0 && index < steps.Count) ? steps[index] : null;
 
-        // Used when the battle map is entered without the campaign having been walked to it —
+        // Used when a gameplay scene is entered without the campaign having been walked to it —
         // pressing Play on the scene, or a dev boot that skips the intro.
-        public int IndexOfFirstBattle()
+        public int IndexOfFirst(CampaignStepKind kind)
         {
             for (int i = 0; i < steps.Count; i++)
-                if (steps[i] != null && steps[i].Kind == CampaignStepKind.Battle) return i;
+                if (steps[i] != null && steps[i].Kind == kind) return i;
             return -1;
         }
     }

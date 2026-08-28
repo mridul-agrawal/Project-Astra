@@ -3,6 +3,7 @@
     "rootNamespace": "ProjectAstra.Core.Tests",
     "references": [
         "ProjectAstra.Core",
+        "ProjectAstra.Core.Editor",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],

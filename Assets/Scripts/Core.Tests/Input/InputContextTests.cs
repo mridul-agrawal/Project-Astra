@@ -98,6 +98,19 @@ namespace ProjectAstra.Core.Tests.Input
             }
         }
 
+        // The hub walks on the cursor directions and interacts with Confirm. Battle-only actions
+        // must stay out, or a stray press would reach systems that aren't loaded in a hub scene.
+        [Test]
+        public void Gurukul_AllowsWalkingAndInteractingOnly()
+        {
+            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.CursorUp));
+            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.Confirm));
+            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.Cancel));
+            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.OpenMapMenu));
+            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.NextUnit));
+            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.SkipAnimation));
+        }
+
         [Test]
         public void PreBattlePrep_IncludesPause()
         {

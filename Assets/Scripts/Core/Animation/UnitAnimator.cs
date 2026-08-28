@@ -23,6 +23,7 @@ namespace ProjectAstra.Core.Animation
         private bool hasLastPosition;
         private bool selected;
         private bool spent;
+        private Facing? facingOverride;
 
         private void Awake()
         {
@@ -34,6 +35,12 @@ namespace ProjectAstra.Core.Animation
         private void OnEnable() => hasLastPosition = false;   // re-sync after any toggle
 
         public void SetSelected(bool value) => selected = value;
+
+        // Faces a direction the unit isn't actually moving in. Walking into a wall produces no
+        // movement, so the hub would otherwise keep the previous facing while the player clearly
+        // pressed a new one; the same hook turns characters to face each other before dialogue.
+        // Null hands facing back to what movement says, which is how the battle map always runs.
+        public void SetFacingOverride(Facing? value) => facingOverride = value;
 
         // A spent unit holds its current frame instead of idling. Freezing the clock rather
         // than disabling the Animator keeps the pose the unit already had, so the grey-out
@@ -53,7 +60,7 @@ namespace ProjectAstra.Core.Animation
             // refresh doesn't read the accumulated gap as a sprint.
             if (spent) return;
 
-            PushToAnimator(LocomotionState.Select(facing.Moving, facing.Facing, selected));
+            PushToAnimator(LocomotionState.Select(facing.Moving, facingOverride ?? facing.Facing, selected));
         }
 
         // First frame after enable establishes a baseline with zero delta, so a

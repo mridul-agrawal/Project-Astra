@@ -20,6 +20,7 @@ namespace ProjectAstra.Core.State
         LevelUpScreen,
         // Appended (not inserted) so existing serialized GameState ints keep their values.
         Splash,
-        UnitInfoScreen
+        UnitInfoScreen,
+        Gurukul
     }
 }

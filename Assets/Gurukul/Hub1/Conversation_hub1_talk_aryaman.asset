@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9300598a42e9d244bec9f7ff438c6e7, type: 3}
+  m_Name: Conversation_hub1_talk_aryaman
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraph
+  conversationId: hub1_talk_aryaman
+  entryNodeId: first
+  repeatEntryNodeId: again
+  nodes:
+  - nodeId: first
+    kind: 0
+    script: {fileID: 11400000, guid: 6a2062feb4b3b9c4cb4aaa46f1026fb1, type: 2}
+    nextNodeId: 
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 
+  - nodeId: again
+    kind: 0
+    script: {fileID: 11400000, guid: 9ed8f7b5330a09c429afffef3879776c, type: 2}
+    nextNodeId: 
+    options: []
+    allowCancel: 1
+    cancelNodeId: 
+    flagId: 

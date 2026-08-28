@@ -4,10 +4,13 @@ using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Flow
 {
-    public enum CampaignStepKind 
-    { 
-        Cutscene, 
-        Battle 
+    // Append only — Campaign.asset stores the kind as an int, so reordering rewrites every
+    // authored step into something else.
+    public enum CampaignStepKind
+    {
+        Cutscene,
+        Battle,
+        HubVisit
     }
 
     [Serializable]
@@ -16,9 +19,11 @@ namespace ProjectAstra.Core.Flow
         [SerializeField] private CampaignStepKind kind;
         [SerializeField] private CutsceneId cutscene;
         [SerializeField] private string mapId;
+        [SerializeField] private string visitId;
 
         public CampaignStepKind Kind => kind;
         public CutsceneId Cutscene => cutscene;
         public string MapId => mapId;
+        public string VisitId => visitId;
     }
 }

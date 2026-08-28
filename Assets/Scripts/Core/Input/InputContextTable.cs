@@ -40,6 +40,11 @@ namespace ProjectAstra.Core.Input
         private const GameInputAction All = (GameInputAction)0x1FFFF;  // bits 0..16 = every defined action
         private const GameInputAction UnitInfo =
             Cursor | GameInputAction.Cancel | GameInputAction.NextUnit | GameInputAction.PrevUnit;
+        // The hub walks on the cursor directions and uses one Confirm for interacting, advancing
+        // dialogue and picking choices — which of those a press means is decided by the hub's own
+        // sub-state, not here.
+        private const GameInputAction Exploration =
+            Cursor | GameInputAction.Confirm | GameInputAction.Cancel | GameInputAction.SkipDialogue | GameInputAction.HoldAdvanceDialogue;
 
         [SerializeField] private List<StateInputRule> rules = new()
         {
@@ -59,6 +64,7 @@ namespace ProjectAstra.Core.Input
             new(GameState.SettingsMenu, CursorAndMenu),
             new(GameState.LevelUpScreen, GameInputAction.Confirm),
             new(GameState.UnitInfoScreen, UnitInfo),
+            new(GameState.Gurukul, Exploration),
         };
 
         // The allowed-action mask for a state — first matching rule wins; None if the state is
