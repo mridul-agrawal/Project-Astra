@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fd45a200a72ea748acb9108a618d3c6, type: 3}
   m_Name: Event_hub1_training_ground
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEvent
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEventData
   eventId: hub1_training_ground
   trigger: 2
   triggerArea:

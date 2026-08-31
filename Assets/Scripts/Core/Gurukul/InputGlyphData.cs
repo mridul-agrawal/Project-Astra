@@ -10,8 +10,8 @@ namespace ProjectAstra.Core.Gurukul
     //
     // Labels now, sprites when the art pass lands — the field is already here so nothing downstream
     // changes when they arrive.
-    [CreateAssetMenu(fileName = "InputGlyphTable", menuName = "Project Astra/Gurukul/Input Glyph Table")]
-    public class InputGlyphTable : ScriptableObject
+    [CreateAssetMenu(fileName = "InputGlyphData", menuName = "Project Astra/Gurukul/Input Glyph Data")]
+    public class InputGlyphData : ScriptableObject
     {
         [Serializable]
         public struct Entry

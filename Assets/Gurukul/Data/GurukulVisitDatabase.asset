@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 584c3ebafe80e0347822979e02ba5c40, type: 3}
-  m_Name: GurukulVisitCatalog
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulVisitCatalog
+  m_Name: GurukulVisitDatabase
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulVisitDatabase
   visits:
   - {fileID: 11400000, guid: 3b9b1c158168f054f8f542bed99728f3, type: 2}
   - {fileID: 11400000, guid: af3a0717ad3379d47b458dcef0b7109d, type: 2}

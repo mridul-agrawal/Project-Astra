@@ -3,26 +3,26 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Gurukul
 {
-    // Lookup from a string visit id to its GurukulVisit asset, so a campaign step can name a visit
+    // Lookup from a string visit id to its GurukulVisitData asset, so a campaign step can name a visit
     // without holding a direct asset reference. Mirrors MapCatalog.
-    [CreateAssetMenu(fileName = "GurukulVisitCatalog", menuName = "Project Astra/Gurukul/Visit Catalog")]
-    public class GurukulVisitCatalog : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulVisitDatabase", menuName = "Project Astra/Gurukul/Visit Database")]
+    public class GurukulVisitDatabase : ScriptableObject
     {
-        [SerializeField] private List<GurukulVisit> visits = new();
+        [SerializeField] private List<GurukulVisitData> visits = new();
 
-        private Dictionary<string, GurukulVisit> byId;
+        private Dictionary<string, GurukulVisitData> byId;
 
-        public GurukulVisit Get(string id)
+        public GurukulVisitData Get(string id)
         {
             EnsureIndexBuilt();
-            return byId.TryGetValue(id, out GurukulVisit visit) ? visit : null;
+            return byId.TryGetValue(id, out GurukulVisitData visit) ? visit : null;
         }
 
         private void EnsureIndexBuilt()
         {
             if (byId != null) return;
-            byId = new Dictionary<string, GurukulVisit>();
-            foreach (GurukulVisit visit in visits)
+            byId = new Dictionary<string, GurukulVisitData>();
+            foreach (GurukulVisitData visit in visits)
                 if (visit != null && !string.IsNullOrEmpty(visit.VisitId))
                     byId[visit.VisitId] = visit;
         }

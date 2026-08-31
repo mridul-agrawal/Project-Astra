@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cfcfc88490b42604ba07c936c0463c74, type: 3}
-  m_Name: ConversationGraphCatalog
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraphCatalog
+  m_Name: ConversationGraphDatabase
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraphDatabase
   conversations:
   - {fileID: 11400000, guid: d88754f147828db4095bb464fc119fae, type: 2}
   - {fileID: 11400000, guid: 0fa4d65532f5eb448889c4d9f88841b5, type: 2}

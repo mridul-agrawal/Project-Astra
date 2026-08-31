@@ -15,9 +15,9 @@ namespace ProjectAstra.Core.Gurukul
 
         private GameObject current;
 
-        public GurukulLocation Current { get; private set; }
+        public GurukulLocationData Current { get; private set; }
 
-        public void Show(GurukulLocation location)
+        public void Show(GurukulLocationData location)
         {
             Clear();
             if (location == null) return;
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core.Gurukul
 
         // Placed at the origin so the sprite's own pivot decides the alignment — the same
         // arrangement MapRenderer uses for a battle map's base art.
-        private static void DrawBaseArt(GurukulLocation location, Transform parent)
+        private static void DrawBaseArt(GurukulLocationData location, Transform parent)
         {
             if (location.BaseArt == null)
             {
@@ -56,7 +56,7 @@ namespace ProjectAstra.Core.Gurukul
             renderer.sortingOrder = 0;
         }
 
-        private static void SpawnProps(GurukulLocation location, Transform parent)
+        private static void SpawnProps(GurukulLocationData location, Transform parent)
         {
             if (location.PropsPrefab == null) return;
             Instantiate(location.PropsPrefab, parent, false).name = "Props";

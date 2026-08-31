@@ -24,8 +24,8 @@ namespace ProjectAstra.Core.Gurukul
     // Its own type rather than a battle MapData because the two want different things — MapData
     // caps at 64x64, routes passability through a per-movement-type cost table the hub is not
     // allowed to use, and has nowhere to put sub-tile footprints.
-    [CreateAssetMenu(fileName = "GurukulLocation", menuName = "Project Astra/Gurukul/Location")]
-    public class GurukulLocation : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulLocationData", menuName = "Project Astra/Gurukul/Location Data")]
+    public class GurukulLocationData : ScriptableObject
     {
         // Half a tile, matching GurukulCollisionMap.
         public const int CellsPerTile = 2;
@@ -122,9 +122,9 @@ namespace ProjectAstra.Core.Gurukul
                 Array.Resize(ref blockedCells, expected);
         }
 
-        internal static GurukulLocation CreateForTest(string locationId, int tileWidth, int tileHeight)
+        internal static GurukulLocationData CreateForTest(string locationId, int tileWidth, int tileHeight)
         {
-            var location = CreateInstance<GurukulLocation>();
+            var location = CreateInstance<GurukulLocationData>();
             location.locationId = locationId;
             location.tileWidth = tileWidth;
             location.tileHeight = tileHeight;

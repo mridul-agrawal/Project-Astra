@@ -9,10 +9,10 @@ namespace ProjectAstra.Core.Gurukul
     {
         public static GurukulLocationService Instance { get; private set; }
 
-        private readonly GurukulLocation location;
+        private readonly GurukulLocationData location;
         private readonly GurukulCollisionMap collision;
 
-        private GurukulLocationService(GurukulLocation location)
+        private GurukulLocationService(GurukulLocationData location)
         {
             this.location = location;
             collision = location.BuildCollisionMap();
@@ -20,12 +20,12 @@ namespace ProjectAstra.Core.Gurukul
 
         // The single set-point. GurukulBootstrapper calls it on visit load, and the location
         // switcher calls it again at every doorway.
-        public static void Load(GurukulLocation location)
+        public static void Load(GurukulLocationData location)
         {
             Instance = location != null ? new GurukulLocationService(location) : null;
         }
 
-        public GurukulLocation CurrentLocation => location;
+        public GurukulLocationData CurrentLocation => location;
         public GurukulCollisionMap Collision => collision;
         public Rect Bounds => location != null ? location.Bounds : Rect.zero;
 

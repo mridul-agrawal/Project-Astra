@@ -61,7 +61,7 @@ namespace ProjectAstra.EditorTools
         }
 
         private static string[] MapIds() => IdsOf<MapData>(map => map.MapId);
-        private static string[] VisitIds() => IdsOf<GurukulVisit>(visit => visit.VisitId);
+        private static string[] VisitIds() => IdsOf<GurukulVisitData>(visit => visit.VisitId);
 
         private static string[] IdsOf<T>(Func<T, string> idOf) where T : ScriptableObject
         {

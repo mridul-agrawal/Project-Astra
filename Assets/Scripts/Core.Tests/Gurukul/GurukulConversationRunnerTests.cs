@@ -46,7 +46,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
         }
 
         private readonly List<DialogueScript> scripts = new();
-        private readonly List<ConversationGraph> graphs = new();
+        private readonly List<ConversationGraphData> graphs = new();
 
         [TearDown]
         public void TearDown()
@@ -88,7 +88,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
         private (GurukulConversationRunner runner, FakePresenter presenter, GurukulRuntimeState state) Build(
             string entry, params ConversationNode[] nodes)
         {
-            var graph = ConversationGraph.CreateForTest("talk_kaal", entry, nodes);
+            var graph = ConversationGraphData.CreateForTest("talk_kaal", entry, nodes);
             graphs.Add(graph);
 
             var state = new GurukulRuntimeState("hub1");
@@ -304,7 +304,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
         [Test]
         public void ASecondVisit_StartsFromTheRepeatEntryWhenThereIsOne()
         {
-            var graph = ConversationGraph.CreateForTest("talk_kaal", "first",
+            var graph = ConversationGraphData.CreateForTest("talk_kaal", "first",
                 new[] { ScriptNode("first", null), ScriptNode("again", null) }, repeatEntryNodeId: "again");
             graphs.Add(graph);
 
@@ -320,7 +320,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
         [Test]
         public void WithNoRepeatEntry_ASecondVisitReplaysTheFirstTimeContent()
         {
-            var graph = ConversationGraph.CreateForTest("talk_kaal", "first",
+            var graph = ConversationGraphData.CreateForTest("talk_kaal", "first",
                 new[] { ScriptNode("first", null) });
             graphs.Add(graph);
 

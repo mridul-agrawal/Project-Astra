@@ -12,11 +12,11 @@ namespace ProjectAstra.Core.Gurukul
     {
         public static GurukulProgressService Instance { get; private set; }
 
-        private readonly GurukulVisit visit;
+        private readonly GurukulVisitData visit;
         private readonly GurukulRuntimeState state;
         private readonly ObjectiveSequenceRunner objectives;
 
-        private GurukulProgressService(GurukulVisit visit)
+        private GurukulProgressService(GurukulVisitData visit)
         {
             this.visit = visit;
             state = new GurukulRuntimeState(visit.VisitId);
@@ -25,12 +25,12 @@ namespace ProjectAstra.Core.Gurukul
         }
 
         // The single set-point. GurukulBootstrapper calls this when a visit loads.
-        public static void Load(GurukulVisit visit)
+        public static void Load(GurukulVisitData visit)
         {
             Instance = visit != null ? new GurukulProgressService(visit) : null;
         }
 
-        public GurukulVisit Visit => visit;
+        public GurukulVisitData Visit => visit;
         public GurukulRuntimeState State => state;
         public ObjectiveSequenceRunner Objectives => objectives;
 

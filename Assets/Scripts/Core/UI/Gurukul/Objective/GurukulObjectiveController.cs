@@ -51,12 +51,12 @@ namespace ProjectAstra.Core.UI.Gurukul.Objective
             Render();
         }
 
-        private void HandleObjectiveChanged(GurukulObjective objective) => Refresh();
+        private void HandleObjectiveChanged(GurukulObjectiveData objective) => Refresh();
         private void HandleProgressChanged() => Refresh();
 
         // Skipped while a conversation or event owns the screen — an objective that completes
         // mid-scene has its cue deferred until control comes back, which is what the spec asks for.
-        private void HandleObjectiveCompleted(GurukulObjective objective)
+        private void HandleObjectiveCompleted(GurukulObjectiveData objective)
         {
             if (suppressed) return;
             objectiveView.ShowCompletedCue(objective.DisplayText);
@@ -64,7 +64,7 @@ namespace ProjectAstra.Core.UI.Gurukul.Objective
 
         private void Refresh()
         {
-            GurukulObjective active = objectives?.ActiveObjective;
+            GurukulObjectiveData active = objectives?.ActiveObjective;
             hasObjective = active != null;
 
             if (hasObjective)

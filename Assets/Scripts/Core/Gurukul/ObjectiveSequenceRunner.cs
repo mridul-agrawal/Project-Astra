@@ -12,24 +12,24 @@ namespace ProjectAstra.Core.Gurukul
     // then its effects land, then the next objective appears.
     public class ObjectiveSequenceRunner
     {
-        private readonly GurukulObjective[] objectives;
+        private readonly GurukulObjectiveData[] objectives;
         private readonly GurukulRuntimeState state;
 
         // Fires with the objective that just became active, or null once the visit is finished.
-        public event Action<GurukulObjective> ObjectiveChanged;
-        public event Action<GurukulObjective> ObjectiveCompleted;
+        public event Action<GurukulObjectiveData> ObjectiveChanged;
+        public event Action<GurukulObjectiveData> ObjectiveCompleted;
         public event Action ProgressChanged;
 
         // Raised instead of applied: firing an event needs the world, which this class can't see.
         public event Action<string> EventRequested;
 
-        public ObjectiveSequenceRunner(GurukulObjective[] objectives, GurukulRuntimeState state)
+        public ObjectiveSequenceRunner(GurukulObjectiveData[] objectives, GurukulRuntimeState state)
         {
-            this.objectives = objectives ?? Array.Empty<GurukulObjective>();
+            this.objectives = objectives ?? Array.Empty<GurukulObjectiveData>();
             this.state = state;
         }
 
-        public GurukulObjective ActiveObjective =>
+        public GurukulObjectiveData ActiveObjective =>
             state.ObjectiveIndex >= 0 && state.ObjectiveIndex < objectives.Length
                 ? objectives[state.ObjectiveIndex]
                 : null;
@@ -52,7 +52,7 @@ namespace ProjectAstra.Core.Gurukul
         // and for the objective that is active right now.
         public bool Report(GurukulConditionKind kind, string targetId)
         {
-            GurukulObjective active = ActiveObjective;
+            GurukulObjectiveData active = ActiveObjective;
             if (active == null) return false;
             if (!active.Completion.Accepts(kind, targetId)) return false;
             if (!state.Satisfy(targetId)) return false;
@@ -64,12 +64,12 @@ namespace ProjectAstra.Core.Gurukul
 
         public bool IsMarkerTargetOutstanding(string targetId)
         {
-            GurukulObjective active = ActiveObjective;
+            GurukulObjectiveData active = ActiveObjective;
             if (active == null || Array.IndexOf(active.MarkerTargetIds, targetId) < 0) return false;
             return !state.HasSatisfied(targetId);
         }
 
-        private void Complete(GurukulObjective objective)
+        private void Complete(GurukulObjectiveData objective)
         {
             state.CompleteObjective(objective.ObjectiveId);
             ApplyEffects(objective);
@@ -83,7 +83,7 @@ namespace ProjectAstra.Core.Gurukul
         // activates. Looping covers a run of them back to back.
         private void SettleImmediateObjectives()
         {
-            GurukulObjective active = ActiveObjective;
+            GurukulObjectiveData active = ActiveObjective;
             while (active != null && active.Completion.kind == GurukulConditionKind.Immediate)
             {
                 state.CompleteObjective(active.ObjectiveId);
@@ -93,7 +93,7 @@ namespace ProjectAstra.Core.Gurukul
             }
         }
 
-        private void ApplyEffects(GurukulObjective objective)
+        private void ApplyEffects(GurukulObjectiveData objective)
         {
             foreach (GurukulEffect effect in objective.OnComplete)
                 Apply(effect);
@@ -123,7 +123,7 @@ namespace ProjectAstra.Core.Gurukul
 
         // Content check, run by the validation tooling: a stage nobody can finish would strand the
         // visit with no way forward and no error.
-        public static bool IsAuthoredCorrectly(GurukulObjective objective, out string problem)
+        public static bool IsAuthoredCorrectly(GurukulObjectiveData objective, out string problem)
         {
             problem = null;
             if (objective == null) { problem = "objective is missing"; return false; }

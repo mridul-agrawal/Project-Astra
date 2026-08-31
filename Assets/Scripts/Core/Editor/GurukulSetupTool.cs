@@ -148,14 +148,14 @@ namespace ProjectAstra.Core.Editor
             }
 
             var serialized = new SerializedObject(flow);
-            SerializedProperty catalog = serialized.FindProperty("visitCatalog");
-            if (catalog.objectReferenceValue == null)
+            SerializedProperty visitDatabase = serialized.FindProperty("visitDatabase");
+            if (visitDatabase.objectReferenceValue == null)
             {
-                catalog.objectReferenceValue = LoadSingle<GurukulVisitCatalog>();
+                visitDatabase.objectReferenceValue = LoadSingle<GurukulVisitDatabase>();
                 serialized.ApplyModifiedProperties();
                 EditorSceneManager.MarkSceneDirty(boot);
                 EditorSceneManager.SaveScene(boot);
-                Debug.Log("[GurukulSetup] Wired the visit catalog into GameFlow.");
+                Debug.Log("[GurukulSetup] Wired the visit visitDatabase into GameFlow.");
             }
 
             if (!string.IsNullOrEmpty(reopen) && reopen != BootScenePath)

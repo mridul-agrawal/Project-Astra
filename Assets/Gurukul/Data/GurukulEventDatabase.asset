@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 884b6bdc27f720444b4cdefe6136a1c2, type: 3}
-  m_Name: GurukulEventCatalog
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEventCatalog
+  m_Name: GurukulEventDatabase
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEventDatabase
   events:
   - {fileID: 11400000, guid: dbf9fb9f5556b2b43a72ede620d733b5, type: 2}
   - {fileID: 11400000, guid: cb50f6be26d37e44cac94e8f76c81fe8, type: 2}

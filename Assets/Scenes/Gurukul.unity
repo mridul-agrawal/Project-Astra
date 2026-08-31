@@ -1961,7 +1961,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulAreaTriggerWatcher
   router: {fileID: 1708496278}
   events: {fileID: 1708496283}
-  catalog: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
+  eventDatabase: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
   loader: {fileID: 1708496286}
 --- !u!114 &1708496283
 MonoBehaviour:
@@ -1977,7 +1977,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEventRunner
   router: {fileID: 1708496278}
   conversations: {fileID: 1708496288}
-  catalog: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
+  eventDatabase: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
   cameraRig: {fileID: 882913018}
 --- !u!114 &1708496284
 MonoBehaviour:
@@ -2023,7 +2023,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationLoader
   locationHost: {fileID: 2106615268}
-  locationCatalog: {fileID: 11400000, guid: 3a75d527744d4e64284a41aab0efd422, type: 2}
+  locationDatabase: {fileID: 11400000, guid: 3a75d527744d4e64284a41aab0efd422, type: 2}
   unitDatabase: {fileID: 11400000, guid: 8cf1ddc7cbb7fa34f944d8b6a8e3f53b, type: 2}
   castRoot: {fileID: 919515350}
 --- !u!114 &1708496287
@@ -2057,7 +2057,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.GurukulConversationPlayer
   router: {fileID: 1708496278}
   choiceView: {fileID: 1211811492}
-  catalog: {fileID: 11400000, guid: 7a64a35730bcd1f488e0bcd01ef6e138, type: 2}
+  conversationDatabase: {fileID: 11400000, guid: 7a64a35730bcd1f488e0bcd01ef6e138, type: 2}
 --- !u!4 &1708496289
 Transform:
   m_ObjectHideFlags: 0
@@ -2285,7 +2285,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.UI.Gurukul.GurukulHUDController
   promptView: {fileID: 1729706517}
   objectiveView: {fileID: 2116031237}
-  glyphTable: {fileID: 11400000, guid: 7d44fcc30c5c0304e86f46f95618fb0a, type: 2}
+  glyphData: {fileID: 11400000, guid: 7d44fcc30c5c0304e86f46f95618fb0a, type: 2}
   interactionDriver: {fileID: 1708496279}
   router: {fileID: 1708496278}
 --- !u!114 &2106318084

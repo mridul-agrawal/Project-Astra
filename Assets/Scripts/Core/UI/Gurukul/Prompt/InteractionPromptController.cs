@@ -10,15 +10,15 @@ namespace ProjectAstra.Core.UI.Gurukul.Prompt
         public InteractionPromptView promptView;
         public InteractionPromptModel promptModel;
 
-        private readonly InputGlyphTable glyphs;
+        private readonly InputGlyphData glyphs;
         private InputDeviceType device = InputDeviceType.Keyboard;
         private GurukulVerb? verb;
 
-        public InteractionPromptController(InteractionPromptView view, InputGlyphTable glyphTable)
+        public InteractionPromptController(InteractionPromptView view, InputGlyphData glyphData)
         {
             promptView = view;
             promptModel = new InteractionPromptModel();
-            glyphs = glyphTable;
+            glyphs = glyphData;
             Render();
         }
 

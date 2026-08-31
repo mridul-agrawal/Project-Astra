@@ -21,7 +21,7 @@ namespace ProjectAstra.Core.Gurukul.Events
 
         [SerializeField] private GurukulInputRouter router;
         [SerializeField] private GurukulConversationPlayer conversations;
-        [SerializeField] private GurukulEventCatalog catalog;
+        [SerializeField] private GurukulEventDatabase eventDatabase;
         [SerializeField] private GurukulCameraRig cameraRig;
 
         private EventQueueGuard guard;
@@ -44,16 +44,16 @@ namespace ProjectAstra.Core.Gurukul.Events
 
         public bool TryPlay(string eventId)
         {
-            GurukulEvent authored = catalog != null ? catalog.Get(eventId) : null;
+            GurukulEventData authored = eventDatabase != null ? eventDatabase.Get(eventId) : null;
             if (authored == null)
             {
-                Debug.LogError($"[GurukulEvent] No event with id '{eventId}'.");
+                Debug.LogError($"[GurukulEventData] No event with id '{eventId}'.");
                 return false;
             }
             return TryPlay(authored);
         }
 
-        public bool TryPlay(GurukulEvent authored)
+        public bool TryPlay(GurukulEventData authored)
         {
             if (guard == null) BindToVisit();
             if (!guard.TryBegin(authored.EventId, authored.OneTime)) return false;
@@ -67,7 +67,7 @@ namespace ProjectAstra.Core.Gurukul.Events
             return true;
         }
 
-        private IEnumerator Play(GurukulEvent authored)
+        private IEnumerator Play(GurukulEventData authored)
         {
             bool departed = false;
 
@@ -221,7 +221,7 @@ namespace ProjectAstra.Core.Gurukul.Events
                     stalledFor += Time.deltaTime;
                     if (stalledFor > StuckTimeoutSeconds)
                     {
-                        Debug.LogError($"[GurukulEvent] '{actor.CharacterId}' stopped at {actor.Position} on the way " +
+                        Debug.LogError($"[GurukulEventData] '{actor.CharacterId}' stopped at {actor.Position} on the way " +
                                        $"to {corner} — something is in the way.");
                         yield break;
                     }

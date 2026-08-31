@@ -28,13 +28,13 @@ namespace ProjectAstra.Core.Gurukul
         [SerializeField] private string protagonistUnitId = "aranya";
 
         [Tooltip("Fallback visit for pressing Play directly in this scene, when the campaign isn't running.")]
-        [SerializeField] private GurukulVisit fallbackVisit;
+        [SerializeField] private GurukulVisitData fallbackVisit;
 
         private void Start()
         {
             GurukulWorld.Clear();
 
-            GurukulVisit visit = ResolveVisit();
+            GurukulVisitData visit = ResolveVisit();
             if (visit == null)
             {
                 Debug.LogError("[GurukulBootstrapper] No visit to load — assign a fallback visit or start from the campaign.");
@@ -47,14 +47,14 @@ namespace ProjectAstra.Core.Gurukul
 
         // The campaign's visit wins, starting the campaign at its first hub step if something
         // skipped straight here. The serialized fallback is only for a scene with no GameFlow alive.
-        private GurukulVisit ResolveVisit()
+        private GurukulVisitData ResolveVisit()
         {
             GameFlow flow = GameFlow.Instance;
-            GurukulVisit campaignVisit = flow != null ? flow.EnsureHubStepStarted() : null;
+            GurukulVisitData campaignVisit = flow != null ? flow.EnsureHubStepStarted() : null;
             return campaignVisit != null ? campaignVisit : fallbackVisit;
         }
 
-        private void OpenVisit(GurukulVisit visit)
+        private void OpenVisit(GurukulVisitData visit)
         {
             // She is built before the room so the loader has someone to place, and left non-solid —
             // the only thing her footprint could collide with is itself.

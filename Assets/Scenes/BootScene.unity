@@ -833,7 +833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GameStateManager
   transitionTable: {fileID: 11400000, guid: 5a25e2f8fb709f140bfaa1bb9be5d6dc, type: 2}
-  initialState: 16
+  initialState: 14
 --- !u!4 &1755540676
 Transform:
   m_ObjectHideFlags: 0
@@ -881,7 +881,7 @@ MonoBehaviour:
   campaign: {fileID: 11400000, guid: 8f075270fdd7bdd48af8da45653411b7, type: 2}
   mapCatalog: {fileID: 11400000, guid: 2826a6ebad232a34cae350884e7b1a29, type: 2}
   cutsceneCatalog: {fileID: 11400000, guid: 0411b9e634ff6274c95eb388158154bf, type: 2}
-  visitCatalog: {fileID: 11400000, guid: 36c5a9a3aaad9d3479aa2670e9919cbc, type: 2}
+  visitDatabase: {fileID: 11400000, guid: 36c5a9a3aaad9d3479aa2670e9919cbc, type: 2}
 --- !u!4 &1994050361
 Transform:
   m_ObjectHideFlags: 0

@@ -70,8 +70,8 @@ namespace ProjectAstra.Core.Gurukul.Conversation
     // with no branching, and its runner and view are pinned by a test suite — so choices, topics and
     // quizzes are expressed by sequencing whole scripts instead of by reaching into them. A quiz
     // needs no machinery of its own: it is a choice whose wrong answers point back at the question.
-    [CreateAssetMenu(fileName = "ConversationGraph", menuName = "Project Astra/Gurukul/Conversation")]
-    public class ConversationGraph : ScriptableObject
+    [CreateAssetMenu(fileName = "ConversationGraphData", menuName = "Project Astra/Gurukul/Conversation Data")]
+    public class ConversationGraphData : ScriptableObject
     {
         [SerializeField] private string conversationId;
         [SerializeField] private string entryNodeId;
@@ -97,10 +97,10 @@ namespace ProjectAstra.Core.Gurukul.Conversation
             return null;
         }
 
-        internal static ConversationGraph CreateForTest(string conversationId, string entryNodeId,
+        internal static ConversationGraphData CreateForTest(string conversationId, string entryNodeId,
             ConversationNode[] nodes, string repeatEntryNodeId = null)
         {
-            var graph = CreateInstance<ConversationGraph>();
+            var graph = CreateInstance<ConversationGraphData>();
             graph.conversationId = conversationId;
             graph.entryNodeId = entryNodeId;
             graph.repeatEntryNodeId = repeatEntryNodeId;

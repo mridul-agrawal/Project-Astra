@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.UI.Gurukul
     {
         [SerializeField] private InteractionPromptView promptView;
         [SerializeField] private GurukulObjectiveView objectiveView;
-        [SerializeField] private InputGlyphTable glyphTable;
+        [SerializeField] private InputGlyphData glyphData;
         [SerializeField] private GurukulInteractionDriver interactionDriver;
         [SerializeField] private GurukulInputRouter router;
 
@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.UI.Gurukul
 
         private void Awake()
         {
-            prompt = new InteractionPromptController(promptView, glyphTable);
+            prompt = new InteractionPromptController(promptView, glyphData);
             objectives = new GurukulObjectiveController(objectiveView);
 
             if (interactionDriver == null) interactionDriver = FindFirstObjectByType<GurukulInteractionDriver>();

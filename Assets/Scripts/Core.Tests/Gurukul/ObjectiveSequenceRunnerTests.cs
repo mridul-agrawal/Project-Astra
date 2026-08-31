@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
     [TestFixture]
     public class ObjectiveSequenceRunnerTests
     {
-        private readonly List<GurukulObjective> created = new();
+        private readonly List<GurukulObjectiveData> created = new();
 
         [TearDown]
         public void TearDown()
@@ -21,18 +21,18 @@ namespace ProjectAstra.Core.Tests.Gurukul
             created.Clear();
         }
 
-        private GurukulObjective Objective(string id, GurukulConditionKind kind, string[] targets,
+        private GurukulObjectiveData Objective(string id, GurukulConditionKind kind, string[] targets,
             bool showCounter = false, GurukulEffect[] effects = null, string[] markers = null)
         {
             var condition = new GurukulCondition { kind = kind, targetIds = targets, showCounter = showCounter };
-            var objective = GurukulObjective.CreateForTest(id, condition, effects, markers);
+            var objective = GurukulObjectiveData.CreateForTest(id, condition, effects, markers);
             created.Add(objective);
             return objective;
         }
 
-        private static GurukulObjective[] Sequence(params GurukulObjective[] objectives) => objectives;
+        private static GurukulObjectiveData[] Sequence(params GurukulObjectiveData[] objectives) => objectives;
 
-        private static (ObjectiveSequenceRunner runner, GurukulRuntimeState state) Start(params GurukulObjective[] objectives)
+        private static (ObjectiveSequenceRunner runner, GurukulRuntimeState state) Start(params GurukulObjectiveData[] objectives)
         {
             var state = new GurukulRuntimeState("hub1");
             var runner = new ObjectiveSequenceRunner(Sequence(objectives), state);
@@ -169,7 +169,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
 
             var state = new GurukulRuntimeState("hub1");
             var runner = new ObjectiveSequenceRunner(Sequence(first, second), state);
-            var announced = new List<GurukulObjective>();
+            var announced = new List<GurukulObjectiveData>();
             runner.ObjectiveChanged += announced.Add;
 
             runner.Begin();

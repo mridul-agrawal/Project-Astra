@@ -91,7 +91,7 @@ namespace ProjectAstra.Core.Gurukul
         // silence. Whether it opens is decided when the press lands.
         private void GatherDoors()
         {
-            GurukulLocation here = GurukulLocationService.Instance?.CurrentLocation;
+            GurukulLocationData here = GurukulLocationService.Instance?.CurrentLocation;
             if (here == null) return;
 
             foreach (GurukulDoor door in here.Doors)

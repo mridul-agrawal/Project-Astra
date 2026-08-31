@@ -3,26 +3,26 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Gurukul
 {
-    // Lookup from a string location id to its GurukulLocation asset, so visits and doors can name a
+    // Lookup from a string location id to its GurukulLocationData asset, so visits and doors can name a
     // room without holding a direct reference. Mirrors MapCatalog.
-    [CreateAssetMenu(fileName = "GurukulLocationCatalog", menuName = "Project Astra/Gurukul/Location Catalog")]
-    public class GurukulLocationCatalog : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulLocationDatabase", menuName = "Project Astra/Gurukul/Location Database")]
+    public class GurukulLocationDatabase : ScriptableObject
     {
-        [SerializeField] private List<GurukulLocation> locations = new();
+        [SerializeField] private List<GurukulLocationData> locations = new();
 
-        private Dictionary<string, GurukulLocation> byId;
+        private Dictionary<string, GurukulLocationData> byId;
 
-        public GurukulLocation Get(string id)
+        public GurukulLocationData Get(string id)
         {
             EnsureIndexBuilt();
-            return byId.TryGetValue(id, out GurukulLocation location) ? location : null;
+            return byId.TryGetValue(id, out GurukulLocationData location) ? location : null;
         }
 
         private void EnsureIndexBuilt()
         {
             if (byId != null) return;
-            byId = new Dictionary<string, GurukulLocation>();
-            foreach (GurukulLocation location in locations)
+            byId = new Dictionary<string, GurukulLocationData>();
+            foreach (GurukulLocationData location in locations)
                 if (location != null && !string.IsNullOrEmpty(location.LocationId))
                     byId[location.LocationId] = location;
         }

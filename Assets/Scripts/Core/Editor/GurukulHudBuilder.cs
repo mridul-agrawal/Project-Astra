@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Editor
         private const float CanvasWidth = 1920f;
         private const float CanvasHeight = 1080f;
 
-        private const string GlyphTablePath = "Assets/Gurukul/Data/InputGlyphTable.asset";
+        private const string GlyphDataPath = "Assets/Gurukul/Data/InputGlyphData.asset";
 
         private static float Sc(float logical) => logical * Scale;
 
@@ -45,7 +45,7 @@ namespace ProjectAstra.Core.Editor
             var serialized = new SerializedObject(controller);
             serialized.FindProperty("promptView").objectReferenceValue = prompt;
             serialized.FindProperty("objectiveView").objectReferenceValue = objective;
-            serialized.FindProperty("glyphTable").objectReferenceValue = LoadOrCreateGlyphTable();
+            serialized.FindProperty("glyphData").objectReferenceValue = LoadOrCreateGlyphData();
             serialized.ApplyModifiedProperties();
 
             return controller;
@@ -335,16 +335,16 @@ namespace ProjectAstra.Core.Editor
                 : null;
         }
 
-        private static InputGlyphTable LoadOrCreateGlyphTable()
+        private static InputGlyphData LoadOrCreateGlyphData()
         {
-            var existing = AssetDatabase.LoadAssetAtPath<InputGlyphTable>(GlyphTablePath);
+            var existing = AssetDatabase.LoadAssetAtPath<InputGlyphData>(GlyphDataPath);
             if (existing != null) return existing;
 
             if (!AssetDatabase.IsValidFolder("Assets/Gurukul")) AssetDatabase.CreateFolder("Assets", "Gurukul");
             if (!AssetDatabase.IsValidFolder("Assets/Gurukul/Data")) AssetDatabase.CreateFolder("Assets/Gurukul", "Data");
 
-            var created = ScriptableObject.CreateInstance<InputGlyphTable>();
-            AssetDatabase.CreateAsset(created, GlyphTablePath);
+            var created = ScriptableObject.CreateInstance<InputGlyphData>();
+            AssetDatabase.CreateAsset(created, GlyphDataPath);
             return created;
         }
     }

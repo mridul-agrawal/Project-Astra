@@ -79,9 +79,9 @@ namespace ProjectAstra.Core.Editor
 
             GameObject props = BuildPropsPrefab(tree);
 
-            GurukulLocation courtyard = BuildCourtyard(courtyardArt, props);
-            GurukulLocation house = BuildHouse(houseArt);
-            GurukulVisit visit = BuildVisit(courtyard);
+            GurukulLocationData courtyard = BuildCourtyard(courtyardArt, props);
+            GurukulLocationData house = BuildHouse(houseArt);
+            GurukulVisitData visit = BuildVisit(courtyard);
 
             RegisterInCatalogs(visit, courtyard, house);
             BuildConversations();
@@ -199,9 +199,9 @@ namespace ProjectAstra.Core.Editor
 
         // --- Locations ---
 
-        private static GurukulLocation BuildCourtyard(Sprite art, GameObject props)
+        private static GurukulLocationData BuildCourtyard(Sprite art, GameObject props)
         {
-            var location = LoadOrCreate<GurukulLocation>($"{DataFolder}/Location_GreyboxCourtyard.asset");
+            var location = LoadOrCreate<GurukulLocationData>($"{DataFolder}/Location_GreyboxCourtyard.asset");
             var serialized = new SerializedObject(location);
 
             WriteLocationBasics(serialized, "greybox_courtyard", "Greybox Courtyard", art, props,
@@ -214,9 +214,9 @@ namespace ProjectAstra.Core.Editor
             return location;
         }
 
-        private static GurukulLocation BuildHouse(Sprite art)
+        private static GurukulLocationData BuildHouse(Sprite art)
         {
-            var location = LoadOrCreate<GurukulLocation>($"{DataFolder}/Location_GreyboxHouse.asset");
+            var location = LoadOrCreate<GurukulLocationData>($"{DataFolder}/Location_GreyboxHouse.asset");
             var serialized = new SerializedObject(location);
 
             WriteLocationBasics(serialized, "greybox_house", "Greybox House", art, null,
@@ -245,8 +245,8 @@ namespace ProjectAstra.Core.Editor
         private static void WriteBlockedCells(SerializedProperty cells, int tilesWide, int tilesHigh,
             IEnumerable<RectInt> walls)
         {
-            int cellsWide = tilesWide * GurukulLocation.CellsPerTile;
-            int cellsHigh = tilesHigh * GurukulLocation.CellsPerTile;
+            int cellsWide = tilesWide * GurukulLocationData.CellsPerTile;
+            int cellsHigh = tilesHigh * GurukulLocationData.CellsPerTile;
 
             cells.arraySize = cellsWide * cellsHigh;
             for (int i = 0; i < cells.arraySize; i++)
@@ -260,11 +260,11 @@ namespace ProjectAstra.Core.Editor
 
         private static void BlockTile(SerializedProperty cells, int cellsWide, int tileX, int tileY)
         {
-            for (int dy = 0; dy < GurukulLocation.CellsPerTile; dy++)
-                for (int dx = 0; dx < GurukulLocation.CellsPerTile; dx++)
+            for (int dy = 0; dy < GurukulLocationData.CellsPerTile; dy++)
+                for (int dx = 0; dx < GurukulLocationData.CellsPerTile; dx++)
                 {
-                    int cellX = tileX * GurukulLocation.CellsPerTile + dx;
-                    int cellY = tileY * GurukulLocation.CellsPerTile + dy;
+                    int cellX = tileX * GurukulLocationData.CellsPerTile + dx;
+                    int cellY = tileY * GurukulLocationData.CellsPerTile + dy;
                     cells.GetArrayElementAtIndex(cellY * cellsWide + cellX).boolValue = true;
                 }
         }
@@ -308,9 +308,9 @@ namespace ProjectAstra.Core.Editor
 
         // --- Visit ---
 
-        private static GurukulVisit BuildVisit(GurukulLocation location)
+        private static GurukulVisitData BuildVisit(GurukulLocationData location)
         {
-            var visit = LoadOrCreate<GurukulVisit>($"{DataFolder}/Visit_Greybox.asset");
+            var visit = LoadOrCreate<GurukulVisitData>($"{DataFolder}/Visit_Greybox.asset");
             var serialized = new SerializedObject(visit);
 
             serialized.FindProperty("visitId").stringValue = "greybox";
@@ -345,9 +345,9 @@ namespace ProjectAstra.Core.Editor
         // and marked over a prop.
         private static void WriteObjectives(SerializedProperty list)
         {
-            GurukulObjective talk = BuildObjective("greybox_talk", "Talk to Arjun",
+            GurukulObjectiveData talk = BuildObjective("greybox_talk", "Talk to Arjun",
                 GurukulConditionKind.ConversationCompleted, "greybox_arjun_talk", "arjun");
-            GurukulObjective look = BuildObjective("greybox_look", "Look at the tree",
+            GurukulObjectiveData look = BuildObjective("greybox_look", "Look at the tree",
                 GurukulConditionKind.ObjectInspected, "greybox_tree", "greybox_tree");
 
             list.arraySize = 2;
@@ -355,10 +355,10 @@ namespace ProjectAstra.Core.Editor
             list.GetArrayElementAtIndex(1).objectReferenceValue = look;
         }
 
-        private static GurukulObjective BuildObjective(string objectiveId, string text,
+        private static GurukulObjectiveData BuildObjective(string objectiveId, string text,
             GurukulConditionKind kind, string targetId, string markerId)
         {
-            var objective = LoadOrCreate<GurukulObjective>($"{DataFolder}/Objective_{objectiveId}.asset");
+            var objective = LoadOrCreate<GurukulObjectiveData>($"{DataFolder}/Objective_{objectiveId}.asset");
             var serialized = new SerializedObject(objective);
 
             serialized.FindProperty("objectiveId").stringValue = objectiveId;
@@ -388,12 +388,12 @@ namespace ProjectAstra.Core.Editor
         // text — design owns the real words.
         private static void BuildConversations()
         {
-            ConversationGraph tree = BuildTreeInspection();
-            ConversationGraph arjun = BuildArjunConversation();
+            ConversationGraphData tree = BuildTreeInspection();
+            ConversationGraphData arjun = BuildArjunConversation();
             GurukulPlaceholderDialogue.Catalog(DataFolder, tree, arjun);
         }
 
-        private static ConversationGraph BuildTreeInspection()
+        private static ConversationGraphData BuildTreeInspection()
         {
             DialogueScript look = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_tree_look_lines",
                 "PLACEHOLDER: a tree, taller than it needs to be.",
@@ -403,7 +403,7 @@ namespace ProjectAstra.Core.Editor
             return GurukulPlaceholderDialogue.Graph(DataFolder, "greybox_tree_look", "look", nodes);
         }
 
-        private static ConversationGraph BuildArjunConversation()
+        private static ConversationGraphData BuildArjunConversation()
         {
             DialogueScript greeting = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_greeting",
                 "PLACEHOLDER: Arjun says something.");
@@ -473,7 +473,7 @@ namespace ProjectAstra.Core.Editor
         // the real collision map, and control comes back only once he has settled.
         private static void BuildEvents()
         {
-            var opening = LoadOrCreate<GurukulEvent>($"{DataFolder}/Event_greybox_opening.asset");
+            var opening = LoadOrCreate<GurukulEventData>($"{DataFolder}/Event_greybox_opening.asset");
             var serialized = new SerializedObject(opening);
 
             serialized.FindProperty("eventId").stringValue = "greybox_opening";
@@ -495,18 +495,18 @@ namespace ProjectAstra.Core.Editor
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(opening);
 
-            AppendUnique(LoadOrCreate<GurukulEventCatalog>($"{DataFolder}/GurukulEventCatalog.asset"), "events", opening);
+            AppendUnique(LoadOrCreate<GurukulEventDatabase>($"{DataFolder}/GurukulEventDatabase.asset"), "events", opening);
         }
 
         // --- Plumbing ---
 
-        private static void RegisterInCatalogs(GurukulVisit visit, params GurukulLocation[] locations)
+        private static void RegisterInCatalogs(GurukulVisitData visit, params GurukulLocationData[] locations)
         {
-            var locationCatalog = LoadOrCreate<GurukulLocationCatalog>($"{DataFolder}/GurukulLocationCatalog.asset");
-            foreach (GurukulLocation location in locations)
+            var locationCatalog = LoadOrCreate<GurukulLocationDatabase>($"{DataFolder}/GurukulLocationDatabase.asset");
+            foreach (GurukulLocationData location in locations)
                 AppendUnique(locationCatalog, "locations", location);
 
-            AppendUnique(LoadOrCreate<GurukulVisitCatalog>($"{DataFolder}/GurukulVisitCatalog.asset"), "visits", visit);
+            AppendUnique(LoadOrCreate<GurukulVisitDatabase>($"{DataFolder}/GurukulVisitDatabase.asset"), "visits", visit);
         }
 
         private static void AppendUnique(ScriptableObject catalog, string listName, Object entry)

@@ -37,18 +37,18 @@ namespace ProjectAstra.Core.Editor
         {
             var problems = new List<GurukulProblem>();
 
-            foreach (GurukulLocation location in LoadAll<GurukulLocation>()) CheckLocation(location, problems);
-            foreach (ConversationGraph graph in LoadAll<ConversationGraph>()) CheckConversation(graph, problems);
-            foreach (GurukulObjective objective in LoadAll<GurukulObjective>()) CheckObjective(objective, problems);
-            foreach (GurukulEvent authored in LoadAll<GurukulEvent>()) CheckEvent(authored, problems);
-            foreach (GurukulVisit visit in LoadAll<GurukulVisit>()) CheckVisit(visit, problems);
+            foreach (GurukulLocationData location in LoadAll<GurukulLocationData>()) CheckLocation(location, problems);
+            foreach (ConversationGraphData graph in LoadAll<ConversationGraphData>()) CheckConversation(graph, problems);
+            foreach (GurukulObjectiveData objective in LoadAll<GurukulObjectiveData>()) CheckObjective(objective, problems);
+            foreach (GurukulEventData authored in LoadAll<GurukulEventData>()) CheckEvent(authored, problems);
+            foreach (GurukulVisitData visit in LoadAll<GurukulVisitData>()) CheckVisit(visit, problems);
 
             return problems;
         }
 
         // --- Locations ---
 
-        private static void CheckLocation(GurukulLocation location, List<GurukulProblem> problems)
+        private static void CheckLocation(GurukulLocationData location, List<GurukulProblem> problems)
         {
             if (string.IsNullOrEmpty(location.LocationId))
                 problems.Add(new GurukulProblem(location, $"{location.name}: empty locationId"));
@@ -61,7 +61,7 @@ namespace ProjectAstra.Core.Editor
 
         // A room smaller than the screen leaves the camera with nothing to clamp to and shows the
         // void past its edges.
-        private static void CheckRoomIsBigEnough(GurukulLocation location, List<GurukulProblem> problems)
+        private static void CheckRoomIsBigEnough(GurukulLocationData location, List<GurukulProblem> problems)
         {
             const float viewWide = GurukulScreenSpace.GameplayWidth / GurukulScreenSpace.PixelsPerTile;
             const float viewHigh = GurukulScreenSpace.GameplayHeight / GurukulScreenSpace.PixelsPerTile;
@@ -72,7 +72,7 @@ namespace ProjectAstra.Core.Editor
                     $"{viewWide:0.#}x{viewHigh:0.#} the camera shows"));
         }
 
-        private static void CheckDoors(GurukulLocation location, List<GurukulProblem> problems)
+        private static void CheckDoors(GurukulLocationData location, List<GurukulProblem> problems)
         {
             var seen = new HashSet<string>();
 
@@ -95,7 +95,7 @@ namespace ProjectAstra.Core.Editor
 
         // --- Conversations ---
 
-        private static void CheckConversation(ConversationGraph graph, List<GurukulProblem> problems)
+        private static void CheckConversation(ConversationGraphData graph, List<GurukulProblem> problems)
         {
             if (string.IsNullOrEmpty(graph.ConversationId))
                 problems.Add(new GurukulProblem(graph, $"{graph.name}: empty conversationId"));
@@ -109,7 +109,7 @@ namespace ProjectAstra.Core.Editor
             foreach (ConversationNode node in graph.Nodes) CheckNode(graph, node, problems);
         }
 
-        private static void CheckNode(ConversationGraph graph, ConversationNode node, List<GurukulProblem> problems)
+        private static void CheckNode(ConversationGraphData graph, ConversationNode node, List<GurukulProblem> problems)
         {
             if (node.kind == ConversationNodeKind.Script && node.script == null)
                 problems.Add(new GurukulProblem(graph, $"{graph.name}: node '{node.nodeId}' plays no script"));
@@ -134,7 +134,7 @@ namespace ProjectAstra.Core.Editor
 
         // An empty link ends the conversation, which is fine. A link to a node that isn't there is
         // a dead end the player would fall through.
-        private static void CheckLink(ConversationGraph graph, string fromNode, string toNode,
+        private static void CheckLink(ConversationGraphData graph, string fromNode, string toNode,
             List<GurukulProblem> problems)
         {
             if (string.IsNullOrEmpty(toNode) || graph.Find(toNode) != null) return;
@@ -143,7 +143,7 @@ namespace ProjectAstra.Core.Editor
 
         // --- Objectives and events ---
 
-        private static void CheckObjective(GurukulObjective objective, List<GurukulProblem> problems)
+        private static void CheckObjective(GurukulObjectiveData objective, List<GurukulProblem> problems)
         {
             if (!ObjectiveSequenceRunner.IsAuthoredCorrectly(objective, out string problem))
                 problems.Add(new GurukulProblem(objective, $"{objective.name}: {problem}"));
@@ -154,7 +154,7 @@ namespace ProjectAstra.Core.Editor
                     problems.Add(new GurukulProblem(objective, $"{objective.name}: '{target}' is listed twice as a target"));
         }
 
-        private static void CheckEvent(GurukulEvent authored, List<GurukulProblem> problems)
+        private static void CheckEvent(GurukulEventData authored, List<GurukulProblem> problems)
         {
             if (string.IsNullOrEmpty(authored.EventId))
                 problems.Add(new GurukulProblem(authored, $"{authored.name}: empty eventId"));
@@ -170,12 +170,12 @@ namespace ProjectAstra.Core.Editor
 
         // --- Visits ---
 
-        private static void CheckVisit(GurukulVisit visit, List<GurukulProblem> problems)
+        private static void CheckVisit(GurukulVisitData visit, List<GurukulProblem> problems)
         {
             if (string.IsNullOrEmpty(visit.VisitId))
                 problems.Add(new GurukulProblem(visit, $"{visit.name}: empty visitId"));
 
-            GurukulLocation start = FindLocation(visit.StartLocationId);
+            GurukulLocationData start = FindLocation(visit.StartLocationId);
             if (start == null)
             {
                 problems.Add(new GurukulProblem(visit,
@@ -192,7 +192,7 @@ namespace ProjectAstra.Core.Editor
             CheckRouteTimes(visit, start, problems);
         }
 
-        private static void CheckSpawn(GurukulVisit visit, GurukulLocation start, List<GurukulProblem> problems)
+        private static void CheckSpawn(GurukulVisitData visit, GurukulLocationData start, List<GurukulProblem> problems)
         {
             GurukulCollisionMap map = start.BuildCollisionMap();
             Rect footprint = GurukulMover.FootprintAt(visit.PlayerSpawn, PlayerFootprint);
@@ -202,7 +202,7 @@ namespace ProjectAstra.Core.Editor
                     $"{visit.name}: she spawns at {visit.PlayerSpawn}, which is inside something solid"));
         }
 
-        private static void CheckPlacements(GurukulVisit visit, List<GurukulProblem> problems)
+        private static void CheckPlacements(GurukulVisitData visit, List<GurukulProblem> problems)
         {
             var seen = new HashSet<string>();
 
@@ -222,13 +222,13 @@ namespace ProjectAstra.Core.Editor
 
         // A marker over something the visit never places, or over an interactable nothing declares,
         // would point the player at empty ground.
-        private static void CheckMarkers(GurukulVisit visit, List<GurukulProblem> problems)
+        private static void CheckMarkers(GurukulVisitData visit, List<GurukulProblem> problems)
         {
             var placed = new HashSet<string>();
             foreach (GurukulCharacterPlacement placement in visit.CharacterPlacements)
                 placed.Add(placement.characterId);
 
-            foreach (GurukulObjective objective in visit.Objectives)
+            foreach (GurukulObjectiveData objective in visit.Objectives)
             {
                 if (objective == null) continue;
                 foreach (string target in objective.MarkerTargetIds)
@@ -244,7 +244,7 @@ namespace ProjectAstra.Core.Editor
 
         // The spec's timing check: walk every marked target in the opening room and report anything
         // slower than the target. Reported, not corrected — the fix is design's.
-        private static void CheckRouteTimes(GurukulVisit visit, GurukulLocation start, List<GurukulProblem> problems)
+        private static void CheckRouteTimes(GurukulVisitData visit, GurukulLocationData start, List<GurukulProblem> problems)
         {
             GurukulCollisionMap map = start.BuildCollisionMap();
 
@@ -276,10 +276,10 @@ namespace ProjectAstra.Core.Editor
             return false;
         }
 
-        private static GurukulLocation FindLocation(string locationId)
+        private static GurukulLocationData FindLocation(string locationId)
         {
             if (string.IsNullOrEmpty(locationId)) return null;
-            foreach (GurukulLocation candidate in LoadAll<GurukulLocation>())
+            foreach (GurukulLocationData candidate in LoadAll<GurukulLocationData>())
                 if (candidate.LocationId == locationId) return candidate;
             return null;
         }

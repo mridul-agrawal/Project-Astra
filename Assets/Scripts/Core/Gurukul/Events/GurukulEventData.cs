@@ -65,8 +65,8 @@ namespace ProjectAstra.Core.Gurukul.Events
     //
     // Its own asset rather than living inside a visit, because the same event is often wanted in
     // more than one and a visit that owned them inline would be unmergeable.
-    [CreateAssetMenu(fileName = "GurukulEvent", menuName = "Project Astra/Gurukul/Event")]
-    public class GurukulEvent : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulEventData", menuName = "Project Astra/Gurukul/Event Data")]
+    public class GurukulEventData : ScriptableObject
     {
         [SerializeField] private string eventId;
         [SerializeField] private GurukulEventTrigger trigger = GurukulEventTrigger.Called;
@@ -89,10 +89,10 @@ namespace ProjectAstra.Core.Gurukul.Events
         public bool OneTime => oneTime;
         public GurukulEventAction[] Actions => actions;
 
-        internal static GurukulEvent CreateForTest(string eventId, GurukulEventTrigger trigger,
+        internal static GurukulEventData CreateForTest(string eventId, GurukulEventTrigger trigger,
             GurukulEventAction[] actions, bool oneTime = true)
         {
-            var authored = CreateInstance<GurukulEvent>();
+            var authored = CreateInstance<GurukulEventData>();
             authored.eventId = eventId;
             authored.trigger = trigger;
             authored.actions = actions;

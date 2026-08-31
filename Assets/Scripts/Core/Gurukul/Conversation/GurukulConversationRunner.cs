@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
     // greying both test without a Canvas — the same arrangement DialogueRunner uses.
     public class GurukulConversationRunner
     {
-        private readonly ConversationGraph graph;
+        private readonly ConversationGraphData graph;
         private readonly IConversationPresenter presenter;
         private readonly GurukulRuntimeState state;
         private readonly List<ConversationChoice> choiceBuffer = new();
@@ -24,7 +24,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         public event Action<string> FlagRaised;
         public event Action Completed;
 
-        public GurukulConversationRunner(ConversationGraph graph, IConversationPresenter presenter,
+        public GurukulConversationRunner(ConversationGraphData graph, IConversationPresenter presenter,
             GurukulRuntimeState state)
         {
             this.graph = graph;

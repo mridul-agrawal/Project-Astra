@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.Gurukul
     public sealed class GurukulLocationLoader : MonoBehaviour
     {
         [SerializeField] private GurukulLocationHost locationHost;
-        [SerializeField] private GurukulLocationCatalog locationCatalog;
+        [SerializeField] private GurukulLocationDatabase locationDatabase;
         [SerializeField] private UnitDatabase unitDatabase;
 
         [Tooltip("Everyone except the protagonist is built under here, so a room change can clear the whole cast at once.")]
@@ -23,10 +23,10 @@ namespace ProjectAstra.Core.Gurukul
 
         public bool Load(string locationId, Vector2 playerSpawn, Facing playerFacing, string houseIdentity)
         {
-            GurukulLocation location = locationCatalog != null ? locationCatalog.Get(locationId) : null;
+            GurukulLocationData location = locationDatabase != null ? locationDatabase.Get(locationId) : null;
             if (location == null)
             {
-                Debug.LogError($"[GurukulLocationLoader] No location '{locationId}' in the catalog.");
+                Debug.LogError($"[GurukulLocationLoader] No location '{locationId}' in the database.");
                 return false;
             }
 
@@ -60,7 +60,7 @@ namespace ProjectAstra.Core.Gurukul
         // service, so an objective that has since moved someone wins over the authored baseline.
         private void SpawnCast(string locationId)
         {
-            GurukulVisit visit = GurukulProgressService.Instance?.Visit;
+            GurukulVisitData visit = GurukulProgressService.Instance?.Visit;
             if (visit == null) return;
 
             foreach (GurukulCharacterPlacement authored in visit.CharacterPlacements)

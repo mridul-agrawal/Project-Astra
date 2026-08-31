@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.Gurukul.Events
     {
         [SerializeField] private GurukulInputRouter router;
         [SerializeField] private GurukulEventRunner events;
-        [SerializeField] private GurukulEventCatalog catalog;
+        [SerializeField] private GurukulEventDatabase eventDatabase;
         [SerializeField] private GurukulLocationLoader loader;
 
         private void Update()
@@ -21,7 +21,7 @@ namespace ProjectAstra.Core.Gurukul.Events
             Vector2 here = loader.Player.Position;
             string room = GurukulProgressService.Instance?.State.CurrentLocationId;
 
-            foreach (GurukulEvent authored in catalog.All)
+            foreach (GurukulEventData authored in eventDatabase.All)
             {
                 if (!IsWaitingHere(authored, room, here)) continue;
                 if (events.TryPlay(authored)) return;
@@ -29,10 +29,10 @@ namespace ProjectAstra.Core.Gurukul.Events
         }
 
         private bool CanTrigger() =>
-            catalog != null && loader != null && loader.Player != null &&
+            eventDatabase != null && loader != null && loader.Player != null &&
             router != null && router.States.AcceptsMovement && !events.IsRunning;
 
-        private static bool IsWaitingHere(GurukulEvent authored, string room, Vector2 position) =>
+        private static bool IsWaitingHere(GurukulEventData authored, string room, Vector2 position) =>
             authored != null &&
             authored.Trigger == GurukulEventTrigger.AreaEntered &&
             authored.TriggerLocationId == room &&

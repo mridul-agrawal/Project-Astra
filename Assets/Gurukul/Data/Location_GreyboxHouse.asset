@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3aec0b1419d4c63458396d9446a1389b, type: 3}
   m_Name: Location_GreyboxHouse
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocation
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationData
   locationId: greybox_house
   displayName: Greybox House
   baseArt: {fileID: 21300000, guid: abee34c6e394bd84a878e9e462fa26b9, type: 3}

@@ -46,7 +46,7 @@ namespace ProjectAstra.Core.Gurukul
         {
             offScreen.Clear();
 
-            GurukulObjective active = ActiveObjectiveWhileExploring();
+            GurukulObjectiveData active = ActiveObjectiveWhileExploring();
             if (active == null)
             {
                 ClearAll();
@@ -60,13 +60,13 @@ namespace ProjectAstra.Core.Gurukul
 
         // Wayfinding belongs to free exploration. During a conversation or an event the spec wants
         // the screen clear, and a marker must never draw over a dialogue box.
-        private GurukulObjective ActiveObjectiveWhileExploring()
+        private GurukulObjectiveData ActiveObjectiveWhileExploring()
         {
             if (router != null && !router.States.AcceptsMovement) return null;
             return GurukulProgressService.Instance?.Objectives?.ActiveObjective;
         }
 
-        private void SyncMarkers(ObjectiveSequenceRunner objectives, GurukulObjective active)
+        private void SyncMarkers(ObjectiveSequenceRunner objectives, GurukulObjectiveData active)
         {
             foreach (string targetId in active.MarkerTargetIds)
             {
@@ -106,7 +106,7 @@ namespace ProjectAstra.Core.Gurukul
         }
 
         // Changing objective replaces the whole set, so anything left over from the last one goes.
-        private void DropMarkersNotInThisObjective(GurukulObjective active)
+        private void DropMarkersNotInThisObjective(GurukulObjectiveData active)
         {
             stale.Clear();
             foreach (string shown in markers.Keys)

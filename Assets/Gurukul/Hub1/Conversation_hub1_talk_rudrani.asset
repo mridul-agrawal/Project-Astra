@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9300598a42e9d244bec9f7ff438c6e7, type: 3}
   m_Name: Conversation_hub1_talk_rudrani
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraph
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Conversation.ConversationGraphData
   conversationId: hub1_talk_rudrani
   entryNodeId: first
   repeatEntryNodeId: again

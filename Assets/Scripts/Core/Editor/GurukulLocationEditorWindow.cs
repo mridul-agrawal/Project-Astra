@@ -8,7 +8,7 @@ namespace ProjectAstra.Core.Editor
 {
     // Visual authoring tool for hub rooms. A designer imports a painted PNG (which sets the room
     // size), paints where you can walk, drags out the blocking areas of tall props, and saves a
-    // GurukulLocation that the hub loads straight away.
+    // GurukulLocationData that the hub loads straight away.
     //
     // Written fresh rather than sharing code with the Map Editor: that one paints a per-tile terrain
     // type for a battle map, this one paints half-tile walkability for free movement. The shape of
@@ -22,10 +22,10 @@ namespace ProjectAstra.Core.Editor
         private enum Brush { Block, Clear }
 
         private const int TilePixels = 32;
-        private const int CellsPerTile = GurukulLocation.CellsPerTile;
+        private const int CellsPerTile = GurukulLocationData.CellsPerTile;
         private const string ArtFolder = "Assets/Gurukul/Art";
 
-        private GurukulLocation target;
+        private GurukulLocationData target;
 
         // Working state — edited live, written back on Save.
         private string workId = "";
@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.Editor
         private readonly List<GurukulPropFootprint> props = new();
         private bool dirty;
 
-        private GurukulLocationCatalog catalog;
+        private GurukulLocationDatabase database;
         private bool registered;
 
         private Tool tool = Tool.Walkability;
@@ -63,7 +63,7 @@ namespace ProjectAstra.Core.Editor
             DrawTargetField();
             if (target == null)
             {
-                EditorGUILayout.HelpBox("Pick a GurukulLocation to edit, or create one from the asset menu.", MessageType.Info);
+                EditorGUILayout.HelpBox("Pick a GurukulLocationData to edit, or create one from the asset menu.", MessageType.Info);
                 return;
             }
 
@@ -84,7 +84,7 @@ namespace ProjectAstra.Core.Editor
         private void DrawTargetField()
         {
             EditorGUI.BeginChangeCheck();
-            var picked = (GurukulLocation)EditorGUILayout.ObjectField("Location", target, typeof(GurukulLocation), false);
+            var picked = (GurukulLocationData)EditorGUILayout.ObjectField("Location", target, typeof(GurukulLocationData), false);
             if (EditorGUI.EndChangeCheck()) LoadTarget(picked);
         }
 
@@ -419,12 +419,12 @@ namespace ProjectAstra.Core.Editor
         {
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button(dirty ? "Save *" : "Save")) SaveTarget();
-            using (new EditorGUI.DisabledScope(catalog == null || registered))
+            using (new EditorGUI.DisabledScope(database == null || registered))
                 if (GUILayout.Button("Register In Catalog")) RegisterInCatalog();
             EditorGUILayout.EndHorizontal();
         }
 
-        private void LoadTarget(GurukulLocation picked)
+        private void LoadTarget(GurukulLocationData picked)
         {
             target = picked;
             dirty = false;
@@ -449,11 +449,11 @@ namespace ProjectAstra.Core.Editor
 
         private void CacheCatalog()
         {
-            string[] guids = AssetDatabase.FindAssets("t:GurukulLocationCatalog");
-            catalog = guids.Length > 0
-                ? AssetDatabase.LoadAssetAtPath<GurukulLocationCatalog>(AssetDatabase.GUIDToAssetPath(guids[0]))
+            string[] guids = AssetDatabase.FindAssets("t:GurukulLocationDatabase");
+            database = guids.Length > 0
+                ? AssetDatabase.LoadAssetAtPath<GurukulLocationDatabase>(AssetDatabase.GUIDToAssetPath(guids[0]))
                 : null;
-            registered = catalog != null && catalog.Get(workId) == target;
+            registered = database != null && database.Get(workId) == target;
         }
 
         private void SaveTarget()
@@ -498,7 +498,7 @@ namespace ProjectAstra.Core.Editor
 
         private void RegisterInCatalog()
         {
-            var serialized = new SerializedObject(catalog);
+            var serialized = new SerializedObject(database);
             SerializedProperty list = serialized.FindProperty("locations");
 
             for (int i = 0; i < list.arraySize; i++)
@@ -507,7 +507,7 @@ namespace ProjectAstra.Core.Editor
             list.InsertArrayElementAtIndex(list.arraySize);
             list.GetArrayElementAtIndex(list.arraySize - 1).objectReferenceValue = target;
             serialized.ApplyModifiedProperties();
-            EditorUtility.SetDirty(catalog);
+            EditorUtility.SetDirty(database);
             AssetDatabase.SaveAssets();
             registered = true;
         }

@@ -6,8 +6,8 @@ namespace ProjectAstra.Core.Gurukul
     // One stage of a hub visit: the line the player reads, what finishes it, and what changes about
     // the world when it does. Its own asset because content iterates on these constantly and a
     // visit that owned them inline would be an unmergeable wall of YAML.
-    [CreateAssetMenu(fileName = "GurukulObjective", menuName = "Project Astra/Gurukul/Objective")]
-    public class GurukulObjective : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulObjectiveData", menuName = "Project Astra/Gurukul/Objective Data")]
+    public class GurukulObjectiveData : ScriptableObject
     {
         [SerializeField] private string objectiveId;
 
@@ -30,10 +30,10 @@ namespace ProjectAstra.Core.Gurukul
 
         // Builds an objective without an asset file, so the progression tests don't need a fixture
         // folder. Not for production use.
-        internal static GurukulObjective CreateForTest(string objectiveId, GurukulCondition completion,
+        internal static GurukulObjectiveData CreateForTest(string objectiveId, GurukulCondition completion,
             GurukulEffect[] onComplete = null, string[] markerTargetIds = null, string displayText = "Do the thing")
         {
-            var objective = CreateInstance<GurukulObjective>();
+            var objective = CreateInstance<GurukulObjectiveData>();
             objective.objectiveId = objectiveId;
             objective.displayText = displayText;
             objective.completion = completion;

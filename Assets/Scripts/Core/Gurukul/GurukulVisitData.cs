@@ -56,8 +56,8 @@ namespace ProjectAstra.Core.Gurukul
     // One authored visit to the Gurukul: where the player starts, where everyone is standing, what
     // has to be done, and which battle it leads to. A visit is a complete starting state, not a
     // continuation — loading one replaces whatever the previous visit left behind.
-    [CreateAssetMenu(fileName = "GurukulVisit", menuName = "Project Astra/Gurukul/Visit")]
-    public class GurukulVisit : ScriptableObject
+    [CreateAssetMenu(fileName = "GurukulVisitData", menuName = "Project Astra/Gurukul/Visit Data")]
+    public class GurukulVisitData : ScriptableObject
     {
         [SerializeField] private string visitId;
         [SerializeField] private string displayName;
@@ -82,7 +82,7 @@ namespace ProjectAstra.Core.Gurukul
 
         [Header("Progression")]
         [Tooltip("Worked through in order. The next one activates only once the current one completes and its effects are applied.")]
-        [SerializeField] private GurukulObjective[] objectives = Array.Empty<GurukulObjective>();
+        [SerializeField] private GurukulObjectiveData[] objectives = Array.Empty<GurukulObjectiveData>();
 
         [SerializeField] private GurukulDeparture departure;
 
@@ -96,7 +96,7 @@ namespace ProjectAstra.Core.Gurukul
         public GurukulInteractableOverride[] InteractableOverrides => interactableOverrides;
         public string[] OpenGates => openGates;
         public string EnvironmentSet => environmentSet;
-        public GurukulObjective[] Objectives => objectives;
+        public GurukulObjectiveData[] Objectives => objectives;
         public GurukulDeparture Departure => departure;
     }
 }

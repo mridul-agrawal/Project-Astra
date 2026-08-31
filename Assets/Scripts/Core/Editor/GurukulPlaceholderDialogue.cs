@@ -58,14 +58,14 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
-        public static ConversationGraph Graph(string folder, string conversationId, string entryNodeId,
+        public static ConversationGraphData Graph(string folder, string conversationId, string entryNodeId,
             ConversationNode[] nodes, string repeatEntryNodeId = null)
         {
             string path = $"{folder}/Conversation_{conversationId}.asset";
-            var graph = AssetDatabase.LoadAssetAtPath<ConversationGraph>(path);
+            var graph = AssetDatabase.LoadAssetAtPath<ConversationGraphData>(path);
             if (graph == null)
             {
-                graph = ScriptableObject.CreateInstance<ConversationGraph>();
+                graph = ScriptableObject.CreateInstance<ConversationGraphData>();
                 AssetDatabase.CreateAsset(graph, path);
             }
 
@@ -113,19 +113,19 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
-        public static ConversationGraphCatalog Catalog(string folder, params ConversationGraph[] graphs)
+        public static ConversationGraphDatabase Catalog(string folder, params ConversationGraphData[] graphs)
         {
-            string path = $"{folder}/ConversationGraphCatalog.asset";
-            var catalog = AssetDatabase.LoadAssetAtPath<ConversationGraphCatalog>(path);
+            string path = $"{folder}/ConversationGraphDatabase.asset";
+            var catalog = AssetDatabase.LoadAssetAtPath<ConversationGraphDatabase>(path);
             if (catalog == null)
             {
-                catalog = ScriptableObject.CreateInstance<ConversationGraphCatalog>();
+                catalog = ScriptableObject.CreateInstance<ConversationGraphDatabase>();
                 AssetDatabase.CreateAsset(catalog, path);
             }
 
             var serialized = new SerializedObject(catalog);
             SerializedProperty list = serialized.FindProperty("conversations");
-            foreach (ConversationGraph graph in graphs) AppendUnique(list, graph);
+            foreach (ConversationGraphData graph in graphs) AppendUnique(list, graph);
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(catalog);
             return catalog;

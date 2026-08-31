@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24d64dd0176649a468b72255f104261e, type: 3}
-  m_Name: GurukulLocationCatalog
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationCatalog
+  m_Name: GurukulLocationDatabase
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationDatabase
   locations:
   - {fileID: 11400000, guid: 4936bccffc78893489eefb3f98a2fa82, type: 2}
   - {fileID: 11400000, guid: fe49711000a95ec43bd6ffb111078d92, type: 2}

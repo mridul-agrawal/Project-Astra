@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3aec0b1419d4c63458396d9446a1389b, type: 3}
   m_Name: Location_GreyboxCourtyard
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocation
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationData
   locationId: greybox_courtyard
   displayName: Greybox Courtyard
   baseArt: {fileID: 21300000, guid: af13e7d42b594c94db2af6f5b935a715, type: 3}

@@ -103,7 +103,7 @@ namespace ProjectAstra.Core.Editor
         {
             var serialized = new SerializedObject(loader);
             serialized.FindProperty("locationHost").objectReferenceValue = host;
-            serialized.FindProperty("locationCatalog").objectReferenceValue = FindAsset<GurukulLocationCatalog>();
+            serialized.FindProperty("locationDatabase").objectReferenceValue = FindAsset<GurukulLocationDatabase>();
             serialized.FindProperty("unitDatabase").objectReferenceValue = FindAsset<UnitDatabase>();
             serialized.FindProperty("castRoot").objectReferenceValue = cast;
             serialized.ApplyModifiedProperties();
@@ -130,7 +130,7 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("playerRoot").objectReferenceValue = playerRoot;
             serialized.FindProperty("events").objectReferenceValue = Object.FindFirstObjectByType<GurukulEventRunner>();
             serialized.FindProperty("director").objectReferenceValue = Object.FindFirstObjectByType<GurukulVisitDirector>();
-            serialized.FindProperty("fallbackVisit").objectReferenceValue = FindAsset<GurukulVisit>();
+            serialized.FindProperty("fallbackVisit").objectReferenceValue = FindAsset<GurukulVisitData>();
             serialized.ApplyModifiedProperties();
         }
 
@@ -161,7 +161,7 @@ namespace ProjectAstra.Core.Editor
         {
             var serialized = new SerializedObject(player);
             serialized.FindProperty("router").objectReferenceValue = router;
-            serialized.FindProperty("catalog").objectReferenceValue = FindAsset<ConversationGraphCatalog>();
+            serialized.FindProperty("conversationDatabase").objectReferenceValue = FindAsset<ConversationGraphDatabase>();
             serialized.ApplyModifiedProperties();
         }
 
@@ -189,19 +189,19 @@ namespace ProjectAstra.Core.Editor
             GurukulInputRouter router, GurukulConversationPlayer conversations, GurukulCameraRig cameraRig,
             GurukulLocationLoader loader)
         {
-            var catalog = FindAsset<GurukulEventCatalog>();
+            var eventDatabase = FindAsset<GurukulEventDatabase>();
 
             var runner = new SerializedObject(events);
             runner.FindProperty("router").objectReferenceValue = router;
             runner.FindProperty("conversations").objectReferenceValue = conversations;
-            runner.FindProperty("catalog").objectReferenceValue = catalog;
+            runner.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             runner.FindProperty("cameraRig").objectReferenceValue = cameraRig;
             runner.ApplyModifiedProperties();
 
             var watcher = new SerializedObject(areaTriggers);
             watcher.FindProperty("router").objectReferenceValue = router;
             watcher.FindProperty("events").objectReferenceValue = events;
-            watcher.FindProperty("catalog").objectReferenceValue = catalog;
+            watcher.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             watcher.FindProperty("loader").objectReferenceValue = loader;
             watcher.ApplyModifiedProperties();
         }

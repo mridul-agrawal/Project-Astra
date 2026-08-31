@@ -15,7 +15,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
     {
         [SerializeField] private GurukulInputRouter router;
         [SerializeField] private ChoiceMenuView choiceView;
-        [SerializeField] private ConversationGraphCatalog catalog;
+        [SerializeField] private ConversationGraphDatabase conversationDatabase;
 
         private ChoiceMenuController choices;
         private GurukulConversationRunner runner;
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         {
             if (IsRunning || string.IsNullOrEmpty(conversationId)) return false;
 
-            ConversationGraph graph = catalog != null ? catalog.Get(conversationId) : null;
+            ConversationGraphData graph = conversationDatabase != null ? conversationDatabase.Get(conversationId) : null;
             if (graph == null)
             {
                 Debug.LogError($"[GurukulConversation] No conversation graph with id '{conversationId}'.");

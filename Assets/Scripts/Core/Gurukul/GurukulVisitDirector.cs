@@ -81,7 +81,7 @@ namespace ProjectAstra.Core.Gurukul
         // the spec's rule that a gate is never just an invisible wall.
         private void UseDoor(string doorId)
         {
-            GurukulLocation here = GurukulLocationService.Instance?.CurrentLocation;
+            GurukulLocationData here = GurukulLocationService.Instance?.CurrentLocation;
             if (here == null || !here.TryGetDoor(doorId, out GurukulDoor door)) return;
 
             if (IsShut(door))

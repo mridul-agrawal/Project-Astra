@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.Flow
         [SerializeField] private Campaign campaign;
         [SerializeField] private MapCatalog mapCatalog;
         [SerializeField] private CutsceneCatalog cutsceneCatalog;
-        [SerializeField] private GurukulVisitCatalog visitCatalog;
+        [SerializeField] private GurukulVisitDatabase visitDatabase;
         private int stepIndex = -1;
 
         private CampaignStep CurrentStep => campaign != null ? campaign.StepAt(stepIndex) : null;
@@ -38,9 +38,9 @@ namespace ProjectAstra.Core.Flow
             }
         }
 
-        public GurukulVisit CurrentVisit =>
-            (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.HubVisit && visitCatalog != null)
-                ? visitCatalog.Get(CurrentStep.VisitId) : null;
+        public GurukulVisitData CurrentVisit =>
+            (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.HubVisit && visitDatabase != null)
+                ? visitDatabase.Get(CurrentStep.VisitId) : null;
 
         private void Awake()
         {
@@ -75,7 +75,7 @@ namespace ProjectAstra.Core.Flow
 
         // Same idea for the hub: pressing Play on the Gurukul scene should give you the visit the
         // campaign would have, not whatever fallback the bootstrapper is holding.
-        public GurukulVisit EnsureHubStepStarted()
+        public GurukulVisitData EnsureHubStepStarted()
         {
             if (CurrentVisit != null) return CurrentVisit;
 
@@ -97,25 +97,36 @@ namespace ProjectAstra.Core.Flow
 
         private void EnterStep(int index)
         {
-            this.stepIndex = index;
-            var step = CurrentStep;
-            if (step == null)
-            {
-                Debug.Log("[GameFlow] Campaign complete — returning to title.");
-                this.stepIndex = -1;   // a fresh Begin() restarts from the top
-                RequestState(GameState.TitleScreen);
-                return;
-            }
+            int previousIndex = stepIndex;
+            stepIndex = index;
 
-            switch (step.Kind)
+            CampaignStep step = CurrentStep;
+            if (step == null) { FinishCampaign(); return; }
+
+            // A refused transition means the campaign never actually moved, so leaving the index
+            // on the new step would point it at a beat the game isn't playing.
+            if (!RequestStateFor(step.Kind)) stepIndex = previousIndex;
+        }
+
+        private void FinishCampaign()
+        {
+            Debug.Log("[GameFlow] Campaign complete — returning to title.");
+            stepIndex = -1;   // a fresh Begin() restarts from the top
+            RequestState(GameState.TitleScreen);
+        }
+
+        private bool RequestStateFor(CampaignStepKind kind)
+        {
+            switch (kind)
             {
-                case CampaignStepKind.Cutscene: RequestState(GameState.Cutscene); break;
-                case CampaignStepKind.Battle:   RequestState(GameState.BattleMap); break;
-                case CampaignStepKind.HubVisit: RequestState(GameState.Gurukul); break;
+                case CampaignStepKind.Cutscene: return RequestState(GameState.Cutscene);
+                case CampaignStepKind.Battle:   return RequestState(GameState.BattleMap);
+                case CampaignStepKind.HubVisit: return RequestState(GameState.Gurukul);
+                default: return false;
             }
         }
 
-        private void RequestState(GameState state) =>
+        private bool RequestState(GameState state) =>
             GameStateManager.Instance.RequestTransition(state, nameof(GameFlow));
     }
 }
