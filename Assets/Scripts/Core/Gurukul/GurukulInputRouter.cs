@@ -33,14 +33,14 @@ namespace ProjectAstra.Core.Gurukul
         private void Awake()
         {
             States = new GurukulStateMachine();
-            States.StateChanged += OnSubStateChanged;
+            States.HandoverEnded += OnHandoverEnded;
         }
 
         private void OnEnable() => EventService.Instance?.SubscribeGameStateChanged(OnGameStateChanged);
 
         private void OnDestroy()
         {
-            if (States != null) States.StateChanged -= OnSubStateChanged;
+            if (States != null) States.HandoverEnded -= OnHandoverEnded;
         }
 
         private void Update()
@@ -74,9 +74,9 @@ namespace ProjectAstra.Core.Gurukul
         private static bool IsHeld(GameInputAction action) =>
             InputManager.Instance != null && InputManager.Instance.IsActionHeld(action);
 
-        // Both re-arm the button, so a press held through the end of a conversation or a change of
-        // mode can't immediately activate whatever she happens to be standing in front of.
-        private void OnSubStateChanged(GurukulSubState previous, GurukulSubState next) => confirm.Suppress();
+        // Both re-arm the button, so a press held through the end of a conversation or a doorway
+        // can't immediately activate whatever she happens to be standing in front of.
+        private void OnHandoverEnded() => confirm.Suppress();
 
         private void OnGameStateChanged(StateChangeArgs args) => confirm.Suppress();
 

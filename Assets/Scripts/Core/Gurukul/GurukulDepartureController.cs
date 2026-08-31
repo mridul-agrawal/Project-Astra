@@ -7,9 +7,13 @@ namespace ProjectAstra.Core.Gurukul
     // Leaves the hub for the battle the visit points at.
     //
     // Both of the spec's modes end up here. An automatic departure is the Depart action at the end
-    // of a scripted event; a confirmed one is a conversation whose "yes" branch raises the departure
-    // flag. Neither needs its own machinery — the conversation graph already does confirmations, and
-    // routing both through one place means the checks can't be skipped by taking the other road.
+    // of a scripted sequence; a confirmed one is a conversation whose "yes" branch raises the
+    // departure flag. Neither needs its own machinery — the conversation graph already does
+    // confirmations, and routing both through one place means the checks can't be skipped by
+    // taking the other road.
+    //
+    // Leaving is a handover, not a mode, so it holds the hub's lock rather than being a state. That
+    // is also what lets a refused departure hand control back: a terminal state had nowhere to go.
     public sealed class GurukulDepartureController : MonoBehaviour
     {
         // The flag a confirmation conversation raises on its "leave" branch.
@@ -41,16 +45,19 @@ namespace ProjectAstra.Core.Gurukul
         // load leaves her standing in the hub rather than nowhere.
         private bool Commit(GurukulProgressService progress)
         {
-            router.States.TryTransition(GurukulSubState.Departure);
+            if (!router.States.TryBeginHandover()) return false;
+
             GameFlow.Instance.NotifyHubVisitFinished();
 
             if (GameStateManager.Instance.CurrentState == GameState.HubExploration)
             {
                 Debug.LogError($"[GurukulDeparture] Asked for '{progress.DestinationMapId}' but the game is still in the hub.");
-                router.States.TryTransition(GurukulSubState.FreeExploration);
+                router.States.EndHandover();
                 return false;
             }
 
+            // The lock is deliberately still held: the hub is going away, and nothing here should
+            // answer another press on the way out.
             progress.State.MarkDeparted();
             HasDeparted = true;
             return true;

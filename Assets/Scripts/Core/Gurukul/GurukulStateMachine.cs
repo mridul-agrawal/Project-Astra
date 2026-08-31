@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.State;
 
@@ -13,21 +12,20 @@ namespace ProjectAstra.Core.Gurukul
         Departure
     }
 
-    // Validated state machine for the hub's remaining modes.
+    // Answers one question for the whole hub: may anything here act right now?
     //
-    // Conversations, choices and scripted sequences used to live here too. They are high-level
-    // GameStates now — a conversation is GameState.Dialogue wherever it happens — so this machine
-    // asks GameStateManager whether the hub is in control at all before letting anything through.
+    // Conversations and scripted sequences used to be states in here; they are high-level
+    // GameStates now, so this asks GameStateManager about those. Walking through a doorway and
+    // leaving for the battle used to be states too, but neither is a mode the player is *in* —
+    // each is a handover in flight, so each is a lock that is held while it runs.
     public class GurukulStateMachine
     {
-        private static readonly HashSet<(GurukulSubState, GurukulSubState)> LegalTransitions = BuildLegalTransitions();
-
         private GurukulSubState currentState;
+        private int handoversInFlight;
 
-        // Fires with (previous, next) so listeners can react to the specific edge — returning to
-        // FreeExploration from an event needs the interact button re-armed, arriving from a
-        // location transition does not.
-        public event Action<GurukulSubState, GurukulSubState> StateChanged;
+        // Fires when the last handover finishes, so a button still held from before it started
+        // can be re-armed rather than read the moment control comes back.
+        public event Action HandoverEnded;
 
         public GurukulStateMachine(GurukulSubState initialState = GurukulSubState.FreeExploration)
         {
@@ -36,48 +34,37 @@ namespace ProjectAstra.Core.Gurukul
 
         public GurukulSubState CurrentState => currentState;
 
-        public bool AcceptsMovement => IsHubInControl && currentState == GurukulSubState.FreeExploration;
+        public bool IsHandoverInFlight => handoversInFlight > 0;
+
+        public bool AcceptsMovement => IsHubInControl && !IsHandoverInFlight;
         public bool AcceptsWorldInteraction => AcceptsMovement;
 
-        // A conversation or a cutscene owns the moment even though the hub scene is still loaded,
-        // so nothing hub-side may act. A null manager means someone pressed Play on the scene
-        // directly, which should still be walkable.
+        // A conversation or a scripted sequence owns the moment even though the hub scene is still
+        // loaded, so nothing hub-side may act. A null manager means someone pressed Play on the
+        // scene directly, which should still be walkable.
         private static bool IsHubInControl =>
             GameStateManager.Instance == null ||
             GameStateManager.Instance.CurrentState == GameState.HubExploration;
 
-        public bool TryTransition(GurukulSubState next)
+        // Refused rather than nested: two doorways at once, or a door during a departure, would
+        // each land the player somewhere the other didn't expect.
+        public bool TryBeginHandover()
         {
-            if (next == currentState) return true;
-
-            if (!LegalTransitions.Contains((currentState, next)))
-            {
-                Debug.LogWarning($"[GurukulStateMachine] Illegal transition: {currentState} -> {next}. Rejected.");
-                return false;
-            }
-
-            GurukulSubState previous = currentState;
-            currentState = next;
-            StateChanged?.Invoke(previous, next);
+            if (IsHandoverInFlight) return false;
+            handoversInFlight++;
             return true;
         }
 
-        internal static bool IsLegal(GurukulSubState from, GurukulSubState to) =>
-            from == to || LegalTransitions.Contains((from, to));
-
-        private static HashSet<(GurukulSubState, GurukulSubState)> BuildLegalTransitions()
+        public void EndHandover()
         {
-            return new HashSet<(GurukulSubState, GurukulSubState)>
+            if (handoversInFlight == 0)
             {
-                // Walking around is where both handovers start from.
-                (GurukulSubState.FreeExploration, GurukulSubState.LocationTransition),
-                (GurukulSubState.FreeExploration, GurukulSubState.Departure),
+                Debug.LogWarning("[GurukulStateMachine] EndHandover with nothing in flight. Ignored.");
+                return;
+            }
 
-                // A doorway lands back in free exploration in the new room.
-                (GurukulSubState.LocationTransition, GurukulSubState.FreeExploration),
-
-                // Departure is terminal: once it commits, the hub is done and the battle loads.
-            };
+            handoversInFlight--;
+            if (handoversInFlight == 0) HandoverEnded?.Invoke();
         }
     }
 }

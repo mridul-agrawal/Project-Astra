@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -17,7 +15,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
         [SetUp]
         public void SetUp()
         {
-            // No manager means "someone pressed Play on the hub scene", which the machine treats as
+            // No manager means "someone pressed Play on the hub scene", which the gate treats as
             // the hub being in control. Cleared explicitly so a manager left behind by another
             // fixture can't decide these tests.
             ClearGameStateManagerInstance();
@@ -33,86 +31,98 @@ namespace ProjectAstra.Core.Tests.Gurukul
                 .SetValue(null, null);
 
         [Test]
-        public void StartsInFreeExploration()
-        {
-            Assert.AreEqual(GurukulSubState.FreeExploration, machine.CurrentState);
-        }
-
-        [TestCase(GurukulSubState.FreeExploration, GurukulSubState.LocationTransition)]
-        [TestCase(GurukulSubState.FreeExploration, GurukulSubState.Departure)]
-        [TestCase(GurukulSubState.LocationTransition, GurukulSubState.FreeExploration)]
-        public void LegalTransition_IsAccepted(GurukulSubState from, GurukulSubState to)
-        {
-            Assert.IsTrue(GurukulStateMachine.IsLegal(from, to), $"Expected {from} -> {to} to be legal");
-        }
-
-        // Walking straight out of a doorway into the battle would skip everything the hub still
-        // has to settle first.
-        [TestCase(GurukulSubState.LocationTransition, GurukulSubState.Departure)]
-        public void IllegalTransition_IsRejected(GurukulSubState from, GurukulSubState to)
-        {
-            Assert.IsFalse(GurukulStateMachine.IsLegal(from, to), $"Expected {from} -> {to} to be illegal");
-        }
-
-        // Once the battle is committed to, nothing may pull the player back into the hub.
-        [Test]
-        public void Departure_IsTerminal()
-        {
-            foreach (GurukulSubState state in Enum.GetValues(typeof(GurukulSubState)))
-            {
-                if (state == GurukulSubState.Departure) continue;
-                Assert.IsFalse(GurukulStateMachine.IsLegal(GurukulSubState.Departure, state),
-                    $"Departure -> {state} should be illegal");
-            }
-        }
-
-        [Test]
-        public void RejectedTransition_LeavesTheStateAloneAndWarns()
-        {
-            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Illegal transition"));
-
-            bool accepted = machine.TryTransition(GurukulSubState.Departure);
-            machine.TryTransition(GurukulSubState.FreeExploration);
-
-            Assert.IsTrue(accepted);
-        }
-
-        [Test]
-        public void TransitioningToTheCurrentState_IsANoOp()
-        {
-            bool changed = false;
-            machine.StateChanged += (_, _) => changed = true;
-
-            Assert.IsTrue(machine.TryTransition(GurukulSubState.FreeExploration));
-            Assert.IsFalse(changed, "Re-entering the same state should not announce a change.");
-        }
-
-        [Test]
-        public void StateChanged_ReportsBothEndsOfTheEdge()
-        {
-            var edges = new List<(GurukulSubState, GurukulSubState)>();
-            machine.StateChanged += (from, to) => edges.Add((from, to));
-
-            machine.TryTransition(GurukulSubState.LocationTransition);
-            machine.TryTransition(GurukulSubState.FreeExploration);
-
-            CollectionAssert.AreEqual(new[]
-            {
-                (GurukulSubState.FreeExploration, GurukulSubState.LocationTransition),
-                (GurukulSubState.LocationTransition, GurukulSubState.FreeExploration)
-            }, edges);
-        }
-
-        [Test]
-        public void OnlyFreeExploration_AcceptsMovementAndWorldInteraction()
+        public void WithNothingInFlight_TheHubAcceptsInput()
         {
             Assert.IsTrue(machine.AcceptsMovement);
             Assert.IsTrue(machine.AcceptsWorldInteraction);
+            Assert.IsFalse(machine.IsHandoverInFlight);
+        }
 
-            machine.TryTransition(GurukulSubState.LocationTransition);
+        [Test]
+        public void AHandoverInFlight_StopsTheHubAcceptingAnything()
+        {
+            Assert.IsTrue(machine.TryBeginHandover());
 
+            Assert.IsTrue(machine.IsHandoverInFlight);
             Assert.IsFalse(machine.AcceptsMovement);
             Assert.IsFalse(machine.AcceptsWorldInteraction);
+        }
+
+        // Two doorways at once, or a door during a departure, would each land her somewhere the
+        // other didn't expect.
+        [Test]
+        public void ASecondHandover_IsRefusedWhileOneIsInFlight()
+        {
+            machine.TryBeginHandover();
+
+            Assert.IsFalse(machine.TryBeginHandover());
+        }
+
+        [Test]
+        public void EndingTheHandover_GivesControlBackAndAnnouncesIt()
+        {
+            int ended = 0;
+            machine.HandoverEnded += () => ended++;
+            machine.TryBeginHandover();
+
+            machine.EndHandover();
+
+            Assert.AreEqual(1, ended, "The router needs this to re-arm a still-held button");
+            Assert.IsTrue(machine.AcceptsMovement);
+        }
+
+        // This is the departure soft-lock: a refused departure used to leave the hub in a terminal
+        // state with movement and interaction both dead.
+        [Test]
+        public void ARefusedHandover_CanHandControlBack()
+        {
+            machine.TryBeginHandover();
+            machine.EndHandover();
+
+            Assert.IsTrue(machine.TryBeginHandover(), "The hub must be able to try leaving again");
+            machine.EndHandover();
+            Assert.IsTrue(machine.AcceptsMovement);
+        }
+
+        [Test]
+        public void EndingAHandoverThatNeverStarted_WarnsInsteadOfGoingNegative()
+        {
+            LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("nothing in flight"));
+
+            machine.EndHandover();
+
+            Assert.IsFalse(machine.IsHandoverInFlight);
+            Assert.IsTrue(machine.AcceptsMovement);
+        }
+
+        // A conversation is a high-level GameState now, so the hub must go quiet during one even
+        // though no handover is in flight.
+        [Test]
+        public void DialogueElsewhere_StopsTheHubAcceptingAnything()
+        {
+            var go = new GameObject("TestGameStateManager");
+            var table = ScriptableObject.CreateInstance<GameStateTransitionTable>();
+            try
+            {
+                var manager = go.AddComponent<GameStateManager>();
+                typeof(GameStateTransitionTable)
+                    .GetField("validTransitions", BindingFlags.NonPublic | BindingFlags.Instance)
+                    .SetValue(table, GameStateTransitionTable.CreateDefaultTransitions());
+                manager.Initialize(table, GameState.HubExploration);
+
+                Assert.IsTrue(machine.AcceptsMovement, "The hub is in control while HubExploration is up");
+
+                Assert.IsTrue(manager.RequestTransition(GameState.Dialogue, "test"));
+
+                Assert.IsFalse(machine.AcceptsMovement);
+                Assert.IsFalse(machine.AcceptsWorldInteraction);
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(table);
+                UnityEngine.Object.DestroyImmediate(go);
+                ClearGameStateManagerInstance();
+            }
         }
     }
 }

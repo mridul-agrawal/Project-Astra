@@ -16,12 +16,11 @@ namespace ProjectAstra.Core.Gurukul
         [SerializeField] private GurukulLocationLoader loader;
         [SerializeField] private GurukulScreenFade fade;
 
-        public bool IsTransitioning { get; private set; }
+        public bool IsTransitioning => router.States.IsHandoverInFlight;
 
         public bool TryUse(GurukulDoor door)
         {
-            if (IsTransitioning) return false;
-            if (!router.States.TryTransition(GurukulSubState.LocationTransition)) return false;
+            if (!router.States.TryBeginHandover()) return false;
 
             StartCoroutine(Travel(door));
             return true;
@@ -29,19 +28,15 @@ namespace ProjectAstra.Core.Gurukul
 
         private IEnumerator Travel(GurukulDoor door)
         {
-            IsTransitioning = true;
-
             // Read before the swap: once the room changes, where she came from is gone.
             RememberWayBack(door);
             ResolveDestination(door, out string locationId, out Vector2 spawn, out Facing facing);
 
             yield return fade.Cover(() => loader.Load(locationId, spawn, facing, door.houseIdentityId));
 
-            IsTransitioning = false;
-
-            // Returning to exploration re-arms the buttons, so the press that opened the door can't
+            // Ending the handover re-arms the buttons, so the press that opened the door can't
             // immediately open the one she just arrived next to.
-            router.States.TryTransition(GurukulSubState.FreeExploration);
+            router.States.EndHandover();
         }
 
         // She stands at the door facing it, so coming back out means standing in the same place
