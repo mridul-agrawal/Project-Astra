@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Astra — Runtime Flow: Startup to Gurukul Hub</title>
+<style>
+  :root{
+    --bg:#f5f6fa; --panel:#ffffff; --panel-2:#eef0f7; --sunken:#f0f2f8;
+    --ink:#171a24; --ink-soft:#5a6178; --ink-faint:#868da4;
+    --line:#dcdfec; --line-soft:#e8eaf3;
+    --shadow:0 1px 2px rgba(20,24,40,.05),0 10px 28px rgba(20,24,40,.05);
+    --accent:#3b5bd9;
+
+    --s-reused:#5b6478;   --s-reused-bg:#e9ebf2;
+    --s-modified:#b06b12; --s-modified-bg:#faf0dc;
+    --s-new:#1c7d5a;      --s-new-bg:#e0f3ea;
+    --s-temp:#c23b58;     --s-temp-bg:#fbe6ea;
+    --s-gap:#8a4ec9;      --s-gap-bg:#f2e9fb;
+
+    --warn:#c23b58; --warn-bg:#fdf0f2; --warn-line:#f0c3cc;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c0e15; --panel:#151823; --panel-2:#1c2030; --sunken:#111420;
+      --ink:#e9ecf6; --ink-soft:#a4abc2; --ink-faint:#767d94;
+      --line:#282e40; --line-soft:#212636;
+      --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 32px rgba(0,0,0,.35);
+      --accent:#8ba0f5;
+
+      --s-reused:#98a0b6;   --s-reused-bg:#212636;
+      --s-modified:#e3a84c; --s-modified-bg:#332912;
+      --s-new:#4cc490;      --s-new-bg:#0e2f24;
+      --s-temp:#f0748e;     --s-temp-bg:#361620;
+      --s-gap:#b98ae8;      --s-gap-bg:#26193a;
+
+      --warn:#f0748e; --warn-bg:#2a1219; --warn-line:#5a2733;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c0e15; --panel:#151823; --panel-2:#1c2030; --sunken:#111420;
+    --ink:#e9ecf6; --ink-soft:#a4abc2; --ink-faint:#767d94;
+    --line:#282e40; --line-soft:#212636;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 12px 32px rgba(0,0,0,.35);
+    --accent:#8ba0f5;
+    --s-reused:#98a0b6;   --s-reused-bg:#212636;
+    --s-modified:#e3a84c; --s-modified-bg:#332912;
+    --s-new:#4cc490;      --s-new-bg:#0e2f24;
+    --s-temp:#f0748e;     --s-temp-bg:#361620;
+    --s-gap:#b98ae8;      --s-gap-bg:#26193a;
+    --warn:#f0748e; --warn-bg:#2a1219; --warn-line:#5a2733;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%; scroll-behavior:smooth; scroll-padding-top:84px}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:15px; line-height:1.6;
+    font-variant-numeric:tabular-nums;
+  }
+  .wrap{max-width:1120px; margin:0 auto; padding:0 22px}
+  .mono{font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace}
+  code{
+    font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+    font-size:.87em; background:var(--panel-2); border:1px solid var(--line-soft);
+    padding:.1em .38em; border-radius:5px; color:var(--ink);
+    overflow-wrap:anywhere;
+  }
+  a{color:var(--accent); text-decoration-thickness:1px; text-underline-offset:2px}
+
+  /* ---- masthead ---- */
+  header.mast{
+    border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(80rem 24rem at 12% -8rem, color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%),
+      var(--panel);
+    padding:52px 0 34px;
+  }
+  .eyebrow{
+    font-size:11.5px; letter-spacing:.13em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:600; margin:0 0 14px;
+  }
+  h1{
+    margin:0; font-size:clamp(28px,4.4vw,42px); line-height:1.12;
+    letter-spacing:-.022em; font-weight:680; max-width:22ch;
+  }
+  .standfirst{
+    margin:16px 0 0; max-width:70ch; color:var(--ink-soft); font-size:16.5px; line-height:1.62;
+  }
+  .meta{
+    display:flex; flex-wrap:wrap; gap:8px 26px; margin-top:26px;
+    font-size:12.5px; color:var(--ink-faint);
+  }
+  .meta b{color:var(--ink-soft); font-weight:600}
+
+  /* ---- sticky nav ---- */
+  nav.jump{
+    position:sticky; top:0; z-index:40;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .jump-inner{display:flex; gap:2px; overflow-x:auto; padding:9px 0; scrollbar-width:thin}
+  .jump a{
+    flex:0 0 auto; font-size:12.5px; color:var(--ink-soft); text-decoration:none;
+    padding:5px 10px; border-radius:7px; white-space:nowrap; font-weight:500;
+  }
+  .jump a:hover{background:var(--panel-2); color:var(--ink)}
+
+  /* ---- status tags ---- */
+  .tag{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:10.5px; font-weight:700; letter-spacing:.055em; text-transform:uppercase;
+    padding:2.5px 7px; border-radius:5px; white-space:nowrap; vertical-align:middle;
+    border:1px solid transparent;
+  }
+  .tag::before{content:""; width:5px; height:5px; border-radius:50%; background:currentColor; flex:none}
+  .t-reused  {color:var(--s-reused);   background:var(--s-reused-bg);   border-color:color-mix(in srgb,var(--s-reused) 22%,transparent)}
+  .t-modified{color:var(--s-modified); background:var(--s-modified-bg); border-color:color-mix(in srgb,var(--s-modified) 26%,transparent)}
+  .t-new     {color:var(--s-new);      background:var(--s-new-bg);      border-color:color-mix(in srgb,var(--s-new) 26%,transparent)}
+  .t-temp    {color:var(--s-temp);     background:var(--s-temp-bg);     border-color:color-mix(in srgb,var(--s-temp) 28%,transparent)}
+  .t-gap     {color:var(--s-gap);      background:var(--s-gap-bg);      border-color:color-mix(in srgb,var(--s-gap) 26%,transparent)}
+
+  /* ---- filter bar ---- */
+  .filterbar{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:16px 18px; box-shadow:var(--shadow); margin:26px 0 0;
+  }
+  .filterbar h2{margin:0 0 4px; font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-faint)}
+  .filterbar p{margin:0 0 13px; font-size:13.5px; color:var(--ink-soft); max-width:74ch}
+  .chips{display:flex; flex-wrap:wrap; gap:7px}
+  .chip{
+    font:inherit; font-size:11px; font-weight:700; letter-spacing:.055em; text-transform:uppercase;
+    padding:5px 11px; border-radius:7px; cursor:pointer; transition:.16s ease;
+    border:1px solid var(--line); background:var(--panel-2); color:var(--ink-soft);
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .chip::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor}
+  .chip[data-s="reused"]  {color:var(--s-reused)}
+  .chip[data-s="modified"]{color:var(--s-modified)}
+  .chip[data-s="new"]     {color:var(--s-new)}
+  .chip[data-s="temp"]    {color:var(--s-temp)}
+  .chip[data-s="gap"]     {color:var(--s-gap)}
+  .chip:hover{border-color:currentColor}
+  .chip[aria-pressed="true"]{background:currentColor; border-color:currentColor}
+  .chip[aria-pressed="true"]::before{background:var(--panel)}
+  .chip[aria-pressed="true"] span{color:var(--panel)}
+  .chip-reset{
+    font:inherit; font-size:11px; font-weight:600; letter-spacing:.04em;
+    padding:5px 11px; border-radius:7px; cursor:pointer;
+    border:1px dashed var(--line); background:transparent; color:var(--ink-faint);
+  }
+  .chip-reset:hover{color:var(--ink); border-color:var(--ink-faint)}
+
+  body.filtering [data-status]{opacity:.2; filter:saturate(.15); transition:opacity .18s ease, filter .18s ease}
+  body.filtering [data-status].hit{opacity:1; filter:none}
+
+  /* ---- sections ---- */
+  section{padding:46px 0 8px; border-top:1px solid var(--line-soft)}
+  section:first-of-type{border-top:0}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px}
+  .sec-num{
+    font-size:12px; font-weight:700; color:var(--accent);
+    letter-spacing:.09em; flex:none; padding-top:5px;
+  }
+  h2.sec{margin:0; font-size:clamp(20px,2.5vw,25px); letter-spacing:-.017em; font-weight:660}
+  .lede{margin:10px 0 22px; color:var(--ink-soft); max-width:76ch; font-size:15px}
+  h3{
+    margin:30px 0 10px; font-size:15px; font-weight:660; letter-spacing:-.005em;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  }
+  p{max-width:80ch}
+
+  /* ---- callout ---- */
+  .callout{
+    border:1px solid var(--warn-line); background:var(--warn-bg);
+    border-radius:14px; padding:20px 22px; margin:26px 0;
+    position:relative; overflow:hidden;
+  }
+  .callout::before{content:""; position:absolute; inset:0 auto 0 0; width:3px; background:var(--warn)}
+  .callout h3{margin:0 0 8px; color:var(--warn); font-size:14px; letter-spacing:.02em}
+  .callout p{margin:0 0 10px; font-size:14.5px}
+  .callout p:last-child{margin-bottom:0}
+
+  .note{
+    border-left:2px solid var(--line); padding:2px 0 2px 16px; margin:20px 0;
+    color:var(--ink-soft); font-size:14.5px;
+  }
+
+  /* ---- cards ---- */
+  .card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:18px 20px; box-shadow:var(--shadow); margin:18px 0;
+  }
+  .grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:14px; margin:18px 0}
+
+  /* ---- boot diagram ---- */
+  .flow{margin:22px 0; display:flex; flex-direction:column; gap:0}
+  .flow-step{
+    display:grid; grid-template-columns:auto 1fr; gap:0 16px; align-items:start;
+  }
+  .rail{display:flex; flex-direction:column; align-items:center; width:24px}
+  .dot{
+    width:11px; height:11px; border-radius:50%; background:var(--panel);
+    border:2.5px solid var(--accent); margin-top:6px; flex:none; z-index:1;
+  }
+  .dot.muted{border-color:var(--ink-faint)}
+  .dot.stop{border-color:var(--s-temp); background:var(--s-temp)}
+  .stem{width:2px; flex:1 0 auto; background:var(--line); min-height:16px}
+  .flow-body{padding-bottom:20px; min-width:0}
+  .flow-title{font-weight:640; font-size:14.5px; margin:1px 0 3px}
+  .flow-sub{color:var(--ink-soft); font-size:13.5px; margin:0; max-width:74ch}
+
+  /* ---- code ---- */
+  pre{
+    background:var(--sunken); border:1px solid var(--line); border-radius:11px;
+    padding:15px 17px; overflow-x:auto; margin:16px 0;
+    font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,"Liberation Mono",monospace;
+    font-size:12.9px; line-height:1.66; color:var(--ink);
+  }
+  pre code{background:none; border:0; padding:0; font-size:inherit}
+  pre .c{color:var(--ink-faint)}
+  pre .k{color:var(--accent)}
+  .pre-label{
+    font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-faint);
+    font-weight:650; margin:20px 0 -8px;
+  }
+
+  /* ---- tables ---- */
+  .tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:12px; background:var(--panel)}
+  table{border-collapse:collapse; width:100%; font-size:13.8px; min-width:520px}
+  th{
+    text-align:left; font-size:11px; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:650; padding:11px 15px;
+    border-bottom:1px solid var(--line); background:var(--panel-2); white-space:nowrap;
+  }
+  td{padding:11px 15px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  td.ord{color:var(--accent); font-weight:660; white-space:nowrap; font-family:ui-monospace,monospace; font-size:12.5px}
+
+  /* ---- footer ---- */
+  footer{
+    margin-top:56px; border-top:1px solid var(--line); padding:26px 0 60px;
+    color:var(--ink-faint); font-size:13px;
+  }
+
+  .theme-toggle{
+    position:fixed; right:16px; bottom:16px; z-index:60;
+    width:38px; height:38px; border-radius:11px; cursor:pointer;
+    border:1px solid var(--line); background:var(--panel); color:var(--ink-soft);
+    box-shadow:var(--shadow); font-size:15px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .theme-toggle:hover{color:var(--ink)}
+
+  @media (max-width:640px){
+    body{font-size:14.5px}
+    section{padding-top:36px}
+    .meta{gap:6px 16px}
+  }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <p class="eyebrow">Project Astra · Runtime reference</p>
+    <h1>Startup to Gurukul Hub</h1>
+    <p class="standfirst">
+      How the game actually boots and runs after the Gurukul Hub work — the real call chains, in
+      execution order, with the file that backs each claim. Written against the code as committed,
+      not against an intended design.
+    </p>
+    <div class="meta">
+      <span><b>Commit</b> <code>29554b9</code></span>
+      <span><b>Branch</b> <code>hub.dev.master</code></span>
+      <span><b>Tests</b> 844 EditMode, green</span>
+      <span><b>Source</b> <code>docs/hub/runtime-flow.md</code></span>
+    </div>
+  </div>
+</header>
+
+<nav class="jump">
+  <div class="wrap jump-inner">
+    <a href="#launch">1 · Launch</a>
+    <a href="#first-state">2 · First state</a>
+    <a href="#transitions">3 · Transitions</a>
+    <a href="#campaign">4 · Campaign data</a>
+    <a href="#visit">5 · Visit selection</a>
+    <a href="#scene">6 · Scene init</a>
+    <a href="#world">7 · World build</a>
+    <a href="#objective">8 · Active objective</a>
+    <a href="#progression">9 · Progression state</a>
+    <a href="#completion">10 · Completion</a>
+    <a href="#departure">11 · Departure</a>
+    <a href="#gaps">Not finished</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="filterbar">
+    <h2>Status filter</h2>
+    <p>
+      Every claim below is tagged. Pick one or more to focus the whole page — everything tagged
+      otherwise dims, untagged prose stays put.
+    </p>
+    <div class="chips" id="chips">
+      <button class="chip" data-s="reused"   aria-pressed="false"><span>Reused</span></button>
+      <button class="chip" data-s="modified" aria-pressed="false"><span>Modified</span></button>
+      <button class="chip" data-s="new"      aria-pressed="false"><span>New</span></button>
+      <button class="chip" data-s="temp"     aria-pressed="false"><span>Temporary</span></button>
+      <button class="chip" data-s="gap"      aria-pressed="false"><span>Not wired</span></button>
+      <button class="chip-reset" id="reset">Clear</button>
+    </div>
+  </div>
+
+  <div class="callout" data-status="temp">
+    <h3>Read this first — the game does not currently transition into the hub</h3>
+    <p>
+      <code>BootScene.unity:836</code> reads <code>initialState: 16</code>, which is
+      <code>GameState.Gurukul</code>. <code>GameStateManager.Awake</code> assigns that silently —
+      it raises no event — and <code>SceneLoader.Start</code> loads the matching scene directly.
+      <strong>Splash, Title, Main Menu and the opening cutscene are all skipped, and
+      <code>GameFlow.EnterStep</code> never runs.</strong>
+    </p>
+    <p>
+      This is <code>DevBootTarget</code>'s dev mode, committed on purpose so hub testing is one
+      keypress away. It was already in dev mode before this work, pointing at <code>BattleMap</code>.
+      Run <code>Project&nbsp;Astra/Dev/Restore&nbsp;Normal&nbsp;Boot</code> before any build that ships.
+    </p>
+  </div>
+
+  <!-- 1 -->
+  <section id="launch">
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec">Launch</h2></div>
+    <p class="lede">
+      <code>BootScene</code> is build index 0 and the only scene that starts on its own. It holds
+      twelve objects, all of which make themselves <code>DontDestroyOnLoad</code> and survive every
+      later scene load.
+    </p>
+
+    <div class="card">
+      <p style="margin:0; font-size:13.6px; color:var(--ink-soft)">
+        <code>EventService</code> · <code>GameStateManager</code> · <code>SceneLoader</code> ·
+        <code>GameFlow</code> · <code>Input Manager</code> · <code>DialogueService</code> ·
+        <code>OverlayManager</code> · <code>AudioManager</code> · <code>EventSystem</code> ·
+        <code>UICanvas</code> · <code>Main Camera</code> · <code>Global Light 2D</code>
+      </p>
+    </div>
+
+    <p>
+      Only one has a forced order: <code>EventService</code> is
+      <code>[DefaultExecutionOrder(-1000)]</code>, so its channels exist before anything publishes.
+      Everything else relies on Unity's rule that <em>all</em> <code>Awake</code> calls run before
+      <em>any</em> <code>Start</code>.
+    </p>
+
+    <h3>Awake phase</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Object</th><th>What it does</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr data-status="reused"><td><code>EventService.Awake</code></td><td>Wires the five SO event channels, <code>DontDestroyOnLoad</code>.</td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="reused"><td><code>GameStateManager.Awake</code></td><td>Singleton guard, <code>transitionTable.Initialize()</code>, <code>currentState = initialState</code>. <strong>Raises nothing</strong> — a silent assignment, not a transition.</td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="reused"><td><code>SceneLoader.Awake</code></td><td>Singleton guard, <code>DontDestroyOnLoad</code> the <code>EventSystem</code>, instantiate the <code>ScreenFader</code> prefab.</td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="reused"><td><code>GameFlow.Awake</code></td><td>Singleton guard only. <code>stepIndex</code> stays at its initialiser, <code>-1</code>.</td><td><span class="tag t-reused">Reused</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Start phase — the deciding code</h3>
+    <p class="pre-label">Core/Scenes/SceneLoader.cs:60</p>
+<pre><code>EventService.Instance.SubscribeGameStateChanged(OnStateChanged);
+
+<span class="k">var</span> initialState = GameStateManager.Instance.CurrentState;
+<span class="k">if</span> (HasSceneFor(initialState))
+{
+    currentScene = initialState.ToString();
+    LoadScene(currentScene, useFader: <span class="k">false</span>);
+}</code></pre>
+    <p>
+      So the first scene loaded is decided entirely by <code>GameStateManager.initialState</code>,
+      serialised in <code>BootScene.unity</code>.
+    </p>
+  </section>
+
+  <!-- 2 -->
+  <section id="first-state">
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec">Which state is initialised first</h2></div>
+
+    <div class="flow">
+      <div class="flow-step" data-status="temp">
+        <div class="rail"><span class="dot stop"></span><span class="stem"></span></div>
+        <div class="flow-body">
+          <p class="flow-title">As committed — <span class="tag t-temp">Temporary</span></p>
+          <p class="flow-sub"><code>initialState: 16</code> → <code>Gurukul</code>. Loaded directly. No transition occurs at all.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="rail"><span class="dot muted"></span><span class="stem"></span></div>
+        <div class="flow-body">
+          <p class="flow-title">Normal boot — <code>Splash (14)</code></p>
+          <p class="flow-sub"><code>Splash → TitleScreen</code>, then the player's confirm reaches <code>TitleScreenUI.cs:25</code> → <code>GameFlow.Begin()</code> → <code>EnterStep(0)</code>.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="rail"><span class="dot"></span></div>
+        <div class="flow-body">
+          <p class="flow-title">Restore it</p>
+          <p class="flow-sub"><code>Project Astra/Dev/Restore Normal Boot</code> sets <code>initialState</code> back to <code>Splash</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section id="transitions">
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec">Every transition from boot to the hub</h2></div>
+
+    <h3>Under the committed dev boot <span class="tag t-temp">Temporary</span></h3>
+    <p data-status="temp">
+      <strong>There are none.</strong> The transition table is never consulted,
+      <code>GameFlow</code> never runs <code>EnterStep</code>, and <code>stepIndex</code> is still
+      <code>-1</code> when the hub scene wakes up.
+    </p>
+
+    <h3>Under normal boot</h3>
+    <p class="pre-label">Validated against ScriptableObjects/Core/TransitionTable.asset</p>
+<pre><code>Splash                            <span class="c">initialState, no transition</span>
+  └─▶ TitleScreen                 <span class="c">SplashUI → RequestTransition</span>
+       └─▶ Cutscene               <span class="c">GameFlow.EnterStep(0) — step 0 is Cutscene(Opening)</span>
+            └─▶ Gurukul           <span class="c">CutsceneUI.cs:36 → NotifyCutsceneFinished() → EnterStep(1)</span></code></pre>
+
+    <div class="card" data-status="modified">
+      <h3 style="margin-top:0">Seven hub edges added <span class="tag t-modified">Modified</span></h3>
+      <p style="margin:0; font-size:13.8px; color:var(--ink-soft)">
+        <code>TitleScreen→Gurukul</code> · <code>MainMenu→Gurukul</code> ·
+        <code>Cutscene→Gurukul</code> · <code>ChapterClear→Gurukul</code> ·
+        <code>Gurukul→BattleMap</code> · <code>Gurukul→Cutscene</code> ·
+        <code>Gurukul→TitleScreen</code><br>
+        <span style="color:var(--ink-faint)">Core/State/GameStateTransitionTable.cs — <code>CreateDefaultTransitions</code></span>
+      </p>
+    </div>
+
+    <div class="note" data-status="reused">
+      Two things about <code>GameStateManager</code> <span class="tag t-reused">Reused</span> —
+      <strong>one transition per frame</strong> (a second in the same frame is discarded with a
+      warning via <code>IsBlockedThisFrame</code>, which is precisely why the hub's six sub-states
+      are <em>not</em> <code>GameState</code>s), and an illegal transition is rejected and logged as
+      an error without changing state.
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section id="campaign">
+    <div class="sec-head"><span class="sec-num">04</span><h2 class="sec">Campaign and progression data</h2></div>
+    <p class="lede">
+      <code>GameFlow</code> <span class="tag t-modified">Modified</span> holds four serialised
+      references, all wired on the <code>GameFlow</code> object in <code>BootScene</code>.
+    </p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Field</th><th>Asset</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr data-status="reused"><td><code>campaign</code></td><td><code>ScriptableObjects/Core/Campaign.asset</code></td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="reused"><td><code>mapCatalog</code></td><td><code>MapCatalog</code></td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="reused"><td><code>cutsceneCatalog</code></td><td><code>CutsceneCatalog</code></td><td><span class="tag t-reused">Reused</span></td></tr>
+          <tr data-status="new"><td><code>visitDatabase</code></td><td><code>Assets/Gurukul/Data/GurukulVisitDatabase.asset</code></td><td><span class="tag t-new">New</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" data-status="gap" style="border-color:color-mix(in srgb,var(--s-gap) 34%,transparent); background:var(--s-gap-bg)">
+      <h3 style="color:var(--s-gap)">All campaign progression is one unserialised int</h3>
+      <p style="margin:0">
+        <code>private int stepIndex = -1;</code> — never written to disk, so it lives for the
+        session only. No save system exists; that was deferred by decision.
+        <span class="tag t-gap">Not wired</span>
+      </p>
+    </div>
+
+    <p class="pre-label">Campaign.asset as committed — four steps</p>
+<pre><code>0  Cutscene   CutsceneId.Opening
+1  HubVisit   visitId "hub1"          <span class="c">← added by this work</span>
+2  Battle     mapId "tooltesting map"
+3  Cutscene   CutsceneId.Ch1Ending</code></pre>
+    <p data-status="modified">
+      <code>CampaignStepKind</code> gained <code>HubVisit = 2</code> — appended, because the kind is
+      stored as an int in the asset — and <code>CampaignStep</code> gained a <code>visitId</code>
+      string. <code>CampaignStepDrawer</code> grew a third branch, or the field would be invisible in
+      the inspector. <span class="tag t-modified">Modified</span>
+    </p>
+  </section>
+
+  <!-- 5 -->
+  <section id="visit">
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec">Selecting the campaign entry and the right visit</h2></div>
+
+    <p class="pre-label">Core/Gurukul/GurukulBootstrapper.cs:49 — ResolveVisit</p>
+<pre><code>GameFlow flow = GameFlow.Instance;
+GurukulVisitData campaignVisit = flow != <span class="k">null</span> ? flow.EnsureHubStepStarted() : <span class="k">null</span>;
+<span class="k">return</span> campaignVisit != <span class="k">null</span> ? campaignVisit : fallbackVisit;</code></pre>
+
+    <p data-status="new">
+      <code>GameFlow.EnsureHubStepStarted()</code> <span class="tag t-new">New</span> mirrors the
+      existing <code>EnsureBattleStepStarted</code>: if <code>CurrentVisit</code> already resolves —
+      the campaign walked here properly — return it untouched. Otherwise find
+      <code>campaign.IndexOfFirst(CampaignStepKind.HubVisit)</code>, set <code>stepIndex</code> to it,
+      and return that visit. <code>CurrentVisit</code> requires the current step to be
+      <code>HubVisit</code>, then resolves <code>visitDatabase.Get(step.VisitId)</code>.
+    </p>
+
+    <div class="grid2">
+      <div class="card" data-status="temp">
+        <h3 style="margin-top:0">Under the dev boot <span class="tag t-temp">Temporary</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          <code>stepIndex</code> is <code>-1</code>, so the second branch fires and snaps to index 1,
+          loading <code>hub1</code>. That is why the departure later finds
+          <code>tooltesting map</code> as the next step.
+        </p>
+      </div>
+      <div class="card" data-status="temp">
+        <h3 style="margin-top:0">Play pressed on <code>Gurukul.unity</code> <span class="tag t-temp">Temporary</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          No <code>BootScene</code> means no <code>GameFlow</code>, so it falls through to the
+          serialised <code>fallbackVisit</code> — the greybox, not <code>hub1</code>. No
+          <code>InputManager</code> either, so nothing responds to keys.
+          <strong>Always boot from <code>BootScene</code>.</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section id="scene">
+    <div class="sec-head"><span class="sec-num">06</span><h2 class="sec">Loading and initialising the hub scene</h2></div>
+    <p class="lede">
+      <code>SceneManager.LoadScene("Gurukul")</code> in <strong>single</strong> mode.
+      <code>SceneLoader</code> has no additive path — which is the reason interiors are not scenes.
+    </p>
+
+    <h3>Awake phase in <code>Gurukul.unity</code></h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Component</th><th>Order</th><th>What it does</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr data-status="new"><td><code>GurukulInputRouter</code></td><td class="ord">−50</td><td>Constructs <code>GurukulStateMachine</code>, subscribes to its own <code>StateChanged</code>.</td><td><span class="tag t-new">New</span></td></tr>
+          <tr data-status="new"><td><code>GurukulActor</code></td><td class="ord">—</td><td><code>Position = transform.position</code>.</td><td><span class="tag t-new">New</span></td></tr>
+          <tr data-status="new"><td><code>GurukulHUDController</code></td><td class="ord">—</td><td>News the prompt and objective controllers, finds the driver and router.</td><td><span class="tag t-new">New</span></td></tr>
+          <tr data-status="new"><td><code>GurukulCameraRig</code></td><td class="ord">100</td><td>Reads <code>PixelPerfectCamera</code> for viewport tiles.</td><td><span class="tag t-new">New</span></td></tr>
+          <tr data-status="reused"><td><code>MapCamera</code></td><td class="ord">—</td><td>Adds <code>PixelPerfectCamera</code>, 480×270 @ 32 PPU. Untouched.</td><td><span class="tag t-reused">Reused</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Start phase, strictly in this order</h3>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="rail"><span class="dot"></span><span class="stem"></span></div>
+        <div class="flow-body">
+          <p class="flow-title"><code>GurukulBootstrapper.Start</code> — order −100</p>
+          <p class="flow-sub">Everything below.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="rail"><span class="dot"></span></div>
+        <div class="flow-body">
+          <p class="flow-title"><code>GurukulHUDController.Start</code> — default order</p>
+          <p class="flow-sub">
+            <code>objectives.Bind(...)</code>. <code>Bind</code> calls <code>Refresh</code>
+            immediately rather than waiting for an event — which is what stops the HUD missing the
+            opening objective the bootstrapper already announced.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="pre-label">GurukulBootstrapper.Start</p>
+<pre><code>GurukulWorld.Clear()                  <span class="c">drop actors/interactables from a previous session</span>
+ResolveVisit()                        <span class="c">§5</span>
+GurukulProgressService.Load(visit)    <span class="c">runtime state + objective runner + baseline</span>
+OpenVisit(visit)</code></pre>
+
+    <p data-status="new">
+      <code>GurukulProgressService.Load</code> <span class="tag t-new">New</span> constructs
+      <code>GurukulRuntimeState</code> and <code>ObjectiveSequenceRunner</code>, then
+      <code>ApplyBaselineGates()</code> writes the visit's <code>openGates</code> and
+      <code>interactableOverrides</code> into that state.
+    </p>
+
+    <p class="pre-label">OpenVisit</p>
+<pre><code>loader.CreatePlayer(protagonistUnitId, spawn, facing, playerRoot)   <span class="c">non-solid</span>
+  ├─ + GurukulPlayerController
+  ├─ cameraRig.Follow(player.transform)
+  └─ interactionDriver.Bind(router, player)
+
+loader.Load(startLocationId, spawn, facing, houseIdentity: <span class="k">null</span>)   <span class="c">§7</span>
+
+events.BindToVisit()                              <span class="c">EventQueueGuard over this visit</span>
+Objectives.EventRequested += director.PlayEvent   <span class="c">effect → event bridge</span>
+Objectives.Begin()                                <span class="c">§8</span>
+
+<span class="k">if</span> (visit.OpeningEventId != <span class="c">""</span>) events.TryPlay(...)     <span class="c">before control is given</span></code></pre>
+  </section>
+
+  <!-- 7 -->
+  <section id="world">
+    <div class="sec-head"><span class="sec-num">07</span><h2 class="sec">Building the world</h2></div>
+    <p class="lede">
+      <code>GurukulLocationLoader.Load</code> <span class="tag t-new">New</span> is the
+      <em>single</em> path used both by the bootstrapper and by every doorway, so arriving in a room
+      always means the same thing.
+    </p>
+
+    <p class="pre-label">Core/Gurukul/GurukulLocationLoader.cs:24</p>
+<pre><code>ClearCast()                              <span class="c">destroy previous room's NPCs</span>
+GurukulLocationService.Load(location)    <span class="c">builds the collision map</span>
+locationHost.Show(location)              <span class="c">base-art sprite + props prefab</span>
+State.EnterLocation(locationId, houseIdentity)
+ApplyHouseIdentity()                     <span class="c">switch on only this house's objects</span>
+PlacePlayer(spawn, facing)               <span class="c">she is moved, never rebuilt</span>
+SpawnCast(locationId)</code></pre>
+
+    <div class="grid2">
+      <div class="card" data-status="new">
+        <h3 style="margin-top:0">Collision <span class="tag t-new">New</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          <code>GurukulLocationData.BuildCollisionMap()</code> makes a map at <strong>half-tile</strong>
+          resolution from the painted <code>blockedCells</code> mask, then stamps every
+          <code>propFootprint</code> marked <code>startsSolid</code>. Half a tile because a tall
+          sprite blocks only its base. Prop rects are kept rather than baked flat, so a state change
+          can un-stamp exactly what it stamped.
+        </p>
+      </div>
+      <div class="card" data-status="new">
+        <h3 style="margin-top:0">Environment art <span class="tag t-new">New</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          <code>GurukulLocationHost.Show</code> draws <code>baseArt</code> as one
+          <code>SpriteRenderer</code> on the <code>Ground</code> sorting layer and instantiates
+          <code>propsPrefab</code> — mirroring <code>MapRenderer.DrawBaseArt</code> /
+          <code>SpawnEnvironment</code>.
+        </p>
+      </div>
+    </div>
+
+    <div class="note" data-status="gap">
+      <strong>Environment <em>state</em> is not implemented.</strong>
+      <code>GurukulVisitData.environmentSet</code> is authored and has <strong>no consumer anywhere</strong>.
+      Per-visit environmental change — flood debris, damp ground — does nothing.
+      <span class="tag t-gap">Not wired</span>
+    </div>
+
+    <h3>NPCs</h3>
+    <p>
+      <code>SpawnCast</code> walks <code>visit.CharacterPlacements</code>, resolves each through
+      <code>GurukulProgressService.TryGetPlacement</code> — so a relocation or conversation override
+      applied by an earlier objective wins over the authored baseline — skips anyone whose
+      <code>locationId</code> isn't this room, and calls
+      <code>GurukulActorFactory.Create(..., solid: true)</code>.
+    </p>
+    <p data-status="new">
+      <code>GurukulActorFactory</code> <span class="tag t-new">New</span> builds actors
+      procedurally, because the project has no character prefabs — this mirrors
+      <code>UnitSpawner.AttachSprite</code>. Identity comes from the existing
+      <code>UnitDefinition</code> <span class="tag t-reused">Reused</span>
+      (<code>unitName</code>, <code>mapSprite</code>, <code>mapAnimator</code>, <code>speaker</code>).
+      Actors register with <code>GurukulWorld</code> in <code>OnEnable</code>, which is the list the
+      interaction check reads each frame instead of sweeping the scene.
+    </p>
+
+    <h3>Interactables and conversations</h3>
+    <p>
+      Interactables are <strong>not</strong> spawned from visit data. They are components authored
+      inside the location's <code>propsPrefab</code> and register themselves the same way. The visit
+      can only override their <em>state</em>.
+    </p>
+    <div class="note" data-status="gap">
+      <code>GurukulInteractableOverride.conversationId</code> is authored, but
+      <code>ApplyBaselineGates</code> applies only <code>state</code> — the conversation half is
+      silently dropped. <span class="tag t-gap">Not wired</span>
+    </div>
+    <p>
+      Conversations are named by id on a placement or an interactable and resolved at interaction
+      time through <code>ConversationGraphDatabase</code>. Nothing about them is initialised at load.
+    </p>
+  </section>
+
+  <!-- 8 -->
+  <section id="objective">
+    <div class="sec-head"><span class="sec-num">08</span><h2 class="sec">Determining the active objective</h2></div>
+
+    <p class="pre-label">ObjectiveSequenceRunner — pure C#, no Unity types</p>
+<pre><code><span class="k">public</span> GurukulObjectiveData ActiveObjective =&gt;
+    state.ObjectiveIndex &gt;= 0 &amp;&amp; state.ObjectiveIndex &lt; objectives.Length
+        ? objectives[state.ObjectiveIndex] : <span class="k">null</span>;</code></pre>
+
+    <p>
+      <code>Begin()</code> calls <code>SettleImmediateObjectives()</code> — clearing any leading
+      stage whose condition kind is <code>Immediate</code>, which exists so a stage can just run
+      effects and hand on — then raises <code>ObjectiveChanged</code> with whatever is now active.
+    </p>
+    <div class="note">
+      The active objective is only ever "the one at the current index". There is no activation
+      condition; <code>GurukulObjectiveData</code> has exactly five fields: <code>objectiveId</code>,
+      <code>displayText</code>, <code>completion</code>, <code>onComplete</code>,
+      <code>markerTargetIds</code>.
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="progression">
+    <div class="sec-head"><span class="sec-num">09</span><h2 class="sec">Progression state within one visit</h2></div>
+    <p class="lede">
+      All of it lives in one object, <code>GurukulRuntimeState</code>
+      <span class="tag t-new">New</span> — session-scoped, but written as plain serialisable data
+      (<code>List&lt;string&gt;</code>, asset ids, no SO references) so a later save ticket is wiring
+      rather than a rewrite.
+    </p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Held</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>objectiveIndex</code></td><td>Which stage is active.</td></tr>
+          <tr><td><code>satisfiedTargets</code></td><td>Targets cleared <strong>for the current stage only</strong>; cleared on advance, so acting on a later stage's target early banks nothing.</td></tr>
+          <tr><td><code>completedObjectiveIds</code><br><code>completedConversationIds</code><br><code>completedEventIds</code></td><td>One-time guards.</td></tr>
+          <tr><td><code>askedTopics</code></td><td>Keyed <code>conversationId:optionId</code>, so two characters can own a topic of the same name.</td></tr>
+          <tr><td><code>openGates</code>, <code>interactables</code><br><code>relocations</code>, <code>conversationOverrides</code></td><td>What objective effects write.</td></tr>
+          <tr><td><code>currentLocationId</code>, <code>houseIdentity</code><br>return ticket</td><td>Where she is, and how six houses share one interior.</td></tr>
+          <tr><td><code>departed</code></td><td>Set only after departure commits.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid2">
+      <div class="card" data-status="new">
+        <h3 style="margin-top:0">Sub-states <span class="tag t-new">New</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          <code>GurukulStateMachine</code> holds <code>FreeExploration</code> ·
+          <code>Conversation</code> · <code>ChoiceOrQuiz</code> · <code>ScriptedEvent</code> ·
+          <code>LocationTransition</code> · <code>Departure</code>, with a code-side legal-transition
+          set modelled on <code>CursorStateMachine</code>. <code>Departure</code> is terminal.
+        </p>
+      </div>
+      <div class="card" data-status="new">
+        <h3 style="margin-top:0">Input routing <span class="tag t-new">New</span></h3>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft)">
+          <code>GurukulInputRouter</code> is the <strong>only</strong> <code>InputManager</code>
+          subscriber in the hub, routing each press by sub-state through a single confirm latch — so
+          one press physically cannot be read as both "talk to him" and "advance the line". It polls
+          <code>IsActionHeld</code> rather than subscribing, which bypasses
+          <code>DelayedAutoShift</code> without touching it.
+          <strong><code>InputManager</code> itself was not modified.</strong>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section id="completion">
+    <div class="sec-head"><span class="sec-num">10</span><h2 class="sec">Completing an objective</h2></div>
+    <p class="lede">
+      The only path in is <code>ObjectiveSequenceRunner.Report(kind, targetId)</code>, called from
+      <code>GurukulVisitDirector</code> <span class="tag t-new">New</span>.
+    </p>
+
+    <ul>
+      <li><code>OnConversationFinished</code> → <code>Report(ConversationCompleted, conversationId)</code>, plus <code>Report(ObjectInspected, interactableId)</code> when the conversation opened from a non-character.</li>
+      <li><code>OnFlagRaised</code> — a <code>SetFlag</code> node, or an event's <code>RaiseFlag</code> → <code>Report(QuizPassed, …)</code> and <code>Report(EventCompleted, …)</code>. Only the kind an objective actually named will match.</li>
+    </ul>
+
+    <p>
+      Progress is reported <strong>after</strong> the conversation finishes, which is what makes the
+      completion order hold.
+    </p>
+
+    <p class="pre-label">Report</p>
+<pre><code>Accepts(kind, targetId)?     <span class="c">kind must match and the id must be in the target set</span>
+Satisfy(targetId)            <span class="c">deduped — a repeat earns nothing</span>
+ProgressChanged              <span class="c">HUD counter refresh</span>
+CurrentProgress &gt;= Required? → Complete(active)</code></pre>
+
+    <p class="pre-label">Complete — this exact order</p>
+<pre><code>state.CompleteObjective(objective.ObjectiveId);  <span class="c">clears satisfiedTargets, ++objectiveIndex</span>
+ApplyEffects(objective);                         <span class="c">gates, relocations, states, FireEvent</span>
+ObjectiveCompleted?.Invoke(objective);           <span class="c">HUD cue</span>
+SettleImmediateObjectives();
+ObjectiveChanged?.Invoke(ActiveObjective);       <span class="c">HUD shows the next line</span></code></pre>
+
+    <div class="callout" style="border-color:color-mix(in srgb,var(--accent) 32%,transparent); background:color-mix(in srgb,var(--accent) 7%,transparent)">
+      <h3 style="color:var(--accent)">The index advances before the effects run</h3>
+      <p style="margin:0">
+        That is load-bearing. Hub 1's last objective fires an event whose <code>Depart</code> action
+        asks <code>CanDepart</code>, which is <code>IsVisitComplete</code>, which is only true once
+        the index has passed the end.
+      </p>
+    </div>
+
+    <p>
+      Effects (<code>GurukulEffect</code>) write into runtime state rather than touching the scene,
+      so the same list replays identically whether she is standing outside or three rooms away:
+      <code>SetGate</code>, <code>SetInteractableState</code>, <code>RelocateCharacter</code>,
+      <code>SetCharacterConversation</code>, and <code>FireEvent</code> — raised as
+      <code>EventRequested</code> because the runner cannot see the world.
+    </p>
+
+    <h3>What unlocks as a result</h3>
+    <p>
+      A gate opening changes <code>GurukulInteractable.IsGated</code> and
+      <code>GurukulDoor.requiredGate</code>, so a previously-refused door now opens and the prompt
+      changes on the next frame. <code>GurukulMarkerManager</code> recomputes every
+      <code>LateUpdate</code>, so markers move to the new stage's targets with no explicit refresh
+      call.
+    </p>
+  </section>
+
+  <!-- 11 -->
+  <section id="departure">
+    <div class="sec-head"><span class="sec-num">11</span><h2 class="sec">Departure into the battle</h2></div>
+    <p class="lede">Hub 1 uses the automatic mode. The chain, end to end:</p>
+
+<pre><code>last objective completes
+  └─ effect FireEvent <span class="c">"hub1_training_ground"</span>
+      └─ ObjectiveSequenceRunner.EventRequested
+          └─ GurukulVisitDirector.PlayEvent
+              └─ GurukulEventRunner.TryPlay
+                  ├─ EventQueueGuard: not already done, nothing else running
+                  ├─ sub-state → ScriptedEvent   <span class="c">input locked, prompts hidden</span>
+                  ├─ action PlayConversation <span class="c">"hub1_training_scene"</span>
+                  └─ action Depart → DepartureRequested
+                      └─ GurukulDepartureController.TryDepart()</code></pre>
+
+    <p class="pre-label">Core/Gurukul/GurukulDepartureController.cs — the gate</p>
+<pre><code>DepartureGate.CanDepart(progress.CanDepart,          <span class="c">every objective done</span>
+                        progress.DestinationMapId,   <span class="c">authored on the visit</span>
+                        GameFlow.Instance.NextBattleMapId,
+                        <span class="k">out string</span> problem)</code></pre>
+
+    <p data-status="new">
+      <code>DepartureGate</code> <span class="tag t-new">New</span> is pure C# and refuses on any of:
+      unfinished objectives, a visit with no destination, no battle after this step, or the visit and
+      the campaign naming <em>different</em> maps. The last matters because the spec forbids
+      inferring the next battle — a disagreement is reported, not silently resolved.
+    </p>
+
+    <p class="pre-label">Commit</p>
+<pre><code>router.States.TryTransition(GurukulSubState.Departure);   <span class="c">lock first</span>
+GameFlow.Instance.NotifyHubVisitFinished();               <span class="c">EnterStep(stepIndex + 1)</span>
+
+<span class="k">if</span> (GameStateManager.Instance.CurrentState == GameState.Gurukul)  <span class="c">it didn't take</span>
+{
+    Debug.LogError(...);
+    router.States.TryTransition(GurukulSubState.FreeExploration);
+    <span class="k">return false</span>;                                          <span class="c">she stays in the hub, recoverable</span>
+}
+
+progress.State.MarkDeparted();
+HasDeparted = <span class="k">true</span>;</code></pre>
+
+    <p>
+      <code>NotifyHubVisitFinished</code> → <code>EnterStep(2)</code> → step is <code>Battle</code> →
+      <code>RequestState(GameState.BattleMap)</code> → the transition table validates
+      <code>Gurukul → BattleMap</code> → <code>EventService.RaiseGameStateChanged</code> →
+      <code>SceneLoader.OnStateChanged</code> loads <code>BattleMap.unity</code> <em>with</em> the
+      fader. From there <code>MapBootstrapper</code> <span class="tag t-reused">Reused</span> takes
+      over and <code>GameFlow.CurrentMap</code> resolves <code>tooltesting map</code>.
+    </p>
+
+    <div class="note">
+      The event runner breaks out of its action loop after <code>Depart</code> and deliberately does
+      <strong>not</strong> return to <code>FreeExploration</code>, so there is no frame of playable
+      hub between the decision and the battle.
+    </div>
+
+    <h3>Return from battle <span class="tag t-reused">Reused</span></h3>
+    <p data-status="reused">
+      Unchanged: <code>BattleVictoryWatcher</code> → <code>WarLedger</code> or
+      <code>ChapterClear</code> → <code>ChapterClearUI.cs:100</code> →
+      <code>NotifyBattleFinished()</code> → <code>EnterStep(+1)</code>. If that next step is a
+      <code>HubVisit</code>, <code>ChapterClear → Gurukul</code> is now a legal edge. Defeat routes to
+      <code>GameOver</code>, which never touches <code>GameFlow</code> — so losing cannot advance
+      progression.
+    </p>
+  </section>
+
+  <!-- gaps -->
+  <section id="gaps">
+    <div class="sec-head"><span class="sec-num">—</span><h2 class="sec">What is not finished</h2></div>
+    <p class="lede">
+      Authored-but-unwired fields, deferred systems, and one latent ordering issue. All verified by
+      grepping for consumers, not assumed.
+    </p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:26%">Item</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr data-status="gap"><td><strong>Disk save/load</strong></td><td>None. All progression is session-only. Deferred by decision until ≥2 maps and ≥2 hubs are playable.</td></tr>
+          <tr data-status="gap"><td><code>GurukulVisitData.environmentSet</code></td><td>Authored field, zero consumers. Per-visit environmental change is not implemented.</td></tr>
+          <tr data-status="gap"><td><code>Departure.mode</code><br><code>departureTargetId</code></td><td>Authored, zero consumers. Only the automatic path works; a deliberate "walk to a Depart target and confirm" is not wired, though the pieces exist — a <code>Depart</code> verb, a choice node, the <code>depart</code> flag.</td></tr>
+          <tr data-status="gap"><td><code>InteractableOverride</code><br><code>.conversationId</code></td><td>Only <code>state</code> is applied at load; the conversation half is silently dropped.</td></tr>
+          <tr data-status="gap"><td><code>GurukulEventTrigger</code><br><code>.VisitLoad</code></td><td>Never matched. Opening events fire by id from <code>visit.OpeningEventId</code>; only <code>AreaEntered</code> is matched, by <code>GurukulAreaTriggerWatcher</code>.</td></tr>
+          <tr data-status="gap"><td><strong>Cross-room wayfinding</strong></td><td><code>GurukulMarkerManager.AnchorFor</code> resolves targets only through <code>GurukulWorld</code> — the current room. A target elsewhere gets no marker <em>and</em> no edge arrow; there is no "mark the door instead". Hub 1 puts the Guru in a different room, so this is visible.</td></tr>
+          <tr data-status="gap"><td><strong>Retry after defeat</strong></td><td><code>GameFlow.stepIndex</code> is never persisted, so Game Over → Title → New Game rewinds the whole campaign. Pre-existing; the hub makes it visible.</td></tr>
+          <tr data-status="gap"><td><code>DeathRegistry</code><br><code>CommitmentTracker</code></td><td>Still scene-scoped <code>MonoBehaviour</code>s with no <code>DontDestroyOnLoad</code>; their state dies on every scene load. Pre-existing, untouched.</td></tr>
+          <tr data-status="gap"><td><strong>Latent:</strong> cast teardown on a room change</td><td><code>ClearCast()</code> uses <code>Destroy</code>, which defers <code>OnDisable</code> to end of frame. By then <code>GurukulLocationService.Instance</code> holds the <strong>new</strong> room's collision map, so departing actors un-stamp against it. <code>AddToCells</code> clamps at zero so it is usually harmless, but an old footprint overlapping a new actor's cells would wrongly clear that actor's stamp.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout" data-status="temp">
+      <h3>Hub content status <span class="tag t-temp">Temporary</span></h3>
+      <p style="margin:0">
+        Hub Interaction 1 runs end to end, but every line of its dialogue reads
+        <code>PLACEHOLDER</code> and the whole cast stands in a programmer-art courtyard rather than
+        the authored Gurukul. See <code>docs/hub/hub1-content-owed.md</code>.
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    Generated from <code>docs/hub/runtime-flow.md</code> · Project Astra ·
+    every claim traceable to the file named beside it.
+  </footer>
+</div>
+
+<button class="theme-toggle" id="theme" title="Toggle light / dark" aria-label="Toggle light or dark theme">◐</button>
+
+<script>
+(function () {
+  // ---- status filter -------------------------------------------------------
+  var active = new Set();
+  var chips  = document.querySelectorAll('.chip[data-s]');
+  var body   = document.body;
+
+  function apply() {
+    var on = active.size > 0;
+    body.classList.toggle('filtering', on);
+    document.querySelectorAll('[data-status]').forEach(function (el) {
+      el.classList.toggle('hit', on && active.has(el.getAttribute('data-status')));
+    });
+  }
+
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var key = chip.getAttribute('data-s');
+      var now = chip.getAttribute('aria-pressed') !== 'true';
+      chip.setAttribute('aria-pressed', String(now));
+      if (now) { active.add(key); } else { active.delete(key); }
+      apply();
+    });
+  });
+
+  document.getElementById('reset').addEventListener('click', function () {
+    active.clear();
+    chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+    apply();
+  });
+
+  // ---- theme ---------------------------------------------------------------
+  var root = document.documentElement;
+  document.getElementById('theme').addEventListener('click', function () {
+    var current = root.getAttribute('data-theme');
+    if (!current) {
+      var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      current = systemDark ? 'dark' : 'light';
+    }
+    root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  });
+})();
+</script>
+</body>
+</html>
