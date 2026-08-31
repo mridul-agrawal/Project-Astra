@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using ProjectAstra.Core.Events;
@@ -7,23 +8,52 @@ using ProjectAstra.Core.Events;
 namespace ProjectAstra.Core.State
 {
     // The game's top-level state machine. Only one GameState is active at a time, and only one
-    // transition can land per frame so multiple scripts can't fight over the state in one tick.
+    // transition is ever mid-flight — but a move asked for while another is still being announced
+    // is queued rather than dropped, so a chain like "the conversation ended, now the event that
+    // owns it takes control back" survives landing in a single frame.
     public class GameStateManager : MonoBehaviour
     {
         public static GameStateManager Instance { get; private set; }
+
+        // A runaway A→B→A loop would hang the editor, so the drain gives up and says so.
+        private const int MaxQueuedTransitionsPerDrain = 32;
+
+        // States that hand control back to whoever opened them. Everything else is reached by an
+        // explicit transition and so has no caller worth remembering.
+        private static readonly HashSet<GameState> StatesThatReturnToCaller = new()
+        {
+            GameState.SaveMenu,
+            GameState.SettingsMenu,
+            GameState.Dialogue,
+        };
 
         // Inspector References:
         [SerializeField] private GameStateTransitionTable transitionTable;
         [SerializeField] private GameState initialState = GameState.TitleScreen;
 
         // Private Variables:
+        private readonly Queue<PendingTransition> queuedTransitions = new();
+        private readonly Stack<GameState> callers = new();
         private GameState currentState;
-        private GameState stateToReturnToWhenMenuCloses;
-        private bool hasTransitionedThisFrame;
+        private bool isAnnouncing;
 
         // Properties:
         public GameState CurrentState => currentState;
-        public GameState MenuReturnState => stateToReturnToWhenMenuCloses;
+
+        // Who the current state will hand control back to, for anyone who needs to show it.
+        public GameState CallerState => callers.Count > 0 ? callers.Peek() : currentState;
+
+        private readonly struct PendingTransition
+        {
+            public readonly GameState Target;
+            public readonly string Requester;
+
+            public PendingTransition(GameState target, string requester)
+            {
+                Target = target;
+                Requester = requester;
+            }
+        }
 
         private void Awake()
         {
@@ -44,24 +74,55 @@ namespace ProjectAstra.Core.State
             DontDestroyOnLoad(gameObject);
         }
 
-        private void LateUpdate() => ResetFrameGate();
-
         public bool RequestTransition(GameState target, string requester = null)
         {
-            if (IsBlockedThisFrame(target, requester)) return false;
+            if (isAnnouncing) return QueueUntilAnnouncementEnds(target, requester);
             if (IsIllegalTransition(target, requester)) return false;
 
-            RememberMenuReturnIfNeeded(target);
             ExecuteTransition(target);
-            hasTransitionedThisFrame = true;
+            DrainQueuedTransitions();
             return true;
+        }
+
+        // A listener reacting to one state change by asking for another can't be served straight
+        // away — the state it would be leaving is still being announced. It goes in the queue and
+        // is judged against the table when its turn comes, not now.
+        private bool QueueUntilAnnouncementEnds(GameState target, string requester)
+        {
+            queuedTransitions.Enqueue(new PendingTransition(target, requester));
+            return true;
+        }
+
+        private void DrainQueuedTransitions()
+        {
+            int drained = 0;
+            while (queuedTransitions.Count > 0)
+            {
+                if (++drained > MaxQueuedTransitionsPerDrain)
+                {
+                    LogRunawayQueue();
+                    return;
+                }
+
+                PendingTransition next = queuedTransitions.Dequeue();
+                if (IsIllegalTransition(next.Target, next.Requester)) continue;
+                ExecuteTransition(next.Target);
+            }
         }
 
         private void ExecuteTransition(GameState target)
         {
-            var previous = currentState;
+            GameState previous = currentState;
+            UpdateCallerStack(leaving: previous, entering: target);
             currentState = target;
-            EventService.Instance?.RaiseGameStateChanged(previous, target);
+            Announce(previous, target);
+        }
+
+        private void Announce(GameState previous, GameState target)
+        {
+            isAnnouncing = true;
+            try { EventService.Instance?.RaiseGameStateChanged(previous, target); }
+            finally { isAnnouncing = false; }
         }
 
         // Returns true (and logs) if the requested move isn't in the transition table.
@@ -75,44 +136,40 @@ namespace ProjectAstra.Core.State
 
         private static string RequesterName(string requester) => requester ?? "unknown";
 
+        private void LogRunawayQueue() => Debug.LogError(
+            $"[GameStateManager] Transition queue never settled after {MaxQueuedTransitionsPerDrain} moves — " +
+            $"dropping {queuedTransitions.Count} more. Something is transitioning in a loop.");
 
-        // Return From Menu Logic:
-        // Called by Context Menu UI Scripts to transition back to previous game states:
-        public bool ReturnFromContextMenu(string requester = null)
+
+        // Return To Caller Logic:
+        // Dialogue, the save menu and the settings menu are all opened from somewhere and go back
+        // there when they close. The stack is what lets dialogue opened from the hub return to the
+        // hub and dialogue opened mid-battle return to the battle, with no caller hardcoding it.
+        public bool ReturnToCaller(string requester = null)
         {
-            if (!IsThisStateContextMenu(currentState))
+            if (!CanReturnToCaller())
             {
-                LogInvalidContextMenuReturn(requester);
+                LogInvalidReturn(requester);
                 return false;
             }
 
-            return RequestTransition(stateToReturnToWhenMenuCloses, requester);
+            return RequestTransition(callers.Peek(), requester);
         }
 
-        private void RememberMenuReturnIfNeeded(GameState target)
+        public bool CanReturnToCaller() =>
+            callers.Count > 0 && StatesThatReturnToCaller.Contains(currentState);
+
+        private void UpdateCallerStack(GameState leaving, GameState entering)
         {
-            if (IsThisStateContextMenu(target))
-                stateToReturnToWhenMenuCloses = currentState;
+            // Popped on the way out however the state is left, so a dialogue that ends in a game
+            // over doesn't leave its caller behind for the next one to inherit.
+            if (StatesThatReturnToCaller.Contains(leaving) && callers.Count > 0) callers.Pop();
+            if (StatesThatReturnToCaller.Contains(entering)) callers.Push(leaving);
         }
 
-        private static bool IsThisStateContextMenu(GameState state) => state == GameState.SaveMenu || state == GameState.SettingsMenu;
-
-        private void LogInvalidContextMenuReturn(string requester) => Debug.LogError(
-                $"[GameStateManager] ReturnFromContextMenu called from invalid state: {currentState}. " +
-                $"Requester: {RequesterName(requester)}");
-
-
-        // Frame Gate Logic:
-        private bool IsBlockedThisFrame(GameState target, string requester)
-        {
-            if (!hasTransitionedThisFrame) return false;
-            Debug.LogWarning(
-                $"[GameStateManager] Transition to {target} discarded — " +
-                $"already processed a transition this frame. Requester: {RequesterName(requester)}");
-            return true;
-        }
-
-        internal void ResetFrameGate() => hasTransitionedThisFrame = false;
+        private void LogInvalidReturn(string requester) => Debug.LogError(
+            $"[GameStateManager] ReturnToCaller called from {currentState}, which has no caller to return to. " +
+            $"Requester: {RequesterName(requester)}");
 
         #region Test Support
 
@@ -122,6 +179,7 @@ namespace ProjectAstra.Core.State
         {
             Debug.LogError($"[GameStateManager] FORCED state change to {state}. Reason: {reason}");
             ExecuteTransition(state);
+            DrainQueuedTransitions();
         }
 
 
@@ -134,7 +192,9 @@ namespace ProjectAstra.Core.State
             Instance = this;
             this.transitionTable.Initialize();
             currentState = this.initialState;
-            hasTransitionedThisFrame = false;
+            queuedTransitions.Clear();
+            callers.Clear();
+            isAnnouncing = false;
         }
 
         #endregion

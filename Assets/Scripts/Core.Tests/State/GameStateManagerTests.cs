@@ -94,7 +94,6 @@ namespace ProjectAstra.Core.Tests.State
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
             manager.ForceState(startState, "test setup");
-            manager.ResetFrameGate();
 
             bool result = manager.RequestTransition(target, "test");
 
@@ -109,7 +108,6 @@ namespace ProjectAstra.Core.Tests.State
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
             manager.ForceState(startState, "test setup");
-            manager.ResetFrameGate();
 
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition"));
             bool result = manager.RequestTransition(target, "test");
@@ -119,26 +117,58 @@ namespace ProjectAstra.Core.Tests.State
         }
 
         [Test]
-        public void SecondTransitionSameFrame_IsDiscarded()
+        public void SecondTransitionSameFrame_Succeeds()
         {
             bool first = manager.RequestTransition(GameState.MainMenu, "first");
             Assert.IsTrue(first);
 
-            LogAssert.Expect(LogType.Warning, new Regex(@"\[GameStateManager\] Transition to .+ discarded"));
             bool second = manager.RequestTransition(GameState.Cutscene, "second");
-            Assert.IsFalse(second);
+            Assert.IsTrue(second, "A chained transition in the same frame must not be dropped");
+            Assert.AreEqual(GameState.Cutscene, manager.CurrentState);
+        }
+
+        [Test]
+        public void TransitionRequestedWhileAnnouncing_IsQueuedNotDropped()
+        {
+            channel.Register(args =>
+            {
+                if (args.NewState == GameState.MainMenu)
+                    manager.RequestTransition(GameState.Cutscene, "listener");
+            });
+
+            manager.RequestTransition(GameState.MainMenu, "test");
+
+            Assert.AreEqual(GameState.Cutscene, manager.CurrentState,
+                "A transition asked for from inside a state-change listener must still land");
+        }
+
+        [Test]
+        public void QueuedTransition_IsJudgedAgainstTableWhenItsTurnComes()
+        {
+            channel.Register(args =>
+            {
+                if (args.NewState == GameState.MainMenu)
+                    manager.RequestTransition(GameState.CombatAnimation, "listener");
+            });
+
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ILLEGAL transition: MainMenu -> CombatAnimation"));
+            manager.RequestTransition(GameState.MainMenu, "test");
+
             Assert.AreEqual(GameState.MainMenu, manager.CurrentState);
         }
 
         [Test]
-        public void AfterFrameGateReset_TransitionSucceeds()
+        public void RunawayTransitionLoop_GivesUpAndLogs()
         {
-            manager.RequestTransition(GameState.MainMenu, "first");
-            manager.ResetFrameGate();
+            channel.Register(args =>
+            {
+                if (args.NewState == GameState.MainMenu) manager.RequestTransition(GameState.Cutscene, "loop");
+                if (args.NewState == GameState.Cutscene) manager.RequestTransition(GameState.TitleScreen, "loop");
+                if (args.NewState == GameState.TitleScreen) manager.RequestTransition(GameState.MainMenu, "loop");
+            });
 
-            bool result = manager.RequestTransition(GameState.Cutscene, "second");
-            Assert.IsTrue(result);
-            Assert.AreEqual(GameState.Cutscene, manager.CurrentState);
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] Transition queue never settled"));
+            manager.RequestTransition(GameState.MainMenu, "test");
         }
 
         [Test]
@@ -170,53 +200,73 @@ namespace ProjectAstra.Core.Tests.State
         public void SaveMenu_StoresMenuReturnState()
         {
             manager.RequestTransition(GameState.MainMenu, "test");
-            manager.ResetFrameGate();
             manager.RequestTransition(GameState.BattleMap, "test");
-            manager.ResetFrameGate();
             manager.RequestTransition(GameState.BattleMapPaused, "test");
-            manager.ResetFrameGate();
 
             manager.RequestTransition(GameState.SaveMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, manager.MenuReturnState);
+            Assert.AreEqual(GameState.BattleMapPaused, manager.CallerState);
         }
 
         [Test]
         public void SettingsMenu_StoresMenuReturnState()
         {
             manager.RequestTransition(GameState.MainMenu, "test");
-            manager.ResetFrameGate();
             manager.RequestTransition(GameState.BattleMap, "test");
-            manager.ResetFrameGate();
             manager.RequestTransition(GameState.BattleMapPaused, "test");
-            manager.ResetFrameGate();
 
             manager.RequestTransition(GameState.SettingsMenu, "test");
 
-            Assert.AreEqual(GameState.BattleMapPaused, manager.MenuReturnState);
+            Assert.AreEqual(GameState.BattleMapPaused, manager.CallerState);
         }
 
         [Test]
-        public void ReturnFromContextMenu_TransitionsToStoredContext()
+        public void ReturnToCaller_TransitionsToStoredContext()
         {
             LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
             manager.ForceState(GameState.BattleMapPaused, "test setup");
-            manager.ResetFrameGate();
             manager.RequestTransition(GameState.SaveMenu, "test");
-            manager.ResetFrameGate();
 
-            bool result = manager.ReturnFromContextMenu("test");
+            bool result = manager.ReturnToCaller("test");
 
             Assert.IsTrue(result);
             Assert.AreEqual(GameState.BattleMapPaused, manager.CurrentState);
         }
 
         [Test]
-        public void ReturnFromContextMenu_RejectsIfNotInContextMenuState()
+        public void ReturnToCaller_RejectsWhenCurrentStateHasNoCaller()
         {
-            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ReturnFromContextMenu called from invalid state"));
-            bool result = manager.ReturnFromContextMenu("test");
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] ReturnToCaller called from TitleScreen"));
+            bool result = manager.ReturnToCaller("test");
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void Dialogue_RemembersWhoeverOpenedIt()
+        {
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
+            manager.ForceState(GameState.BattleMap, "test setup");
+
+            manager.RequestTransition(GameState.Dialogue, "test");
+
+            Assert.IsTrue(manager.CanReturnToCaller());
+            Assert.AreEqual(GameState.BattleMap, manager.CallerState);
+            Assert.IsTrue(manager.ReturnToCaller("test"));
+            Assert.AreEqual(GameState.BattleMap, manager.CurrentState);
+        }
+
+        // A dialogue that ends somewhere other than where it started must not leave its caller
+        // behind for the next dialogue to inherit.
+        [Test]
+        public void LeavingAReturningStateByAnotherRoute_ClearsItsCaller()
+        {
+            LogAssert.Expect(LogType.Error, new Regex(@"\[GameStateManager\] FORCED state change"));
+            manager.ForceState(GameState.BattleMap, "test setup");
+            manager.RequestTransition(GameState.Dialogue, "test");
+
+            manager.RequestTransition(GameState.GameOver, "test");
+
+            Assert.IsFalse(manager.CanReturnToCaller());
         }
 
         [Test]

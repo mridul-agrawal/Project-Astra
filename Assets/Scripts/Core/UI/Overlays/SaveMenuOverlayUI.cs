@@ -47,6 +47,6 @@ namespace ProjectAstra.Core.UI.Overlays
             InputManager.Instance.OnCancel -= Return;
         }
 
-        private void Return() => GameStateManager.Instance.ReturnFromContextMenu(nameof(SaveMenuOverlayUI));
+        private void Return() => GameStateManager.Instance.ReturnToCaller(nameof(SaveMenuOverlayUI));
     }
 }

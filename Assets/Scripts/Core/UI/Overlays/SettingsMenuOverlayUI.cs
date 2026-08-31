@@ -92,7 +92,7 @@ namespace ProjectAstra.Core.UI.Overlays
         private void Return()
         {
             AudioManager.Instance?.Play(SoundId.UiCancel);
-            GameStateManager.Instance.ReturnFromContextMenu(nameof(SettingsMenuOverlayUI));
+            GameStateManager.Instance.ReturnToCaller(nameof(SettingsMenuOverlayUI));
         }
     }
 }
