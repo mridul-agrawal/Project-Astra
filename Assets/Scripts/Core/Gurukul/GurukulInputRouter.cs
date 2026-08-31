@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.Gurukul
         private readonly CardinalInputResolver directions = new();
         private readonly InteractLatch confirm = new();
 
-        public GurukulStateMachine States { get; private set; }
+        public GurukulControlGate Gate { get; private set; }
 
         // Walking. Null means stand still. Free exploration only.
         public Facing? MoveIntent { get; private set; }
@@ -32,15 +32,15 @@ namespace ProjectAstra.Core.Gurukul
 
         private void Awake()
         {
-            States = new GurukulStateMachine();
-            States.HandoverEnded += OnHandoverEnded;
+            Gate = new GurukulControlGate();
+            Gate.HandoverEnded += OnHandoverEnded;
         }
 
         private void OnEnable() => EventService.Instance?.SubscribeGameStateChanged(OnGameStateChanged);
 
         private void OnDestroy()
         {
-            if (States != null) States.HandoverEnded -= OnHandoverEnded;
+            if (Gate != null) Gate.HandoverEnded -= OnHandoverEnded;
         }
 
         private void Update()
@@ -53,7 +53,7 @@ namespace ProjectAstra.Core.Gurukul
             Facing? walking = ResolveHeldDirection();
             bool confirmPressed = confirm.Consume(IsHeld(GameInputAction.Confirm));
 
-            if (!States.AcceptsMovement) return;
+            if (!Gate.AcceptsMovement) return;
 
             MoveIntent = walking;
             InteractPressed = confirmPressed;

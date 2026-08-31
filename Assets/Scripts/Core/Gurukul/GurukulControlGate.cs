@@ -4,35 +4,19 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Gurukul
 {
-    // What the hub itself is doing, when the hub is the thing in control.
-    public enum GurukulSubState
-    {
-        FreeExploration,
-        LocationTransition,
-        Departure
-    }
-
     // Answers one question for the whole hub: may anything here act right now?
     //
     // Conversations and scripted sequences used to be states in here; they are high-level
     // GameStates now, so this asks GameStateManager about those. Walking through a doorway and
     // leaving for the battle used to be states too, but neither is a mode the player is *in* —
     // each is a handover in flight, so each is a lock that is held while it runs.
-    public class GurukulStateMachine
+    public class GurukulControlGate
     {
-        private GurukulSubState currentState;
         private int handoversInFlight;
 
         // Fires when the last handover finishes, so a button still held from before it started
         // can be re-armed rather than read the moment control comes back.
         public event Action HandoverEnded;
-
-        public GurukulStateMachine(GurukulSubState initialState = GurukulSubState.FreeExploration)
-        {
-            currentState = initialState;
-        }
-
-        public GurukulSubState CurrentState => currentState;
 
         public bool IsHandoverInFlight => handoversInFlight > 0;
 
@@ -59,7 +43,7 @@ namespace ProjectAstra.Core.Gurukul
         {
             if (handoversInFlight == 0)
             {
-                Debug.LogWarning("[GurukulStateMachine] EndHandover with nothing in flight. Ignored.");
+                Debug.LogWarning("[GurukulControlGate] EndHandover with nothing in flight. Ignored.");
                 return;
             }
 

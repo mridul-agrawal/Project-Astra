@@ -62,7 +62,7 @@ namespace ProjectAstra.Core.Gurukul
         // the screen clear, and a marker must never draw over a dialogue box.
         private GurukulObjectiveData ActiveObjectiveWhileExploring()
         {
-            if (router != null && !router.States.AcceptsMovement) return null;
+            if (router != null && !router.Gate.AcceptsMovement) return null;
             return GurukulProgressService.Instance?.Objectives?.ActiveObjective;
         }
 

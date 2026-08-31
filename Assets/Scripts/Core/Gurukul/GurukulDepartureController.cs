@@ -45,14 +45,14 @@ namespace ProjectAstra.Core.Gurukul
         // load leaves her standing in the hub rather than nowhere.
         private bool Commit(GurukulProgressService progress)
         {
-            if (!router.States.TryBeginHandover()) return false;
+            if (!router.Gate.TryBeginHandover()) return false;
 
             GameFlow.Instance.NotifyHubVisitFinished();
 
             if (GameStateManager.Instance.CurrentState == GameState.HubExploration)
             {
                 Debug.LogError($"[GurukulDeparture] Asked for '{progress.DestinationMapId}' but the game is still in the hub.");
-                router.States.EndHandover();
+                router.Gate.EndHandover();
                 return false;
             }
 

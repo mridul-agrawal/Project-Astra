@@ -16,11 +16,11 @@ namespace ProjectAstra.Core.Gurukul
         [SerializeField] private GurukulLocationLoader loader;
         [SerializeField] private GurukulScreenFade fade;
 
-        public bool IsTransitioning => router.States.IsHandoverInFlight;
+        public bool IsTransitioning => router.Gate.IsHandoverInFlight;
 
         public bool TryUse(GurukulDoor door)
         {
-            if (!router.States.TryBeginHandover()) return false;
+            if (!router.Gate.TryBeginHandover()) return false;
 
             StartCoroutine(Travel(door));
             return true;
@@ -36,7 +36,7 @@ namespace ProjectAstra.Core.Gurukul
 
             // Ending the handover re-arms the buttons, so the press that opened the door can't
             // immediately open the one she just arrived next to.
-            router.States.EndHandover();
+            router.Gate.EndHandover();
         }
 
         // She stands at the door facing it, so coming back out means standing in the same place

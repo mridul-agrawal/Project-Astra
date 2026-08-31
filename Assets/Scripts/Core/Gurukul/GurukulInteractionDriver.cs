@@ -36,7 +36,7 @@ namespace ProjectAstra.Core.Gurukul
         {
             if (router == null || player == null) return;
 
-            if (!router.States.AcceptsWorldInteraction)
+            if (!router.Gate.AcceptsWorldInteraction)
             {
                 ClearPrompt();
                 return;

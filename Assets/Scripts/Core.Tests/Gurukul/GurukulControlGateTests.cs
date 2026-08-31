@@ -8,9 +8,9 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.Tests.Gurukul
 {
     [TestFixture]
-    public class GurukulStateMachineTests
+    public class GurukulControlGateTests
     {
-        private GurukulStateMachine machine;
+        private GurukulControlGate machine;
 
         [SetUp]
         public void SetUp()
@@ -19,7 +19,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
             // the hub being in control. Cleared explicitly so a manager left behind by another
             // fixture can't decide these tests.
             ClearGameStateManagerInstance();
-            machine = new GurukulStateMachine();
+            machine = new GurukulControlGate();
         }
 
         [TearDown]

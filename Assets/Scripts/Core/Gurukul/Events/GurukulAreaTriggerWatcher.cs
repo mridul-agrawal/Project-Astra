@@ -30,7 +30,7 @@ namespace ProjectAstra.Core.Gurukul.Events
 
         private bool CanTrigger() =>
             eventDatabase != null && loader != null && loader.Player != null &&
-            router != null && router.States.AcceptsMovement && !events.IsRunning;
+            router != null && router.Gate.AcceptsMovement && !events.IsRunning;
 
         private static bool IsWaitingHere(GurukulEventData authored, string room, Vector2 position) =>
             authored != null &&
