@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Gurukul;
 using ProjectAstra.Core.Input;
 using ProjectAstra.Core.UI.Gurukul.Objective;
@@ -39,14 +40,14 @@ namespace ProjectAstra.Core.UI.Gurukul
         private void Subscribe()
         {
             if (interactionDriver != null) interactionDriver.PromptChanged += prompt.HandleTargetChanged;
-            if (router != null) router.States.StateChanged += objectives.HandleSubStateChanged;
+            EventService.Instance?.SubscribeGameStateChanged(objectives.HandleGameStateChanged);
             if (InputManager.Instance != null) InputManager.Instance.OnDeviceChanged += prompt.HandleDeviceChanged;
         }
 
         private void Unsubscribe()
         {
             if (interactionDriver != null) interactionDriver.PromptChanged -= prompt.HandleTargetChanged;
-            if (router != null) router.States.StateChanged -= objectives.HandleSubStateChanged;
+            EventService.Instance?.UnsubscribeGameStateChanged(objectives.HandleGameStateChanged);
             if (InputManager.Instance != null) InputManager.Instance.OnDeviceChanged -= prompt.HandleDeviceChanged;
             objectives.Unbind();
         }

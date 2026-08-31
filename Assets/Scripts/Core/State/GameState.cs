@@ -21,6 +21,7 @@ namespace ProjectAstra.Core.State
         // Appended (not inserted) so existing serialized GameState ints keep their values.
         Splash,
         UnitInfoScreen,
-        HubExploration
+        HubExploration,
+        ScriptedSequence
     }
 }

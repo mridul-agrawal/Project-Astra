@@ -65,6 +65,8 @@ namespace ProjectAstra.Core.Input
             new(GameState.LevelUpScreen, GameInputAction.Confirm),
             new(GameState.UnitInfoScreen, UnitInfo),
             new(GameState.HubExploration, Exploration),
+            // A sequence plays itself; the only thing she can do is hurry a line along.
+            new(GameState.ScriptedSequence, GameInputAction.SkipDialogue | GameInputAction.HoldAdvanceDialogue),
         };
 
         // The allowed-action mask for a state — first matching rule wins; None if the state is

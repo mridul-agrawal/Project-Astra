@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Gurukul.Events
 {
@@ -57,7 +58,7 @@ namespace ProjectAstra.Core.Gurukul.Events
         {
             if (guard == null) BindToVisit();
             if (!guard.TryBegin(authored.EventId, authored.OneTime)) return false;
-            if (!router.States.TryTransition(GurukulSubState.ScriptedEvent))
+            if (!EnterSequenceState())
             {
                 guard.Finish(authored.EventId, oneTime: false);
                 return false;
@@ -65,6 +66,16 @@ namespace ProjectAstra.Core.Gurukul.Events
 
             StartCoroutine(Play(authored));
             return true;
+        }
+
+        // A sequence plays in the world that is already loaded, so it never brings a scene of its
+        // own — unlike a cutscene, which is its own place.
+        private static bool EnterSequenceState()
+        {
+            GameStateManager states = GameStateManager.Instance;
+            if (states == null) return true;
+            if (states.CurrentState == GameState.ScriptedSequence) return true;
+            return states.RequestTransition(GameState.ScriptedSequence, nameof(GurukulEventRunner));
         }
 
         private IEnumerator Play(GurukulEventData authored)
@@ -83,7 +94,7 @@ namespace ProjectAstra.Core.Gurukul.Events
 
             // An event that leaves for battle must not flicker back through exploration on the way.
             if (departed) yield break;
-            router.States.TryTransition(GurukulSubState.FreeExploration);
+            GameStateManager.Instance?.RequestTransition(GameState.HubExploration, nameof(GurukulEventRunner));
         }
 
         private IEnumerator Perform(GurukulEventAction action)
@@ -168,11 +179,10 @@ namespace ProjectAstra.Core.Gurukul.Events
         private IEnumerator PlayConversation(GurukulEventAction action)
         {
             if (!conversations.TryStart(action.valueId)) yield break;
-            while (conversations.IsRunning) yield return null;
 
-            // The conversation hands control back to exploration when it ends; the event still owns
-            // it, so take it back before the next action runs.
-            router.States.TryTransition(GurukulSubState.ScriptedEvent);
+            // Nothing to take back afterwards: the conversation returns the state to whoever opened
+            // it, which is this sequence.
+            while (conversations.IsRunning) yield return null;
         }
 
         private IEnumerator Walk(GurukulEventAction action)

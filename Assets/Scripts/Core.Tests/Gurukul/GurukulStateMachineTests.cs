@@ -38,22 +38,9 @@ namespace ProjectAstra.Core.Tests.Gurukul
             Assert.AreEqual(GurukulSubState.FreeExploration, machine.CurrentState);
         }
 
-        [Test]
-        public void AVisitCanOpenStraightIntoItsEvent()
-        {
-            var opening = new GurukulStateMachine(GurukulSubState.ScriptedEvent);
-
-            Assert.AreEqual(GurukulSubState.ScriptedEvent, opening.CurrentState);
-        }
-
-        [TestCase(GurukulSubState.FreeExploration, GurukulSubState.ScriptedEvent)]
         [TestCase(GurukulSubState.FreeExploration, GurukulSubState.LocationTransition)]
         [TestCase(GurukulSubState.FreeExploration, GurukulSubState.Departure)]
-        [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.LocationTransition)]
-        [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.FreeExploration)]
-        [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.Departure)]
         [TestCase(GurukulSubState.LocationTransition, GurukulSubState.FreeExploration)]
-        [TestCase(GurukulSubState.LocationTransition, GurukulSubState.ScriptedEvent)]
         public void LegalTransition_IsAccepted(GurukulSubState from, GurukulSubState to)
         {
             Assert.IsTrue(GurukulStateMachine.IsLegal(from, to), $"Expected {from} -> {to} to be legal");
@@ -106,13 +93,13 @@ namespace ProjectAstra.Core.Tests.Gurukul
             var edges = new List<(GurukulSubState, GurukulSubState)>();
             machine.StateChanged += (from, to) => edges.Add((from, to));
 
-            machine.TryTransition(GurukulSubState.ScriptedEvent);
             machine.TryTransition(GurukulSubState.LocationTransition);
+            machine.TryTransition(GurukulSubState.FreeExploration);
 
             CollectionAssert.AreEqual(new[]
             {
-                (GurukulSubState.FreeExploration, GurukulSubState.ScriptedEvent),
-                (GurukulSubState.ScriptedEvent, GurukulSubState.LocationTransition)
+                (GurukulSubState.FreeExploration, GurukulSubState.LocationTransition),
+                (GurukulSubState.LocationTransition, GurukulSubState.FreeExploration)
             }, edges);
         }
 
@@ -122,7 +109,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
             Assert.IsTrue(machine.AcceptsMovement);
             Assert.IsTrue(machine.AcceptsWorldInteraction);
 
-            machine.TryTransition(GurukulSubState.ScriptedEvent);
+            machine.TryTransition(GurukulSubState.LocationTransition);
 
             Assert.IsFalse(machine.AcceptsMovement);
             Assert.IsFalse(machine.AcceptsWorldInteraction);

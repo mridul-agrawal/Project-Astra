@@ -9,17 +9,15 @@ namespace ProjectAstra.Core.Gurukul
     public enum GurukulSubState
     {
         FreeExploration,
-        ScriptedEvent,
         LocationTransition,
         Departure
     }
 
     // Validated state machine for the hub's remaining modes.
     //
-    // Conversations and choices used to live here too. They are high-level GameStates now — a
-    // conversation is GameState.Dialogue wherever it happens — so this machine no longer has an
-    // opinion about them, and asks GameStateManager whether the hub is in control at all before
-    // letting anything through.
+    // Conversations, choices and scripted sequences used to live here too. They are high-level
+    // GameStates now — a conversation is GameState.Dialogue wherever it happens — so this machine
+    // asks GameStateManager whether the hub is in control at all before letting anything through.
     public class GurukulStateMachine
     {
         private static readonly HashSet<(GurukulSubState, GurukulSubState)> LegalTransitions = BuildLegalTransitions();
@@ -71,20 +69,12 @@ namespace ProjectAstra.Core.Gurukul
         {
             return new HashSet<(GurukulSubState, GurukulSubState)>
             {
-                // Walking around is where everything starts from.
-                (GurukulSubState.FreeExploration, GurukulSubState.ScriptedEvent),
+                // Walking around is where both handovers start from.
                 (GurukulSubState.FreeExploration, GurukulSubState.LocationTransition),
                 (GurukulSubState.FreeExploration, GurukulSubState.Departure),
 
-                // Events move people between locations, and can run straight into the battle
-                // without ever handing control back.
-                (GurukulSubState.ScriptedEvent, GurukulSubState.LocationTransition),
-                (GurukulSubState.ScriptedEvent, GurukulSubState.FreeExploration),
-                (GurukulSubState.ScriptedEvent, GurukulSubState.Departure),
-
-                // A doorway lands in the new room, or straight into the event waiting there.
+                // A doorway lands back in free exploration in the new room.
                 (GurukulSubState.LocationTransition, GurukulSubState.FreeExploration),
-                (GurukulSubState.LocationTransition, GurukulSubState.ScriptedEvent),
 
                 // Departure is terminal: once it commits, the hub is done and the battle loads.
             };

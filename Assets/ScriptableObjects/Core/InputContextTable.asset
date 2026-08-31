@@ -47,3 +47,5 @@ MonoBehaviour:
     allowed: 49199
   - state: 16
     allowed: 12351
+  - state: 17
+    allowed: 12288

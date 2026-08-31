@@ -80,6 +80,13 @@ namespace ProjectAstra.Core.Tests.State
         // A conversation in the hub is the same Dialogue state a battle map uses.
         [TestCase(GameState.HubExploration, GameState.Dialogue)]
         [TestCase(GameState.Dialogue, GameState.HubExploration)]
+        // A scripted sequence plays in the world already loaded, talks, and can hand straight over
+        // to the battle without passing back through exploration.
+        [TestCase(GameState.HubExploration, GameState.ScriptedSequence)]
+        [TestCase(GameState.ScriptedSequence, GameState.HubExploration)]
+        [TestCase(GameState.ScriptedSequence, GameState.Dialogue)]
+        [TestCase(GameState.Dialogue, GameState.ScriptedSequence)]
+        [TestCase(GameState.ScriptedSequence, GameState.BattleMap)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
             Assert.IsTrue(table.IsValid(from, to),
@@ -106,6 +113,9 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.BattleMap, GameState.HubExploration)]
         // Losing a battle must never walk the campaign forward into the next visit.
         [TestCase(GameState.GameOver, GameState.HubExploration)]
+        // A sequence has no scene of its own, so it can never become one.
+        [TestCase(GameState.ScriptedSequence, GameState.Cutscene)]
+        [TestCase(GameState.BattleMap, GameState.ScriptedSequence)]
         public void IllegalTransition_ReturnsFalse(GameState from, GameState to)
         {
             Assert.IsFalse(table.IsValid(from, to),

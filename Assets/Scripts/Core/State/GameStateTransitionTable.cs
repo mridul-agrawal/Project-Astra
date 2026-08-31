@@ -130,6 +130,15 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.HubExploration, GameState.BattleMap),
                 new TransitionEntry(GameState.HubExploration, GameState.Cutscene),
                 new TransitionEntry(GameState.HubExploration, GameState.TitleScreen),
+
+                // An authored sequence plays in whatever world is already loaded, so unlike a
+                // cutscene it never brings a scene of its own. It can talk, and it can run
+                // straight into the battle without handing control back first.
+                new TransitionEntry(GameState.HubExploration, GameState.ScriptedSequence),
+                new TransitionEntry(GameState.ScriptedSequence, GameState.HubExploration),
+                new TransitionEntry(GameState.Dialogue, GameState.ScriptedSequence),
+                new TransitionEntry(GameState.ScriptedSequence, GameState.Dialogue),
+                new TransitionEntry(GameState.ScriptedSequence, GameState.BattleMap),
             };
         }
     }

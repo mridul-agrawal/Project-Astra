@@ -1,4 +1,6 @@
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Gurukul;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Gurukul.Objective
 {
@@ -44,10 +46,11 @@ namespace ProjectAstra.Core.UI.Gurukul.Objective
             objectives = null;
         }
 
-        // Free exploration is the only state the objective belongs on screen in.
-        public void HandleSubStateChanged(GurukulSubState previous, GurukulSubState next)
+        // Free roaming is the only state the objective belongs on screen in — a conversation or a
+        // scripted sequence owns the screen while it runs.
+        public void HandleGameStateChanged(StateChangeArgs args)
         {
-            suppressed = next != GurukulSubState.FreeExploration;
+            suppressed = args.NewState != GameState.HubExploration;
             Render();
         }
 
