@@ -103,12 +103,12 @@ namespace ProjectAstra.Core.Tests.Input
         [Test]
         public void Gurukul_AllowsWalkingAndInteractingOnly()
         {
-            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.CursorUp));
-            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.Confirm));
-            Assert.IsTrue(table.IsActionAllowed(GameState.Gurukul, GameInputAction.Cancel));
-            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.OpenMapMenu));
-            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.NextUnit));
-            Assert.IsFalse(table.IsActionAllowed(GameState.Gurukul, GameInputAction.SkipAnimation));
+            Assert.IsTrue(table.IsActionAllowed(GameState.HubExploration, GameInputAction.CursorUp));
+            Assert.IsTrue(table.IsActionAllowed(GameState.HubExploration, GameInputAction.Confirm));
+            Assert.IsTrue(table.IsActionAllowed(GameState.HubExploration, GameInputAction.Cancel));
+            Assert.IsFalse(table.IsActionAllowed(GameState.HubExploration, GameInputAction.OpenMapMenu));
+            Assert.IsFalse(table.IsActionAllowed(GameState.HubExploration, GameInputAction.NextUnit));
+            Assert.IsFalse(table.IsActionAllowed(GameState.HubExploration, GameInputAction.SkipAnimation));
         }
 
         [Test]

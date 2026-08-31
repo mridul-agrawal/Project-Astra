@@ -18,7 +18,7 @@ namespace ProjectAstra.Core.Editor
     // Safe to run repeatedly: each step checks before it writes and reports only what it changed.
     public static class GurukulSetupTool
     {
-        private const string HubScenePath = "Assets/Scenes/Gurukul.unity";
+        private const string HubScenePath = "Assets/Scenes/HubExploration.unity";
         private const string BootScenePath = "Assets/Scenes/BootScene.unity";
 
         [MenuItem("Project Astra/Gurukul/Run Setup")]
@@ -89,15 +89,15 @@ namespace ProjectAstra.Core.Editor
         private static void SyncSceneStateCatalog(List<string> changes)
         {
             var catalog = LoadSingle<SceneStateCatalog>();
-            if (catalog == null || catalog.HasScene(GameState.Gurukul)) return;
+            if (catalog == null || catalog.HasScene(GameState.HubExploration)) return;
 
             var serialized = new SerializedObject(catalog);
             SerializedProperty states = serialized.FindProperty("sceneStates");
             states.InsertArrayElementAtIndex(states.arraySize);
-            states.GetArrayElementAtIndex(states.arraySize - 1).enumValueIndex = (int)GameState.Gurukul;
+            states.GetArrayElementAtIndex(states.arraySize - 1).enumValueIndex = (int)GameState.HubExploration;
             serialized.ApplyModifiedProperties();
 
-            changes.Add($"SceneStateCatalog += {GameState.Gurukul}");
+            changes.Add($"SceneStateCatalog += {GameState.HubExploration}");
         }
 
         // A state with no row here gets an empty allow-mask, so every input is disabled and nothing
@@ -105,19 +105,19 @@ namespace ProjectAstra.Core.Editor
         private static void SyncInputContextTable(List<string> changes)
         {
             var table = LoadSingle<InputContextTable>();
-            if (table == null || table.AllowedFor(GameState.Gurukul) != GameInputAction.None) return;
+            if (table == null || table.AllowedFor(GameState.HubExploration) != GameInputAction.None) return;
 
-            GameInputAction mask = DefaultMaskFor(GameState.Gurukul);
+            GameInputAction mask = DefaultMaskFor(GameState.HubExploration);
             var serialized = new SerializedObject(table);
             SerializedProperty rules = serialized.FindProperty("rules");
 
             rules.InsertArrayElementAtIndex(rules.arraySize);
             SerializedProperty added = rules.GetArrayElementAtIndex(rules.arraySize - 1);
-            added.FindPropertyRelative("state").enumValueIndex = (int)GameState.Gurukul;
+            added.FindPropertyRelative("state").enumValueIndex = (int)GameState.HubExploration;
             added.FindPropertyRelative("allowed").intValue = (int)mask;
             serialized.ApplyModifiedProperties();
 
-            changes.Add($"InputContextTable += {GameState.Gurukul} allowing {mask}");
+            changes.Add($"InputContextTable += {GameState.HubExploration} allowing {mask}");
         }
 
         private static GameInputAction DefaultMaskFor(GameState state)

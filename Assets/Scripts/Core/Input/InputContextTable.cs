@@ -64,7 +64,7 @@ namespace ProjectAstra.Core.Input
             new(GameState.SettingsMenu, CursorAndMenu),
             new(GameState.LevelUpScreen, GameInputAction.Confirm),
             new(GameState.UnitInfoScreen, UnitInfo),
-            new(GameState.Gurukul, Exploration),
+            new(GameState.HubExploration, Exploration),
         };
 
         // The allowed-action mask for a state — first matching rule wins; None if the state is

@@ -70,13 +70,13 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.SettingsMenu, GameState.BattleMapPaused)]
         [TestCase(GameState.SettingsMenu, GameState.MainMenu)]
         [TestCase(GameState.LevelUpScreen, GameState.BattleMap)]
-        [TestCase(GameState.TitleScreen, GameState.Gurukul)]
-        [TestCase(GameState.MainMenu, GameState.Gurukul)]
-        [TestCase(GameState.Cutscene, GameState.Gurukul)]
-        [TestCase(GameState.ChapterClear, GameState.Gurukul)]
-        [TestCase(GameState.Gurukul, GameState.BattleMap)]
-        [TestCase(GameState.Gurukul, GameState.Cutscene)]
-        [TestCase(GameState.Gurukul, GameState.TitleScreen)]
+        [TestCase(GameState.TitleScreen, GameState.HubExploration)]
+        [TestCase(GameState.MainMenu, GameState.HubExploration)]
+        [TestCase(GameState.Cutscene, GameState.HubExploration)]
+        [TestCase(GameState.ChapterClear, GameState.HubExploration)]
+        [TestCase(GameState.HubExploration, GameState.BattleMap)]
+        [TestCase(GameState.HubExploration, GameState.Cutscene)]
+        [TestCase(GameState.HubExploration, GameState.TitleScreen)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
             Assert.IsTrue(table.IsValid(from, to),
@@ -100,10 +100,10 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.GameOver, GameState.BattleMap)]
         [TestCase(GameState.ChapterClear, GameState.BattleMap)]
         [TestCase(GameState.PreBattlePrep, GameState.MainMenu)]
-        [TestCase(GameState.BattleMap, GameState.Gurukul)]
-        [TestCase(GameState.Gurukul, GameState.Dialogue)]
+        [TestCase(GameState.BattleMap, GameState.HubExploration)]
+        [TestCase(GameState.HubExploration, GameState.Dialogue)]
         // Losing a battle must never walk the campaign forward into the next visit.
-        [TestCase(GameState.GameOver, GameState.Gurukul)]
+        [TestCase(GameState.GameOver, GameState.HubExploration)]
         public void IllegalTransition_ReturnsFalse(GameState from, GameState to)
         {
             Assert.IsFalse(table.IsValid(from, to),

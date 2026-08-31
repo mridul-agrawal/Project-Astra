@@ -22,7 +22,7 @@ namespace ProjectAstra.Core.Editor
     // Rebuilding replaces the scene file, so keep anything hand-placed out of it.
     public static class GurukulSceneBuilder
     {
-        private const string ScenePath = "Assets/Scenes/Gurukul.unity";
+        private const string ScenePath = "Assets/Scenes/HubExploration.unity";
 
         [MenuItem("Project Astra/Gurukul/Build Hub Scene")]
         public static void BuildScene()

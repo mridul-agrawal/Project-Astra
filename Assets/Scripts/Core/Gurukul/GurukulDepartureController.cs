@@ -44,7 +44,7 @@ namespace ProjectAstra.Core.Gurukul
             router.States.TryTransition(GurukulSubState.Departure);
             GameFlow.Instance.NotifyHubVisitFinished();
 
-            if (GameStateManager.Instance.CurrentState == GameState.Gurukul)
+            if (GameStateManager.Instance.CurrentState == GameState.HubExploration)
             {
                 Debug.LogError($"[GurukulDeparture] Asked for '{progress.DestinationMapId}' but the game is still in the hub.");
                 router.States.TryTransition(GurukulSubState.FreeExploration);

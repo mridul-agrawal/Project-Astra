@@ -25,7 +25,7 @@ namespace ProjectAstra.Core.Editor
         // The hub only works booted from here, not by pressing Play on Gurukul.unity — InputManager
         // and the rest of the persistent services live in BootScene, so walking would do nothing.
         [MenuItem(GurukulMenu)]
-        public static void BootToGurukul() => SetInitialState(GameState.Gurukul);
+        public static void BootToGurukul() => SetInitialState(GameState.HubExploration);
 
         [MenuItem(NormalBootMenu)]
         public static void BootNormally() => SetInitialState(GameState.Splash);
@@ -34,7 +34,7 @@ namespace ProjectAstra.Core.Editor
         private static bool CanBootToBattleMap() => CurrentInitialState() != GameState.BattleMap;
 
         [MenuItem(GurukulMenu, validate = true)]
-        private static bool CanBootToGurukul() => CurrentInitialState() != GameState.Gurukul;
+        private static bool CanBootToGurukul() => CurrentInitialState() != GameState.HubExploration;
 
         [MenuItem(NormalBootMenu, validate = true)]
         private static bool CanBootNormally() => CurrentInitialState() != GameState.Splash;

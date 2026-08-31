@@ -121,7 +121,7 @@ namespace ProjectAstra.Core.Flow
             {
                 case CampaignStepKind.Cutscene: return RequestState(GameState.Cutscene);
                 case CampaignStepKind.Battle:   return RequestState(GameState.BattleMap);
-                case CampaignStepKind.HubVisit: return RequestState(GameState.Gurukul);
+                case CampaignStepKind.HubVisit: return RequestState(GameState.HubExploration);
                 default: return false;
             }
         }
