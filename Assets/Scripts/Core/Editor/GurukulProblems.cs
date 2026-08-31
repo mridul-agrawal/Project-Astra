@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Editor

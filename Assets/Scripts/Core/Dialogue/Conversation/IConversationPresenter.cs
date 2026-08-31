@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using ProjectAstra.Core.Dialogue;
 
-namespace ProjectAstra.Core.Gurukul.Conversation
+namespace ProjectAstra.Core.Dialogue.Conversation
 {
     // One selectable line, already resolved: what it reads and whether it can still be picked.
     public readonly struct ConversationChoice

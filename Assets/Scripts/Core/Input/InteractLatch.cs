@@ -1,4 +1,4 @@
-namespace ProjectAstra.Core.Gurukul
+namespace ProjectAstra.Core.Input
 {
     // Makes the interact button a discrete activation instead of a repeating one. Holding it must
     // never fire twice, and after anything consumes a press — a conversation opening, a menu

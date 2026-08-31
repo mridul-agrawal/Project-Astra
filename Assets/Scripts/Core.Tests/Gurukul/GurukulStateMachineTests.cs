@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using ProjectAstra.Core.Gurukul;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Tests.Gurukul
 {
@@ -13,7 +15,22 @@ namespace ProjectAstra.Core.Tests.Gurukul
         private GurukulStateMachine machine;
 
         [SetUp]
-        public void SetUp() => machine = new GurukulStateMachine();
+        public void SetUp()
+        {
+            // No manager means "someone pressed Play on the hub scene", which the machine treats as
+            // the hub being in control. Cleared explicitly so a manager left behind by another
+            // fixture can't decide these tests.
+            ClearGameStateManagerInstance();
+            machine = new GurukulStateMachine();
+        }
+
+        [TearDown]
+        public void TearDown() => ClearGameStateManagerInstance();
+
+        private static void ClearGameStateManagerInstance() =>
+            typeof(GameStateManager)
+                .GetProperty("Instance", BindingFlags.Public | BindingFlags.Static)
+                .SetValue(null, null);
 
         [Test]
         public void StartsInFreeExploration()
@@ -29,15 +46,10 @@ namespace ProjectAstra.Core.Tests.Gurukul
             Assert.AreEqual(GurukulSubState.ScriptedEvent, opening.CurrentState);
         }
 
-        [TestCase(GurukulSubState.FreeExploration, GurukulSubState.Conversation)]
         [TestCase(GurukulSubState.FreeExploration, GurukulSubState.ScriptedEvent)]
         [TestCase(GurukulSubState.FreeExploration, GurukulSubState.LocationTransition)]
         [TestCase(GurukulSubState.FreeExploration, GurukulSubState.Departure)]
-        [TestCase(GurukulSubState.Conversation, GurukulSubState.ChoiceOrQuiz)]
-        [TestCase(GurukulSubState.Conversation, GurukulSubState.FreeExploration)]
-        [TestCase(GurukulSubState.ChoiceOrQuiz, GurukulSubState.Conversation)]
-        [TestCase(GurukulSubState.ChoiceOrQuiz, GurukulSubState.Departure)]
-        [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.Conversation)]
+        [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.LocationTransition)]
         [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.FreeExploration)]
         [TestCase(GurukulSubState.ScriptedEvent, GurukulSubState.Departure)]
         [TestCase(GurukulSubState.LocationTransition, GurukulSubState.FreeExploration)]
@@ -47,12 +59,8 @@ namespace ProjectAstra.Core.Tests.Gurukul
             Assert.IsTrue(GurukulStateMachine.IsLegal(from, to), $"Expected {from} -> {to} to be legal");
         }
 
-        // Walking straight into a choice, or into a door from inside a menu, would mean a press
-        // could land in two places at once.
-        [TestCase(GurukulSubState.FreeExploration, GurukulSubState.ChoiceOrQuiz)]
-        [TestCase(GurukulSubState.Conversation, GurukulSubState.LocationTransition)]
-        [TestCase(GurukulSubState.ChoiceOrQuiz, GurukulSubState.LocationTransition)]
-        [TestCase(GurukulSubState.LocationTransition, GurukulSubState.Conversation)]
+        // Walking straight out of a doorway into the battle would skip everything the hub still
+        // has to settle first.
         [TestCase(GurukulSubState.LocationTransition, GurukulSubState.Departure)]
         public void IllegalTransition_IsRejected(GurukulSubState from, GurukulSubState to)
         {
@@ -76,10 +84,10 @@ namespace ProjectAstra.Core.Tests.Gurukul
         {
             LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("Illegal transition"));
 
-            bool accepted = machine.TryTransition(GurukulSubState.ChoiceOrQuiz);
+            bool accepted = machine.TryTransition(GurukulSubState.Departure);
+            machine.TryTransition(GurukulSubState.FreeExploration);
 
-            Assert.IsFalse(accepted);
-            Assert.AreEqual(GurukulSubState.FreeExploration, machine.CurrentState);
+            Assert.IsTrue(accepted);
         }
 
         [Test]
@@ -98,13 +106,13 @@ namespace ProjectAstra.Core.Tests.Gurukul
             var edges = new List<(GurukulSubState, GurukulSubState)>();
             machine.StateChanged += (from, to) => edges.Add((from, to));
 
-            machine.TryTransition(GurukulSubState.Conversation);
-            machine.TryTransition(GurukulSubState.ChoiceOrQuiz);
+            machine.TryTransition(GurukulSubState.ScriptedEvent);
+            machine.TryTransition(GurukulSubState.LocationTransition);
 
             CollectionAssert.AreEqual(new[]
             {
-                (GurukulSubState.FreeExploration, GurukulSubState.Conversation),
-                (GurukulSubState.Conversation, GurukulSubState.ChoiceOrQuiz)
+                (GurukulSubState.FreeExploration, GurukulSubState.ScriptedEvent),
+                (GurukulSubState.ScriptedEvent, GurukulSubState.LocationTransition)
             }, edges);
         }
 
@@ -114,7 +122,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
             Assert.IsTrue(machine.AcceptsMovement);
             Assert.IsTrue(machine.AcceptsWorldInteraction);
 
-            machine.TryTransition(GurukulSubState.Conversation);
+            machine.TryTransition(GurukulSubState.ScriptedEvent);
 
             Assert.IsFalse(machine.AcceptsMovement);
             Assert.IsFalse(machine.AcceptsWorldInteraction);

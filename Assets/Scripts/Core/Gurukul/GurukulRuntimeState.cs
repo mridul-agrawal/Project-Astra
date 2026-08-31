@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
+using ProjectAstra.Core.Dialogue.Conversation;
 
 namespace ProjectAstra.Core.Gurukul
 {
@@ -36,7 +37,7 @@ namespace ProjectAstra.Core.Gurukul
     // Lookups are linear because these collections hold a few dozen entries at most; a dictionary
     // would cost more in serialization awkwardness than it saves in time.
     [Serializable]
-    public class GurukulRuntimeState
+    public class GurukulRuntimeState : IConversationMemory
     {
         [SerializeField] private string visitId;
         [SerializeField] private int objectiveIndex;

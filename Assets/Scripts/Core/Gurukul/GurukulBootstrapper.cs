@@ -2,6 +2,8 @@ using UnityEngine;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Gurukul.Events;
 
+using ProjectAstra.Core.Dialogue.Conversation;
+
 namespace ProjectAstra.Core.Gurukul
 {
     // Brings up the visit the campaign is on: loads its progression, builds its opening room, and
@@ -68,6 +70,7 @@ namespace ProjectAstra.Core.Gurukul
             if (!loader.Load(visit.StartLocationId, visit.PlayerSpawn, visit.PlayerFacing, houseIdentity: null)) return;
 
             events.BindToVisit();
+            if (director != null) director.BindVisitMemory(GurukulProgressService.Instance.State);
             GurukulProgressService.Instance.Objectives.EventRequested += director.PlayEvent;
             GurukulProgressService.Instance.Objectives.Begin();
 

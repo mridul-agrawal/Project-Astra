@@ -77,6 +77,9 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.HubExploration, GameState.BattleMap)]
         [TestCase(GameState.HubExploration, GameState.Cutscene)]
         [TestCase(GameState.HubExploration, GameState.TitleScreen)]
+        // A conversation in the hub is the same Dialogue state a battle map uses.
+        [TestCase(GameState.HubExploration, GameState.Dialogue)]
+        [TestCase(GameState.Dialogue, GameState.HubExploration)]
         public void ValidTransition_ReturnsTrue(GameState from, GameState to)
         {
             Assert.IsTrue(table.IsValid(from, to),
@@ -101,7 +104,6 @@ namespace ProjectAstra.Core.Tests.State
         [TestCase(GameState.ChapterClear, GameState.BattleMap)]
         [TestCase(GameState.PreBattlePrep, GameState.MainMenu)]
         [TestCase(GameState.BattleMap, GameState.HubExploration)]
-        [TestCase(GameState.HubExploration, GameState.Dialogue)]
         // Losing a battle must never walk the campaign forward into the next visit.
         [TestCase(GameState.GameOver, GameState.HubExploration)]
         public void IllegalTransition_ReturnsFalse(GameState from, GameState to)

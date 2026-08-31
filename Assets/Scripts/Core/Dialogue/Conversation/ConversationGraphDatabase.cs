@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectAstra.Core.Gurukul.Conversation
+namespace ProjectAstra.Core.Dialogue.Conversation
 {
     // Lookup from a conversation id to its graph, so a character placement or an interactable can
     // name a conversation without holding a direct reference. Mirrors MapCatalog.
-    [CreateAssetMenu(fileName = "ConversationGraphDatabase", menuName = "Project Astra/Gurukul/Conversation Database")]
+    [CreateAssetMenu(fileName = "ConversationGraphDatabase", menuName = "Project Astra/Dialogue/Conversation Database")]
     public class ConversationGraphDatabase : ScriptableObject
     {
         [SerializeField] private List<ConversationGraphData> conversations = new();

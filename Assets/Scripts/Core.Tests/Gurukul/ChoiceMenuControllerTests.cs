@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using ProjectAstra.Core.Gurukul.Conversation;
-using ProjectAstra.Core.UI.Gurukul.Choice;
+using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.UI.Dialogue.Choice;
 
 namespace ProjectAstra.Core.Tests.Gurukul
 {

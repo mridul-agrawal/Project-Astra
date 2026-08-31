@@ -1,5 +1,5 @@
 using UnityEngine;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Gurukul
@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.Gurukul
     public sealed class GurukulVisitDirector : MonoBehaviour
     {
         [SerializeField] private GurukulInteractionDriver interactionDriver;
-        [SerializeField] private GurukulConversationPlayer conversations;
+        [SerializeField] private ConversationPlayer conversations;
         [SerializeField] private GurukulLocationTransition transitions;
         [SerializeField] private GurukulEventRunner events;
         [SerializeField] private GurukulDepartureController departures;
@@ -25,7 +25,7 @@ namespace ProjectAstra.Core.Gurukul
         private void Awake()
         {
             if (interactionDriver == null) interactionDriver = FindFirstObjectByType<GurukulInteractionDriver>();
-            if (conversations == null) conversations = FindFirstObjectByType<GurukulConversationPlayer>();
+            if (conversations == null) conversations = FindFirstObjectByType<ConversationPlayer>();
             if (transitions == null) transitions = FindFirstObjectByType<GurukulLocationTransition>();
             if (events == null) events = FindFirstObjectByType<GurukulEventRunner>();
             if (departures == null) departures = FindFirstObjectByType<GurukulDepartureController>();
@@ -55,6 +55,13 @@ namespace ProjectAstra.Core.Gurukul
             if (events == null) return;
             events.FlagRaised -= OnFlagRaised;
             events.DepartureRequested -= OnDepartureRequested;
+        }
+
+        // The visit's memory of what has already been said. Handed over once the visit is loaded,
+        // because the conversation player itself knows nothing about hubs or visits.
+        public void BindVisitMemory(IConversationMemory memory)
+        {
+            if (conversations != null) conversations.Memory = memory;
         }
 
         private void OnDepartureRequested(string _) => departures?.TryDepart();

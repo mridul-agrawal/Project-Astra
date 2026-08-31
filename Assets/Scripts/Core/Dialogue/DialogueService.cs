@@ -26,7 +26,7 @@ namespace ProjectAstra.Core.Dialogue
         private IDialogueView view;
         private DialogueRunner runner;
         private Action currentCallback;
-        private bool holdsBattleMapState;
+        private bool holdsDialogueState;
         private bool inputBound;
 
         private struct Pending
@@ -106,11 +106,11 @@ namespace ProjectAstra.Core.Dialogue
             var pending = queue.Dequeue();
             currentCallback = pending.OnComplete;
 
-            ExitBattleMapStateIfNeeded(pending.Context);
+            TakeDialogueStateIfNeeded(pending.Context);
 
             runner = new DialogueRunner(pending.Script, speakerRegistry, view, pending.Context, settings.CharsPerSecond);
             runner.OnComplete += HandleRunnerComplete;
-            if (pending.Context != DialogueTriggeringContext.Gurukul) BindInput();
+            if (pending.Context != DialogueTriggeringContext.Conversation) BindInput();
             runner.Start();
         }
 
@@ -121,26 +121,30 @@ namespace ProjectAstra.Core.Dialogue
             runner = null;
             UnbindInput();
 
-            // Hand control back to the map only once nothing else is queued.
-            if (queue.Count == 0) EnterBattleMapStateIfHeld();
+            // Hand control back to whoever opened this only once nothing else is queued.
+            if (queue.Count == 0) ReturnDialogueStateIfHeld();
 
             callback?.Invoke();
 
             if (queue.Count > 0) StartNext();
         }
 
-        private void ExitBattleMapStateIfNeeded(DialogueTriggeringContext context)
+        // A cutscene's state belongs to GameFlow and a conversation's to ConversationPlayer, so the
+        // service only takes the state for a standalone script triggered on the map.
+        private void TakeDialogueStateIfNeeded(DialogueTriggeringContext context)
         {
-            if (context != DialogueTriggeringContext.BattleMap || holdsBattleMapState) return;
-            GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(DialogueService));
-            holdsBattleMapState = true;
+            if (context != DialogueTriggeringContext.BattleMap || holdsDialogueState) return;
+            holdsDialogueState =
+                GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(DialogueService)) ?? false;
         }
 
-        private void EnterBattleMapStateIfHeld()
+        // Goes back to whoever opened the dialogue rather than assuming the battle map, so the same
+        // service serves a script triggered anywhere.
+        private void ReturnDialogueStateIfHeld()
         {
-            if (!holdsBattleMapState) return;
-            GameStateManager.Instance?.RequestTransition(GameState.BattleMap, nameof(DialogueService));
-            holdsBattleMapState = false;
+            if (!holdsDialogueState) return;
+            holdsDialogueState = false;
+            GameStateManager.Instance?.ReturnToCaller(nameof(DialogueService));
         }
 
         private void BindInput()

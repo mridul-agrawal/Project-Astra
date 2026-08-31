@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using ProjectAstra.Core.Gurukul;
+using ProjectAstra.Core.Input;
 
-namespace ProjectAstra.Core.Tests.Gurukul
+namespace ProjectAstra.Core.Tests.Input
 {
     [TestFixture]
     public class InteractLatchTests

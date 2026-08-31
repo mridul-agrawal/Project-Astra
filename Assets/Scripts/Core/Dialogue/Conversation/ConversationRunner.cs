@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ProjectAstra.Core.Gurukul.Conversation
+namespace ProjectAstra.Core.Dialogue.Conversation
 {
     // Walks one conversation graph: plays a script, waits, shows a choice, follows the branch, and
     // stops when it runs out of nodes.
     //
     // Pure C# behind IConversationPresenter, so a quiz's wrong-answer loop and a topic menu's
     // greying both test without a Canvas — the same arrangement DialogueRunner uses.
-    public class GurukulConversationRunner
+    public class ConversationRunner
     {
         private readonly ConversationGraphData graph;
         private readonly IConversationPresenter presenter;
-        private readonly GurukulRuntimeState state;
+        private readonly IConversationMemory state;
         private readonly List<ConversationChoice> choiceBuffer = new();
 
         private ConversationNode current;
@@ -24,8 +24,8 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         public event Action<string> FlagRaised;
         public event Action Completed;
 
-        public GurukulConversationRunner(ConversationGraphData graph, IConversationPresenter presenter,
-            GurukulRuntimeState state)
+        public ConversationRunner(ConversationGraphData graph, IConversationPresenter presenter,
+            IConversationMemory state)
         {
             this.graph = graph;
             this.presenter = presenter;
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         {
             if (graph == null)
             {
-                Debug.LogError("[GurukulConversation] Asked to run a conversation with no graph.");
+                Debug.LogError("[Conversation] Asked to run a conversation with no graph.");
                 return;
             }
 
@@ -77,7 +77,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         {
             if (node.script == null)
             {
-                Debug.LogError($"[GurukulConversation] '{graph.ConversationId}' node '{node.nodeId}' has no script.");
+                Debug.LogError($"[Conversation] '{graph.ConversationId}' node '{node.nodeId}' has no script.");
                 Finish();
                 return;
             }
@@ -94,7 +94,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
         {
             if (node.options == null || node.options.Length == 0)
             {
-                Debug.LogError($"[GurukulConversation] '{graph.ConversationId}' node '{node.nodeId}' offers no options.");
+                Debug.LogError($"[Conversation] '{graph.ConversationId}' node '{node.nodeId}' offers no options.");
                 Finish();
                 return;
             }

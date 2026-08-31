@@ -4,14 +4,14 @@ using NUnit.Framework;
 using UnityEngine;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 
 namespace ProjectAstra.Core.Tests.Gurukul
 {
     // Walks whole graphs against a fake presenter, so a quiz's wrong-answer loop and a topic menu's
     // greying are proven without a Canvas or a dialogue box.
     [TestFixture]
-    public class GurukulConversationRunnerTests
+    public class ConversationRunnerTests
     {
         // Answers every prompt the instant it arrives, recording what it was asked to do. Choices
         // are answered by a queue the test fills in advance.
@@ -85,7 +85,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
             optionId = id, label = label, nextNodeId = next, askOnce = askOnce, repeatNodeId = repeatNode
         };
 
-        private (GurukulConversationRunner runner, FakePresenter presenter, GurukulRuntimeState state) Build(
+        private (ConversationRunner runner, FakePresenter presenter, GurukulRuntimeState state) Build(
             string entry, params ConversationNode[] nodes)
         {
             var graph = ConversationGraphData.CreateForTest("talk_kaal", entry, nodes);
@@ -93,7 +93,7 @@ namespace ProjectAstra.Core.Tests.Gurukul
 
             var state = new GurukulRuntimeState("hub1");
             var presenter = new FakePresenter();
-            return (new GurukulConversationRunner(graph, presenter, state), presenter, state);
+            return (new ConversationRunner(graph, presenter, state), presenter, state);
         }
 
         // Straight-line walks
@@ -311,8 +311,8 @@ namespace ProjectAstra.Core.Tests.Gurukul
             var state = new GurukulRuntimeState("hub1");
             var presenter = new FakePresenter();
 
-            new GurukulConversationRunner(graph, presenter, state).Begin();
-            new GurukulConversationRunner(graph, presenter, state).Begin();
+            new ConversationRunner(graph, presenter, state).Begin();
+            new ConversationRunner(graph, presenter, state).Begin();
 
             CollectionAssert.AreEqual(new[] { "first", "again" }, presenter.PlayedScripts);
         }
@@ -327,8 +327,8 @@ namespace ProjectAstra.Core.Tests.Gurukul
             var state = new GurukulRuntimeState("hub1");
             var presenter = new FakePresenter();
 
-            new GurukulConversationRunner(graph, presenter, state).Begin();
-            new GurukulConversationRunner(graph, presenter, state).Begin();
+            new ConversationRunner(graph, presenter, state).Begin();
+            new ConversationRunner(graph, presenter, state).Begin();
 
             CollectionAssert.AreEqual(new[] { "first", "first" }, presenter.PlayedScripts);
         }

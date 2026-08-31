@@ -5,7 +5,7 @@ using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 using ProjectAstra.Core.Units;
 

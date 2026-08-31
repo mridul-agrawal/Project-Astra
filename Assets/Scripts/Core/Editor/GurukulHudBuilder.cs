@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Gurukul;
 using ProjectAstra.Core.UI.Gurukul;
-using ProjectAstra.Core.UI.Gurukul.Choice;
+using ProjectAstra.Core.UI.Dialogue.Choice;
 using ProjectAstra.Core.UI.Gurukul.Marker;
 using ProjectAstra.Core.UI.Gurukul.Objective;
 using ProjectAstra.Core.UI.Gurukul.Prompt;

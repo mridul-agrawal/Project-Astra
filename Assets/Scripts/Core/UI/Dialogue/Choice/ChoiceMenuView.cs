@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-namespace ProjectAstra.Core.UI.Gurukul.Choice
+namespace ProjectAstra.Core.UI.Dialogue.Choice
 {
     // Draws the choice list under the dialogue box. Render-only: it owns no input and no selection
     // state, which is the point.

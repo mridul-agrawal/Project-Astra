@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using ProjectAstra.Core.Dialogue;
 
-namespace ProjectAstra.Core.Gurukul.Conversation
+namespace ProjectAstra.Core.Dialogue.Conversation
 {
     // Append only — authored nodes store the kind as an int.
     public enum ConversationNodeKind
@@ -70,7 +70,7 @@ namespace ProjectAstra.Core.Gurukul.Conversation
     // with no branching, and its runner and view are pinned by a test suite — so choices, topics and
     // quizzes are expressed by sequencing whole scripts instead of by reaching into them. A quiz
     // needs no machinery of its own: it is a choice whose wrong answers point back at the question.
-    [CreateAssetMenu(fileName = "ConversationGraphData", menuName = "Project Astra/Gurukul/Conversation Data")]
+    [CreateAssetMenu(fileName = "ConversationGraphData", menuName = "Project Astra/Dialogue/Conversation Data")]
     public class ConversationGraphData : ScriptableObject
     {
         [SerializeField] private string conversationId;

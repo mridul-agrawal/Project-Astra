@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ProjectAstra.Core.UI.Gurukul.Choice
+namespace ProjectAstra.Core.UI.Dialogue.Choice
 {
     public sealed class ChoiceRowVM
     {

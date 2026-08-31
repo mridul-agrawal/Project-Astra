@@ -11,9 +11,9 @@ namespace ProjectAstra.Core.Dialogue
         // Overlay over the live battle map; map input is suppressed while it plays.
         BattleMap,
 
-        // Inside the Gurukul hub. The hub already owns input and its own sub-state, so the service
-        // neither takes the game state nor binds the confirm button here — the hub's router feeds
-        // it instead, which is what keeps one press from being read as two things.
-        Gurukul
+        // One script inside a longer branching conversation. ConversationPlayer owns the game state
+        // and the confirm button for the whole exchange, so the service takes neither here — which
+        // is what keeps one press from being read as both "advance the line" and "pick this option".
+        Conversation
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Editor

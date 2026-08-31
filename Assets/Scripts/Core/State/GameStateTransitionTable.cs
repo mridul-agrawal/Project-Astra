@@ -119,12 +119,14 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.UnitInfoScreen, GameState.BattleMap),
 
                 // The Gurukul hub sits between battles, so the campaign reaches it from wherever
-                // the previous step ended and leaves it for whatever the next step is. Its own six
-                // exploration sub-states live in GurukulStateMachine, not here.
+                // the previous step ended and leaves it for whatever the next step is. A
+                // conversation there is GameState.Dialogue, the same as anywhere else.
                 new TransitionEntry(GameState.TitleScreen, GameState.HubExploration),
                 new TransitionEntry(GameState.MainMenu, GameState.HubExploration),
                 new TransitionEntry(GameState.Cutscene, GameState.HubExploration),
                 new TransitionEntry(GameState.ChapterClear, GameState.HubExploration),
+                new TransitionEntry(GameState.HubExploration, GameState.Dialogue),
+                new TransitionEntry(GameState.Dialogue, GameState.HubExploration),
                 new TransitionEntry(GameState.HubExploration, GameState.BattleMap),
                 new TransitionEntry(GameState.HubExploration, GameState.Cutscene),
                 new TransitionEntry(GameState.HubExploration, GameState.TitleScreen),

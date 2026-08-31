@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 
 namespace ProjectAstra.Core.Gurukul.Events
 {
@@ -20,7 +20,7 @@ namespace ProjectAstra.Core.Gurukul.Events
         private const float MinProgressSqr = 1e-8f;
 
         [SerializeField] private GurukulInputRouter router;
-        [SerializeField] private GurukulConversationPlayer conversations;
+        [SerializeField] private ConversationPlayer conversations;
         [SerializeField] private GurukulEventDatabase eventDatabase;
         [SerializeField] private GurukulCameraRig cameraRig;
 
@@ -36,7 +36,7 @@ namespace ProjectAstra.Core.Gurukul.Events
         private void Awake()
         {
             if (router == null) router = FindFirstObjectByType<GurukulInputRouter>();
-            if (conversations == null) conversations = FindFirstObjectByType<GurukulConversationPlayer>();
+            if (conversations == null) conversations = FindFirstObjectByType<ConversationPlayer>();
         }
 
         // Rebuilt per visit, because the guard reads the visit's completed-event list.

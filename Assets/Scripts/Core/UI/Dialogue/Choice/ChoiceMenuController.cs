@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using ProjectAstra.Core.Gurukul.Conversation;
+using ProjectAstra.Core.Dialogue.Conversation;
 
-namespace ProjectAstra.Core.UI.Gurukul.Choice
+namespace ProjectAstra.Core.UI.Dialogue.Choice
 {
     // Owns which option the cursor is on and what happens when it is confirmed. Plain C#, so the
     // navigation rules — wrapping, skipping greyed rows, refusing to confirm a used topic — test
