@@ -84,9 +84,15 @@ namespace ProjectAstra.Core.Gurukul.Events
 
             foreach (GurukulEventAction action in authored.Actions)
             {
-                if (action.kind == GurukulEventActionKind.Depart) departed = true;
                 yield return Perform(action);
-                if (departed) break;
+
+                // Judged on whether the game actually left, not on having asked. A departure the
+                // gate refuses — an objective still unfinished — has to fall through to the
+                // hand-back below, or the sequence ends with nothing on screen and no input.
+                if (action.kind != GurukulEventActionKind.Depart) continue;
+                if (!HasLeftTheHub()) continue;
+                departed = true;
+                break;
             }
 
             guard.Finish(authored.EventId, authored.OneTime);
@@ -96,6 +102,10 @@ namespace ProjectAstra.Core.Gurukul.Events
             if (departed) yield break;
             GameStateManager.Instance?.RequestTransition(GameState.HubExploration, nameof(GurukulEventRunner));
         }
+
+        private static bool HasLeftTheHub() =>
+            GameStateManager.Instance != null &&
+            GameStateManager.Instance.CurrentState != GameState.ScriptedSequence;
 
         private IEnumerator Perform(GurukulEventAction action)
         {
