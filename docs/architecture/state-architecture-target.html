@@ -1,0 +1,261 @@
+<title>Hub State Integration</title>
+<style>
+  :root {
+    --ground: #ffffff;
+    --panel: #f6f7f8;
+    --ink: #17191d;
+    --ink-soft: #565b63;
+    --rule: #d6d9dd;
+    --rule-strong: #b4b9c0;
+    --code-bg: #eef0f2;
+    --keep: #5c626a;
+    --rename: #8a5a00;
+    --new: #1a5aa8;
+    --drop: #9a2f2f;
+    --keep-bg: #eceef0;
+    --rename-bg: #fbf1dd;
+    --new-bg: #e4eefb;
+    --drop-bg: #fae9e9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14161a;
+      --panel: #1c1f24;
+      --ink: #e6e8ec;
+      --ink-soft: #a2a8b2;
+      --rule: #333840;
+      --rule-strong: #4b525c;
+      --code-bg: #23272e;
+      --keep: #a2a8b2;
+      --rename: #e0ab52;
+      --new: #79b0ee;
+      --drop: #ef8f8f;
+      --keep-bg: #262a30;
+      --rename-bg: #382e1a;
+      --new-bg: #1c2c40;
+      --drop-bg: #3a2323;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #14161a;
+    --panel: #1c1f24;
+    --ink: #e6e8ec;
+    --ink-soft: #a2a8b2;
+    --rule: #333840;
+    --rule-strong: #4b525c;
+    --code-bg: #23272e;
+    --keep: #a2a8b2;
+    --rename: #e0ab52;
+    --new: #79b0ee;
+    --drop: #ef8f8f;
+    --keep-bg: #262a30;
+    --rename-bg: #382e1a;
+    --new-bg: #1c2c40;
+    --drop-bg: #3a2323;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 40px 24px 96px;
+  }
+  main { max-width: 940px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
+  p, li { max-width: 68ch; }
+
+  h1 { font-size: 28px; line-height: 1.25; margin: 0 0 6px; text-wrap: balance; }
+  h2 {
+    font-size: 20px; margin: 20px 0 0; padding-top: 22px;
+    border-top: 1px solid var(--rule-strong); text-wrap: balance;
+  }
+  h3 { font-size: 15px; margin: 18px 0 -8px; color: var(--ink-soft);
+       text-transform: uppercase; letter-spacing: 0.06em; }
+  .lede { color: var(--ink-soft); margin: 0; }
+  .rule-box {
+    background: var(--panel); border: 1px solid var(--rule);
+    padding: 14px 18px; border-radius: 4px;
+  }
+  .rule-box p { margin: 0; max-width: none; }
+  .rule-box p + p { margin-top: 10px; }
+
+  code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  th code, td code { background: none; padding: 0; }
+
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; color: var(--ink-soft); white-space: nowrap; }
+
+  .tag {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 3px; white-space: nowrap;
+  }
+  .t-keep   { color: var(--keep);   background: var(--keep-bg); }
+  .t-rename { color: var(--rename); background: var(--rename-bg); }
+  .t-new    { color: var(--new);    background: var(--new-bg); }
+  .t-drop   { color: var(--drop);   background: var(--drop-bg); }
+
+  ol.phases { list-style: none; counter-reset: phase -1; padding: 0; margin: 0;
+              display: flex; flex-direction: column; gap: 14px; }
+  ol.phases > li { counter-increment: phase; padding-left: 78px; position: relative; max-width: 74ch; }
+  ol.phases > li::before {
+    content: "Phase " counter(phase);
+    position: absolute; left: 0; top: 2px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.03em;
+    color: var(--ink-soft); font-variant-numeric: tabular-nums;
+  }
+  .exit { color: var(--ink-soft); font-style: italic; }
+
+  ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  ol.numbered { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .aside { color: var(--ink-soft); font-size: 15px; border-left: 3px solid var(--rule-strong);
+           padding-left: 14px; }
+  footer { color: var(--ink-soft); font-size: 14px; border-top: 1px solid var(--rule); padding-top: 14px; }
+</style>
+
+<main>
+  <header>
+    <h1>Hub State Integration</h1>
+    <p class="lede">Project Astra · decided and executed 2026-08-31 on <code>hub.dev.master</code>. Supersedes the earlier draft, which over-reached.</p>
+  </header>
+
+  <div class="rule-box">
+    <p><b>Status: all six phases done.</b> 838 EditMode tests green, hub verified in play mode end to end — boot, conversation, scripted sequence, refused departure, doorway. Two soft-locks found and fixed on the way (§7). Uncommitted.</p>
+    <p><b>Goal:</b> the Gurukul hub stops running a private state machine. Its six sub-states become either high-level <code>GameState</code> values or busy locks, and <code>GurukulStateMachine</code> is deleted. Nothing else in the game changes.</p>
+  </div>
+
+  <section>
+    <h2>1 · Scope</h2>
+    <p><b>In:</b> <code>GurukulSubState</code> and the seven hub scripts that read it, plus the two <code>GameStateManager</code> capabilities that make the merge possible.</p>
+    <p><b>Out, and staying out:</b></p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Machine</th><th>Why it stays</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>CursorStateMachine</code><br><code>CursorMode</code></td>
+            <td>The cursor is an entity that exists only on the battle map. Free / Selected / Targeting describe what a cursor is doing, not what the game is. An entity owning its own state machine is correct design, not duplication.</td>
+          </tr>
+          <tr>
+            <td><code>BattlePhaseManager</code><br><code>BattlePhase</code></td>
+            <td>A different axis — whose turn it is, not what the player is doing. Both are true at once, so merging produces a cross-product.</td>
+          </tr>
+          <tr>
+            <td><code>InventoryMenuUI</code><br><code>TradeScreenUI</code><br><code>ConvoyUI</code></td>
+            <td>Battle-map screens, working today. Out of this budget.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The test for what belongs in <code>GameState</code>: <b>does the player see and do something categorically different?</b> Free roaming, dialogue, a cutscene — yes. A cursor changing what it highlights — no.</p>
+    <p class="aside">Separate, unrelated note: <code>CursorMode</code> (5 values, input rules) and <code>CursorState</code> (6 values, visuals) overlap inside <code>GridCursor</code> and are not identical. That is a cursor-internal cleanup for some other day. It is not state-architecture work and is not in this plan.</p>
+  </section>
+
+  <section>
+    <h2>2 · The six sub-states, mapped</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th><code>GurukulSubState</code></th><th>Becomes</th><th>Kind</th></tr></thead>
+        <tbody>
+          <tr><td><code>FreeExploration</code></td><td><code>GameState.HubExploration</code></td><td><span class="tag t-rename">rename</span> of the state it already duplicates</td></tr>
+          <tr><td><code>Conversation</code></td><td><code>GameState.Dialogue</code></td><td><span class="tag t-keep">existing</span> state, widened</td></tr>
+          <tr><td><code>ChoiceOrQuiz</code></td><td>nothing</td><td><span class="tag t-drop">dropped</span> a node kind inside a dialogue, not a mode</td></tr>
+          <tr><td><code>ScriptedEvent</code></td><td><code>GameState.ScriptedSequence</code></td><td><span class="tag t-new">new</span> one new state</td></tr>
+          <tr><td><code>LocationTransition</code></td><td>busy lock</td><td><span class="tag t-drop">dropped</span> already duplicated as <code>IsTransitioning</code></td></tr>
+          <tr><td><code>Departure</code></td><td>busy lock</td><td><span class="tag t-drop">dropped</span> hub-to-battle handover</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Six sub-states, one new global state.</p>
+  </section>
+
+  <section>
+    <h2>3 · Enum changes</h2>
+    <p><code>GameState</code> ints are serialized in <code>TransitionTable.asset</code>, <code>InputContextTable</code> and <code>SceneStateCatalog</code>. <b>Rename freely — the int is unchanged. Append only. Never reorder.</b></p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>#</th><th>Change</th></tr></thead>
+        <tbody>
+          <tr><td class="num">16</td><td><span class="tag t-rename">rename</span> &nbsp;<code>Gurukul</code> → <code>HubExploration</code> — int unchanged, so all existing table rows keep working</td></tr>
+          <tr><td class="num">17</td><td><span class="tag t-new">new</span> &nbsp;<code>ScriptedSequence</code>, appended</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>17 states become 18.</p>
+    <p><code>Cutscene</code> (2) cannot serve as the scripted-sequence state: it is scene-backed, so entering it would load <code>Cutscene.unity</code> and tear the hub down mid-event. <code>ScriptedSequence</code> is an overlay state — it must <b>not</b> be added to <code>SceneStateCatalog</code>.</p>
+
+    <h3>The scene rename</h3>
+    <p><code>SceneLoader</code> resolves scenes by <code>state.ToString()</code>, so renaming state 16 means renaming <code>Assets/Scenes/Gurukul.unity</code> to <code>HubExploration.unity</code> and confirming Build Settings follows the move. That is smaller than replacing the name lookup with an explicit state-to-scene map. Build the explicit map later, when a second explorable location actually needs it.</p>
+  </section>
+
+  <section>
+    <h2>4 · Rows to append to TransitionTable.asset</h2>
+    <p>Derived from the sub-state graph. Seven rows; <b>append only, never regenerate.</b></p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>From</th><th>To</th><th>Replaces</th></tr></thead>
+        <tbody>
+          <tr><td>16 <code>HubExploration</code></td><td>7 <code>Dialogue</code></td><td><code>FreeExploration → Conversation</code></td></tr>
+          <tr><td>7 <code>Dialogue</code></td><td>16 <code>HubExploration</code></td><td><code>Conversation → FreeExploration</code></td></tr>
+          <tr><td>16 <code>HubExploration</code></td><td>17 <code>ScriptedSequence</code></td><td><code>FreeExploration → ScriptedEvent</code></td></tr>
+          <tr><td>17 <code>ScriptedSequence</code></td><td>16 <code>HubExploration</code></td><td><code>ScriptedEvent → FreeExploration</code></td></tr>
+          <tr><td>7 <code>Dialogue</code></td><td>17 <code>ScriptedSequence</code></td><td><code>Conversation → ScriptedEvent</code></td></tr>
+          <tr><td>17 <code>ScriptedSequence</code></td><td>7 <code>Dialogue</code></td><td><code>ScriptedEvent → Conversation</code></td></tr>
+          <tr><td>17 <code>ScriptedSequence</code></td><td>4 <code>BattleMap</code></td><td><code>ScriptedEvent → Departure</code>, without flickering through exploration</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><code>16 → 4</code> (hub to battle) already exists, so a normal departure needs no new row. <code>InputContextTable</code> needs one new row for <code>ScriptedSequence</code> — skip-dialogue only, matching what a locked-out player can do during an event.</p>
+  </section>
+
+  <section>
+    <h2>5 · What GameStateManager must gain</h2>
+    <p>Two things. Both are prerequisites, not nice-to-haves.</p>
+    <ol class="numbered">
+      <li><b>A transition queue</b>, replacing the one-per-frame gate. The hub chains transitions inside a single frame today — a choice resolving into the next choice, a conversation ending and the event that owns it taking control back (<code>GurukulEventRunner.PlayConversation</code>). Under the current gate the second one is discarded with a warning.</li>
+      <li><b>A return-to-caller state</b>, generalising <code>MenuReturnState</code>. <code>DialogueService</code> hardcodes returning to <code>BattleMap</code> (<code>DialogueService.cs:134-143</code>). Once hub conversations run in <code>GameState.Dialogue</code>, dialogue must return to whichever state opened it.</li>
+    </ol>
+    <p><b>Not needed for this scope:</b> the full single-owner-input refactor. A narrower rule is enough — <code>GurukulInputRouter</code> acts only while the state is <code>HubExploration</code>, and <code>DialogueService</code> owns confirm while the state is <code>Dialogue</code>. The router already re-arms its latches on every sub-state change; that hook moves to <code>GameStateChanged</code>.</p>
+  </section>
+
+  <section>
+    <h2>6 · Migration order</h2>
+    <p>Each phase leaves the game runnable and is independently committable.</p>
+    <ol class="phases">
+      <li><b>Manager capabilities. <span class="tag t-keep">done</span></b> The one-per-frame gate is gone, replaced by a queue that holds a transition asked for from inside a state-change listener and judges it against the table when its turn comes, with a runaway-loop guard. <code>MenuReturnState</code> became a caller stack — <code>CallerState</code> / <code>CanReturnToCaller()</code> / <code>ReturnToCaller()</code> — popped however a state is left, so a dialogue ending in a game over can't leave its caller behind. <span class="exit">848 tests green.</span></li>
+      <li><b><code>Gurukul</code> → <code>HubExploration</code>. <span class="tag t-keep">done</span></b> Enum value renamed at int 16, so every existing table row kept working untouched. <code>Gurukul.unity</code> renamed to <code>HubExploration.unity</code>; Build Settings followed the move with its GUID intact. <span class="exit">848 tests green; scene confirmed loading under the new name in play mode.</span></li>
+      <li><b>Dialogue absorbs <code>Conversation</code> and <code>ChoiceOrQuiz</code>. <span class="tag t-keep">done</span></b> The whole conversation stack moved to <code>Core.Dialogue.Conversation</code> — player, runner, graph data and the choice menu UI — with GUIDs preserved so scene wiring survived. The runner's last hub dependency became <code>IConversationMemory</code>, which <code>GurukulRuntimeState</code> implements, so the conversation stack now holds zero references to the hub. <code>ConversationPlayer</code> owns the confirm button and the Dialogue state for a whole exchange. <span class="exit">841 tests green.</span></li>
+      <li><b><code>ScriptedSequence</code>. <span class="tag t-keep">done</span></b> Appended at int 17 with its five table rows and an input row allowing skip only. <code>GurukulEventRunner</code> moves the global state; the line that used to re-take control after an inner conversation is gone, because the caller stack already returns there. The objective panel now hides on <code>GameStateChanged</code>. <span class="exit">842 tests green.</span></li>
+      <li><b>Locks. <span class="tag t-keep">done</span></b> Both handovers became one refusable lock (<code>TryBeginHandover</code> / <code>EndHandover</code> / <code>HandoverEnded</code>). The door fade's duplicate <code>IsTransitioning</code> flag now just reads the lock, and the router re-arms the confirm button when a handover ends. <span class="exit">838 tests green.</span></li>
+      <li><b>Delete <code>GurukulStateMachine</code>. <span class="tag t-keep">done</span></b> <code>GurukulSubState</code> is gone. What is left is <code>GurukulControlGate</code>, which answers one question — may anything in the hub act right now? — from the game state and the handover lock. <code>router.States</code> became <code>router.Gate</code>. <span class="exit">838 tests green.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>7 · Bug fixed on the way</h2>
+    <p><b>Departure soft-lock.</b> <code>GurukulSubState.Departure</code> is terminal — it has no outgoing edges. When <code>GurukulDepartureController.Commit</code> finds the state change did not take, it attempts <code>Departure → FreeExploration</code> (<code>GurukulDepartureController.cs:50</code>), which is illegal, is rejected with a warning, and leaves the hub with movement and interaction both dead. A failed departure strands the player with no way out. Phase 4 removes the cause.</p>
+  </section>
+
+  <section>
+    <h2>8 · Constraints on the work</h2>
+    <ul>
+      <li><b><code>TransitionTable.asset</code> is append-only.</b> Never regenerate it from <code>CreateDefaultTransitions()</code> — that silently drops designer-added rows. Edit additively and confirm <code>git diff</code> shows only additions.</li>
+      <li><b><code>GameState</code> ints are serialized</b> in three shared assets. Rename freely, append only, never reorder or insert.</li>
+      <li><b>Verify in the editor, not from serialized data.</b> Play-test or screenshot each phase.</li>
+      <li><b>Seven non-test scripts read <code>GurukulSubState</code>:</b> <code>GurukulInputRouter</code>, <code>GurukulStateMachine</code>, <code>GurukulConversationPlayer</code>, <code>GurukulEventRunner</code>, <code>GurukulLocationTransition</code>, <code>GurukulDepartureController</code>, <code>GurukulObjectiveController</code>. Plus <code>GurukulStateMachineTests</code>.</li>
+    </ul>
+  </section>
+
+  <footer>Source of truth: <code>docs/architecture/state-architecture-target.md</code></footer>
+</main>
