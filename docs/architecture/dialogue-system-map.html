@@ -1,0 +1,278 @@
+<title>Dialogue System Map</title>
+<style>
+  :root {
+    --ground: #ffffff;
+    --panel: #f6f7f8;
+    --ink: #17191d;
+    --ink-soft: #565b63;
+    --rule: #d6d9dd;
+    --rule-strong: #9aa0a8;
+    --code-bg: #eef0f2;
+    --accent: #1a5aa8;
+    --accent-bg: #e8f0fc;
+    --flag: #a3312f;
+    --flag-bg: #fbeceb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14161a;
+      --panel: #1c1f24;
+      --ink: #e6e8ec;
+      --ink-soft: #a2a8b2;
+      --rule: #333840;
+      --rule-strong: #5a626d;
+      --code-bg: #23272e;
+      --accent: #79b0ee;
+      --accent-bg: #1b2b3f;
+      --flag: #ef8f8f;
+      --flag-bg: #382322;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #14161a;
+    --panel: #1c1f24;
+    --ink: #e6e8ec;
+    --ink-soft: #a2a8b2;
+    --rule: #333840;
+    --rule-strong: #5a626d;
+    --code-bg: #23272e;
+    --accent: #79b0ee;
+    --accent-bg: #1b2b3f;
+    --flag: #ef8f8f;
+    --flag-bg: #382322;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.5; margin: 0; padding: 32px 24px 80px;
+  }
+  main { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
+
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 14px; color: var(--ink-soft);
+       text-transform: uppercase; letter-spacing: 0.08em; }
+  .lede { color: var(--ink-soft); margin: 0; font-size: 15px; }
+  code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em;
+         background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+
+  figure { margin: 0; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px;
+            color: var(--ink-soft); margin-top: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 26px; height: 13px; border-radius: 2px; display: inline-block; }
+  .sw.solid { border: 1px solid var(--ink); }
+  .sw.dash { border: 1px dashed var(--ink-soft); }
+  .sw.pill { border: 1px solid var(--ink); border-radius: 7px; }
+  .sw.dead { border: 1px solid var(--flag); background: var(--flag-bg); }
+
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; align-items: start; }
+  .col { display: flex; flex-direction: column; gap: 6px; }
+  .owner {
+    border: 1.6px solid var(--ink); border-radius: 4px; padding: 9px 12px;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 13px; font-weight: 600; text-align: center;
+  }
+  .owner.dead { border-color: var(--flag); color: var(--flag); background: var(--flag-bg); }
+  .owner small { display: block; font-family: inherit; font-weight: 400;
+                 font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em;
+                 text-transform: uppercase; margin-top: 3px; }
+  .spine { height: 14px; border-left: 1.6px solid var(--rule-strong); margin-left: 50%; }
+  .blk {
+    border: 1px solid var(--rule); border-radius: 3px; padding: 7px 10px; background: var(--panel);
+  }
+  .blk b { font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+           font-size: 12.5px; font-weight: 600; display: block; }
+  .blk i { font-style: normal; font-size: 12.5px; color: var(--ink-soft); display: block; margin-top: 1px; }
+  .blk.dead { border-color: var(--flag); background: var(--flag-bg); }
+  .blk.dead b { color: var(--flag); }
+  .tag { float: right; font-family: inherit; font-size: 10px; font-weight: 700;
+         letter-spacing: 0.05em; text-transform: uppercase; color: var(--flag); }
+</style>
+
+<main>
+  <header>
+    <h1>Dialogue System Map</h1>
+    <p class="lede">All 30 scripts in <code>Core/Dialogue</code> and <code>Core/UI/Dialogue</code>.</p>
+  </header>
+
+  <section>
+    <h2>Runtime — what calls what</h2>
+    <figure>
+      <svg viewBox="0 0 1360 560" role="img" aria-label="Runtime flow: callers enter through DialogueService for a single script, while ConversationPlayer runs a branching graph one layer above and re-enters DialogueService once per script node.">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+          <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/>
+          </marker>
+          <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--flag)"/>
+          </marker>
+        </defs>
+
+        <!-- ============ edges (drawn first, pills cover them) ============ -->
+        <g stroke="currentColor" fill="none" marker-end="url(#a)">
+          <line x1="240" y1="90"  x2="392" y2="90"/>
+          <line x1="240" y1="390" x2="392" y2="390"/>
+          <line x1="600" y1="390" x2="752" y2="390"/>
+          <line x1="960" y1="390" x2="1112" y2="390"/>
+          <line x1="960" y1="230" x2="1112" y2="230"/>
+          <line x1="960" y1="90"  x2="1112" y2="90"/>
+          <polyline points="580,120 580,230 752,230"/>
+        </g>
+        <line x1="860" y1="260" x2="860" y2="276" stroke="currentColor"/>
+
+        <g stroke="var(--accent)" fill="none" marker-end="url(#b)">
+          <line x1="600" y1="78" x2="752" y2="78"/>
+          <line x1="756" y1="104" x2="604" y2="104"/>
+          <line x1="470" y1="120" x2="470" y2="356" stroke-width="1.8"/>
+        </g>
+
+        <g stroke="var(--flag)" fill="none" marker-end="url(#c)">
+          <polyline points="240,490 340,490 340,404 392,404"/>
+        </g>
+
+        <!-- ============ interface pills, covering their edge ============ -->
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="968" y="79" width="140" height="22" rx="11" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1038" y="94" fill="currentColor">IConversationMemory</text>
+
+          <rect x="612" y="93" width="136" height="22" rx="11" fill="var(--ground)" stroke="var(--accent)"/>
+          <text x="680" y="108" fill="var(--accent)">IConversationPresenter</text>
+
+          <rect x="978" y="379" width="120" height="22" rx="11" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1038" y="394" fill="currentColor">IDialogueView</text>
+        </g>
+
+        <!-- ============ boxes ============ -->
+        <g font-size="13" text-anchor="middle">
+          <!-- row 1 -->
+          <rect x="40" y="60" width="200" height="60" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="140" y="85" fill="var(--ink-soft)">hub: EventRunner</text>
+          <text x="140" y="103" fill="var(--ink-soft)">/ VisitDirector</text>
+
+          <rect x="400" y="60" width="200" height="60" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.6"/>
+          <text x="500" y="85" fill="var(--accent)">ConversationPlayer</text>
+          <text x="500" y="103" fill="var(--accent)" font-size="11">holds Dialogue state</text>
+
+          <rect x="760" y="60" width="200" height="60" rx="3" fill="var(--accent-bg)" stroke="var(--accent)"/>
+          <text x="860" y="85" fill="var(--accent)">ConversationRunner</text>
+          <text x="860" y="103" fill="var(--accent)" font-size="11">walks the graph</text>
+
+          <rect x="1120" y="60" width="200" height="60" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="1220" y="85" fill="var(--ink-soft)">hub visit state</text>
+          <text x="1220" y="103" fill="var(--ink-soft)" font-size="11">GurukulRuntimeState</text>
+
+          <!-- row 2 -->
+          <rect x="760" y="200" width="200" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="860" y="225" fill="currentColor">ChoiceMenu</text>
+          <text x="860" y="243" fill="currentColor">Controller</text>
+
+          <rect x="1120" y="200" width="200" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1220" y="235" fill="currentColor">ChoiceMenuView</text>
+
+          <rect x="760" y="276" width="200" height="38" rx="3" fill="var(--panel)" stroke="var(--rule-strong)"/>
+          <text x="860" y="300" fill="var(--ink-soft)" font-size="12">ChoiceMenuModel</text>
+
+          <!-- row 3 -->
+          <rect x="40" y="360" width="200" height="60" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="140" y="385" fill="var(--ink-soft)">CutsceneUI</text>
+          <text x="140" y="403" fill="var(--ink-soft)" font-size="11">campaign step</text>
+
+          <rect x="400" y="360" width="200" height="60" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="500" y="385" fill="currentColor">DialogueService</text>
+          <text x="500" y="403" fill="currentColor" font-size="11">one at a time, queues rest</text>
+
+          <rect x="760" y="360" width="200" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="860" y="385" fill="currentColor">DialogueRunner</text>
+          <text x="860" y="403" fill="currentColor" font-size="11">one script, letter crawl</text>
+
+          <rect x="1120" y="360" width="200" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1220" y="395" fill="currentColor">DialogueView</text>
+
+          <!-- row 4 -->
+          <rect x="40" y="460" width="200" height="60" rx="3" fill="var(--flag-bg)" stroke="var(--flag)" stroke-dasharray="5 3"/>
+          <text x="140" y="485" fill="var(--flag)">DialogueTriggerDriver</text>
+          <text x="140" y="503" fill="var(--flag)" font-size="11">subscriptions commented out</text>
+        </g>
+
+        <!-- ============ edge labels, each in its own gutter ============ -->
+        <g font-size="11.5" fill="currentColor" text-anchor="middle">
+          <text x="316" y="82">TryStart(id)</text>
+          <text x="316" y="382">Play(script)</text>
+          <text x="676" y="382">drives</text>
+          <text x="1036" y="222">renders</text>
+        </g>
+        <g font-size="11.5" fill="var(--accent)">
+          <text x="676" y="70" text-anchor="middle">walks</text>
+          <text x="588" y="180">shows</text>
+          <text x="588" y="194">options</text>
+          <text x="460" y="228" text-anchor="end">plays one script</text>
+          <text x="460" y="242" text-anchor="end">per graph node</text>
+        </g>
+        <text x="252" y="482" font-size="11.5" fill="var(--flag)">Play(script)</text>
+      </svg>
+      <div class="legend">
+        <span><i class="sw solid"></i> dialogue component</span>
+        <span><i class="sw dash"></i> caller, outside the folder</span>
+        <span><i class="sw pill"></i> interface / test seam</span>
+        <span><i class="sw dead"></i> dead code</span>
+      </div>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Authored data and vocabulary — grouped by what reads it</h2>
+    <div class="cols">
+
+      <div class="col">
+        <div class="owner">DialogueService<small>Runner · View</small></div>
+        <div class="spine"></div>
+        <div class="blk"><b>DialogueScript <span class="tag">legacy list</span></b><i>One linear exchange</i></div>
+        <div class="blk dead"><b>DialogueSegment <span class="tag">×3</span></b><i>Lines sharing a background</i></div>
+        <div class="blk dead"><b>DialogueLine <span class="tag">×3</span></b><i>One line, as authored</i></div>
+        <div class="blk dead"><b>DialogueNode <span class="tag">×3</span></b><i>One line, as run</i></div>
+        <div class="blk"><b>DialogueSpeaker</b><i>Name + portrait per expression</i></div>
+        <div class="blk"><b>DialogueSpeakerRegistry</b><i>Speaker id → speaker</i></div>
+        <div class="blk"><b>DialogueSettings</b><i>Crawl speed</i></div>
+        <div class="blk"><b>DialogueTriggeringContext</b><i>Who owns the game state</i></div>
+        <div class="blk"><b>DialogueExpression</b><i>Which portrait variant</i></div>
+        <div class="blk"><b>PortraitPosition</b><i>Which side, or hidden</i></div>
+        <div class="blk"><b>PortraitFacing</b><i>Which way it looks</i></div>
+        <div class="blk"><b>SpeakerIdAttribute</b><i>Speaker dropdown, not free text</i></div>
+      </div>
+
+      <div class="col">
+        <div class="owner">ConversationPlayer<small>ConversationRunner</small></div>
+        <div class="spine"></div>
+        <div class="blk"><b>ConversationGraphData</b><i>Branching graph of scripts</i></div>
+        <div class="blk"><b>ConversationGraphDatabase</b><i>Conversation id → graph</i></div>
+      </div>
+
+      <div class="col">
+        <div class="owner">GameFlow<small>CutsceneUI</small></div>
+        <div class="spine"></div>
+        <div class="blk"><b>CutsceneCatalog</b><i>Cutscene id → script</i></div>
+        <div class="blk"><b>CutsceneId</b><i>Stable cutscene name</i></div>
+      </div>
+
+      <div class="col">
+        <div class="owner dead">DialogueTriggerDriver<small>disabled</small></div>
+        <div class="spine"></div>
+        <div class="blk dead"><b>DialogueTrigger <span class="tag">dead</span></b><i>Battle moment → script</i></div>
+        <div class="blk dead"><b>BattleDialogueEventType <span class="tag">dead</span></b><i>Which battle moments exist</i></div>
+      </div>
+
+    </div>
+    <div class="legend">
+      <span><b>×3</b> — three shapes describing one line</span>
+      <span><b>legacy list</b> — still carries the pre-migration node list</span>
+      <span><b>dead</b> — reachable from nothing</span>
+    </div>
+  </section>
+</main>
