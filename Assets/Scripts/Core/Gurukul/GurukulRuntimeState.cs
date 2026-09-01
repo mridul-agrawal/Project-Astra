@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
-using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Gurukul
 {
@@ -37,7 +37,7 @@ namespace ProjectAstra.Core.Gurukul
     // Lookups are linear because these collections hold a few dozen entries at most; a dictionary
     // would cost more in serialization awkwardness than it saves in time.
     [Serializable]
-    public class GurukulRuntimeState : IConversationMemory
+    public class GurukulRuntimeState : IDialogueMemory
     {
         [SerializeField] private string visitId;
         [SerializeField] private int objectiveIndex;
@@ -103,6 +103,13 @@ namespace ProjectAstra.Core.Gurukul
         public bool IsObjectiveCompleted(string objectiveId) => completedObjectiveIds.Contains(objectiveId);
 
         // Conversations and events
+
+        // --- IDialogueMemory ---
+        // The visit already tracks both of these; these are the names the dialogue system asks by.
+        public bool HasPlayed(string scriptId) => HasCompletedConversation(scriptId);
+        public void MarkPlayed(string scriptId) => MarkConversationCompleted(scriptId);
+        public bool HasChosen(string scriptId, string optionId) => HasAskedTopic(scriptId, optionId);
+        public void MarkChosen(string scriptId, string optionId) => MarkTopicAsked(scriptId, optionId);
 
         public bool HasCompletedConversation(string conversationId) => completedConversationIds.Contains(conversationId);
 

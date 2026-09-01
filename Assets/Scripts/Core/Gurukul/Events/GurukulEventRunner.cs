@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
-using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Gurukul.Events
@@ -21,7 +21,8 @@ namespace ProjectAstra.Core.Gurukul.Events
         private const float MinProgressSqr = 1e-8f;
 
         [SerializeField] private GurukulInputRouter router;
-        [SerializeField] private ConversationPlayer conversations;
+        [Tooltip("Turns a conversation id into the script to play.")]
+        [SerializeField] private DialogueScriptCatalog scriptCatalog;
         [SerializeField] private GurukulEventDatabase eventDatabase;
         [SerializeField] private GurukulCameraRig cameraRig;
 
@@ -37,7 +38,7 @@ namespace ProjectAstra.Core.Gurukul.Events
         private void Awake()
         {
             if (router == null) router = FindFirstObjectByType<GurukulInputRouter>();
-            if (conversations == null) conversations = FindFirstObjectByType<ConversationPlayer>();
+
         }
 
         // Rebuilt per visit, because the guard reads the visit's completed-event list.
@@ -186,14 +187,26 @@ namespace ProjectAstra.Core.Gurukul.Events
             if (actor != null) cameraRig.Follow(actor.transform);
         }
 
+        // The sequence keeps hold of the moment while a conversation plays inside it: the service
+        // takes Dialogue and, when the script ends, hands the state back here.
         private IEnumerator PlayConversation(GurukulEventAction action)
         {
-            if (!conversations.TryStart(action.valueId)) yield break;
+            DialogueScript script = scriptCatalog != null ? scriptCatalog.Get(action.valueId) : null;
+            if (script == null)
+            {
+                Debug.LogError($"[GurukulEventData] No dialogue script with id '{action.valueId}'. " +
+                               "Add it to the Dialogue Script Catalog.");
+                yield break;
+            }
 
-            // Nothing to take back afterwards: the conversation returns the state to whoever opened
-            // it, which is this sequence.
-            while (conversations.IsRunning) yield return null;
+            bool finished = false;
+            DialogueService.Instance.Play(script, DialogueTriggeringContext.Conversation,
+                () => finished = true, GurukulProgressService.Instance?.State, RaiseFlag);
+
+            while (!finished) yield return null;
         }
+
+        private void RaiseFlag(string flagId) => FlagRaised?.Invoke(flagId);
 
         private IEnumerator Walk(GurukulEventAction action)
         {

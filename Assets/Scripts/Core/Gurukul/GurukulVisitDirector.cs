@@ -1,5 +1,5 @@
 using UnityEngine;
-using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Gurukul
@@ -13,7 +13,9 @@ namespace ProjectAstra.Core.Gurukul
     public sealed class GurukulVisitDirector : MonoBehaviour
     {
         [SerializeField] private GurukulInteractionDriver interactionDriver;
-        [SerializeField] private ConversationPlayer conversations;
+
+        [Tooltip("Turns a conversation id into the script to play.")]
+        [SerializeField] private DialogueScriptCatalog scriptCatalog;
         [SerializeField] private GurukulLocationTransition transitions;
         [SerializeField] private GurukulEventRunner events;
         [SerializeField] private GurukulDepartureController departures;
@@ -25,7 +27,6 @@ namespace ProjectAstra.Core.Gurukul
         private void Awake()
         {
             if (interactionDriver == null) interactionDriver = FindFirstObjectByType<GurukulInteractionDriver>();
-            if (conversations == null) conversations = FindFirstObjectByType<ConversationPlayer>();
             if (transitions == null) transitions = FindFirstObjectByType<GurukulLocationTransition>();
             if (events == null) events = FindFirstObjectByType<GurukulEventRunner>();
             if (departures == null) departures = FindFirstObjectByType<GurukulDepartureController>();
@@ -34,11 +35,6 @@ namespace ProjectAstra.Core.Gurukul
         private void OnEnable()
         {
             if (interactionDriver != null) interactionDriver.Interacted += OnInteracted;
-            if (conversations != null)
-            {
-                conversations.ConversationFinished += OnConversationFinished;
-                conversations.FlagRaised += OnFlagRaised;
-            }
             if (events == null) return;
             events.FlagRaised += OnFlagRaised;
             events.DepartureRequested += OnDepartureRequested;
@@ -47,22 +43,16 @@ namespace ProjectAstra.Core.Gurukul
         private void OnDisable()
         {
             if (interactionDriver != null) interactionDriver.Interacted -= OnInteracted;
-            if (conversations != null)
-            {
-                conversations.ConversationFinished -= OnConversationFinished;
-                conversations.FlagRaised -= OnFlagRaised;
-            }
             if (events == null) return;
             events.FlagRaised -= OnFlagRaised;
             events.DepartureRequested -= OnDepartureRequested;
         }
 
-        // The visit's memory of what has already been said. Handed over once the visit is loaded,
-        // because the conversation player itself knows nothing about hubs or visits.
-        public void BindVisitMemory(IConversationMemory memory)
-        {
-            if (conversations != null) conversations.Memory = memory;
-        }
+        // The visit's memory of what has already been said, handed to every script this visit
+        // plays. The dialogue system never learns what a visit is.
+        private IDialogueMemory memory;
+
+        public void BindVisitMemory(IDialogueMemory visitMemory) => memory = visitMemory;
 
         private void OnDepartureRequested(string _) => departures?.TryDepart();
 
@@ -107,10 +97,24 @@ namespace ProjectAstra.Core.Gurukul
             return state != null && !state.IsGateOpen(door.requiredGate);
         }
 
+        // One call, the same one a cutscene makes. The service takes the Dialogue state, owns the
+        // buttons for the exchange, and hands control back where it found it.
         private void StartConversation(string conversationId, GurukulInteractionCandidate? from)
         {
             if (string.IsNullOrEmpty(conversationId)) return;
-            openedFrom = conversations.TryStart(conversationId) ? from : null;
+            if (DialogueService.Instance == null || DialogueService.Instance.IsPlaying) return;
+
+            DialogueScript script = scriptCatalog != null ? scriptCatalog.Get(conversationId) : null;
+            if (script == null)
+            {
+                Debug.LogError($"[GurukulVisitDirector] No dialogue script with id '{conversationId}'. " +
+                               "Add it to the Dialogue Script Catalog.");
+                return;
+            }
+
+            openedFrom = from;
+            DialogueService.Instance.Play(script, DialogueTriggeringContext.Conversation,
+                () => OnConversationFinished(conversationId), memory, OnFlagRaised);
         }
 
         private static string ConversationFor(GurukulInteractionCandidate target)

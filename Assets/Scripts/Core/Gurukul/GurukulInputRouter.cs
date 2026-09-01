@@ -10,8 +10,8 @@ namespace ProjectAstra.Core.Gurukul
     // things at once.
     //
     // Only walking and interacting live here now. Advancing a line and picking an option belong to
-    // ConversationPlayer, which owns the confirm button for as long as GameState.Dialogue is up —
-    // and this router publishes nothing at all while that is the case, so the two never overlap.
+    // DialogueService, which owns the confirm button for as long as GameState.Dialogue is up — and
+    // this router publishes nothing at all while that is the case, so the two never overlap.
     //
     // Polling rather than subscribing also sidesteps DelayedAutoShift entirely. Its 0.4s-then-0.1s
     // cadence is grid-cursor feel; walking needs the raw held state, and the battle map still needs

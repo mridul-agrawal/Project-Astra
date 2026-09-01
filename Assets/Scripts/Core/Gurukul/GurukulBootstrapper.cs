@@ -2,7 +2,7 @@ using UnityEngine;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Gurukul.Events;
 
-using ProjectAstra.Core.Dialogue.Conversation;
+using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Gurukul
 {

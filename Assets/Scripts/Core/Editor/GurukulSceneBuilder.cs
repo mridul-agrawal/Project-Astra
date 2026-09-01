@@ -3,8 +3,8 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using ProjectAstra.Core.Camera;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 using ProjectAstra.Core.UI.Gurukul;
 using ProjectAstra.Core.UI.Dialogue.Choice;
@@ -75,7 +75,6 @@ namespace ProjectAstra.Core.Editor
             var go = new GameObject("Gurukul");
             var router = go.AddComponent<GurukulInputRouter>();
             var driver = go.AddComponent<GurukulInteractionDriver>();
-            var conversations = go.AddComponent<ConversationPlayer>();
             var director = go.AddComponent<GurukulVisitDirector>();
             var loader = go.AddComponent<GurukulLocationLoader>();
             var transition = go.AddComponent<GurukulLocationTransition>();
@@ -91,11 +90,10 @@ namespace ProjectAstra.Core.Editor
             WireLoader(loader, host, cast);
             WireTransition(transition, router, loader, fade);
             WireBootstrapper(bootstrapper, loader, cameraRig, router, driver, playerRoot);
-            WireConversationPlayer(conversations);
             WireDeparture(departures, router);
             WireMarkers(markers, router, cameraRig);
-            WireDirector(director, driver, conversations, transition, events, departures);
-            WireEvents(events, areaTriggers, router, conversations, cameraRig, loader);
+            WireDirector(director, driver, transition, events, departures);
+            WireEvents(events, areaTriggers, router, cameraRig, loader);
             return driver;
         }
 
@@ -157,20 +155,13 @@ namespace ProjectAstra.Core.Editor
             return go.AddComponent<GurukulScreenFade>();
         }
 
-        private static void WireConversationPlayer(ConversationPlayer player)
-        {
-            var serialized = new SerializedObject(player);
-            serialized.FindProperty("conversationDatabase").objectReferenceValue = FindAsset<ConversationGraphDatabase>();
-            serialized.ApplyModifiedProperties();
-        }
-
         private static void WireDirector(GurukulVisitDirector director, GurukulInteractionDriver driver,
-            ConversationPlayer conversations, GurukulLocationTransition transitions,
+            GurukulLocationTransition transitions,
             GurukulEventRunner events, GurukulDepartureController departures)
         {
             var serialized = new SerializedObject(director);
             serialized.FindProperty("interactionDriver").objectReferenceValue = driver;
-            serialized.FindProperty("conversations").objectReferenceValue = conversations;
+            serialized.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
             serialized.FindProperty("transitions").objectReferenceValue = transitions;
             serialized.FindProperty("events").objectReferenceValue = events;
             serialized.FindProperty("departures").objectReferenceValue = departures;
@@ -185,14 +176,14 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void WireEvents(GurukulEventRunner events, GurukulAreaTriggerWatcher areaTriggers,
-            GurukulInputRouter router, ConversationPlayer conversations, GurukulCameraRig cameraRig,
+            GurukulInputRouter router, GurukulCameraRig cameraRig,
             GurukulLocationLoader loader)
         {
             var eventDatabase = FindAsset<GurukulEventDatabase>();
 
             var runner = new SerializedObject(events);
             runner.FindProperty("router").objectReferenceValue = router;
-            runner.FindProperty("conversations").objectReferenceValue = conversations;
+            runner.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
             runner.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             runner.FindProperty("cameraRig").objectReferenceValue = cameraRig;
             runner.ApplyModifiedProperties();
@@ -224,10 +215,6 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("router").objectReferenceValue = Object.FindFirstObjectByType<GurukulInputRouter>();
             serialized.ApplyModifiedProperties();
 
-            var player = Object.FindFirstObjectByType<ConversationPlayer>();
-            var playerSerialized = new SerializedObject(player);
-            playerSerialized.FindProperty("choiceView").objectReferenceValue = choiceMenu;
-            playerSerialized.ApplyModifiedProperties();
 
             var markers = Object.FindFirstObjectByType<GurukulMarkerManager>();
             var markerSerialized = new SerializedObject(markers);
