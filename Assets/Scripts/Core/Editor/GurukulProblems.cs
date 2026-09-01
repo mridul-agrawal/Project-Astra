@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -38,7 +37,6 @@ namespace ProjectAstra.Core.Editor
             var problems = new List<GurukulProblem>();
 
             foreach (GurukulLocationData location in LoadAll<GurukulLocationData>()) CheckLocation(location, problems);
-            foreach (ConversationGraphData graph in LoadAll<ConversationGraphData>()) CheckConversation(graph, problems);
             foreach (GurukulObjectiveData objective in LoadAll<GurukulObjectiveData>()) CheckObjective(objective, problems);
             foreach (GurukulEventData authored in LoadAll<GurukulEventData>()) CheckEvent(authored, problems);
             foreach (GurukulVisitData visit in LoadAll<GurukulVisitData>()) CheckVisit(visit, problems);
@@ -95,51 +93,6 @@ namespace ProjectAstra.Core.Editor
 
         // --- Conversations ---
 
-        private static void CheckConversation(ConversationGraphData graph, List<GurukulProblem> problems)
-        {
-            if (string.IsNullOrEmpty(graph.ConversationId))
-                problems.Add(new GurukulProblem(graph, $"{graph.name}: empty conversationId"));
-
-            if (graph.Find(graph.EntryNodeId) == null)
-                problems.Add(new GurukulProblem(graph, $"{graph.name}: entry node '{graph.EntryNodeId}' doesn't exist"));
-
-            if (!string.IsNullOrEmpty(graph.RepeatEntryNodeId) && graph.Find(graph.RepeatEntryNodeId) == null)
-                problems.Add(new GurukulProblem(graph, $"{graph.name}: repeat entry '{graph.RepeatEntryNodeId}' doesn't exist"));
-
-            foreach (ConversationNode node in graph.Nodes) CheckNode(graph, node, problems);
-        }
-
-        private static void CheckNode(ConversationGraphData graph, ConversationNode node, List<GurukulProblem> problems)
-        {
-            if (node.kind == ConversationNodeKind.Script && node.script == null)
-                problems.Add(new GurukulProblem(graph, $"{graph.name}: node '{node.nodeId}' plays no script"));
-
-            bool offersOptions = node.kind is ConversationNodeKind.Choice or ConversationNodeKind.TopicMenu;
-            if (offersOptions && (node.options == null || node.options.Length == 0))
-                problems.Add(new GurukulProblem(graph, $"{graph.name}: node '{node.nodeId}' offers nothing to pick"));
-
-            CheckLink(graph, node.nodeId, node.nextNodeId, problems);
-            if (!offersOptions) return;
-
-            CheckLink(graph, node.nodeId, node.cancelNodeId, problems);
-            foreach (ConversationOption option in node.options)
-            {
-                if (string.IsNullOrEmpty(option.optionId))
-                    problems.Add(new GurukulProblem(graph, $"{graph.name}: an option on '{node.nodeId}' has no id"));
-
-                CheckLink(graph, node.nodeId, option.nextNodeId, problems);
-                CheckLink(graph, node.nodeId, option.repeatNodeId, problems);
-            }
-        }
-
-        // An empty link ends the conversation, which is fine. A link to a node that isn't there is
-        // a dead end the player would fall through.
-        private static void CheckLink(ConversationGraphData graph, string fromNode, string toNode,
-            List<GurukulProblem> problems)
-        {
-            if (string.IsNullOrEmpty(toNode) || graph.Find(toNode) != null) return;
-            problems.Add(new GurukulProblem(graph, $"{graph.name}: '{fromNode}' points at '{toNode}', which doesn't exist"));
-        }
 
         // --- Objectives and events ---
 

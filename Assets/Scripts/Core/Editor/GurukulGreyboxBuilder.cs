@@ -5,7 +5,6 @@ using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -84,7 +83,6 @@ namespace ProjectAstra.Core.Editor
             GurukulVisitData visit = BuildVisit(courtyard);
 
             RegisterInCatalogs(visit, courtyard, house);
-            BuildConversations();
             BuildEvents();
 
             AssetDatabase.SaveAssets();
@@ -382,89 +380,6 @@ namespace ProjectAstra.Core.Editor
         }
 
         // --- Placeholder conversations ---
-
-        // Two graphs that between them exercise every node kind: a plain script, a reopenable topic
-        // menu with an ask-once topic, and a question whose wrong answer loops back. All placeholder
-        // text — design owns the real words.
-        private static void BuildConversations()
-        {
-            ConversationGraphData tree = BuildTreeInspection();
-            ConversationGraphData arjun = BuildArjunConversation();
-            GurukulPlaceholderDialogue.Catalog(DataFolder, tree, arjun);
-        }
-
-        private static ConversationGraphData BuildTreeInspection()
-        {
-            DialogueScript look = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_tree_look_lines",
-                "PLACEHOLDER: a tree, taller than it needs to be.",
-                "PLACEHOLDER: its trunk blocks the way; its branches do not.");
-
-            var nodes = new[] { ScriptNode("look", look, null) };
-            return GurukulPlaceholderDialogue.Graph(DataFolder, "greybox_tree_look", "look", nodes);
-        }
-
-        private static ConversationGraphData BuildArjunConversation()
-        {
-            DialogueScript greeting = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_greeting",
-                "PLACEHOLDER: Arjun says something.");
-            DialogueScript aboutTraining = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_training",
-                "PLACEHOLDER: he talks about training.");
-            DialogueScript aboutTrainingAgain = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_training_again",
-                "PLACEHOLDER: he has already said this.");
-            DialogueScript question = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_question",
-                "PLACEHOLDER: which answer is the right one?");
-            DialogueScript wrong = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_wrong",
-                "PLACEHOLDER: not that one. Try again.");
-            DialogueScript right = GurukulPlaceholderDialogue.Script(DataFolder, "greybox_arjun_right",
-                "PLACEHOLDER: that's the one.");
-
-            var nodes = new[]
-            {
-                ScriptNode("greeting", greeting, "menu"),
-                new ConversationNode
-                {
-                    nodeId = "menu", kind = ConversationNodeKind.TopicMenu, allowCancel = true,
-                    options = new[]
-                    {
-                        Option("training", "Ask about training", "training", askOnce: true, repeat: "trainingAgain"),
-                        Option("test", "Ask to be tested", "question"),
-                        Option("leave", "Say nothing", null)
-                    }
-                },
-                ScriptNode("training", aboutTraining, "menu"),
-                ScriptNode("trainingAgain", aboutTrainingAgain, "menu"),
-                ScriptNode("question", question, "answers"),
-                new ConversationNode
-                {
-                    nodeId = "answers", kind = ConversationNodeKind.Choice, allowCancel = false,
-                    options = new[]
-                    {
-                        Option("correct", "The right answer", "right"),
-                        Option("incorrect", "The wrong answer", "wrong")
-                    }
-                },
-                ScriptNode("wrong", wrong, "question"),
-                ScriptNode("right", right, "passed"),
-                new ConversationNode
-                {
-                    nodeId = "passed", kind = ConversationNodeKind.SetFlag,
-                    flagId = "greybox_quiz_passed", nextNodeId = "menu"
-                }
-            };
-            return GurukulPlaceholderDialogue.Graph(DataFolder, "greybox_arjun_talk", "greeting", nodes,
-                repeatEntryNodeId: "menu");
-        }
-
-        private static ConversationNode ScriptNode(string id, DialogueScript script, string next) => new()
-        {
-            nodeId = id, kind = ConversationNodeKind.Script, script = script, nextNodeId = next
-        };
-
-        private static ConversationOption Option(string id, string label, string next,
-            bool askOnce = false, string repeat = null) => new()
-        {
-            optionId = id, label = label, nextNodeId = next, askOnce = askOnce, repeatNodeId = repeat
-        };
 
         // --- Placeholder events ---
 

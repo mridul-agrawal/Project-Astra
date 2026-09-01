@@ -5,7 +5,6 @@ using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Gurukul;
-using ProjectAstra.Core.Dialogue.Conversation;
 using ProjectAstra.Core.Gurukul.Events;
 using ProjectAstra.Core.Units;
 
@@ -45,11 +44,9 @@ namespace ProjectAstra.Core.Editor
             EnsureFolder("Assets/Gurukul", "Hub1");
 
             BuildCast();
-            List<ConversationGraphData> conversations = BuildConversations();
             GurukulEventData trainingGround = BuildTrainingGroundEvent();
             GurukulVisitData visit = BuildVisit(trainingGround);
 
-            RegisterConversations(conversations);
             RegisterVisit(visit);
             RegisterEvent(trainingGround);
             InsertCampaignStep(visit);
@@ -116,56 +113,12 @@ namespace ProjectAstra.Core.Editor
 
         // --- Conversations ---
 
-        private static List<ConversationGraphData> BuildConversations()
-        {
-            var built = new List<ConversationGraphData>();
-
-            foreach ((string id, string name, _, _) in Students)
-                built.Add(StudentConversation(id, name));
-
-            built.Add(ReportCardConversation());
-            return built;
-        }
-
-        // First time counts toward the counter; afterwards they have a shorter line, which is the
-        // spec's first-time-versus-repeat rule.
-        private static ConversationGraphData StudentConversation(string unitId, string name)
-        {
-            DialogueScript first = GurukulPlaceholderDialogue.Script(DataFolder, $"hub1_{unitId}_first",
-                $"PLACEHOLDER: {name} says something about the report cards.");
-            DialogueScript again = GurukulPlaceholderDialogue.Script(DataFolder, $"hub1_{unitId}_again",
-                $"PLACEHOLDER: {name} has already said their piece.");
-
-            var nodes = new[]
-            {
-                ScriptNode("first", first, null),
-                ScriptNode("again", again, null)
-            };
-            return GurukulPlaceholderDialogue.Graph(DataFolder, $"hub1_talk_{unitId}", "first", nodes,
-                repeatEntryNodeId: "again");
-        }
-
-        private static ConversationGraphData ReportCardConversation()
-        {
-            DialogueScript handover = GurukulPlaceholderDialogue.Script(DataFolder, "hub1_report_card",
-                "PLACEHOLDER: the Guru hands over the report card.",
-                "PLACEHOLDER: he says she cannot join external missions until she relearns the basics.",
-                "PLACEHOLDER: he agrees to the practical retest.");
-
-            var nodes = new[] { ScriptNode("handover", handover, null) };
-            return GurukulPlaceholderDialogue.Graph(DataFolder, "hub1_report_card", "handover", nodes);
-        }
-
         // --- Event and objectives ---
 
         // The spec's automatic departure: the retest is agreed, the scene moves to the training
         // ground, and Map 1 begins without control ever coming back.
         private static GurukulEventData BuildTrainingGroundEvent()
         {
-            DialogueScript scene = GurukulPlaceholderDialogue.Script(DataFolder, "hub1_training_ground",
-                "PLACEHOLDER: the scene moves to the Training Grounds.",
-                "PLACEHOLDER: the Guru conjures two shadow puppets; the others gather to watch.");
-
             var authored = LoadOrCreate<GurukulEventData>($"{DataFolder}/Event_hub1_training_ground.asset");
             var serialized = new SerializedObject(authored);
 
@@ -183,8 +136,6 @@ namespace ProjectAstra.Core.Editor
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(authored);
 
-            GurukulPlaceholderDialogue.Graph(DataFolder, "hub1_training_scene", "scene",
-                new[] { ScriptNode("scene", scene, null) });
             return authored;
         }
 
@@ -323,16 +274,6 @@ namespace ProjectAstra.Core.Editor
 
         // --- Registration ---
 
-        private static void RegisterConversations(List<ConversationGraphData> conversations)
-        {
-            var catalog = FindAsset<ConversationGraphDatabase>();
-            if (catalog == null) return;
-
-            foreach (ConversationGraphData graph in conversations) AppendUnique(catalog, "conversations", graph);
-            AppendUnique(catalog, "conversations",
-                AssetDatabase.LoadAssetAtPath<ConversationGraphData>($"{DataFolder}/Conversation_hub1_training_scene.asset"));
-        }
-
         private static void RegisterVisit(GurukulVisitData visit) =>
             AppendUnique(FindAsset<GurukulVisitDatabase>(), "visits", visit);
 
@@ -382,11 +323,6 @@ namespace ProjectAstra.Core.Editor
         }
 
         // --- Plumbing ---
-
-        private static ConversationNode ScriptNode(string id, DialogueScript script, string next) => new()
-        {
-            nodeId = id, kind = ConversationNodeKind.Script, script = script, nextNodeId = next
-        };
 
         private static void AppendUnique(Object catalog, string listName, Object entry)
         {
