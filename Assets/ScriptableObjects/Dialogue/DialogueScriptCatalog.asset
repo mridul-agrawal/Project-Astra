@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d08098208fd2a004396bbc9366c4ebb7, type: 3}
+  m_Name: DialogueScriptCatalog
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScriptCatalog
+  scripts:
+  - {fileID: 11400000, guid: 017b6eb2fb836834598f2d7b958e440c, type: 2}
+  - {fileID: 11400000, guid: aeda3868037cd464a8f1469568112603, type: 2}
+  - {fileID: 11400000, guid: e6e1bee15972da548b5c0c4bf7ce6c68, type: 2}
+  - {fileID: 11400000, guid: e780920f69be60a4e8b6e991300aa522, type: 2}
+  - {fileID: 11400000, guid: 2b16903b56b3db24c94758bf9caa0daf, type: 2}
+  - {fileID: 11400000, guid: adc39dbeead8be74dae099cbfd28d10a, type: 2}
+  - {fileID: 11400000, guid: f5e62150679663d41942b8546ac87a18, type: 2}
+  - {fileID: 11400000, guid: f178467c9342d8145b40ed5edd910f48, type: 2}
+  - {fileID: 11400000, guid: 074e371eecabe4443b93ad9fe0a18ccc, type: 2}

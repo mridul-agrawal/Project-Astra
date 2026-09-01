@@ -1,0 +1,258 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
+  m_Name: Script_greybox_arjun_talk
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
+  scriptId: greybox_arjun_talk
+  segments:
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: Arjun says something.'
+      kind: 0
+      label: greeting
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: menu
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 1
+      label: menu
+      options:
+      - optionId: training
+        label: Ask about training
+        targetLabel: training
+        askOnce: 1
+        repeatTargetLabel: trainingAgain
+      - optionId: test
+        label: Ask to be tested
+        targetLabel: question
+        askOnce: 0
+        repeatTargetLabel: 
+      - optionId: leave
+        label: Say nothing
+        targetLabel: 
+        askOnce: 0
+        repeatTargetLabel: 
+      allowCancel: 1
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: he talks about training.'
+      kind: 0
+      label: training
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: menu
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: he has already said this.'
+      kind: 0
+      label: trainingAgain
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: menu
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: which answer is the right one?'
+      kind: 0
+      label: question
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: answers
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 1
+      label: answers
+      options:
+      - optionId: correct
+        label: The right answer
+        targetLabel: right
+        askOnce: 0
+        repeatTargetLabel: 
+      - optionId: incorrect
+        label: The wrong answer
+        targetLabel: wrong
+        askOnce: 0
+        repeatTargetLabel: 
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: not that one. Try again.'
+      kind: 0
+      label: wrong
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: question
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: -1
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: NARRATOR
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 'PLACEHOLDER: that''s the one.'
+      kind: 0
+      label: right
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: passed
+      signalId: 
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 3
+      label: passed
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: greybox_quiz_passed
+    - speakerId: 
+      expression: 0
+      portraitPosition: 3
+      portraitFacing: 0
+      text: 
+      kind: 2
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: menu
+      signalId: 
+  repeatEntryLabel: menu
