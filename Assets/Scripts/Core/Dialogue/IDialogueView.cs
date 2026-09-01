@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectAstra.Core.Dialogue
@@ -25,6 +26,20 @@ namespace ProjectAstra.Core.Dialogue
         }
     }
 
+    // One option as it should currently read. Disabled means already taken — shown greyed
+    // rather than removed, so a topic menu doesn't reshuffle under the player.
+    public readonly struct DialogueChoiceView
+    {
+        public readonly string Label;
+        public readonly bool Enabled;
+
+        public DialogueChoiceView(string label, bool enabled)
+        {
+            Label = label;
+            Enabled = enabled;
+        }
+    }
+
     // The presentation surface the runner drives. Kept as an interface so the
     // runner can be unit-tested against a fake, with no Canvas or Unity time.
     public interface IDialogueView
@@ -33,6 +48,12 @@ namespace ProjectAstra.Core.Dialogue
         void ShowLine(in DialogueLineView line);
         void SetVisibleCharacters(int count);
         void SetContinueHintVisible(bool visible);
+
+        // The runner owns which option is highlighted, exactly as it owns the crawl. The view
+        // draws what it is handed and decides nothing.
+        void ShowChoices(IReadOnlyList<DialogueChoiceView> options, int highlighted);
+        void HideChoices();
+
         void Hide();
     }
 }

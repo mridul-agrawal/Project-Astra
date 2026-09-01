@@ -11,9 +11,8 @@ namespace ProjectAstra.Core.Dialogue
         // Overlay over the live battle map; map input is suppressed while it plays.
         BattleMap,
 
-        // One script inside a longer branching conversation. ConversationPlayer owns the game state
-        // and the confirm button for the whole exchange, so the service takes neither here — which
-        // is what keeps one press from being read as both "advance the line" and "pick this option".
+        // A conversation in a world that is already loaded — the hub, or a battle map. Plays over
+        // whatever is on screen; the service takes the Dialogue state and hands it back after.
         Conversation
     }
 }

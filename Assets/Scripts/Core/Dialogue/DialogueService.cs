@@ -26,6 +26,7 @@ namespace ProjectAstra.Core.Dialogue
         private IDialogueView view;
         private DialogueRunner runner;
         private Action currentCallback;
+        private Action<string> currentSignalHandler;
         private bool holdsDialogueState;
         private bool inputBound;
 
@@ -34,13 +35,25 @@ namespace ProjectAstra.Core.Dialogue
             public DialogueScript Script;
             public DialogueTriggeringContext Context;
             public Action OnComplete;
+            public IDialogueMemory Memory;
+            public Action<string> OnSignal;
         }
 
-        public void Play(DialogueScript script, DialogueTriggeringContext context, Action onComplete = null)
+        // memory lets a script show different content the second time; onSignal is how a Signal
+        // node reaches whoever asked for the script. Both are optional — a cutscene needs neither.
+        public void Play(DialogueScript script, DialogueTriggeringContext context, Action onComplete = null,
+            IDialogueMemory memory = null, Action<string> onSignal = null)
         {
             if (script == null) { Debug.LogError("[DialogueService] Play called with null script."); return; }
 
-            queue.Enqueue(new Pending { Script = script, Context = context, OnComplete = onComplete });
+            queue.Enqueue(new Pending
+            {
+                Script = script,
+                Context = context,
+                OnComplete = onComplete,
+                Memory = memory,
+                OnSignal = onSignal
+            });
             if (runner == null) StartNext();
         }
 
@@ -108,9 +121,12 @@ namespace ProjectAstra.Core.Dialogue
 
             TakeDialogueStateIfNeeded(pending.Context);
 
-            runner = new DialogueRunner(pending.Script, speakerRegistry, view, pending.Context, settings.CharsPerSecond);
+            runner = new DialogueRunner(pending.Script, speakerRegistry, view, pending.Context,
+                settings.CharsPerSecond, pending.Memory);
+            currentSignalHandler = pending.OnSignal;
+            if (currentSignalHandler != null) runner.SignalRaised += currentSignalHandler;
             runner.OnComplete += HandleRunnerComplete;
-            if (pending.Context != DialogueTriggeringContext.Conversation) BindInput();
+            BindInput();
             runner.Start();
         }
 
@@ -118,6 +134,8 @@ namespace ProjectAstra.Core.Dialogue
         {
             var callback = currentCallback;
             currentCallback = null;
+            if (currentSignalHandler != null) runner.SignalRaised -= currentSignalHandler;
+            currentSignalHandler = null;
             runner = null;
             UnbindInput();
 
@@ -129,11 +147,11 @@ namespace ProjectAstra.Core.Dialogue
             if (queue.Count > 0) StartNext();
         }
 
-        // A cutscene's state belongs to GameFlow and a conversation's to ConversationPlayer, so the
-        // service only takes the state for a standalone script triggered on the map.
+        // A cutscene is its own game state and GameFlow owns it; everything else plays over a
+        // world that has to stop listening, so the service takes Dialogue and hands it back.
         private void TakeDialogueStateIfNeeded(DialogueTriggeringContext context)
         {
-            if (context != DialogueTriggeringContext.BattleMap || holdsDialogueState) return;
+            if (context == DialogueTriggeringContext.Cutscene || holdsDialogueState) return;
             holdsDialogueState =
                 GameStateManager.Instance?.RequestTransition(GameState.Dialogue, nameof(DialogueService)) ?? false;
         }
@@ -152,6 +170,8 @@ namespace ProjectAstra.Core.Dialogue
             if (inputBound || InputManager.Instance == null) return;
             InputManager.Instance.OnConfirm += OnConfirm;
             InputManager.Instance.OnSkipDialogue += OnSkip;
+            InputManager.Instance.OnCursorMove += OnCursorMove;
+            InputManager.Instance.OnCancel += OnCancel;
             inputBound = true;
         }
 
@@ -160,11 +180,21 @@ namespace ProjectAstra.Core.Dialogue
             if (!inputBound || InputManager.Instance == null) { inputBound = false; return; }
             InputManager.Instance.OnConfirm -= OnConfirm;
             InputManager.Instance.OnSkipDialogue -= OnSkip;
+            InputManager.Instance.OnCursorMove -= OnCursorMove;
+            InputManager.Instance.OnCancel -= OnCancel;
             inputBound = false;
         }
 
         private void OnConfirm() => runner?.Confirm();
         private void OnSkip() => runner?.Skip();
+        private void OnCancel() => runner?.Cancel();
+
+        // Only the vertical matters, and only while options are up — the runner ignores it
+        // otherwise, so nothing else has to know a choice is showing.
+        private void OnCursorMove(Vector2Int direction)
+        {
+            if (direction.y != 0) runner?.MoveSelection(direction.y > 0 ? -1 : 1);
+        }
 
         private void OnDestroy()
         {

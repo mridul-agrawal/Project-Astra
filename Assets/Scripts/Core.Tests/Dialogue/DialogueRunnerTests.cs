@@ -249,6 +249,27 @@ namespace ProjectAstra.Core.Tests.Dialogue
             public void SetVisibleCharacters(int count) { LastVisible = count; VisibleSetCount++; }
             public void SetContinueHintVisible(bool visible) => HintVisible = visible;
             public void Hide() => HideCount++;
+
+            public readonly List<string> ChoiceLabels = new();
+            public readonly List<bool> ChoiceEnabled = new();
+            public int Highlighted = -1;
+            public bool ChoicesVisible;
+            public int HideChoicesCount;
+
+            public void ShowChoices(IReadOnlyList<DialogueChoiceView> options, int highlighted)
+            {
+                ChoiceLabels.Clear();
+                ChoiceEnabled.Clear();
+                foreach (DialogueChoiceView option in options)
+                {
+                    ChoiceLabels.Add(option.Label);
+                    ChoiceEnabled.Add(option.Enabled);
+                }
+                Highlighted = highlighted;
+                ChoicesVisible = true;
+            }
+
+            public void HideChoices() { ChoicesVisible = false; HideChoicesCount++; }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,6 +29,10 @@ namespace ProjectAstra.Core.UI.Dialogue
 
         [SerializeField] private TMP_Text bodyText;
         [SerializeField] private GameObject continueHint;
+
+        [Tooltip("The options row shown under the box during a Choice node. Optional — a script " +
+                 "with no choices never needs it.")]
+        [SerializeField] private Choice.ChoiceMenuView choices;
 
         private int lastVisibleCount;
 
@@ -73,6 +78,16 @@ namespace ProjectAstra.Core.UI.Dialogue
             }
             lastVisibleCount = count;
             bodyText.maxVisibleCharacters = count;
+        }
+
+        public void ShowChoices(IReadOnlyList<DialogueChoiceView> options, int highlighted)
+        {
+            if (choices != null) choices.Render(options, highlighted);
+        }
+
+        public void HideChoices()
+        {
+            if (choices != null) choices.SetVisible(false);
         }
 
         public void SetContinueHintVisible(bool visible)

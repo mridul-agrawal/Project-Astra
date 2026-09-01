@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.UI.Dialogue.Choice
 {
@@ -23,14 +24,17 @@ namespace ProjectAstra.Core.UI.Dialogue.Choice
 
         private readonly List<TextMeshProUGUI> rows = new();
 
-        public void Render(ChoiceMenuModel model)
+        // What DialogueRunner hands down: the options as they should read, and which one the
+        // cursor is on. No selection state of its own — that is the point.
+        public void Render(IReadOnlyList<DialogueChoiceView> options, int highlighted)
         {
-            SetVisible(model.Visible);
-            if (!model.Visible) return;
+            SetVisible(options != null && options.Count > 0);
+            if (options == null || options.Count == 0) return;
 
-            EnsureRowCount(model.Rows.Count);
+            EnsureRowCount(options.Count);
             for (int i = 0; i < rows.Count; i++)
-                RenderRow(rows[i], i < model.Rows.Count ? model.Rows[i] : null);
+                RenderRow(rows[i], i < options.Count, i < options.Count && options[i].Enabled,
+                    i == highlighted, i < options.Count ? options[i].Label : null);
         }
 
         public void SetVisible(bool visible)
@@ -38,13 +42,13 @@ namespace ProjectAstra.Core.UI.Dialogue.Choice
             if (content != null) content.SetActive(visible);
         }
 
-        private void RenderRow(TextMeshProUGUI row, ChoiceRowVM data)
+        private void RenderRow(TextMeshProUGUI row, bool used, bool enabled, bool isHighlighted, string label)
         {
-            row.gameObject.SetActive(data != null);
-            if (data == null) return;
+            row.gameObject.SetActive(used);
+            if (!used) return;
 
-            row.text = data.Highlighted ? "› " + data.Label : "   " + data.Label;
-            row.color = !data.Enabled ? disabledColor : data.Highlighted ? highlightColor : enabledColor;
+            row.text = isHighlighted ? "› " + label : "   " + label;
+            row.color = !enabled ? disabledColor : isHighlighted ? highlightColor : enabledColor;
         }
 
         // Rows are cloned once and then reused, so reopening a menu doesn't churn the hierarchy.

@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ProjectAstra.Core.Dialogue
 {
-    // One displayed line in a script. The prototype runs nodes in list order;
-    // NodeId is a stable identifier (it'll key the localisation lookup and the
-    // branch/choice jumps that arrive later — neither is built yet).
+    // One step of a script as the runner consumes it: an authored line with its segment's
+    // background, speed and auto-advance already folded in. Most are spoken lines; a Choice,
+    // a Jump or a Signal carries its own payload instead and leaves the rest blank.
+    //
+    // The runner walks these in list order until a Choice or a Jump sends it to a label.
     [Serializable]
     public class DialogueNode
     {
@@ -27,6 +30,22 @@ namespace ProjectAstra.Core.Dialogue
 
         [Tooltip("Optional full-screen still shown behind this line (high-intensity 'bespoke still' moments).")]
         [SerializeField] private Sprite fullScreenImage;
+
+        [SerializeField] private DialogueNodeKind kind = DialogueNodeKind.Line;
+        [SerializeField] private string label;
+        [SerializeField] private List<DialogueOption> options = new();
+        [SerializeField] private bool allowCancel;
+        [SerializeField] private string cancelTargetLabel;
+        [SerializeField] private string targetLabel;
+        [SerializeField] private string signalId;
+
+        public DialogueNodeKind Kind => kind;
+        public string Label => label;
+        public IReadOnlyList<DialogueOption> Options => options;
+        public bool AllowCancel => allowCancel;
+        public string CancelTargetLabel => cancelTargetLabel;
+        public string TargetLabel => targetLabel;
+        public string SignalId => signalId;
 
         public int NodeId => nodeId;
         public string SpeakerId => speakerId;
@@ -60,7 +79,14 @@ namespace ProjectAstra.Core.Dialogue
                 text = line.Text,
                 fullScreenImage = segment.Background,
                 textSpeedOverride = segment.TextSpeed,
-                autoAdvanceDelay = segment.AutoAdvanceDelay
+                autoAdvanceDelay = segment.AutoAdvanceDelay,
+                kind = line.Kind,
+                label = line.Label,
+                options = new List<DialogueOption>(line.Options ?? (IReadOnlyList<DialogueOption>)Array.Empty<DialogueOption>()),
+                allowCancel = line.AllowCancel,
+                cancelTargetLabel = line.CancelTargetLabel,
+                targetLabel = line.TargetLabel,
+                signalId = line.SignalId
             };
         }
 
@@ -83,5 +109,33 @@ namespace ProjectAstra.Core.Dialogue
                 autoAdvanceDelay = autoAdvanceDelay
             };
         }
+
+        internal static DialogueNode CreateLabelledLineForTest(int nodeId, string speakerId,
+            string text, string label)
+        {
+            DialogueNode node = CreateForTest(nodeId, speakerId, text);
+            node.label = label;
+            return node;
+        }
+
+        internal static DialogueNode CreateChoiceForTest(int nodeId, string label,
+            bool allowCancel = false, string cancelTargetLabel = null, params DialogueOption[] options)
+        {
+            return new DialogueNode
+            {
+                nodeId = nodeId,
+                kind = DialogueNodeKind.Choice,
+                label = label,
+                allowCancel = allowCancel,
+                cancelTargetLabel = cancelTargetLabel,
+                options = new List<DialogueOption>(options)
+            };
+        }
+
+        internal static DialogueNode CreateJumpForTest(int nodeId, string label, string targetLabel) =>
+            new() { nodeId = nodeId, kind = DialogueNodeKind.Jump, label = label, targetLabel = targetLabel };
+
+        internal static DialogueNode CreateSignalForTest(int nodeId, string label, string signalId) =>
+            new() { nodeId = nodeId, kind = DialogueNodeKind.Signal, label = label, signalId = signalId };
     }
 }

@@ -11,23 +11,38 @@ namespace ProjectAstra.Core.Dialogue
         [SerializeField] private string scriptId;
         [SerializeField] private List<DialogueSegment> segments = new();
 
-        // Legacy flat node list — kept for migration safety + fallback. New scripts
-        // author in _segments; the migration tool fills _segments from here.
-        [HideInInspector, SerializeField] private List<DialogueNode> nodes = new();
+        [Tooltip("Where to start when memory says this script has been played before. Blank " +
+                 "replays it from the top, which is what a script with no repeat content wants.")]
+        [SerializeField] private string repeatEntryLabel;
 
+        // Filled by flattening the segments, or seeded directly by a test.
         [System.NonSerialized] private List<DialogueNode> flattened;
 
         public string ScriptId => scriptId;
+        public string RepeatEntryLabel => repeatEntryLabel;
 
-        // The runner consumes this. Serve flattened segments when present, else the
-        // legacy nodes — so pre-migration data keeps working.
-        public IReadOnlyList<DialogueNode> Nodes =>
-            segments != null && segments.Count > 0 ? Flattened() : nodes;
+        // The runner consumes this: every authored line, with its segment's background,
+        // speed and auto-advance already folded in.
+        public IReadOnlyList<DialogueNode> Nodes => Flattened();
+
+        // Where a Jump or a Choice target lands. Returns -1 for a label nothing carries, which
+        // the runner reports rather than silently running on into the next line.
+        public int IndexOfLabel(string label)
+        {
+            if (string.IsNullOrEmpty(label)) return -1;
+
+            IReadOnlyList<DialogueNode> all = Nodes;
+            for (int i = 0; i < all.Count; i++)
+                if (all[i] != null && all[i].Label == label) return i;
+            return -1;
+        }
 
         private List<DialogueNode> Flattened()
         {
             if (flattened != null) return flattened;
             flattened = new List<DialogueNode>();
+            if (segments == null) return flattened;
+
             int id = 0;
             foreach (var segment in segments)
             {
@@ -38,14 +53,9 @@ namespace ProjectAstra.Core.Dialogue
             return flattened;
         }
 
-        // Node ids always mirror list position, so designers never hand-number them
-        // when adding or reordering nodes in the inspector.
-        private void OnValidate()
-        {
-            flattened = null; // refresh the flatten cache after any inspector edit
-            for (int i = 0; i < nodes.Count; i++)
-                nodes[i]?.SetNodeId(i);
-        }
+        // Node ids mirror position in the flattened list, so designers never hand-number
+        // them when adding or reordering lines in the inspector.
+        private void OnValidate() => flattened = null;
 
         // Builds a one-segment script from code at runtime (no asset) for dynamic,
         // data-driven dialogue like a unit's last words. An empty/unset speaker falls
@@ -77,12 +87,13 @@ namespace ProjectAstra.Core.Dialogue
             return script;
         }
 
-        // Test helper to create a script without needing to create an asset file. Not intended for production use.
+        // Test helper to create a script without needing an asset file. Seeds the flattened
+        // list directly, which is what the runner reads. Not intended for production use.
         internal static DialogueScript CreateForTest(string scriptId, params DialogueNode[] nodes)
         {
             var script = CreateInstance<DialogueScript>();
             script.scriptId = scriptId;
-            script.nodes = new List<DialogueNode>(nodes);
+            script.flattened = new List<DialogueNode>(nodes);
             return script;
         }
 
@@ -91,6 +102,14 @@ namespace ProjectAstra.Core.Dialogue
             var script = CreateInstance<DialogueScript>();
             script.scriptId = scriptId;
             script.segments = new List<DialogueSegment>(segments);
+            return script;
+        }
+
+        internal static DialogueScript CreateForTest(string scriptId, string repeatEntryLabel,
+            params DialogueNode[] nodes)
+        {
+            var script = CreateForTest(scriptId, nodes);
+            script.repeatEntryLabel = repeatEntryLabel;
             return script;
         }
     }
