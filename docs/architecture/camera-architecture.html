@@ -5,7 +5,6 @@
     --rule: #d6d9dd; --rule-strong: #9aa0a8; --code-bg: #eef0f2;
     --accent: #1a5aa8; --accent-bg: #e8f0fc;
     --good: #1d6b45; --good-bg: #e6f4ec;
-    --flag: #a3312f; --flag-bg: #fbeceb;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -13,7 +12,6 @@
       --rule: #333840; --rule-strong: #5a626d; --code-bg: #23272e;
       --accent: #79b0ee; --accent-bg: #1b2b3f;
       --good: #6cc394; --good-bg: #1b2f24;
-      --flag: #ef8f8f; --flag-bg: #382322;
     }
   }
   :root[data-theme="dark"] {
@@ -21,144 +19,158 @@
     --rule: #333840; --rule-strong: #5a626d; --code-bg: #23272e;
     --accent: #79b0ee; --accent-bg: #1b2b3f;
     --good: #6cc394; --good-bg: #1b2f24;
-    --flag: #ef8f8f; --flag-bg: #382322;
   }
   body {
     background: var(--ground); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 16px; line-height: 1.5; margin: 0; padding: 32px 24px 80px;
   }
-  main { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
+  main { max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
   h1 { font-size: 26px; margin: 0 0 4px; }
   h2 { font-size: 15px; margin: 0 0 14px; color: var(--ink-soft);
        text-transform: uppercase; letter-spacing: 0.08em; }
   .lede { color: var(--ink-soft); margin: 0; font-size: 15px; }
-  p { max-width: 70ch; }
+  p { max-width: 72ch; }
   code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em;
          background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
   figure { margin: 0; }
   figure svg { max-width: 100%; height: auto; display: block; }
   .scroll { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
-  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
-  th { font-weight: 600; border-bottom: 1px solid var(--rule-strong); }
-  td.v { white-space: nowrap; font-weight: 600; }
-  tr.same td.v { color: var(--good); }
-  tr.diff td.v { color: var(--accent); }
-  .verdict { background: var(--good-bg); border: 1px solid var(--good); border-radius: 4px; padding: 14px 18px; }
-  .verdict p { margin: 0; max-width: none; }
-  .verdict p + p { margin-top: 10px; }
-  .problem { background: var(--flag-bg); border: 1px solid var(--flag); border-radius: 4px; padding: 14px 18px; }
-  .problem p { margin: 0; max-width: none; }
-  .problem p + p { margin-top: 10px; }
-  .minor { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; }
-  .minor p { margin: 0; max-width: none; }
-  .minor p + p { margin-top: 10px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  td.f { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; white-space: nowrap; }
+  .box { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; }
+  .box p { margin: 0; max-width: none; }
+  .box p + p { margin-top: 10px; }
 </style>
 
 <main>
   <header>
     <h1>Camera Architecture</h1>
-    <p class="lede">Project Astra · what is shared between the battle map and the hub, what is deliberately not, and the one asymmetry worth fixing.</p>
+    <p class="lede">Project Astra · every camera script in the game, and how they fit together. Current as of the containment extraction and the focus fix.</p>
   </header>
 
   <section>
-    <h2>The camera in both scenes</h2>
+    <h2>The whole picture</h2>
     <figure>
-      <svg viewBox="0 0 1000 420" role="img" aria-label="Both scenes put the same three components on the main camera: Unity's Camera, URP's UniversalAdditionalCameraData, and the shared MapCamera. On top of that each scene adds exactly one follow policy: CameraController on the battle map, GurukulCameraRig in the hub.">
+      <svg viewBox="0 0 1200 580" role="img" aria-label="Two follow policies, one per world scene. CameraController is driven by the grid cursor and by two Map 1 cinematic scripts; HubCameraController is driven by the bootstrapper and the event runner. Both read viewport numbers from the shared MapCamera. The hub policy also calls the pure CameraContainment helper and publishes its centre and view size to the marker manager. Eight UI scenes carry a bare camera with none of these scripts.">
         <defs>
           <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
           </marker>
+          <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--good)"/>
+          </marker>
         </defs>
 
-        <!-- shared stack -->
-        <rect x="250" y="50" width="500" height="165" rx="4" fill="var(--good-bg)" stroke="var(--good)" stroke-width="1.6"/>
-        <text x="500" y="73" font-size="12" font-weight="600" text-anchor="middle" fill="var(--good)">MAIN CAMERA — IDENTICAL IN BOTH SCENES</text>
-
-        <g text-anchor="middle" font-size="12.5">
-          <rect x="280" y="88" width="440" height="34" rx="3" fill="var(--ground)" stroke="var(--rule-strong)"/>
-          <text x="500" y="110" fill="currentColor">Camera <tspan font-size="10.5" fill="var(--ink-soft)">— Unity</tspan></text>
-
-          <rect x="280" y="130" width="440" height="34" rx="3" fill="var(--ground)" stroke="var(--rule-strong)"/>
-          <text x="500" y="152" fill="currentColor">UniversalAdditionalCameraData <tspan font-size="10.5" fill="var(--ink-soft)">— URP, auto-added</tspan></text>
-
-          <rect x="280" y="172" width="440" height="34" rx="3" fill="var(--ground)" stroke="var(--rule-strong)" stroke-width="1.6"/>
-          <text x="500" y="194" fill="currentColor">MapCamera <tspan font-size="10.5" fill="var(--ink-soft)">— shared, since May · adds PixelPerfectCamera</tspan></text>
+        <g text-anchor="middle" font-size="12" font-weight="600" letter-spacing="1" fill="var(--ink-soft)">
+          <text x="240" y="33">BATTLE MAP</text>
+          <text x="700" y="33">HUB EXPLORATION</text>
         </g>
 
-        <!-- split into the two policies -->
-        <g stroke="currentColor" fill="none">
-          <path d="M500 215 L500 245 M290 245 L710 245"/>
-          <line x1="290" y1="245" x2="290" y2="264" marker-end="url(#a)"/>
-          <line x1="710" y1="245" x2="710" y2="264" marker-end="url(#a)"/>
+        <!-- arrows -->
+        <g stroke="currentColor" fill="none" marker-end="url(#a)">
+          <line x1="240" y1="140" x2="240" y2="174"/>
+          <line x1="700" y1="140" x2="700" y2="174"/>
+          <line x1="900" y1="232" x2="936" y2="232"/>
+          <path d="M900 280 L920 280 L920 374 L936 374"/>
         </g>
-        <text x="500" y="238" font-size="11" text-anchor="middle" fill="var(--ink-soft)">plus exactly one follow policy</text>
+        <g stroke="var(--good)" fill="none" marker-end="url(#ag)">
+          <line x1="240" y1="350" x2="240" y2="306"/>
+          <line x1="700" y1="350" x2="700" y2="306"/>
+        </g>
 
+        <!-- drivers -->
         <g text-anchor="middle">
-          <rect x="110" y="268" width="360" height="96" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.6"/>
-          <text x="290" y="292" font-size="14" fill="currentColor">CameraController</text>
-          <text x="290" y="310" font-size="10.5" fill="var(--ink-soft)">battle map · since May</text>
-          <text x="290" y="331" font-size="11.5" fill="currentColor">follows the grid cursor</text>
-          <text x="290" y="349" font-size="11" fill="var(--ink-soft)">deadzone · whole tiles · Vector2Int</text>
+          <rect x="40" y="46" width="400" height="94" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="240" y="70" font-size="12.5" fill="var(--ink-soft)">GridCursor</text>
+          <text x="240" y="86" font-size="10" fill="var(--ink-soft)">cursor moved — scroll if past the deadzone</text>
+          <text x="240" y="110" font-size="12.5" fill="var(--ink-soft)">Map1RaidPrologue · Map1BattleDirector</text>
+          <text x="240" y="126" font-size="10" fill="var(--ink-soft)">cinematic: frame, pan, shake, then hand back</text>
 
-          <rect x="530" y="268" width="360" height="96" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.6"/>
-          <text x="710" y="292" font-size="14" fill="var(--accent)">GurukulCameraRig</text>
-          <text x="710" y="310" font-size="10.5" fill="var(--accent)">hub · since August</text>
-          <text x="710" y="331" font-size="11.5" fill="var(--accent)">follows the protagonist</text>
-          <text x="710" y="349" font-size="11" fill="var(--accent)">hard follow · rounds to pixel · float</text>
+          <rect x="500" y="46" width="400" height="94" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="700" y="70" font-size="12.5" fill="var(--ink-soft)">GurukulBootstrapper</text>
+          <text x="700" y="86" font-size="10" fill="var(--ink-soft)">sets the target once, at visit start</text>
+          <text x="700" y="110" font-size="12.5" fill="var(--ink-soft)">GurukulEventRunner</text>
+          <text x="700" y="126" font-size="10" fill="var(--ink-soft)">borrows the camera, then gives it back</text>
         </g>
 
-        <text x="500" y="396" font-size="11.5" text-anchor="middle" fill="var(--ink-soft)">Both read refResolution and assetsPPU off the same PixelPerfectCamera — about five duplicated lines.</text>
+        <!-- policies -->
+        <g text-anchor="middle">
+          <rect x="40" y="178" width="400" height="122" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="240" y="207" font-size="15" fill="currentColor">CameraController</text>
+          <text x="240" y="228" font-size="11.5" fill="currentColor">follows the grid cursor</text>
+          <text x="240" y="247" font-size="10.5" fill="var(--ink-soft)">deadzone · whole tiles · Vector2Int</text>
+          <text x="240" y="270" font-size="10.5" fill="var(--ink-soft)">bounded by MapData.Width / Height</text>
+          <text x="240" y="288" font-size="10.5" fill="var(--ink-soft)">writes transform.position</text>
+
+          <rect x="500" y="178" width="400" height="122" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-width="1.8"/>
+          <text x="700" y="207" font-size="15" fill="var(--accent)">HubCameraController</text>
+          <text x="700" y="228" font-size="11.5" fill="var(--accent)">follows the protagonist</text>
+          <text x="700" y="247" font-size="10.5" fill="var(--accent)">hard follow · float · pixel-snapped</text>
+          <text x="700" y="270" font-size="10.5" fill="var(--accent)">bounded by GurukulLocationService.Bounds</text>
+          <text x="700" y="288" font-size="10.5" fill="var(--accent)">writes transform.position</text>
+        </g>
+
+        <!-- helper + consumer, right column -->
+        <g text-anchor="middle">
+          <rect x="940" y="178" width="240" height="122" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1060" y="212" font-size="13" fill="currentColor">CameraContainment</text>
+          <text x="1060" y="234" font-size="10.5" fill="var(--ink-soft)">pure static · 10 tests</text>
+          <text x="1060" y="254" font-size="10.5" fill="var(--ink-soft)">contain to area</text>
+          <text x="1060" y="272" font-size="10.5" fill="var(--ink-soft)">round to whole pixel</text>
+
+          <rect x="940" y="330" width="240" height="88" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="1060" y="358" font-size="12.5" fill="var(--ink-soft)">GurukulMarkerManager</text>
+          <text x="1060" y="378" font-size="10" fill="var(--ink-soft)">reads Centre · ViewSizeTiles</text>
+          <text x="1060" y="396" font-size="10" fill="var(--ink-soft)">to point at off-screen things</text>
+        </g>
+
+        <!-- shared foundation -->
+        <rect x="40" y="350" width="860" height="68" rx="3" fill="var(--good-bg)" stroke="var(--good)" stroke-width="1.8"/>
+        <g text-anchor="middle">
+          <text x="470" y="377" font-size="14" fill="var(--good)">MapCamera <tspan font-size="11">— configures PixelPerfectCamera, answers ViewSizeTiles · PixelsPerUnit</tspan></text>
+          <text x="470" y="399" font-size="10.5" fill="var(--good)">the same script in both scenes, and in the MapEnvironmentBuilder tool scene</text>
+        </g>
+
+        <!-- UI scenes -->
+        <rect x="40" y="460" width="1140" height="70" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+        <g text-anchor="middle" fill="var(--ink-soft)">
+          <text x="610" y="487" font-size="12">Splash · TitleScreen · MainMenu · Cutscene · PreBattlePrep · ChapterClear · GameOver · BootScene</text>
+          <text x="610" y="508" font-size="10.5">A bare Unity camera and none of these scripts. Nothing here is a world, so nothing needs following, bounding or snapping.</text>
+        </g>
+
+        <g font-size="10.5" fill="var(--good)">
+          <text x="248" y="333">ViewSizeTiles · PixelsPerUnit</text>
+          <text x="708" y="333">ViewSizeTiles · PixelsPerUnit</text>
+        </g>
+        <text x="902" y="235" font-size="10.5" fill="currentColor">calls</text>
       </svg>
     </figure>
   </section>
 
   <section>
-    <h2>Requirements, side by side</h2>
+    <h2>Every camera script</h2>
     <div class="scroll">
       <table>
-        <thead><tr><th>Requirement</th><th>Battle map</th><th>Hub</th><th class="v">Verdict</th></tr></thead>
+        <thead><tr><th>Script</th><th>Where</th><th>Responsibility</th></tr></thead>
         <tbody>
-          <tr class="same"><td>Orthographic, integer-scaled, pixel-perfect rendering</td><td colspan="2">the same — <code>MapCamera</code> configures it</td><td class="v">shared ✓</td></tr>
-          <tr class="same"><td>URP per-camera settings</td><td colspan="2">the same — Unity adds it</td><td class="v">built-in ✓</td></tr>
-          <tr class="diff"><td>What the camera follows</td><td>the grid cursor</td><td>the protagonist</td><td class="v">genuinely different</td></tr>
-          <tr class="diff"><td>How movement arrives</td><td>discrete — an event per tile stepped</td><td>continuous — 112 px/s, sub-tile every frame</td><td class="v">genuinely different</td></tr>
-          <tr class="diff"><td>How position is stored</td><td><code>Vector2Int</code>, top-left tile</td><td><code>float</code>, centre, rounded to the pixel</td><td class="v">genuinely different</td></tr>
-          <tr class="diff"><td>When it scrolls</td><td>only past a 3-tile deadzone, a whole tile at a time</td><td>every frame, hard, no smoothing</td><td class="v">genuinely different</td></tr>
-          <tr class="diff"><td>What bounds it</td><td><code>MapData.Width/Height</code> in tiles</td><td><code>GurukulLocationService.Bounds</code>, a float <code>Rect</code></td><td class="v">different source</td></tr>
-          <tr class="diff"><td>Viewport size from the pixel-perfect camera</td><td colspan="2">the same five lines, one in <code>int</code> and one in <code>float</code></td><td class="v">duplicated</td></tr>
-          <tr class="diff"><td>Scripted framing</td><td><code>BeginCinematic</code> / <code>EndCinematic(restore)</code> — symmetric</td><td><code>Follow(other)</code> — no way back</td><td class="v">see below</td></tr>
+          <tr><td class="f">MapCamera</td><td>both world scenes<br>+ the builder tool</td><td>Sets up pixel-perfect rendering, and answers how many tiles a screenful covers. It defines those numbers, so it is the one asked for them.</td></tr>
+          <tr><td class="f">CameraContainment</td><td>static, no scene</td><td>Keeps a point inside an area, centring instead of clamping when the area is no bigger than the view; and rounds to a whole pixel. Pure arithmetic, so the awkward case has tests.</td></tr>
+          <tr><td class="f">CameraController</td><td>BattleMap</td><td>Follows the grid cursor with a three-tile deadzone, a whole tile at a time. Also owns the cinematic mode Map 1 uses — free pan and zoom with pixel-perfect off, then a symmetric hand-back.</td></tr>
+          <tr><td class="f">HubCameraController</td><td>HubExploration</td><td>Follows the protagonist every frame, hard and unsmoothed, contained within the current room and snapped to the pixel grid.</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <h2>The verdict is different from dialogue and fade</h2>
-    <div class="verdict">
-      <p><b>The shared foundation is being reused, correctly.</b> <code>MapCamera</code> is the same script in both scenes, and both cameras carry the identical three-component stack. <code>UniversalAdditionalCameraData</code> is not a new script at all — URP adds it to every camera automatically.</p>
-      <p><b>And the two follow policies genuinely should be separate.</b> The battle camera is welded to a grid cursor that moves in whole tiles and stores its position as a <code>Vector2Int</code>; the hub camera follows a character moving continuously at sub-tile speed. Trying to serve both from one class would mean a policy switch inside every method. This is not the dialogue story repeating.</p>
-      <p>The duplication is about five lines of viewport arithmetic — worth folding into <code>MapCamera</code>, which already owns those numbers, but not urgent.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>The real problem: camera focus is a one-way door</h2>
-    <div class="problem">
-      <p>A scripted event can point the camera at another character with the <code>FocusCamera</code> action, which calls <code>cameraRig.Follow(actor.transform)</code>. <b>Nothing ever points it back.</b> The only other <code>Follow</code> call in the project is in <code>GurukulBootstrapper</code>, once, when the visit loads.</p>
-      <p>So an event that focuses on the Guru leaves the camera following the Guru after the event ends — the player then walks off screen with the camera watching someone else. The only way back is for the content author to remember to append a second <code>FocusCamera</code> pointing at the protagonist. That is a rule a person has to keep, not one the system enforces.</p>
-      <p>The battle map does not have this problem: <code>BeginCinematic</code> and <code>EndCinematic(restoreCenterTile)</code> are a symmetric pair, and handing control back is part of ending.</p>
-      <p><b>Not yet live.</b> Neither authored event uses <code>FocusCamera</code> today, so nothing is broken right now. It is a trap set for the first designer who uses the feature.</p>
-      <p><b>The fix is small:</b> have <code>GurukulEventRunner</code> remember the target before it changes it and restore it when the sequence ends, the same way it already returns the game state to <code>HubExploration</code>. An explicit <code>FocusPlayer</code> action would be worth adding too, for an event that wants to hand the camera back early.</p>
-    </div>
-  </section>
-
-  <section>
-    <h2>One smaller thing</h2>
-    <div class="minor">
-      <p><code>GurukulCameraRig</code> reads the viewport once, in <code>Awake</code>, and relies on <code>[DefaultExecutionOrder(100)]</code> to run after <code>MapCamera</code> has added the <code>PixelPerfectCamera</code>. If that read fails it silently keeps its fallback constants — a 480×270 at 32 PPU guess — for the rest of the session, and the room clamp would be computed against the wrong viewport size.</p>
-      <p><code>CameraController</code> avoids this by recalculating on its first <code>LateUpdate</code>, with a comment explaining that the pixel-perfect values are not readable until after <code>Awake</code>. The hub rig would be steadier doing the same.</p>
+    <h2>Three things the picture says</h2>
+    <div class="box">
+      <p><b>Camera scripts only exist where there is a world.</b> Eight of the eleven scenes carry a plain Unity camera and nothing else — there is nothing to follow, bound or snap in a menu.</p>
+      <p><b>One shared foundation, two follow policies.</b> <code>MapCamera</code> is the same script everywhere and is now the single source of the viewport numbers, which both policies read rather than deriving again. The policies stay separate because they solve different problems: a cursor stepping whole tiles against a character moving continuously at sub-tile speed.</p>
+      <p><b><code>CameraContainment</code> is used by the hub only, for now.</b> <code>CameraController</code> keeps its own clamp because it works in <code>Vector2Int</code> tile space against a viewport-sized margin, not in float world space. Worth revisiting if the battle camera ever needs sub-tile positions; not worth forcing today.</p>
     </div>
   </section>
 </main>
