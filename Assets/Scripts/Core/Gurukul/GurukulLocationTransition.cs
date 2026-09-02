@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
+using ProjectAstra.Core.Scenes;
 
 namespace ProjectAstra.Core.Gurukul
 {
@@ -12,9 +13,12 @@ namespace ProjectAstra.Core.Gurukul
     // it every relocation and completed conversation the visit had accumulated.
     public sealed class GurukulLocationTransition : MonoBehaviour
     {
+        // A doorway is shorter than a scene load, and silent — the transition whoosh belongs to
+        // a change of place, not to every door in a courtyard.
+        private const float DoorFadeSeconds = 0.2f;
+
         [SerializeField] private GurukulInputRouter router;
         [SerializeField] private GurukulLocationLoader loader;
-        [SerializeField] private GurukulScreenFade fade;
 
         public bool IsTransitioning => router.Gate.IsHandoverInFlight;
 
@@ -32,11 +36,25 @@ namespace ProjectAstra.Core.Gurukul
             RememberWayBack(door);
             ResolveDestination(door, out string locationId, out Vector2 spawn, out Facing facing);
 
-            yield return fade.Cover(() => loader.Load(locationId, spawn, facing, door.houseIdentityId));
+            yield return FadeThrough(() => loader.Load(locationId, spawn, facing, door.houseIdentityId));
 
             // Ending the handover re-arms the buttons, so the press that opened the door can't
             // immediately open the one she just arrived next to.
             router.Gate.EndHandover();
+        }
+
+        // The one blackout the whole game uses. Without it — pressing Play on this scene alone, so
+        // no boot services — the room still swaps, just without the fade.
+        private static IEnumerator FadeThrough(System.Action swapRoom)
+        {
+            ScreenFader fader = ScreenFader.Instance;
+            if (fader == null)
+            {
+                swapRoom();
+                yield break;
+            }
+
+            yield return fader.Cover(swapRoom, DoorFadeSeconds, playSound: false);
         }
 
         // She stands at the door facing it, so coming back out means standing in the same place

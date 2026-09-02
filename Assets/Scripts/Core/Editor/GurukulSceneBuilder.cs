@@ -31,8 +31,7 @@ namespace ProjectAstra.Core.Editor
 
             GurukulCameraRig cameraRig = CreateCamera();
             GurukulLocationHost host = CreateLocationHost();
-            GurukulScreenFade fade = CreateFadeOverlay();
-            GurukulInteractionDriver driver = CreateHubRoot(host, cameraRig, fade);
+            GurukulInteractionDriver driver = CreateHubRoot(host, cameraRig);
             WireHud(driver);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -69,8 +68,7 @@ namespace ProjectAstra.Core.Editor
             return go.AddComponent<GurukulLocationHost>();
         }
 
-        private static GurukulInteractionDriver CreateHubRoot(GurukulLocationHost host, GurukulCameraRig cameraRig,
-            GurukulScreenFade fade)
+        private static GurukulInteractionDriver CreateHubRoot(GurukulLocationHost host, GurukulCameraRig cameraRig)
         {
             var go = new GameObject("Gurukul");
             var router = go.AddComponent<GurukulInputRouter>();
@@ -88,7 +86,7 @@ namespace ProjectAstra.Core.Editor
             var playerRoot = new GameObject("Player").transform;
 
             WireLoader(loader, host, cast);
-            WireTransition(transition, router, loader, fade);
+            WireTransition(transition, router, loader);
             WireBootstrapper(bootstrapper, loader, cameraRig, router, driver, playerRoot);
             WireDeparture(departures, router);
             WireMarkers(markers, router, cameraRig);
@@ -108,12 +106,11 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void WireTransition(GurukulLocationTransition transition, GurukulInputRouter router,
-            GurukulLocationLoader loader, GurukulScreenFade fade)
+            GurukulLocationLoader loader)
         {
             var serialized = new SerializedObject(transition);
             serialized.FindProperty("router").objectReferenceValue = router;
             serialized.FindProperty("loader").objectReferenceValue = loader;
-            serialized.FindProperty("fade").objectReferenceValue = fade;
             serialized.ApplyModifiedProperties();
         }
 
@@ -130,29 +127,6 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("director").objectReferenceValue = Object.FindFirstObjectByType<GurukulVisitDirector>();
             serialized.FindProperty("fallbackVisit").objectReferenceValue = FindAsset<GurukulVisitData>();
             serialized.ApplyModifiedProperties();
-        }
-
-        // Its own canvas above the HUD, so a doorway fade covers the objective line and the prompt
-        // as well as the world.
-        private static GurukulScreenFade CreateFadeOverlay()
-        {
-            var go = new GameObject("FadeOverlay", typeof(Canvas), typeof(CanvasGroup));
-
-            var canvas = go.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 100;
-
-            var black = new GameObject("Black", typeof(RectTransform), typeof(Image));
-            black.transform.SetParent(go.transform, false);
-            black.GetComponent<Image>().color = Color.black;
-
-            var rect = black.GetComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-
-            return go.AddComponent<GurukulScreenFade>();
         }
 
         private static void WireDirector(GurukulVisitDirector director, GurukulInteractionDriver driver,
