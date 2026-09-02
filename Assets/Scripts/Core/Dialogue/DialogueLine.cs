@@ -11,7 +11,7 @@ namespace ProjectAstra.Core.Dialogue
     //
     // It can also be a Choice, a Jump or a Signal, in which case most of the fields below
     // are blank and the ones under that kind's heading are the ones that matter. One class
-    // per kind is how GurukulEventAction already handles the same problem, and it is what
+    // per kind is how HubEventAction already handles the same problem, and it is what
     // Unity can serialize without a polymorphic list.
     [Serializable]
     public class DialogueLine

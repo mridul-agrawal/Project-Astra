@@ -16,16 +16,16 @@ namespace ProjectAstra.Core.Editor
     {
         private const string BootScenePath = "Assets/Scenes/BootScene.unity";
         private const string SkipIntroMenu = "Project Astra/Dev/Boot Straight To Battle Map";
-        private const string GurukulMenu = "Project Astra/Dev/Boot Straight To Gurukul";
+        private const string HubMenu = "Project Astra/Dev/Boot Straight To Hub";
         private const string NormalBootMenu = "Project Astra/Dev/Restore Normal Boot";
 
         [MenuItem(SkipIntroMenu)]
         public static void BootToBattleMap() => SetInitialState(GameState.BattleMap);
 
-        // The hub only works booted from here, not by pressing Play on Gurukul.unity — InputManager
+        // The hub only works booted from here, not by pressing Play on Hub.unity — InputManager
         // and the rest of the persistent services live in BootScene, so walking would do nothing.
-        [MenuItem(GurukulMenu)]
-        public static void BootToGurukul() => SetInitialState(GameState.HubExploration);
+        [MenuItem(HubMenu)]
+        public static void BootToHub() => SetInitialState(GameState.HubExploration);
 
         [MenuItem(NormalBootMenu)]
         public static void BootNormally() => SetInitialState(GameState.Splash);
@@ -33,8 +33,8 @@ namespace ProjectAstra.Core.Editor
         [MenuItem(SkipIntroMenu, validate = true)]
         private static bool CanBootToBattleMap() => CurrentInitialState() != GameState.BattleMap;
 
-        [MenuItem(GurukulMenu, validate = true)]
-        private static bool CanBootToGurukul() => CurrentInitialState() != GameState.HubExploration;
+        [MenuItem(HubMenu, validate = true)]
+        private static bool CanBootToHub() => CurrentInitialState() != GameState.HubExploration;
 
         [MenuItem(NormalBootMenu, validate = true)]
         private static bool CanBootNormally() => CurrentInitialState() != GameState.Splash;

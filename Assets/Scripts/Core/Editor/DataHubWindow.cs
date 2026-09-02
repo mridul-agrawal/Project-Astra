@@ -19,7 +19,7 @@ namespace ProjectAstra.Core.Editor
         private string filter = "";
         private string newName = "";
         private Vector2 listScroll, detailScroll, problemsScroll;
-        private List<HubProblem> problems;
+        private List<DataHubProblem> problems;
         private UnityEngine.Object pendingNavigate;
 
         [MenuItem("Project Astra/Data Hub")]
@@ -146,7 +146,7 @@ namespace ProjectAstra.Core.Editor
             problemsScroll = EditorGUILayout.BeginScrollView(problemsScroll);
             if (problems.Count == 0)
                 EditorGUILayout.HelpBox("No problems found — every reference resolves.", MessageType.Info);
-            foreach (HubProblem problem in problems)
+            foreach (DataHubProblem problem in problems)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.HelpBox(problem.Message, MessageType.Warning);

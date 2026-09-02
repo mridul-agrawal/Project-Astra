@@ -101,7 +101,7 @@ namespace ProjectAstra.Core.Tests.Input
         // The hub walks on the cursor directions and interacts with Confirm. Battle-only actions
         // must stay out, or a stray press would reach systems that aren't loaded in a hub scene.
         [Test]
-        public void Gurukul_AllowsWalkingAndInteractingOnly()
+        public void Hub_AllowsWalkingAndInteractingOnly()
         {
             Assert.IsTrue(table.IsActionAllowed(GameState.HubExploration, GameInputAction.CursorUp));
             Assert.IsTrue(table.IsActionAllowed(GameState.HubExploration, GameInputAction.Confirm));

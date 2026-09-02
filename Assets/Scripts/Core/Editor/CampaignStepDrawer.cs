@@ -4,12 +4,12 @@ using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Grid;
-using ProjectAstra.Core.Gurukul;
+using ProjectAstra.Core.Hub;
 
 namespace ProjectAstra.EditorTools
 {
     // Draws a campaign step as: the Kind dropdown, then ONLY the id that matches it — a cutscene
-    // id for a Cutscene step, a map-id popup for a Battle, a visit-id popup for a Gurukul visit.
+    // id for a Cutscene step, a map-id popup for a Battle, a visit-id popup for a Hub visit.
     // A designer only ever sees the one field that applies, and picks from a list built out of the
     // real assets instead of typing a raw id.
     [CustomPropertyDrawer(typeof(CampaignStep))]
@@ -61,7 +61,7 @@ namespace ProjectAstra.EditorTools
         }
 
         private static string[] MapIds() => IdsOf<MapData>(map => map.MapId);
-        private static string[] VisitIds() => IdsOf<GurukulVisitData>(visit => visit.VisitId);
+        private static string[] VisitIds() => IdsOf<HubVisitData>(visit => visit.VisitId);
 
         private static string[] IdsOf<T>(Func<T, string> idOf) where T : ScriptableObject
         {

@@ -118,7 +118,7 @@ namespace ProjectAstra.Core.State
                 new TransitionEntry(GameState.BattleMap, GameState.UnitInfoScreen),
                 new TransitionEntry(GameState.UnitInfoScreen, GameState.BattleMap),
 
-                // The Gurukul hub sits between battles, so the campaign reaches it from wherever
+                // The Hub hub sits between battles, so the campaign reaches it from wherever
                 // the previous step ended and leaves it for whatever the next step is. A
                 // conversation there is GameState.Dialogue, the same as anywhere else.
                 new TransitionEntry(GameState.TitleScreen, GameState.HubExploration),

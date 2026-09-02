@@ -1850,7 +1850,7 @@ GameObject:
   - component: {fileID: 1708496281}
   - component: {fileID: 1708496280}
   m_Layer: 0
-  m_Name: Gurukul
+  m_Name: Hub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2130,7 +2130,7 @@ GameObject:
   - component: {fileID: 2106318084}
   - component: {fileID: 2106318083}
   m_Layer: 0
-  m_Name: GurukulHUD
+  m_Name: HubHUD
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

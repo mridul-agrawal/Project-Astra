@@ -123,7 +123,7 @@ namespace ProjectAstra.Core.Tests.State
         }
 
         // The code defaults only seed a brand-new asset, so the shipped one has to be patched
-        // additively (Project Astra/Gurukul/Run Setup). This catches a state added in code but
+        // additively (Project Astra/Hub/Run Setup). This catches a state added in code but
         // never wired into the asset — which the game reports only as an ILLEGAL transition.
         [Test]
         public void AuthoredAsset_ContainsEveryDefaultTransition()
@@ -134,7 +134,7 @@ namespace ProjectAstra.Core.Tests.State
 
             foreach (var entry in GameStateTransitionTable.CreateDefaultTransitions())
                 Assert.IsTrue(authored.IsValid(entry.From, entry.To),
-                    $"Authored asset is missing {entry.From} -> {entry.To}. Run Project Astra/Gurukul/Run Setup.");
+                    $"Authored asset is missing {entry.From} -> {entry.To}. Run Project Astra/Hub/Run Setup.");
         }
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Grid;
-using ProjectAstra.Core.Gurukul;
+using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Flow
@@ -13,7 +13,7 @@ namespace ProjectAstra.Core.Flow
         [SerializeField] private Campaign campaign;
         [SerializeField] private MapCatalog mapCatalog;
         [SerializeField] private CutsceneCatalog cutsceneCatalog;
-        [SerializeField] private GurukulVisitDatabase visitDatabase;
+        [SerializeField] private HubVisitDatabase visitDatabase;
         private int stepIndex = -1;
 
         private CampaignStep CurrentStep => campaign != null ? campaign.StepAt(stepIndex) : null;
@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.Flow
             }
         }
 
-        public GurukulVisitData CurrentVisit =>
+        public HubVisitData CurrentVisit =>
             (CurrentStep != null && CurrentStep.Kind == CampaignStepKind.HubVisit && visitDatabase != null)
                 ? visitDatabase.Get(CurrentStep.VisitId) : null;
 
@@ -73,9 +73,9 @@ namespace ProjectAstra.Core.Flow
             return CurrentMap;
         }
 
-        // Same idea for the hub: pressing Play on the Gurukul scene should give you the visit the
+        // Same idea for the hub: pressing Play on the Hub scene should give you the visit the
         // campaign would have, not whatever fallback the bootstrapper is holding.
-        public GurukulVisitData EnsureHubStepStarted()
+        public HubVisitData EnsureHubStepStarted()
         {
             if (CurrentVisit != null) return CurrentVisit;
 

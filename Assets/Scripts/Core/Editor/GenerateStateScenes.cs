@@ -479,7 +479,7 @@ namespace ProjectAstra.Core.Editor
 
         // Adds what this generator owns without dropping anything already registered. Rebuilding the
         // list from SceneStates would silently unregister every scene with a dedicated builder —
-        // MainMenu, Cutscene, PreBattlePrep, ChapterClear, GameOver, Splash and Gurukul.
+        // MainMenu, Cutscene, PreBattlePrep, ChapterClear, GameOver, Splash and Hub.
         private static void UpdateBuildSettings()
         {
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
