@@ -1,0 +1,74 @@
+using UnityEngine;
+
+namespace ProjectAstra.Core.Hub.Interaction
+{
+    // Something in the world she can look at: a shelf, a report card on a table, a noticeboard.
+    //
+    // Its availability lives in the visit's runtime state rather than on the component, so an
+    // objective can switch it on, gate it or use it up without finding the GameObject.
+    public sealed class InspectableInteractable : ConversationInteractable
+    {
+        [SerializeField] private string interactableId;
+
+        [Tooltip("Off for an objective-critical object, which outranks a door.")]
+        [SerializeField] private bool objectiveCritical;
+
+        [SerializeField] private HubVerb verb = HubVerb.Inspect;
+
+        [Tooltip("Where she has to stand next to, relative to this transform.")]
+        [SerializeField] private Vector2 interactionOffset;
+
+        [SerializeField] private string conversationId;
+
+        [Tooltip("Blocks the normal result until this gate opens. Empty for something always usable.")]
+        [SerializeField] private string requiredGate;
+
+        [Tooltip("Played instead while the gate is shut. A gated thing she can walk up to must say why.")]
+        [SerializeField] private string deniedConversationId;
+
+        [Tooltip("State to fall back on when the visit doesn't mention this one.")]
+        [SerializeField] private HubInteractableState defaultState = HubInteractableState.Available;
+
+        public string InteractableId => interactableId;
+
+        public override HubVerb Verb => verb;
+
+        public override InteractionPriority Priority =>
+            objectiveCritical ? InteractionPriority.ObjectiveObject : InteractionPriority.Inspectable;
+
+        public override Vector2 InteractionPoint => (Vector2)transform.position + interactionOffset;
+
+        // Inactive things aren't there as far as the player is concerned. Everything else is worth
+        // walking up to, including a gated one that owes her an answer.
+        public override bool IsAvailable =>
+            State != HubInteractableState.Inactive && !string.IsNullOrEmpty(ActiveConversationId);
+
+        protected override string ActiveConversationId => IsLocked ? deniedConversationId : conversationId;
+
+        // Only the real thing counts as having inspected it; a denial line does not.
+        protected override string InspectedId => IsLocked ? null : interactableId;
+
+        private HubInteractableState State =>
+            HubProgressService.Instance != null
+                ? HubProgressService.Instance.State.GetInteractableState(interactableId, defaultState)
+                : defaultState;
+
+        private bool IsLocked =>
+            State == HubInteractableState.Gated ||
+            (!string.IsNullOrEmpty(requiredGate) && Progression != null && !Progression.IsGateOpen(requiredGate));
+
+        // Everything a spawner needs to stand one of these up from authored data.
+        public void Configure(string id, HubVerb showAs, Vector2 offset, string conversation,
+            string gate, string denied, bool critical, HubInteractableState fallback)
+        {
+            interactableId = id;
+            verb = showAs;
+            interactionOffset = offset;
+            conversationId = conversation;
+            requiredGate = gate;
+            deniedConversationId = denied;
+            objectiveCritical = critical;
+            defaultState = fallback;
+        }
+    }
+}

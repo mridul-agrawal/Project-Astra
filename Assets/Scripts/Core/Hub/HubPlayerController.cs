@@ -1,6 +1,8 @@
 using UnityEngine;
 using ProjectAstra.Core.Animation;
 
+using ProjectAstra.Core.Hub.Interaction;
+
 namespace ProjectAstra.Core.Hub
 {
     // Walks the protagonist. Reads the router's resolved direction, asks HubMover where that
@@ -20,6 +22,10 @@ namespace ProjectAstra.Core.Hub
         // True while she is actually changing position, so the interaction layer can stop her
         // before a conversation opens.
         public bool IsWalking { get; private set; }
+
+        // What is in reach and what a press would act on. Owned here because this is the thing
+        // that knows where she is; interactables find it through the trigger she carries.
+        public PlayerInteractionController Interaction { get; } = new();
 
         private void Awake()
         {

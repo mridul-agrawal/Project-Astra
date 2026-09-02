@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Hub
 {
@@ -37,7 +38,7 @@ namespace ProjectAstra.Core.Hub
     // Lookups are linear because these collections hold a few dozen entries at most; a dictionary
     // would cost more in serialization awkwardness than it saves in time.
     [Serializable]
-    public class HubRuntimeState : IDialogueMemory
+    public class HubRuntimeState : IDialogueMemory, IProgressionQuery
     {
         [SerializeField] private string visitId;
         [SerializeField] private int objectiveIndex;

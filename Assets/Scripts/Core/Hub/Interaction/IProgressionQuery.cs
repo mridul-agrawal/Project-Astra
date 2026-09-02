@@ -7,7 +7,7 @@ namespace ProjectAstra.Core.Hub.Interaction
     public interface IProgressionQuery
     {
         bool IsGateOpen(string gateId);
-        bool IsObjectiveActive(string objectiveId);
+        bool IsObjectiveCompleted(string objectiveId);
         bool HasCompletedConversation(string conversationId);
     }
 }
