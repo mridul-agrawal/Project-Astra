@@ -1,4 +1,4 @@
-<title>Screen Fade: Two Implementations</title>
+<title>Screen Fade Architecture</title>
 <style>
   :root {
     --ground: #ffffff; --panel: #f6f7f8; --ink: #17191d; --ink-soft: #565b63;
@@ -43,137 +43,116 @@
   .box { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; }
   .box p { margin: 0; max-width: none; }
   .box p + p { margin-top: 10px; }
-  .wrong { background: var(--flag-bg); border: 1px solid var(--flag); border-radius: 4px; padding: 14px 18px; }
-  .wrong p { margin: 0; max-width: none; }
-  .wrong p + p { margin-top: 10px; }
+  .hist { border-left: 3px solid var(--rule-strong); padding: 2px 0 2px 16px; }
+  .hist p { margin: 0; }
+  .hist p + p { margin-top: 10px; }
   blockquote { margin: 0; padding-left: 14px; border-left: 3px solid var(--flag);
                color: var(--ink-soft); font-style: italic; }
 </style>
 
 <main>
   <header>
-    <h1>Screen Fade: Two Implementations</h1>
-    <p class="lede">Project Astra · <code>ScreenFader</code> shipped 2026-06-06. <code>GurukulScreenFade</code> shipped 2026-08-28, doing the same job.</p>
+    <h1>Screen Fade Architecture</h1>
+    <p class="lede">Project Astra · one blackout, shared by scene swaps and hub doorways. <code>GurukulScreenFade</code> was folded into <code>ScreenFader</code> and deleted.</p>
   </header>
 
   <section>
-    <h2>Before, and now</h2>
+    <h2>How it works now</h2>
     <figure>
-      <svg viewBox="0 0 1000 430" role="img" aria-label="Before the hub, SceneLoader created one persistent ScreenFader that faded every scene swap. Now that path is unchanged, and a second fader, GurukulScreenFade, was added inside the hub scene for doorways.">
+      <svg viewBox="0 0 1000 400" role="img" aria-label="SceneLoader and GurukulLocationTransition both call the single persistent ScreenFader. Its Cover coroutine fades to black, runs the caller's callback, and fades back. Duration and sound are arguments; everything else is shared.">
         <defs>
-          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
-          </marker>
-          <marker id="arF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0 0 L10 5 L0 10 z" fill="var(--flag)"/>
           </marker>
         </defs>
 
-        <line x1="500" y1="48" x2="500" y2="415" stroke="var(--rule-strong)" stroke-dasharray="4 5"/>
-
-        <g text-anchor="middle" font-size="12" font-weight="600" fill="var(--ink-soft)" letter-spacing="1">
-          <text x="250" y="30">BEFORE THE HUB</text>
-          <text x="750" y="30">NOW</text>
+        <!-- converging call paths -->
+        <g stroke="currentColor" fill="none">
+          <path d="M250 111 L250 145 M750 111 L750 145 M250 145 L750 145"/>
+          <line x1="500" y1="145" x2="500" y2="178" marker-end="url(#a)"/>
+          <path d="M500 246 L500 264 L270 264"/>
+          <line x1="270" y1="264" x2="270" y2="276" marker-end="url(#a)"/>
+          <line x1="370" y1="307" x2="396" y2="307" marker-end="url(#a)"/>
+          <line x1="600" y1="307" x2="626" y2="307" marker-end="url(#a)"/>
         </g>
 
-        <!-- LEFT -->
-        <g stroke="currentColor" fill="none" marker-end="url(#ar)">
-          <line x1="250" y1="114" x2="250" y2="150"/>
-          <line x1="250" y1="210" x2="250" y2="246"/>
-        </g>
         <g text-anchor="middle">
-          <rect x="110" y="62" width="280" height="52" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="250" y="84" font-size="13.5" fill="currentColor">SceneLoader</text>
-          <text x="250" y="101" font-size="10.5" fill="var(--ink-soft)">persistent, in BootScene</text>
+          <!-- callers -->
+          <rect x="120" y="55" width="260" height="56" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="250" y="79" font-size="13.5" fill="currentColor">SceneLoader</text>
+          <text x="250" y="97" font-size="10.5" fill="var(--ink-soft)">scene swaps</text>
 
-          <rect x="110" y="152" width="280" height="58" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
-          <text x="250" y="176" font-size="13.5" fill="currentColor">ScreenFader</text>
-          <text x="250" y="194" font-size="10.5" fill="var(--ink-soft)">one instance · DontDestroyOnLoad</text>
+          <rect x="620" y="55" width="260" height="56" rx="3" fill="var(--accent-bg)" stroke="var(--accent)"/>
+          <text x="750" y="79" font-size="13" fill="var(--accent)">GurukulLocationTransition</text>
+          <text x="750" y="97" font-size="10.5" fill="var(--accent)">doorways</text>
 
-          <rect x="110" y="248" width="280" height="52" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
-          <text x="250" y="270" font-size="12.5" fill="var(--ink-soft)">every scene swap</text>
-          <text x="250" y="287" font-size="10.5" fill="var(--ink-soft)">0.35s · whoosh</text>
+          <!-- the one fader -->
+          <rect x="350" y="182" width="300" height="64" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="2"/>
+          <text x="500" y="208" font-size="15" fill="currentColor">ScreenFader</text>
+          <text x="500" y="227" font-size="10" fill="var(--ink-soft)">one instance · DontDestroyOnLoad · made at boot</text>
+
+          <!-- what Cover does -->
+          <rect x="170" y="280" width="200" height="54" rx="3" fill="var(--panel)" stroke="var(--rule-strong)"/>
+          <text x="270" y="304" font-size="12.5" fill="currentColor">fade to black</text>
+          <text x="270" y="321" font-size="10" fill="var(--ink-soft)">block input</text>
+
+          <rect x="400" y="280" width="200" height="54" rx="3" fill="var(--panel)" stroke="var(--rule-strong)"/>
+          <text x="500" y="304" font-size="12.5" fill="currentColor">run whileBlack</text>
+          <text x="500" y="321" font-size="10" fill="var(--ink-soft)">load scene · swap room</text>
+
+          <rect x="630" y="280" width="200" height="54" rx="3" fill="var(--panel)" stroke="var(--rule-strong)"/>
+          <text x="730" y="304" font-size="12.5" fill="currentColor">fade back</text>
+          <text x="730" y="321" font-size="10" fill="var(--ink-soft)">release input</text>
         </g>
-        <g font-size="10.5" fill="var(--ink-soft)">
-          <text x="258" y="137">creates one at boot</text>
-          <text x="258" y="233">RunTransition(load)</text>
-        </g>
 
-        <!-- RIGHT: row A, unchanged -->
-        <g stroke="currentColor" fill="none" marker-end="url(#ar)">
-          <line x1="750" y1="106" x2="750" y2="132"/>
-        </g>
-        <g text-anchor="middle">
-          <rect x="610" y="62" width="280" height="44" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="750" y="89" font-size="13.5" fill="currentColor">SceneLoader</text>
+        <!-- call labels, each in its own gutter -->
+        <text x="258" y="132" font-size="10.5" fill="var(--ink-soft)">RunTransition(load)</text>
+        <text x="742" y="132" font-size="10.5" fill="var(--accent)" text-anchor="end">Cover(swap, 0.2s, silent)</text>
+        <text x="508" y="261" font-size="10.5" fill="currentColor">Cover(whileBlack, duration, playSound)</text>
 
-          <rect x="610" y="134" width="280" height="48" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
-          <text x="750" y="153" font-size="13.5" fill="currentColor">ScreenFader</text>
-          <text x="750" y="171" font-size="10.5" fill="var(--ink-soft)">scene swaps · 0.35s · whoosh</text>
-        </g>
-        <text x="758" y="122" font-size="10.5" fill="var(--ink-soft)">unchanged</text>
-
-        <text x="750" y="216" font-size="11" text-anchor="middle" fill="var(--ink-soft)">and, separately —</text>
-
-        <!-- RIGHT: row B, added -->
-        <g stroke="var(--flag)" fill="none" marker-end="url(#arF)">
-          <line x1="750" y1="276" x2="750" y2="302"/>
-        </g>
-        <g text-anchor="middle">
-          <rect x="610" y="232" width="280" height="44" rx="3" fill="var(--flag-bg)" stroke="var(--flag)"/>
-          <text x="750" y="259" font-size="13" fill="var(--flag)">GurukulLocationTransition</text>
-
-          <rect x="610" y="304" width="280" height="48" rx="3" fill="var(--flag-bg)" stroke="var(--flag)" stroke-width="1.8"/>
-          <text x="750" y="323" font-size="13.5" fill="var(--flag)">GurukulScreenFade</text>
-          <text x="750" y="341" font-size="10.5" fill="var(--flag)">doorways · 0.2s · silent</text>
-        </g>
-        <text x="758" y="292" font-size="10.5" fill="var(--flag)">Cover(swap room)</text>
-
-        <g text-anchor="middle" font-size="11.5" fill="var(--flag)">
-          <text x="750" y="386">Both boxes are the same ~40 lines, including the same clamp comment.</text>
-          <text x="750" y="403">Nothing about a doorway needs a second one.</text>
-        </g>
+        <text x="500" y="371" font-size="11.5" text-anchor="middle" fill="var(--ink-soft)">Duration and sound are arguments. Everything below the fader is shared.</text>
       </svg>
     </figure>
   </section>
 
   <section>
-    <h2>Requirement by requirement</h2>
+    <h2>Why one serves both</h2>
     <div class="scroll">
       <table>
-        <thead><tr><th>What is needed</th><th>ScreenFader already does</th><th>A doorway wants</th><th class="v">Delta</th></tr></thead>
+        <thead><tr><th>What is needed</th><th>Scene swap</th><th>Doorway</th><th class="v">How it is handled</th></tr></thead>
         <tbody>
-          <tr class="same"><td>Black out, run something while black, fade back</td><td>yes</td><td>the same</td><td class="v">none</td></tr>
-          <tr class="same"><td>Block input while black</td><td>yes</td><td>the same</td><td class="v">none</td></tr>
-          <tr class="same"><td>Clamp the per-frame step so a load hitch can't finish the fade in one frame</td><td>yes</td><td>the same</td><td class="v">none — copied verbatim</td></tr>
-          <tr class="same"><td>Full-screen overlay canvas above everything</td><td>yes, order 32767</td><td>the same</td><td class="v">none</td></tr>
-          <tr class="diff"><td>How long</td><td>0.35s, from <code>SceneFadeSettings</code></td><td>about 0.2s</td><td class="v">a parameter</td></tr>
-          <tr class="diff"><td>Sound</td><td>plays <code>TransitionWhoosh</code></td><td>silent — a doorway every few seconds shouldn't announce itself</td><td class="v">a parameter</td></tr>
-          <tr class="diff"><td>The caller waits for it</td><td>no — <code>void RunTransition</code>, fire and forget</td><td>yes — <code>yield return</code>, so control returns only when the new room is on screen</td><td class="v">one overload</td></tr>
-          <tr class="diff"><td>Reachable from a scene</td><td>no — the instance is a private field on <code>SceneLoader</code></td><td>yes</td><td class="v">an accessor</td></tr>
+          <tr class="same"><td>Black out, run something while black, fade back</td><td>yes</td><td>yes</td><td class="v">shared</td></tr>
+          <tr class="same"><td>Block input while black</td><td>yes</td><td>yes</td><td class="v">shared</td></tr>
+          <tr class="same"><td>Clamp the per-frame step so a hitch can't finish the fade in one frame</td><td>yes</td><td>yes</td><td class="v">shared</td></tr>
+          <tr class="same"><td>Full-screen overlay above everything</td><td>yes</td><td>yes</td><td class="v">shared</td></tr>
+          <tr class="diff"><td>How long</td><td>0.35s, from <code>SceneFadeSettings</code></td><td>0.2s</td><td class="v"><code>durationOverride</code></td></tr>
+          <tr class="diff"><td>Sound</td><td><code>TransitionWhoosh</code></td><td>silent</td><td class="v"><code>playSound</code></td></tr>
+          <tr class="diff"><td>Caller waits for it</td><td>no</td><td>yes</td><td class="v"><code>Cover</code> returns <code>IEnumerator</code>; <code>RunTransition</code> wraps it</td></tr>
+          <tr class="diff"><td>Reachable from a scene</td><td>—</td><td>yes</td><td class="v"><code>ScreenFader.Instance</code></td></tr>
         </tbody>
       </table>
     </div>
-    <p>Four requirements are identical, four differ. <b>Two parameters, one method overload, one accessor.</b></p>
+    <p>Four needs identical, four different — and the four differences came to two arguments, one overload and one accessor.</p>
   </section>
 
   <section>
-    <h2>The reason given for building a second one is not correct</h2>
-    <div class="wrong">
-      <p>The header comment on <code>GurukulScreenFade</code> says:</p>
+    <h2>What it replaced</h2>
+    <div class="hist">
+      <p>From 2026-08-28 until this change, the hub carried <code>GurukulScreenFade</code>: its own canvas, its own black image, its own alpha coroutine, and a copy of the clamp comment. <code>ScreenFader</code> had been doing that job since 2026-06-06.</p>
+      <p>Its header explained the duplication this way:</p>
       <blockquote>"Its own thing rather than the shared ScreenFader… that one marks itself DontDestroyOnLoad, so a hub-spawned copy would follow the player into the battle map"</blockquote>
-      <p>That is true of a <em>copy</em> — but the hub never needed to spawn one. <code>SceneLoader</code> instantiates exactly one <code>ScreenFader</code> at boot and it is alive and idle the whole time the hub is running. The obstacle was never lifetime; it was that nothing outside <code>SceneLoader</code> can reach it.</p>
-      <p>The second reason given — the 0.35s duration — is real, and is a parameter.</p>
+      <p>True of a <em>copy</em> — but the hub never needed to spawn one. <code>SceneLoader</code> creates exactly one at boot and it is alive and idle throughout the hub. The obstacle was reach, not lifetime, and reach is an accessor. The second reason given, the 0.35s duration, was real and is now an argument.</p>
+      <p>Deleted with it: the hub scene's <code>FadeOverlay</code> object and the builder code that created it.</p>
     </div>
   </section>
 
   <section>
-    <h2>What it should be</h2>
+    <h2>Verified in play mode</h2>
     <div class="box">
-      <p><code>ScreenFader</code> gains a way to be reached and a way to be awaited:</p>
-      <p><code>ScreenFader.Instance</code> · <code>IEnumerator Cover(Action whileBlack, float duration = -1, bool playSound = true)</code></p>
-      <p>A doorway calls <code>Cover(swapRoom, 0.2f, playSound: false)</code>. <code>SceneLoader</code> keeps calling <code>RunTransition</code>, which becomes a thin wrapper over the same coroutine. <code>GurukulScreenFade</code> and the hub scene's <code>FadeOverlay</code> object both go, and the hub stops carrying a canvas it does not need.</p>
-      <p>Smaller than the dialogue change by a wide margin: one file deleted, one file gaining two optional arguments.</p>
+      <p><b>One fader alive</b> in the hub, and still one after a scene swap.</p>
+      <p><b>A doorway sampled mid-fade at alpha 0.17</b> — the check that matters, since a fade finishing in a single frame would still pass a start-and-end assertion. It animates, then returns to clear with raycasts unblocked, the handover lock released and movement restored.</p>
+      <p><b>A scene swap still fades and whooshes</b> at the full duration.</p>
+      <p>822 EditMode tests green. A doorway with no fader alive — pressing Play on the hub scene with no boot services — still swaps the room, just without the fade.</p>
     </div>
   </section>
 </main>
