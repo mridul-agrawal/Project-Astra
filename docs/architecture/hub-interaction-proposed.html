@@ -50,124 +50,127 @@
   <section>
     <h2>The shape</h2>
     <figure>
-      <svg viewBox="0 0 1200 880" role="img" aria-label="HubPlayer ticks PlayerInteractionController each frame with whether confirm is held. The controller owns a press latch, asks the registry what exists and a pure reach test what is in range, and holds one CurrentTarget. Everything it talks to is the IInteractable interface. Four concrete interactables implement it. Availability is asked of a progression query implemented by the quest system; Interact produces the first consequence.">
+      <svg viewBox="0 0 1200 970" role="img" aria-label="HubPlayerController ticks PlayerInteractionController with whether confirm is held. Interactables are MonoBehaviours whose own 2D trigger is their reach region; on trigger enter they register themselves with the controller and on exit they remove themselves, so the controller holds a list of IInteractable and never scans the world. It resolves priority among whichever said they are reachable, and acts on one. An abstract InteractableBehaviour carries the registration boilerplate and a default reach rule that any subclass may override.">
         <defs>
           <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+          <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--good)"/></marker>
         </defs>
 
         <g stroke="currentColor" fill="none" marker-end="url(#a)">
-          <line x1="600" y1="100" x2="600" y2="131"/>
-          <line x1="340" y1="180" x2="396" y2="180"/>
-          <line x1="860" y1="180" x2="804" y2="180"/>
-          <line x1="340" y1="284" x2="396" y2="284"/>
-          <path d="M470 300 L470 336 L190 336 L190 356"/>
-          <line x1="600" y1="300" x2="600" y2="348"/>
-          <path d="M600 486 L600 506 M180 506 L1060 506 M180 506 L180 532"/>
-          <line x1="480" y1="506" x2="480" y2="532"/>
-          <line x1="780" y1="506" x2="780" y2="532"/>
-          <line x1="1060" y1="506" x2="1060" y2="532"/>
-          <path d="M480 658 L480 678 M300 678 L910 678 M300 678 L300 704"/>
-          <line x1="910" y1="678" x2="910" y2="704"/>
+          <line x1="600" y1="96" x2="600" y2="126"/>
+          <line x1="396" y1="190" x2="356" y2="190"/>
+          <line x1="600" y1="290" x2="600" y2="326"/>
+          <line x1="600" y1="470" x2="600" y2="506"/>
+          <line x1="330" y1="565" x2="294" y2="565"/>
+          <path d="M600 620 L600 645 M165 645 L1035 645 M165 645 L165 666"/>
+          <line x1="455" y1="645" x2="455" y2="666"/>
+          <line x1="745" y1="645" x2="745" y2="666"/>
+          <line x1="1035" y1="645" x2="1035" y2="666"/>
+          <path d="M455 790 L455 812 M385 812 L825 812 M385 812 L385 836"/>
+          <line x1="825" y1="812" x2="825" y2="836"/>
         </g>
+        <path d="M870 560 L920 560 L920 210 L804 210" stroke="var(--good)" fill="none" stroke-width="1.8" marker-end="url(#ag)"/>
 
         <g text-anchor="middle">
-          <rect x="450" y="40" width="300" height="60" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
-          <text x="600" y="64" font-size="12.5" fill="var(--ink-soft)">HubPlayer <tspan font-size="10">&#8212; MonoBehaviour</tspan></text>
-          <text x="600" y="85" font-size="10" fill="var(--ink-soft)">the only thing here that touches Unity input</text>
+          <rect x="430" y="36" width="340" height="60" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="600" y="60" font-size="12.5" fill="var(--ink-soft)">HubPlayerController <tspan font-size="10">&#8212; MonoBehaviour</tspan></text>
+          <text x="600" y="81" font-size="10" fill="var(--ink-soft)">the only thing here that touches Unity input</text>
 
-          <rect x="40" y="135" width="300" height="90" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="190" y="159" font-size="12.5" fill="currentColor">InteractionRegistry</text>
-          <text x="190" y="180" font-size="10" fill="var(--ink-soft)">what exists in the room now</text>
-          <text x="190" y="198" font-size="10" fill="var(--ink-soft)">interactables register themselves</text>
-          <text x="190" y="216" font-size="10" fill="var(--ink-soft)">a destroyed room takes its own with it</text>
+          <rect x="30" y="130" width="320" height="120" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="190" y="155" font-size="12.5" fill="currentColor">PromptPresenter</text>
+          <text x="190" y="177" font-size="10" fill="var(--ink-soft)">at most one, ever</text>
+          <text x="190" y="195" font-size="10" fill="var(--ink-soft)">hysteresis &#8212; no flicker at the edge</text>
+          <text x="190" y="213" font-size="10" fill="var(--ink-soft)">glyph + the target&#8217;s own verb</text>
+          <text x="190" y="231" font-size="10" fill="var(--ink-soft)">nothing to show = nothing shown</text>
 
-          <rect x="400" y="135" width="400" height="165" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="2"/>
-          <text x="600" y="162" font-size="15" fill="currentColor">PlayerInteractionController</text>
-          <text x="600" y="181" font-size="10" fill="var(--ink-soft)">plain C# &#183; one button, one target</text>
-          <text x="600" y="206" font-size="11" fill="currentColor">Tick(confirmHeld)</text>
-          <text x="600" y="224" font-size="11" fill="currentColor">CurrentTarget</text>
-          <text x="600" y="242" font-size="11" fill="currentColor">ResolvePriority()</text>
-          <text x="600" y="260" font-size="11" fill="currentColor">SuppressCurrentPress()</text>
-          <text x="600" y="283" font-size="10" fill="var(--ink-soft)">a press-edge latch is a field in here, not a component</text>
+          <rect x="400" y="130" width="400" height="160" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="2"/>
+          <text x="600" y="157" font-size="15" fill="currentColor">PlayerInteractionController</text>
+          <text x="600" y="176" font-size="10" fill="var(--ink-soft)">plain C# &#183; one button, one target</text>
+          <text x="600" y="201" font-size="11" fill="currentColor">TargetsInRange : List&lt;IInteractable&gt;</text>
+          <text x="600" y="219" font-size="11" fill="currentColor">ResolvePriority() &#8594; CurrentTarget</text>
+          <text x="600" y="237" font-size="11" fill="currentColor">Tick(confirmHeld) &#183; SuppressCurrentPress()</text>
+          <text x="600" y="262" font-size="10" fill="var(--ink-soft)">never scans the world &#8212; things arrive and leave</text>
+          <text x="600" y="278" font-size="10" fill="var(--ink-soft)">on their own; it only chooses among them</text>
 
-          <rect x="860" y="135" width="300" height="90" rx="3" fill="var(--accent-bg)" stroke="var(--accent)"/>
-          <text x="1010" y="159" font-size="12.5" fill="var(--accent)">InteractionReach</text>
-          <text x="1010" y="180" font-size="10" fill="var(--accent)">facing box &#183; lateral tolerance</text>
-          <text x="1010" y="198" font-size="10" fill="var(--accent)">line of sight &#183; per-target region</text>
-          <text x="1010" y="216" font-size="10" fill="var(--accent)">pure &#183; fully testable</text>
+          <rect x="400" y="330" width="400" height="140" rx="3" fill="var(--good-bg)" stroke="var(--good)" stroke-width="2"/>
+          <text x="600" y="355" font-size="15" fill="var(--good)">IInteractable</text>
+          <text x="600" y="375" font-size="10" fill="var(--good)">the only type the controller knows</text>
+          <text x="600" y="397" font-size="11" fill="var(--good)">Prompt &#8212; verb, or none</text>
+          <text x="600" y="414" font-size="11" fill="var(--good)">IsAvailable &#8212; a target at all?</text>
+          <text x="600" y="431" font-size="11" fill="var(--good)">CanReach(player) &#8212; its own rule</text>
+          <text x="600" y="448" font-size="11" fill="var(--good)">Priority &#183; Interact()</text>
+          <text x="600" y="464" font-size="10" fill="var(--good)">the object decides if; the controller decides which</text>
 
-          <rect x="40" y="250" width="300" height="68" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
-          <text x="190" y="273" font-size="11" fill="var(--ink-soft)">after a door or a dialogue closes</text>
-          <text x="190" y="295" font-size="10.5" fill="var(--ink-soft)">SuppressCurrentPress() &#8212; so one press</text>
-          <text x="190" y="311" font-size="10.5" fill="var(--ink-soft)">cannot immediately undo what it just did</text>
+          <rect x="30" y="510" width="260" height="110" rx="3" fill="var(--accent-bg)" stroke="var(--accent)"/>
+          <text x="160" y="535" font-size="12.5" fill="var(--accent)">InteractionReachRules</text>
+          <text x="160" y="557" font-size="10" fill="var(--accent)">pure helpers, used not obeyed</text>
+          <text x="160" y="577" font-size="10" fill="var(--accent)">IsFacing(player, me)</text>
+          <text x="160" y="595" font-size="10" fill="var(--accent)">HasLineOfSight(player, me)</text>
+          <text x="160" y="613" font-size="10" fill="var(--accent)">fully testable</text>
 
-          <rect x="40" y="360" width="300" height="110" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="190" y="384" font-size="12.5" fill="currentColor">PromptPresenter</text>
-          <text x="190" y="405" font-size="10" fill="var(--ink-soft)">at most one, ever</text>
-          <text x="190" y="423" font-size="10" fill="var(--ink-soft)">hysteresis &#8212; no flicker at the edge</text>
-          <text x="190" y="441" font-size="10" fill="var(--ink-soft)">glyph + the target&#8217;s own verb</text>
-          <text x="190" y="459" font-size="10" fill="var(--ink-soft)">nothing to show = nothing shown</text>
+          <rect x="330" y="510" width="540" height="110" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="600" y="535" font-size="13.5" fill="currentColor">InteractableBehaviour <tspan font-size="10" fill="var(--ink-soft)">&#8212; abstract MonoBehaviour</tspan></text>
+          <text x="600" y="557" font-size="10.5" fill="var(--ink-soft)">its own 2D trigger is the reach region &#8212; a big object gets a big collider</text>
+          <text x="600" y="577" font-size="10.5" fill="var(--ink-soft)">OnTriggerEnter / Exit &#8212; adds and removes itself from the player&#8217;s list</text>
+          <text x="600" y="597" font-size="10.5" fill="var(--ink-soft)">virtual CanReach() &#8212; facing + line of sight by default, override freely</text>
+          <text x="600" y="614" font-size="10" fill="var(--ink-soft)">deregisters on disable, so a destroyed room cannot leave a ghost</text>
 
-          <rect x="400" y="352" width="400" height="134" rx="3" fill="var(--good-bg)" stroke="var(--good)" stroke-width="2"/>
-          <text x="600" y="377" font-size="15" fill="var(--good)">IInteractable</text>
-          <text x="600" y="397" font-size="10" fill="var(--good)">the only type the controller knows</text>
-          <text x="600" y="419" font-size="11" fill="var(--good)">Prompt &#8212; verb, or none</text>
-          <text x="600" y="436" font-size="11" fill="var(--good)">IsAvailable &#8212; a target at all?</text>
-          <text x="600" y="453" font-size="11" fill="var(--good)">Reach &#8212; its own region</text>
-          <text x="600" y="470" font-size="11" fill="var(--good)">Priority &#183; Interact()</text>
+          <rect x="30" y="670" width="270" height="120" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="165" y="696" font-size="12" fill="currentColor">CharacterInteractable</text>
+          <text x="165" y="717" font-size="10" fill="var(--ink-soft)">Talk</text>
+          <text x="165" y="736" font-size="10" fill="var(--ink-soft)">no conversation = not available</text>
+          <text x="165" y="754" font-size="10" fill="var(--ink-soft)">stages the face-to-face</text>
+          <text x="165" y="772" font-size="10" fill="var(--ink-soft)">restores authored facings after</text>
 
-          <rect x="40" y="536" width="280" height="122" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="180" y="562" font-size="12.5" fill="currentColor">CharacterInteractable</text>
-          <text x="180" y="583" font-size="10" fill="var(--ink-soft)">Talk</text>
-          <text x="180" y="603" font-size="10" fill="var(--ink-soft)">no conversation = not available</text>
-          <text x="180" y="621" font-size="10" fill="var(--ink-soft)">stages the face-to-face</text>
-          <text x="180" y="639" font-size="10" fill="var(--ink-soft)">restores authored facings after</text>
+          <rect x="320" y="670" width="270" height="120" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="455" y="696" font-size="12" fill="currentColor">DoorInteractable</text>
+          <text x="455" y="717" font-size="10" fill="var(--ink-soft)">Enter &#183; Leave</text>
+          <text x="455" y="736" font-size="10" fill="var(--ink-soft)">locked &#8594; its denial line</text>
+          <text x="455" y="754" font-size="10" fill="var(--ink-soft)">open &#8594; asks for the room change</text>
+          <text x="455" y="772" font-size="10" fill="var(--ink-soft)">carries its house identity</text>
 
-          <rect x="340" y="536" width="280" height="122" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="480" y="562" font-size="12.5" fill="currentColor">DoorInteractable</text>
-          <text x="480" y="583" font-size="10" fill="var(--ink-soft)">Enter &#183; Leave</text>
-          <text x="480" y="603" font-size="10" fill="var(--ink-soft)">locked &#8594; its denial line</text>
-          <text x="480" y="621" font-size="10" fill="var(--ink-soft)">open &#8594; asks for the room change</text>
-          <text x="480" y="639" font-size="10" fill="var(--ink-soft)">carries its house identity</text>
+          <rect x="610" y="670" width="270" height="120" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="745" y="696" font-size="12" fill="currentColor">InspectableInteractable</text>
+          <text x="745" y="717" font-size="10" fill="var(--ink-soft)">Inspect</text>
+          <text x="745" y="736" font-size="10" fill="var(--ink-soft)">first-time and repeat text</text>
+          <text x="745" y="754" font-size="10" fill="var(--ink-soft)">its own state change updates its</text>
+          <text x="745" y="772" font-size="10" fill="var(--ink-soft)">own prompt, visual and collision</text>
 
-          <rect x="640" y="536" width="280" height="122" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="780" y="562" font-size="12.5" fill="currentColor">InspectableInteractable</text>
-          <text x="780" y="583" font-size="10" fill="var(--ink-soft)">Inspect</text>
-          <text x="780" y="603" font-size="10" fill="var(--ink-soft)">first-time and repeat text</text>
-          <text x="780" y="621" font-size="10" fill="var(--ink-soft)">its own state change updates its</text>
-          <text x="780" y="639" font-size="10" fill="var(--ink-soft)">own prompt, visual and collision</text>
+          <rect x="900" y="670" width="270" height="120" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="1035" y="696" font-size="12" fill="currentColor">DepartureInteractable</text>
+          <text x="1035" y="717" font-size="10" fill="var(--ink-soft)">Depart &#183; Report</text>
+          <text x="1035" y="736" font-size="10" fill="var(--ink-soft)">locked until the visit says so</text>
+          <text x="1035" y="758" font-size="10" fill="var(--ink-soft)">a new kind is a new class,</text>
+          <text x="1035" y="774" font-size="10" fill="var(--ink-soft)">a collider, and nothing else</text>
 
-          <rect x="940" y="536" width="240" height="122" rx="3" fill="var(--ground)" stroke="currentColor"/>
-          <text x="1060" y="562" font-size="12.5" fill="currentColor">DepartureInteractable</text>
-          <text x="1060" y="583" font-size="10" fill="var(--ink-soft)">Depart &#183; Report</text>
-          <text x="1060" y="603" font-size="10" fill="var(--ink-soft)">locked until the visit</text>
-          <text x="1060" y="621" font-size="10" fill="var(--ink-soft)">says it may leave</text>
-          <text x="1060" y="643" font-size="10" fill="var(--ink-soft)">a new kind is a new class only</text>
+          <rect x="180" y="840" width="410" height="90" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-dasharray="6 3"/>
+          <text x="385" y="866" font-size="12.5" fill="var(--accent)">IProgressionQuery</text>
+          <text x="385" y="887" font-size="10" fill="var(--accent)">declared here, implemented by the quest system</text>
+          <text x="385" y="905" font-size="10" fill="var(--accent)">IsGateOpen &#183; IsObjectiveActive &#183; HasCompleted</text>
+          <text x="385" y="922" font-size="10" fill="var(--accent)">availability is asked, never worked out in here</text>
 
-          <rect x="40" y="708" width="520" height="126" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-dasharray="6 3"/>
-          <text x="300" y="734" font-size="13" fill="var(--accent)">IProgressionQuery</text>
-          <text x="300" y="755" font-size="10.5" fill="var(--accent)">declared here, implemented by the quest system</text>
-          <text x="300" y="777" font-size="10.5" fill="var(--accent)">IsGateOpen &#183; IsObjectiveActive &#183; HasCompleted &#183; Flag</text>
-          <text x="300" y="802" font-size="10.5" fill="var(--accent)">availability is asked, never worked out in here &#8212;</text>
-          <text x="300" y="819" font-size="10.5" fill="var(--accent)">so the interaction system never learns what a quest is</text>
-
-          <rect x="640" y="708" width="540" height="126" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="6 3"/>
-          <text x="910" y="734" font-size="13" fill="var(--ink-soft)">first consequences</text>
-          <text x="910" y="757" font-size="10.5" fill="var(--ink-soft)">a conversation &#183; a room change &#183; a departure</text>
-          <text x="910" y="779" font-size="10.5" fill="var(--ink-soft)">each interactable calls its own, directly</text>
-          <text x="910" y="804" font-size="10.5" fill="var(--ink-soft)">no central switch deciding which one this was</text>
+          <rect x="620" y="840" width="410" height="90" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="6 3"/>
+          <text x="825" y="866" font-size="12.5" fill="var(--ink-soft)">first consequences</text>
+          <text x="825" y="887" font-size="10" fill="var(--ink-soft)">a conversation &#183; a room change &#183; a departure</text>
+          <text x="825" y="905" font-size="10" fill="var(--ink-soft)">each interactable calls its own, directly</text>
+          <text x="825" y="922" font-size="10" fill="var(--ink-soft)">no central switch deciding which one this was</text>
         </g>
 
         <g font-size="10.5" fill="currentColor">
-          <text x="606" y="126">Tick(confirmHeld)</text>
-          <text x="346" y="175">targets</text>
-          <text x="806" y="175">in reach?</text>
-          <text x="338" y="333" text-anchor="end">the one target, or none</text>
+          <text x="606" y="122">Tick(confirmHeld)</text>
+          <text x="352" y="186" text-anchor="end">shows</text>
+          <text x="606" y="320">talks only to</text>
+          <text x="606" y="500">implements</text>
+          <text x="290" y="562" text-anchor="end">uses</text>
+          <text x="388" y="828">IsAvailable &#183; locked?</text>
+          <text x="828" y="828">Interact()</text>
         </g>
-        <text x="608" y="508" font-size="10.5" fill="var(--good)">implemented by</text>
-        <text x="306" y="699" font-size="10.5" fill="var(--accent)">IsAvailable &#183; locked?</text>
-        <text x="920" y="699" font-size="10.5" fill="var(--ink-soft)">Interact()</text>
+        <g font-size="10.5" fill="var(--good)">
+          <text x="928" y="368">registers itself when the player</text>
+          <text x="928" y="386">enters its trigger, and leaves on exit</text>
+        </g>
       </svg>
     </figure>
   </section>
@@ -197,8 +200,8 @@
       <table>
         <thead><tr><th>Requirement</th><th>Owned by</th></tr></thead>
         <tbody>
-          <tr><td>One tile, facing, line of sight, no tile-centre alignment, four sides</td><td class="f">InteractionReach</td></tr>
-          <tr><td>A large object supplies a wider region</td><td class="f">IInteractable.Reach</td></tr>
+          <tr><td>One tile, facing, line of sight, no tile-centre alignment, four sides</td><td class="f">InteractableBehaviour.CanReach<br><span style="color:var(--ink-soft)">via InteractionReachRules</span></td></tr>
+          <tr><td>A large object supplies a wider region</td><td class="f">its own trigger collider</td></tr>
           <tr><td>Discrete press, re-arms on release, release required after a transition</td><td class="f">PlayerInteractionController <span style="color:var(--ink-soft)">(latch field + SuppressCurrentPress)</span></td></tr>
           <tr><td>Only in free exploration; nothing happens with no target</td><td class="f">PlayerInteractionController</td></tr>
           <tr><td>Exactly one target; priority ladder; most-in-front then nearest</td><td class="f">PlayerInteractionController<br>+ IInteractable.Priority</td></tr>
