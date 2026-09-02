@@ -1,0 +1,240 @@
+<title>Hub Interaction</title>
+<style>
+  :root {
+    --ground:#ffffff; --panel:#f6f7f8; --ink:#17191d; --ink-soft:#565b63;
+    --rule:#d6d9dd; --rule-strong:#9aa0a8; --code-bg:#eef0f2;
+    --accent:#1a5aa8; --accent-bg:#e8f0fc; --flag:#a3312f; --flag-bg:#fbeceb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+      --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+      --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+    --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+    --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+  }
+  body { background:var(--ground); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.5; margin:0; padding:32px 24px 80px; }
+  main { max-width:1060px; margin:0 auto; display:flex; flex-direction:column; gap:34px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:0 0 14px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em; }
+  h3 { font-size:13.5px; margin:22px 0 8px; color:var(--ink); font-weight:600; }
+  .lede { color:var(--ink-soft); margin:0; font-size:15px; }
+  p { max-width:72ch; }
+  code { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.9em;
+    background:var(--code-bg); padding:1px 5px; border-radius:3px; }
+  figure { margin:0; }
+  figure svg { max-width:100%; height:auto; display:block; }
+  ol.req { margin:0; padding-left:22px; display:flex; flex-direction:column; gap:7px; }
+  ol.req li { max-width:74ch; }
+  ol.req li b { font-weight:600; }
+  .src { color:var(--ink-soft); font-size:12.5px; }
+  .box { background:var(--panel); border:1px solid var(--rule); border-radius:4px; padding:14px 18px; }
+  .box p { margin:0; max-width:none; }
+  .box p + p { margin-top:10px; }
+  .legend { display:flex; flex-wrap:wrap; gap:20px; font-size:13px; color:var(--ink-soft); margin-top:12px; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .sw { width:26px; height:13px; border-radius:2px; display:inline-block; }
+  .sw.core { border:1px solid var(--ink); }
+  .sw.pure { border:1px solid var(--accent); background:var(--accent-bg); }
+  .sw.out { border:1px dashed var(--ink-soft); }
+</style>
+
+<main>
+  <header>
+    <h1>Hub Interaction</h1>
+    <p class="lede">Project Astra · what the designer asked for, and what the code does today. Two independent readings — the requirements below are taken from the GDD, not from the code.</p>
+  </header>
+
+  <section>
+    <h2>Part 1 — Requirements, from the GDD</h2>
+    <p class="src">Source: <code>docs/hub/Gurukul_Hub_Programmer_GDD.docx</code> §4.3 Character Interaction, §4.4 Environmental Object Inspection, §4.5 Contextual Interaction Button, §4.6 Interaction Prompts, §6.4 Objective-Based Interaction Gating, §6.7 Building Entry and Exit.</p>
+
+    <h3>Reach — when is something interactable</h3>
+    <ol class="req">
+      <li>Within <b>one tile</b> of the target's foot position, <b>facing</b> it, with <b>no solid boundary between</b>.</li>
+      <li><b>No tile-centre alignment.</b> Visibly adjacent and facing must be enough; the region must tolerate normal sub-tile movement.</li>
+      <li>Approachable from <b>all four cardinal sides</b> unless the authored placement blocks one.</li>
+      <li>A large object may supply a <b>wider authored region</b>.</li>
+      <li>Never through walls, counters, bookcases, house exteriors or the river.</li>
+    </ol>
+
+    <h3>One button, one target</h3>
+    <ol class="req">
+      <li><b>One logical INTERACT</b> covers talk, inspect, enter, leave, report, answer a prompt, and depart.</li>
+      <li><b>Discrete</b>: holding must not re-trigger. Re-arms only after release.</li>
+      <li>Ignored unless the hub is in <b>free exploration</b>.</li>
+      <li>Exactly <b>one</b> target per press — never every overlapping one.</li>
+      <li><b>Priority ladder:</b> open UI or dialogue → character with a conversation → objective-critical object → building entry/exit → other inspectable.</li>
+      <li>Within a level: most <b>directly in front</b>, then <b>nearest</b>.</li>
+      <li>Design may supply an <b>explicit override</b> for a deliberately crowded staging.</li>
+      <li>Mashing while dialogue closes must not reopen it or hit a neighbour.</li>
+      <li>No valid target = <b>nothing happens</b>. No dialogue, no state change, no progress.</li>
+      <li>If the target becomes invalid between prompt and press, <b>cancel cleanly</b> and refresh.</li>
+    </ol>
+
+    <h3>The prompt</h3>
+    <ol class="req">
+      <li><b>At most one</b> prompt, only in free exploration, only while in reach and facing.</li>
+      <li>Lower-centre HUD, sized for 480×270; longer explanation belongs in dialogue.</li>
+      <li>Shows the <b>bound button glyph</b> plus a verb — Talk, Inspect, Enter, Leave, Report, Depart. Use the specific verb, not a generic one.</li>
+      <li><b>Hidden</b> during dialogue, choices, quizzes, events, fades, loading and battle transitions.</li>
+      <li>Refreshes on facing change, target move, objective change, gate opening, interactable state change, visit change.</li>
+      <li><b>Must not flicker</b> at the edge of a region, and must never survive its target being removed.</li>
+      <li>Changing input device re-glyphs it without changing interaction state.</li>
+    </ol>
+
+    <h3>What a press does</h3>
+    <ol class="req">
+      <li><b>Stop movement immediately</b> on an accepted interaction.</li>
+      <li><b>Face each other</b> — protagonist to character, character to protagonist — before portrait dialogue, unless the event stages it otherwise. Restore authored post-conversation facings after.</li>
+      <li>Open the conversation for that character's <b>current state</b> — first-time, repeat, mandatory, optional, group, topic menu or quiz.</li>
+      <li>A character with <b>no available conversation shows no Talk prompt</b> and never opens a blank box.</li>
+      <li>Inspection: non-portrait dialogue by default; different text per visit and after state changes; first-time and shorter repeat text.</li>
+      <li>Inspection must not award items, open inventory, or grant unrequested progression.</li>
+      <li>If an inspection changes state, update <b>visual, prompt, repeat text, objective contribution and collision</b> before control returns.</li>
+      <li>Repeat interaction must not duplicate objective credit or replay a one-time event.</li>
+    </ol>
+
+    <h3>Gates — a locked thing still answers</h3>
+    <ol class="req">
+      <li>Availability may depend on visit, active objective, completed objectives, completed conversations, quiz results, flags and interactable state.</li>
+      <li><b>Re-evaluate immediately</b> when any of those change — including while she is standing at the target.</li>
+      <li>A reachable gated target plays an <b>authored denial line</b> rather than failing silently, and returns to free exploration after.</li>
+      <li><b>An invisible wall is never the only explanation.</b> No internal flag names shown to the player.</li>
+      <li>Repeat denials must not advance objectives. Remove the denial the moment the gate opens.</li>
+    </ol>
+
+    <h3>Doors</h3>
+    <ol class="req">
+      <li>Enter on INTERACT when in reach, facing, and the door is accessible. Show <b>Enter</b>; show <b>Leave</b> at an interior exit.</li>
+      <li>Stop movement and suppress world input; hide the change behind a <b>~0.2s fade each way</b>.</li>
+      <li>Place her at the authored spawn, facing in, and apply interior character, interactable, marker and environment state <b>before the fade lifts</b>.</li>
+      <li>Exit returns to the <b>matching exterior door of the building actually entered</b> — never another student's.</li>
+      <li>The shared student-house interior <b>retains the exterior house identity</b> for name-board, cast, dialogue and interactables.</li>
+      <li><b>Require release</b> after a transition so one press cannot immediately reverse it.</li>
+      <li>No entry or exit while dialogue, choice, quiz, event or departure is active.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Part 2 — What the code does today</h2>
+    <figure>
+      <svg viewBox="0 0 1200 860" role="img" aria-label="One INTERACT press flows from HubInputRouter into HubInteractionDriver, which gathers candidates from the world and asks HubInteractionResolver to pick one. The chosen target either drives the prompt or, on a press, goes to HubVisitDirector, which routes a door to HubLocationTransition and anything else to DialogueService. A shut door plays a denial conversation instead. The room swap ends at HubLocationHost; a finished conversation reports to the objective runner and can raise a departure.">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker>
+          <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--flag)"/></marker>
+        </defs>
+
+        <g stroke="currentColor" fill="none" marker-end="url(#a)">
+          <line x1="600" y1="108" x2="600" y2="136"/>
+          <line x1="370" y1="181" x2="426" y2="181"/>
+          <line x1="830" y1="181" x2="774" y2="181"/>
+          <line x1="600" y1="222" x2="600" y2="296"/>
+          <path d="M430 250 L200 250 L200 316"/>
+          <path d="M600 382 L600 410 M370 410 L830 410 M370 410 L370 466"/>
+          <line x1="830" y1="410" x2="830" y2="466"/>
+          <line x1="370" y1="560" x2="370" y2="606"/>
+          <line x1="830" y1="560" x2="830" y2="606"/>
+          <line x1="830" y1="700" x2="830" y2="736"/>
+        </g>
+        <path d="M560 505 L636 505" stroke="var(--flag)" fill="none" marker-end="url(#af)"/>
+
+        <g text-anchor="middle">
+          <rect x="430" y="48" width="340" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="600" y="73" font-size="13.5" fill="currentColor">HubInputRouter</text>
+          <text x="600" y="92" font-size="10.5" fill="var(--ink-soft)">one press, behind InteractLatch</text>
+
+          <rect x="30" y="140" width="340" height="122" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="200" y="163" font-size="11" fill="var(--ink-soft)">CANDIDATES, EVERY FRAME</text>
+          <text x="200" y="188" font-size="11" fill="var(--ink-soft)">HubWorld.Actors — with a conversation</text>
+          <text x="200" y="209" font-size="11" fill="var(--ink-soft)">HubWorld.Interactables — present ones</text>
+          <text x="200" y="230" font-size="11" fill="var(--ink-soft)">CurrentLocation.Doors — shut ones too</text>
+          <text x="200" y="251" font-size="10" fill="var(--ink-soft)">rebuilt from scratch each frame</text>
+
+          <rect x="430" y="140" width="340" height="82" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="600" y="169" font-size="14.5" fill="currentColor">HubInteractionDriver</text>
+          <text x="600" y="190" font-size="10.5" fill="var(--ink-soft)">gathers, resolves, publishes</text>
+          <text x="600" y="209" font-size="10.5" fill="var(--ink-soft)">silent unless the gate accepts interaction</text>
+
+          <rect x="830" y="140" width="340" height="122" rx="3" fill="var(--accent-bg)" stroke="var(--accent)"/>
+          <text x="1000" y="164" font-size="13" fill="var(--accent)">HubInteractionResolver</text>
+          <text x="1000" y="185" font-size="10.5" fill="var(--accent)">a box in front, not a radius</text>
+          <text x="1000" y="204" font-size="10.5" fill="var(--accent)">reach 1.0 · lateral 0.6 · line of sight</text>
+          <text x="1000" y="223" font-size="10.5" fill="var(--accent)">Character &lt; Objective &lt; Door &lt; Inspectable</text>
+          <text x="1000" y="245" font-size="10" fill="var(--accent)">pure static · table-driven tests</text>
+
+          <rect x="30" y="320" width="340" height="110" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="200" y="345" font-size="13" fill="currentColor">the prompt</text>
+          <text x="200" y="366" font-size="10.5" fill="var(--ink-soft)">PromptHysteresis — anti-flicker</text>
+          <text x="200" y="386" font-size="10.5" fill="var(--ink-soft)">HubHUDController</text>
+          <text x="200" y="406" font-size="10.5" fill="var(--ink-soft)">InteractionPrompt Controller → View</text>
+
+          <rect x="430" y="300" width="340" height="82" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="600" y="330" font-size="14.5" fill="currentColor">HubVisitDirector</text>
+          <text x="600" y="351" font-size="10.5" fill="var(--ink-soft)">the only place a press becomes a consequence</text>
+          <text x="600" y="370" font-size="10.5" fill="var(--ink-soft)">door, or conversation</text>
+
+          <rect x="180" y="470" width="380" height="90" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="370" y="497" font-size="13" fill="currentColor">HubLocationTransition</text>
+          <text x="370" y="518" font-size="10.5" fill="var(--ink-soft)">gate lock · ScreenFader 0.2s</text>
+          <text x="370" y="538" font-size="10.5" fill="var(--ink-soft)">shut door never gets here</text>
+
+          <rect x="640" y="470" width="380" height="90" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="830" y="497" font-size="13" fill="currentColor">DialogueService</text>
+          <text x="830" y="518" font-size="10.5" fill="var(--ink-soft)">script id via DialogueScriptCatalog</text>
+          <text x="830" y="538" font-size="10.5" fill="var(--ink-soft)">also plays the denial line</text>
+
+          <rect x="180" y="610" width="380" height="90" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="370" y="637" font-size="13" fill="currentColor">HubLocationLoader → HubLocationHost</text>
+          <text x="370" y="658" font-size="10.5" fill="var(--ink-soft)">old room destroyed, new one built</text>
+          <text x="370" y="678" font-size="10.5" fill="var(--ink-soft)">cast and collision rebuilt with it</text>
+
+          <rect x="640" y="610" width="380" height="90" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="830" y="637" font-size="13" fill="currentColor">ObjectiveSequenceRunner</text>
+          <text x="830" y="658" font-size="10.5" fill="var(--ink-soft)">ConversationCompleted · ObjectInspected</text>
+          <text x="830" y="678" font-size="10.5" fill="var(--ink-soft)">on the callback, not on the press</text>
+
+          <rect x="640" y="740" width="380" height="80" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="830" y="768" font-size="12.5" fill="var(--ink-soft)">HubDepartureController</text>
+          <text x="830" y="790" font-size="10.5" fill="var(--ink-soft)">when a Signal node raises "depart"</text>
+        </g>
+
+        <g font-size="10.5" fill="currentColor">
+          <text x="608" y="128">InteractPressed</text>
+          <text x="378" y="174">candidates</text>
+          <text x="826" y="174" text-anchor="end">picks one</text>
+          <text x="190" y="284" text-anchor="end">target changed</text>
+          <text x="608" y="245">on a press</text>
+          <text x="200" y="444" text-anchor="middle">Door</text>
+          <text x="830" y="444" text-anchor="middle">Character · Interactable</text>
+          <text x="200" y="586" text-anchor="middle">behind the fade</text>
+          <text x="830" y="586" text-anchor="middle">when it ends</text>
+          <text x="830" y="726" text-anchor="middle">signal</text>
+        </g>
+        <text x="598" y="500" font-size="10.5" fill="var(--flag)" text-anchor="end">shut</text>
+      </svg>
+      <div class="legend">
+        <span><i class="sw core"></i> hub component</span>
+        <span><i class="sw pure"></i> pure logic, unit-tested</span>
+        <span><i class="sw out"></i> data source or downstream system</span>
+      </div>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Reading the two halves together</h2>
+    <div class="box">
+      <p><b>The spine is sound.</b> One press, one resolver, one director. Candidates are rebuilt every frame from live world state, so a character who relocates or an object that changes state is picked up without anything having to be told. The resolver is pure and tested, which is where the fiddly reach-and-facing arithmetic belongs.</p>
+      <p><b>The priority ladder is where code and GDD diverge.</b> The spec's first rung — an open UI or a running line of dialogue — is not in the resolver at all; it is handled earlier, by the driver going silent unless the control gate accepts interaction. That is a reasonable place for it, but it means the ladder in the code is four rungs where the document lists five, and nobody reading either one alone would notice.</p>
+      <p><b>Every consequence lands in one class.</b> <code>HubVisitDirector</code> is the only place a press turns into anything, which is the right shape — but it is also where the door, the gate check, the denial line, the conversation, the objective report and the departure flag all meet. Worth a closer look once the requirements above are agreed.</p>
+    </div>
+  </section>
+</main>
