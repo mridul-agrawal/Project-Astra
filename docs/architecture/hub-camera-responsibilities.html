@@ -1,0 +1,204 @@
+<title>Hub Camera Responsibilities</title>
+<style>
+  :root {
+    --ground: #ffffff; --panel: #f6f7f8; --ink: #17191d; --ink-soft: #565b63;
+    --rule: #d6d9dd; --rule-strong: #9aa0a8; --code-bg: #eef0f2;
+    --accent: #1a5aa8; --accent-bg: #e8f0fc;
+    --good: #1d6b45; --good-bg: #e6f4ec;
+    --flag: #a3312f; --flag-bg: #fbeceb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #14161a; --panel: #1c1f24; --ink: #e6e8ec; --ink-soft: #a2a8b2;
+      --rule: #333840; --rule-strong: #5a626d; --code-bg: #23272e;
+      --accent: #79b0ee; --accent-bg: #1b2b3f;
+      --good: #6cc394; --good-bg: #1b2f24; --flag: #ef8f8f; --flag-bg: #382322;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #14161a; --panel: #1c1f24; --ink: #e6e8ec; --ink-soft: #a2a8b2;
+    --rule: #333840; --rule-strong: #5a626d; --code-bg: #23272e;
+    --accent: #79b0ee; --accent-bg: #1b2b3f;
+    --good: #6cc394; --good-bg: #1b2f24; --flag: #ef8f8f; --flag-bg: #382322;
+  }
+  body {
+    background: var(--ground); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px; line-height: 1.5; margin: 0; padding: 32px 24px 80px;
+  }
+  main { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 0 0 14px; color: var(--ink-soft);
+       text-transform: uppercase; letter-spacing: 0.08em; }
+  .lede { color: var(--ink-soft); margin: 0; font-size: 15px; }
+  p { max-width: 70ch; }
+  code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9em;
+         background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+  figure { margin: 0; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 600; border-bottom: 1px solid var(--rule-strong); }
+  td.n { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-soft); text-align: right; }
+  td.v { white-space: nowrap; font-weight: 600; }
+  tr.stay td.v { color: var(--good); }
+  tr.move td.v { color: var(--accent); }
+  tr.out td.v { color: var(--flag); }
+  .verdict { background: var(--good-bg); border: 1px solid var(--good); border-radius: 4px; padding: 14px 18px; }
+  .verdict p { margin: 0; max-width: none; }
+  .verdict p + p { margin-top: 10px; }
+  .prop { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 18px; }
+  .prop p { margin: 0; max-width: none; }
+  .prop p + p { margin-top: 10px; }
+  ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+  ol li { max-width: 72ch; }
+</style>
+
+<main>
+  <header>
+    <h1>Hub Camera Responsibilities</h1>
+    <p class="lede">Project Astra · <code>HubCameraController</code>, 94 lines. What it does each frame, and whether any of it belongs elsewhere.</p>
+  </header>
+
+  <section>
+    <h2>What it does, once per LateUpdate</h2>
+    <figure>
+      <svg viewBox="0 0 1000 420" role="img" aria-label="Each frame the controller takes the target transform, adds a height offset, contains the point within the current room using the viewport size and room bounds, rounds it to a whole pixel, and writes the camera transform. It also publishes its centre and view size to the marker manager.">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+          </marker>
+          <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/>
+          </marker>
+        </defs>
+
+        <text x="500" y="30" font-size="12" font-weight="600" text-anchor="middle" fill="var(--ink-soft)" letter-spacing="1">EVERY FRAME</text>
+
+        <!-- pipeline arrows -->
+        <g stroke="currentColor" fill="none" marker-end="url(#a)">
+          <line x1="190" y1="210" x2="226" y2="210"/>
+          <line x1="380" y1="210" x2="416" y2="210"/>
+          <line x1="590" y1="210" x2="626" y2="210"/>
+          <line x1="780" y1="210" x2="816" y2="210"/>
+          <line x1="115" y1="130" x2="115" y2="176"/>
+          <line x1="505" y1="130" x2="505" y2="176"/>
+          <line x1="505" y1="290" x2="505" y2="244"/>
+          <line x1="895" y1="240" x2="895" y2="296"/>
+        </g>
+
+        <g text-anchor="middle">
+          <!-- sources -->
+          <rect x="20" y="80" width="190" height="50" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="115" y="101" font-size="11.5" fill="var(--ink-soft)">Bootstrapper /</text>
+          <text x="115" y="118" font-size="11.5" fill="var(--ink-soft)">EventRunner</text>
+
+          <rect x="420" y="80" width="170" height="50" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-dasharray="5 3"/>
+          <text x="505" y="101" font-size="11.5" fill="var(--accent)">PixelPerfectCamera</text>
+          <text x="505" y="118" font-size="10" fill="var(--accent)">read once, in Awake</text>
+
+          <rect x="420" y="290" width="170" height="50" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="505" y="311" font-size="11.5" fill="var(--ink-soft)">GurukulLocation</text>
+          <text x="505" y="328" font-size="11.5" fill="var(--ink-soft)">Service.Bounds</text>
+
+          <rect x="790" y="300" width="180" height="50" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="5 3"/>
+          <text x="880" y="321" font-size="11.5" fill="var(--ink-soft)">GurukulMarker</text>
+          <text x="880" y="338" font-size="11.5" fill="var(--ink-soft)">Manager</text>
+
+          <!-- the pipeline -->
+          <rect x="40" y="180" width="150" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="115" y="205" font-size="12" fill="currentColor">target</text>
+          <text x="115" y="222" font-size="12" fill="currentColor">Transform</text>
+
+          <rect x="230" y="180" width="150" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="305" y="205" font-size="12" fill="currentColor">+ height</text>
+          <text x="305" y="222" font-size="12" fill="currentColor">offset</text>
+
+          <rect x="420" y="180" width="170" height="60" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="505" y="205" font-size="12" fill="currentColor">contain within</text>
+          <text x="505" y="222" font-size="12" fill="currentColor">the room</text>
+
+          <rect x="630" y="180" width="150" height="60" rx="3" fill="var(--ground)" stroke="currentColor"/>
+          <text x="705" y="205" font-size="12" fill="currentColor">round to</text>
+          <text x="705" y="222" font-size="12" fill="currentColor">whole pixel</text>
+
+          <rect x="820" y="180" width="150" height="60" rx="3" fill="var(--ground)" stroke="currentColor" stroke-width="1.8"/>
+          <text x="895" y="205" font-size="12" fill="currentColor">camera</text>
+          <text x="895" y="222" font-size="12" fill="currentColor">transform</text>
+        </g>
+
+        <g font-size="10.5">
+          <text x="122" y="161" fill="var(--ink-soft)">Follow(target)</text>
+          <text x="513" y="161" fill="var(--accent)">refRes / PPU</text>
+          <text x="513" y="273" fill="var(--ink-soft)">Rect bounds</text>
+          <text x="970" y="273" text-anchor="end" fill="var(--ink-soft)">Centre · ViewSizeTiles</text>
+        </g>
+
+        <text x="500" y="394" font-size="11.5" text-anchor="middle" fill="var(--ink-soft)">One job: decide where the camera goes this frame. Five steps, none of which can run without the one before it.</text>
+      </svg>
+    </figure>
+  </section>
+
+  <section>
+    <h2>The six responsibilities, weighed</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Responsibility</th><th class="n">Lines</th><th>Assessment</th><th class="v">Verdict</th></tr></thead>
+        <tbody>
+          <tr class="move">
+            <td>Measure the viewport from <code>PixelPerfectCamera</code></td><td class="n">12</td>
+            <td>Not a follow concern at all, and <code>CameraController</code> computes the same <code>refResolution / assetsPPU</code> in its own words. <code>MapCamera</code> already <em>owns</em> these numbers — it is the thing that sets them.</td>
+            <td class="v">move out</td>
+          </tr>
+          <tr class="stay">
+            <td>Offset the target</td><td class="n">2</td>
+            <td>Raises the camera off her feet so she sits centred. One line of arithmetic.</td>
+            <td class="v">stays</td>
+          </tr>
+          <tr class="move">
+            <td>Contain the point within the room</td><td class="n">14</td>
+            <td>Pure arithmetic with a real edge case — a room narrower than the view is centred rather than clamped, or the minimum would exceed the maximum. Currently untested, and untestable without a Canvas.</td>
+            <td class="v">extract</td>
+          </tr>
+          <tr class="stay">
+            <td>Round to a whole pixel</td><td class="n">2</td>
+            <td>One expression, and inseparable from the containment that precedes it — the comment on it explains it must happen <em>after</em> clamping so the room edge lands on a pixel too.</td>
+            <td class="v">stays</td>
+          </tr>
+          <tr class="stay">
+            <td>Publish <code>Centre</code> and <code>ViewSizeTiles</code></td><td class="n">2</td>
+            <td>Two properties the marker manager reads to point at off-screen things. A query on state it already holds, not a separate job.</td>
+            <td class="v">stays</td>
+          </tr>
+          <tr class="out">
+            <td>Retarget via <code>Follow</code></td><td class="n">1</td>
+            <td>The setter is right. What is missing is anyone restoring it — see below. That gap belongs to the caller, not here.</td>
+            <td class="v">fix elsewhere</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>The answer: no sub-controllers</h2>
+    <div class="verdict">
+      <p><b>These are not several high-level responsibilities. They are five steps of one.</b> Read the diagram left to right: no step means anything without the one before it, and nothing branches. A class that hands this pipeline to three collaborators to produce one <code>Vector3</code> would be harder to follow than the 94 lines are.</p>
+      <p>Splitting here would be the same mistake as the dialogue system, pointed the other way — that one built parallel systems where one belonged; this would shatter one coherent job into parts that have no independent meaning.</p>
+      <p><b>Two things do belong elsewhere, and neither is a sub-controller.</b> One is a fact that lives with its owner; one is arithmetic that wants a test. Both make the controller <em>smaller</em>, not more distributed.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What I would actually change</h2>
+    <div class="prop">
+      <ol>
+        <li><b>Move viewport measurement to <code>MapCamera</code>.</b> It sets <code>refResolutionX</code>, <code>refResolutionY</code> and <code>assetsPPU</code>, so it should answer <code>ViewSizeTiles</code> and <code>PixelsPerUnit</code>. Both cameras then ask the same object instead of each re-deriving it, which removes the only duplicated code between them and deletes the hub controller's three fallback constants and its <code>Awake</code>.</li>
+        <li><b>Extract the containment arithmetic as a pure static</b> — the shape the hub already uses for <code>EdgeIndicatorSolver</code>, <code>CardinalRouteFollower</code> and <code>DepartureGate</code>. It buys tests for the room-smaller-than-view case, which has none today while <code>CameraController</code> has a test fixture.</li>
+        <li><b>Fix the focus asymmetry in <code>GurukulEventRunner</code>, not here.</b> An event that calls <code>FocusCamera</code> retargets the camera and nothing restores it, so the player walks off screen after the event ends. The runner should remember the target and put it back when the sequence finishes, exactly as it already returns the game state to <code>HubExploration</code>.</li>
+      </ol>
+      <p>After 1 and 2 the controller is roughly 55 lines and does exactly what its name says.</p>
+    </div>
+  </section>
+</main>
