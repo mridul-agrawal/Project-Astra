@@ -3,6 +3,8 @@ using TMPro;
 using UnityEngine;
 using ProjectAstra.Core.UI.Hub.Marker;
 
+using ProjectAstra.Core.Hub.Interaction;
+
 namespace ProjectAstra.Core.Hub
 {
     // Points at everything the active objective still needs.
@@ -27,7 +29,6 @@ namespace ProjectAstra.Core.Hub
         private const float CanvasScale = 0.018f;
         private const float EdgeInsetCanvasPixels = 48f;
 
-        [SerializeField] private HubInputRouter router;
         [SerializeField] private HubCameraController cameraRig;
         [SerializeField] private EdgeIndicatorView edgeIndicators;
         [SerializeField] private Color markerColor = new(1f, 0.85f, 0.3f, 1f);
@@ -38,7 +39,6 @@ namespace ProjectAstra.Core.Hub
 
         private void Awake()
         {
-            if (router == null) router = FindFirstObjectByType<HubInputRouter>();
             if (cameraRig == null) cameraRig = FindFirstObjectByType<HubCameraController>();
         }
 
@@ -62,7 +62,7 @@ namespace ProjectAstra.Core.Hub
         // the screen clear, and a marker must never draw over a dialogue box.
         private HubObjectiveData ActiveObjectiveWhileExploring()
         {
-            if (router != null && !router.Gate.AcceptsMovement) return null;
+            if (HubControlGate.Instance != null && !HubControlGate.Instance.AcceptsMovement) return null;
             return HubProgressService.Instance?.Objectives?.ActiveObjective;
         }
 
@@ -120,8 +120,8 @@ namespace ProjectAstra.Core.Hub
             HubActor actor = HubWorld.FindActor(targetId);
             if (actor != null) return actor.transform;
 
-            HubInteractable interactable = HubWorld.FindInteractable(targetId);
-            return interactable != null ? interactable.transform : null;
+            InspectableInteractable inspectable = HubWorld.FindInspectable(targetId);
+            return inspectable != null ? inspectable.transform : null;
         }
 
         // A world-space canvas on the overlay layer, built the way WorldMarker builds the battle

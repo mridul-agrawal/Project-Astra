@@ -9,7 +9,6 @@ namespace ProjectAstra.Core.Hub.Events
     [DefaultExecutionOrder(45)]
     public sealed class HubAreaTriggerWatcher : MonoBehaviour
     {
-        [SerializeField] private HubInputRouter router;
         [SerializeField] private HubEventRunner events;
         [SerializeField] private HubEventDatabase eventDatabase;
         [SerializeField] private HubLocationLoader loader;
@@ -30,7 +29,7 @@ namespace ProjectAstra.Core.Hub.Events
 
         private bool CanTrigger() =>
             eventDatabase != null && loader != null && loader.Player != null &&
-            router != null && router.Gate.AcceptsMovement && !events.IsRunning;
+            HubControlGate.Instance != null && HubControlGate.Instance.AcceptsMovement && !events.IsRunning;
 
         private static bool IsWaitingHere(HubEventData authored, string room, Vector2 position) =>
             authored != null &&

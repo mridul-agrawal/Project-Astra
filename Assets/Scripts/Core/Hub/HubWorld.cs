@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Who and what is currently standing in the loaded room. Actors and interactables put
-    // themselves on here as they appear, so the interaction check reads two small lists each frame
-    // instead of sweeping the scene.
+    // Who and what is currently standing in the loaded room, by id — so an objective marker can
+    // be hung on "the blackboard" without anything having to know where the blackboard is.
     public static class HubWorld
     {
         private static readonly List<HubActor> actors = new();
-        private static readonly List<HubInteractable> interactables = new();
+        private static readonly List<InspectableInteractable> inspectables = new();
 
         // "Enter Play Mode" with domain reload off keeps statics between sessions, which would
         // otherwise leave the last run's destroyed actors on the list.
@@ -17,11 +17,10 @@ namespace ProjectAstra.Core.Hub
         private static void ResetStatics()
         {
             actors.Clear();
-            interactables.Clear();
+            inspectables.Clear();
         }
 
         public static IReadOnlyList<HubActor> Actors => actors;
-        public static IReadOnlyList<HubInteractable> Interactables => interactables;
 
         public static void Register(HubActor actor)
         {
@@ -30,12 +29,12 @@ namespace ProjectAstra.Core.Hub
 
         public static void Unregister(HubActor actor) => actors.Remove(actor);
 
-        public static void Register(HubInteractable interactable)
+        public static void Register(InspectableInteractable inspectable)
         {
-            if (interactable != null && !interactables.Contains(interactable)) interactables.Add(interactable);
+            if (inspectable != null && !inspectables.Contains(inspectable)) inspectables.Add(inspectable);
         }
 
-        public static void Unregister(HubInteractable interactable) => interactables.Remove(interactable);
+        public static void Unregister(InspectableInteractable inspectable) => inspectables.Remove(inspectable);
 
         public static HubActor FindActor(string characterId)
         {
@@ -44,10 +43,10 @@ namespace ProjectAstra.Core.Hub
             return null;
         }
 
-        public static HubInteractable FindInteractable(string interactableId)
+        public static InspectableInteractable FindInspectable(string interactableId)
         {
-            foreach (HubInteractable interactable in interactables)
-                if (interactable != null && interactable.InteractableId == interactableId) return interactable;
+            foreach (InspectableInteractable inspectable in inspectables)
+                if (inspectable != null && inspectable.InteractableId == interactableId) return inspectable;
             return null;
         }
 
@@ -55,7 +54,7 @@ namespace ProjectAstra.Core.Hub
         public static void Clear()
         {
             actors.Clear();
-            interactables.Clear();
+            inspectables.Clear();
         }
     }
 }

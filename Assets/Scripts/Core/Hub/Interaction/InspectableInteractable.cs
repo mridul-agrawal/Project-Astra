@@ -31,6 +31,16 @@ namespace ProjectAstra.Core.Hub.Interaction
 
         public string InteractableId => interactableId;
 
+        // Listed by id as well as by trigger, so an objective marker can find this without knowing
+        // where in the room it stands.
+        private void OnEnable() => HubWorld.Register(this);
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            HubWorld.Unregister(this);
+        }
+
         public override HubVerb Verb => verb;
 
         public override InteractionPriority Priority =>

@@ -31,8 +31,8 @@ namespace ProjectAstra.Core.Editor
 
             HubCameraController cameraRig = CreateCamera();
             HubLocationHost host = CreateLocationHost();
-            HubInteractionDriver driver = CreateHubRoot(host, cameraRig);
-            WireHud(driver);
+            CreateHubRoot(host, cameraRig);
+            WireHud();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             HubSetupTool.RunSetup();
@@ -68,31 +68,27 @@ namespace ProjectAstra.Core.Editor
             return go.AddComponent<HubLocationHost>();
         }
 
-        private static HubInteractionDriver CreateHubRoot(HubLocationHost host, HubCameraController cameraRig)
+        private static void CreateHubRoot(HubLocationHost host, HubCameraController cameraRig)
         {
             var go = new GameObject("Hub");
-            var router = go.AddComponent<HubInputRouter>();
-            var driver = go.AddComponent<HubInteractionDriver>();
-            var director = go.AddComponent<HubVisitDirector>();
             var loader = go.AddComponent<HubLocationLoader>();
             var transition = go.AddComponent<HubLocationTransition>();
             var markers = go.AddComponent<HubMarkerManager>();
             var events = go.AddComponent<HubEventRunner>();
             var areaTriggers = go.AddComponent<HubAreaTriggerWatcher>();
             var departures = go.AddComponent<HubDepartureController>();
+            go.AddComponent<HubProgressionListener>();
             var bootstrapper = go.AddComponent<HubBootstrapper>();
 
             var cast = new GameObject("Cast").transform;
             var playerRoot = new GameObject("Player").transform;
 
             WireLoader(loader, host, cast);
-            WireTransition(transition, router, loader);
-            WireBootstrapper(bootstrapper, loader, cameraRig, router, driver, playerRoot);
-            WireDeparture(departures, router);
-            WireMarkers(markers, router, cameraRig);
-            WireDirector(director, driver, transition, events, departures);
-            WireEvents(events, areaTriggers, router, cameraRig, loader);
-            return driver;
+            WireTransition(transition, loader);
+            WireBootstrapper(bootstrapper, loader, cameraRig, playerRoot);
+            WireDeparture(departures, events);
+            WireMarkers(markers, cameraRig);
+            WireEvents(events, areaTriggers, cameraRig, loader);
         }
 
         private static void WireLoader(HubLocationLoader loader, HubLocationHost host, Transform cast)
@@ -105,90 +101,66 @@ namespace ProjectAstra.Core.Editor
             serialized.ApplyModifiedProperties();
         }
 
-        private static void WireTransition(HubLocationTransition transition, HubInputRouter router,
-            HubLocationLoader loader)
+        private static void WireTransition(HubLocationTransition transition, HubLocationLoader loader)
         {
             var serialized = new SerializedObject(transition);
-            serialized.FindProperty("router").objectReferenceValue = router;
             serialized.FindProperty("loader").objectReferenceValue = loader;
             serialized.ApplyModifiedProperties();
         }
 
         private static void WireBootstrapper(HubBootstrapper bootstrapper, HubLocationLoader loader,
-            HubCameraController cameraRig, HubInputRouter router, HubInteractionDriver driver, Transform playerRoot)
+            HubCameraController cameraRig, Transform playerRoot)
         {
             var serialized = new SerializedObject(bootstrapper);
             serialized.FindProperty("loader").objectReferenceValue = loader;
             serialized.FindProperty("cameraRig").objectReferenceValue = cameraRig;
-            serialized.FindProperty("router").objectReferenceValue = router;
-            serialized.FindProperty("interactionDriver").objectReferenceValue = driver;
             serialized.FindProperty("playerRoot").objectReferenceValue = playerRoot;
             serialized.FindProperty("events").objectReferenceValue = Object.FindFirstObjectByType<HubEventRunner>();
-            serialized.FindProperty("director").objectReferenceValue = Object.FindFirstObjectByType<HubVisitDirector>();
+            serialized.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
             serialized.FindProperty("fallbackVisit").objectReferenceValue = FindAsset<HubVisitData>();
             serialized.ApplyModifiedProperties();
         }
 
-        private static void WireDirector(HubVisitDirector director, HubInteractionDriver driver,
-            HubLocationTransition transitions,
-            HubEventRunner events, HubDepartureController departures)
-        {
-            var serialized = new SerializedObject(director);
-            serialized.FindProperty("interactionDriver").objectReferenceValue = driver;
-            serialized.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
-            serialized.FindProperty("transitions").objectReferenceValue = transitions;
-            serialized.FindProperty("events").objectReferenceValue = events;
-            serialized.FindProperty("departures").objectReferenceValue = departures;
-            serialized.ApplyModifiedProperties();
-        }
-
-        private static void WireDeparture(HubDepartureController departures, HubInputRouter router)
+        private static void WireDeparture(HubDepartureController departures, HubEventRunner events)
         {
             var serialized = new SerializedObject(departures);
-            serialized.FindProperty("router").objectReferenceValue = router;
+            serialized.FindProperty("events").objectReferenceValue = events;
             serialized.ApplyModifiedProperties();
         }
 
         private static void WireEvents(HubEventRunner events, HubAreaTriggerWatcher areaTriggers,
-            HubInputRouter router, HubCameraController cameraRig,
-            HubLocationLoader loader)
+            HubCameraController cameraRig, HubLocationLoader loader)
         {
             var eventDatabase = FindAsset<HubEventDatabase>();
 
             var runner = new SerializedObject(events);
-            runner.FindProperty("router").objectReferenceValue = router;
             runner.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
             runner.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             runner.FindProperty("cameraRig").objectReferenceValue = cameraRig;
             runner.ApplyModifiedProperties();
 
             var watcher = new SerializedObject(areaTriggers);
-            watcher.FindProperty("router").objectReferenceValue = router;
             watcher.FindProperty("events").objectReferenceValue = events;
             watcher.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             watcher.FindProperty("loader").objectReferenceValue = loader;
             watcher.ApplyModifiedProperties();
         }
 
-        private static void WireMarkers(HubMarkerManager markers, HubInputRouter router,
-            HubCameraController cameraRig)
+        private static void WireMarkers(HubMarkerManager markers, HubCameraController cameraRig)
         {
             var serialized = new SerializedObject(markers);
-            serialized.FindProperty("router").objectReferenceValue = router;
             serialized.FindProperty("cameraRig").objectReferenceValue = cameraRig;
             serialized.ApplyModifiedProperties();
         }
 
-        private static void WireHud(HubInteractionDriver driver)
+        private static void WireHud()
         {
             HubHUDController hud = HubHudBuilder.Build(out ChoiceMenuView choiceMenu,
                 out EdgeIndicatorView edgeIndicators);
 
             var serialized = new SerializedObject(hud);
-            serialized.FindProperty("interactionDriver").objectReferenceValue = driver;
-            serialized.FindProperty("router").objectReferenceValue = Object.FindFirstObjectByType<HubInputRouter>();
+            serialized.FindProperty("player").objectReferenceValue = null;
             serialized.ApplyModifiedProperties();
-
 
             var markers = Object.FindFirstObjectByType<HubMarkerManager>();
             var markerSerialized = new SerializedObject(markers);

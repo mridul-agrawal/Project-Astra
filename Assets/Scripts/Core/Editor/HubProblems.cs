@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -223,8 +224,8 @@ namespace ProjectAstra.Core.Editor
 
         private static bool SceneDeclaresInteractable(string interactableId)
         {
-            foreach (HubInteractable candidate in
-                     Resources.FindObjectsOfTypeAll<HubInteractable>())
+            foreach (InspectableInteractable candidate in
+                     Resources.FindObjectsOfTypeAll<InspectableInteractable>())
                 if (candidate.InteractableId == interactableId) return true;
             return false;
         }

@@ -12,6 +12,14 @@ namespace ProjectAstra.Core.Hub
     // each is a handover in flight, so each is a lock that is held while it runs.
     public class HubControlGate
     {
+        // Read anywhere via HubControlGate.Instance, the same shape as HubLocationService — half
+        // the hub asks this question and none of it should need a wire to whoever holds the lock.
+        public static HubControlGate Instance { get; private set; }
+
+        // The single set-point. HubBootstrapper calls it as a visit opens, so a new visit never
+        // inherits a lock the last one was still holding.
+        public static void Begin() => Instance = new HubControlGate();
+
         private int handoversInFlight;
 
         // Fires when the last handover finishes, so a button still held from before it started

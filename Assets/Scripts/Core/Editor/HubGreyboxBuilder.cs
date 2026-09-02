@@ -185,30 +185,13 @@ namespace ProjectAstra.Core.Editor
         }
 
         // The tree doubles as something to walk up to, so the prompt has a target without needing
-        // any more placeholder art. Its sprite has a bottom-left pivot, so the foot offset moves the
-        // interaction point to the middle of its base.
+        // any more placeholder art. Its trigger is the region she has to be standing in.
         private static void MakeTreeInspectable(GameObject treeGo)
-        {
-            var interactable = treeGo.AddComponent<HubInteractable>();
-            var serialized = new SerializedObject(interactable);
-            serialized.FindProperty("interactableId").stringValue = "greybox_tree";
-            serialized.FindProperty("kind").enumValueIndex = (int)HubTargetKind.Inspectable;
-            serialized.FindProperty("verb").enumValueIndex = (int)HubVerb.Inspect;
-            serialized.FindProperty("footOffset").vector2Value = TreeFootOffset;
-            serialized.FindProperty("conversationId").stringValue = "greybox_tree_look";
-            serialized.ApplyModifiedProperties();
-
-            AddTreeReachRegion(treeGo);
-        }
-
-        // The same tree on the new interaction path, which asks the tree itself rather than a
-        // central sweep. Its trigger is the region she has to be standing in.
-        private static void AddTreeReachRegion(GameObject treeGo)
         {
             InteractionPhysics.AttachReachRegion(treeGo, TreeFootOffset);
 
-            var reachable = treeGo.AddComponent<InspectableInteractable>();
-            reachable.Configure("greybox_tree", HubVerb.Inspect, TreeFootOffset, "greybox_tree_look",
+            treeGo.AddComponent<InspectableInteractable>().Configure(
+                "greybox_tree", HubVerb.Inspect, TreeFootOffset, "greybox_tree_look",
                 gate: null, denied: null, critical: false, HubInteractableState.Available);
         }
 

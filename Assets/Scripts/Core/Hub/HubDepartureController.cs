@@ -1,5 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Flow;
+using ProjectAstra.Core.Hub.Events;
+using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Hub
@@ -19,9 +21,39 @@ namespace ProjectAstra.Core.Hub
         // The flag a confirmation conversation raises on its "leave" branch.
         public const string DepartFlag = "depart";
 
-        [SerializeField] private HubInputRouter router;
+        [SerializeField] private HubEventRunner events;
 
         public bool HasDeparted { get; private set; }
+
+        private void Awake()
+        {
+            if (events == null) events = FindFirstObjectByType<HubEventRunner>();
+        }
+
+        // Both roads in. A scripted sequence asks outright; a confirmation conversation raises the
+        // flag on its "leave" branch, and this is the thing that knows what that flag means.
+        private void OnEnable()
+        {
+            InteractionEvents.FlagRaised += OnFlagRaised;
+            if (events == null) return;
+            events.FlagRaised += OnFlagRaised;
+            events.DepartureRequested += OnDepartureRequested;
+        }
+
+        private void OnDisable()
+        {
+            InteractionEvents.FlagRaised -= OnFlagRaised;
+            if (events == null) return;
+            events.FlagRaised -= OnFlagRaised;
+            events.DepartureRequested -= OnDepartureRequested;
+        }
+
+        private void OnDepartureRequested(string _) => TryDepart();
+
+        private void OnFlagRaised(string flagId)
+        {
+            if (flagId == DepartFlag) TryDepart();
+        }
 
         public bool TryDepart()
         {
@@ -45,14 +77,14 @@ namespace ProjectAstra.Core.Hub
         // load leaves her standing in the hub rather than nowhere.
         private bool Commit(HubProgressService progress)
         {
-            if (!router.Gate.TryBeginHandover()) return false;
+            if (!HubControlGate.Instance.TryBeginHandover()) return false;
 
             GameFlow.Instance.NotifyHubVisitFinished();
 
             if (GameStateManager.Instance.CurrentState == GameState.HubExploration)
             {
                 Debug.LogError($"[HubDeparture] Asked for '{progress.DestinationMapId}' but the game is still in the hub.");
-                router.Gate.EndHandover();
+                HubControlGate.Instance.EndHandover();
                 return false;
             }
 

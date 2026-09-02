@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 7788579774730174508}
   - component: {fileID: 670588007919255950}
   - component: {fileID: 6531361963661160577}
-  - component: {fileID: 1474395963718476358}
   - component: {fileID: 1570984476608417528}
   - component: {fileID: 4843270374123578212}
   m_Layer: 0
@@ -142,26 +141,6 @@ MonoBehaviour:
   sortingLayer: Object
   updatesEveryFrame: 1
   baselineOffset: 0
---- !u!114 &1474395963718476358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5263362175385464733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b195d8bd6c3c564699b9d1d3f6fb977, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulInteractable
-  interactableId: greybox_tree
-  kind: 3
-  verb: 1
-  footOffset: {x: 0.5, y: 0}
-  conversationId: greybox_tree_look
-  requiredGate: 
-  deniedConversationId: 
-  defaultState: 1
 --- !u!58 &1570984476608417528
 CircleCollider2D:
   m_ObjectHideFlags: 0

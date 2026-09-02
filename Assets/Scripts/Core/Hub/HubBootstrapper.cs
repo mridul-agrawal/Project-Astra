@@ -8,7 +8,7 @@ namespace ProjectAstra.Core.Hub
 {
     // Brings up the visit the campaign is on: loads its progression, builds its opening room, and
     // puts the cast where the visit says they stand. Runs early so everything exists before the
-    // camera and the input router look for it.
+    // camera and the HUD look for it.
     //
     // Same shape as MapBootstrapper, including the fallback for pressing Play straight into this
     // scene. The room itself is built by HubLocationLoader, which every doorway uses too, so
@@ -19,10 +19,7 @@ namespace ProjectAstra.Core.Hub
         [Header("Scene")]
         [SerializeField] private HubLocationLoader loader;
         [SerializeField] private HubCameraController cameraRig;
-        [SerializeField] private HubInputRouter router;
-        [SerializeField] private HubInteractionDriver interactionDriver;
         [SerializeField] private HubEventRunner events;
-        [SerializeField] private HubVisitDirector director;
         [SerializeField] private Transform playerRoot;
 
         [Header("Data")]
@@ -38,6 +35,7 @@ namespace ProjectAstra.Core.Hub
         private void Start()
         {
             HubWorld.Clear();
+            HubControlGate.Begin();
             HubInteractionCatalog.Bind(scriptCatalog);
 
             HubVisitData visit = ResolveVisit();
@@ -69,13 +67,10 @@ namespace ProjectAstra.Core.Hub
 
             player.gameObject.AddComponent<HubPlayerController>();
             if (cameraRig != null) cameraRig.Follow(player.transform);
-            if (interactionDriver != null) interactionDriver.Bind(router, player);
 
             if (!loader.Load(visit.StartLocationId, visit.PlayerSpawn, visit.PlayerFacing, houseIdentity: null)) return;
 
             events.BindToVisit();
-            if (director != null) director.BindVisitMemory(HubProgressService.Instance.State);
-            HubProgressService.Instance.Objectives.EventRequested += director.PlayEvent;
             HubProgressService.Instance.Objectives.Begin();
 
             // Runs before she is given control, so a visit can open mid-scene rather than on a

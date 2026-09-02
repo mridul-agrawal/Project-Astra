@@ -9,15 +9,15 @@ namespace ProjectAstra.Core.Hub
 {
     // Walks the protagonist and works out what a press in front of her would act on.
     //
-    // Runs after HubInputRouter, which resolves the direction earlier in the frame.
+    // Polling rather than subscribing sidesteps DelayedAutoShift: its 0.4s-then-0.1s cadence is
+    // grid-cursor feel, and walking needs the raw held state.
     [RequireComponent(typeof(HubActor))]
     public sealed class HubPlayerController : MonoBehaviour
     {
-        [SerializeField] private HubInputRouter router;
-
         [Tooltip("Tiles per second. 3.5 is 112 px/s at 32px tiles — a designer-tunable feel value.")]
         [SerializeField] private float speedTilesPerSecond = HubMover.DefaultSpeedTilesPerSecond;
 
+        private readonly CardinalInputResolver directions = new();
         private HubActor actor;
 
         // True while she is actually changing position, so the interaction layer can stop her
@@ -31,8 +31,7 @@ namespace ProjectAstra.Core.Hub
         private void Awake()
         {
             actor = GetComponent<HubActor>();
-            if (router == null) router = FindFirstObjectByType<HubInputRouter>();
-            if (router != null) router.Gate.HandoverEnded += Interaction.SuppressCurrentPress;
+            if (Gate != null) Gate.HandoverEnded += Interaction.SuppressCurrentPress;
         }
 
         private void OnEnable() => EventService.Instance?.SubscribeGameStateChanged(OnGameStateChanged);
@@ -41,18 +40,23 @@ namespace ProjectAstra.Core.Hub
 
         private void OnDestroy()
         {
-            if (router != null) router.Gate.HandoverEnded -= Interaction.SuppressCurrentPress;
+            if (Gate != null) Gate.HandoverEnded -= Interaction.SuppressCurrentPress;
         }
 
         private void Update()
         {
-            if (router == null || HubLocationService.Instance == null) return;
+            if (HubLocationService.Instance == null) return;
 
-            Walk(router.MoveIntent);
+            // Resolved every frame even while control is locked, so a direction held across a
+            // conversation keeps walking the moment control comes back.
+            Facing? walking = ResolveHeldDirection();
+            bool inControl = Gate == null || Gate.AcceptsMovement;
+
+            Walk(inControl ? walking : null);
 
             // After the walk, so the reach check uses where she ended up this frame rather than
             // where she started it.
-            Interaction.Enabled = router.Gate.AcceptsWorldInteraction;
+            Interaction.Enabled = inControl;
             Interaction.Tick(new InteractorPose(actor.Position, actor.Facing), IsConfirmHeld);
         }
 
@@ -69,13 +73,30 @@ namespace ProjectAstra.Core.Hub
             if (moved) actor.SetPosition(next);
         }
 
-        // Read raw rather than taking the router's edge, because the press latch that turns it into
-        // one interaction lives on the interaction controller and is what suppression re-arms.
-        private static bool IsConfirmHeld =>
-            InputManager.Instance != null && InputManager.Instance.IsActionHeld(GameInputAction.Confirm);
+        private static HubControlGate Gate => HubControlGate.Instance;
+
+        private Facing? ResolveHeldDirection() => directions.Resolve(
+            IsHeld(GameInputAction.CursorUp),
+            IsHeld(GameInputAction.CursorDown),
+            IsHeld(GameInputAction.CursorRight),
+            IsHeld(GameInputAction.CursorLeft));
+
+        // Read raw rather than edge-detected here, because the press latch that turns it into one
+        // interaction lives on the interaction controller and is what suppression re-arms.
+        private static bool IsConfirmHeld => IsHeld(GameInputAction.Confirm);
+
+        private static bool IsHeld(GameInputAction action) =>
+            InputManager.Instance != null && InputManager.Instance.IsActionHeld(action);
 
         // A conversation or a scripted sequence taking over must not leave a held button armed for
         // the moment control comes back.
         private void OnGameStateChanged(StateChangeArgs args) => Interaction.SuppressCurrentPress();
+
+        // A lost window or an unplugged controller leaves directions stuck down, so drop them and
+        // wait for real input to come back.
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus) directions.Clear();
+        }
     }
 }

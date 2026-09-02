@@ -52,8 +52,9 @@ namespace ProjectAstra.Core.Hub.Interaction
         }
 
         // A room is destroyed wholesale on a doorway, and Unity does not raise an exit for a
-        // trigger that stops existing — so leaving is said here too.
-        private void OnDisable() => Deregister();
+        // trigger that stops existing — so leaving is said here too. Virtual because Unity calls
+        // only the most-derived declaration of a message, so a subclass has to chain to this.
+        protected virtual void OnDisable() => Deregister();
 
         private void RegisterWith(PlayerInteractionController controller)
         {

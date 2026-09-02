@@ -1839,9 +1839,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1708496289}
-  - component: {fileID: 1708496278}
-  - component: {fileID: 1708496279}
-  - component: {fileID: 1708496287}
   - component: {fileID: 1708496286}
   - component: {fileID: 1708496285}
   - component: {fileID: 1708496284}
@@ -1849,6 +1846,7 @@ GameObject:
   - component: {fileID: 1708496282}
   - component: {fileID: 1708496281}
   - component: {fileID: 1708496280}
+  - component: {fileID: 1708496290}
   m_Layer: 0
   m_Name: Hub
   m_TagString: Untagged
@@ -1856,32 +1854,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1708496278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708496277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1df11db967ad0ee4eb9e29fe4f766830, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulInputRouter
---- !u!114 &1708496279
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708496277}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 603b73903cfa6714f877e2c9799a6722, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulInteractionDriver
-  router: {fileID: 0}
-  player: {fileID: 0}
 --- !u!114 &1708496280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1896,10 +1868,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulBootstrapper
   loader: {fileID: 1708496286}
   cameraRig: {fileID: 882913018}
-  router: {fileID: 1708496278}
-  interactionDriver: {fileID: 1708496279}
   events: {fileID: 1708496283}
-  director: {fileID: 1708496287}
   playerRoot: {fileID: 1550008122}
   protagonistUnitId: aranya
   fallbackVisit: {fileID: 11400000, guid: 3b9b1c158168f054f8f542bed99728f3, type: 2}
@@ -1916,7 +1885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bd0a83cc96f3d04bb6bbd13db93a9d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulDepartureController
-  router: {fileID: 1708496278}
+  events: {fileID: 1708496283}
 --- !u!114 &1708496282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1929,7 +1898,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ab0923bc40c3294c900f54ef4af57f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulAreaTriggerWatcher
-  router: {fileID: 1708496278}
   events: {fileID: 1708496283}
   eventDatabase: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
   loader: {fileID: 1708496286}
@@ -1945,7 +1913,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 723613a948e9c8f448a21e6a1aa5a232, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.Events.GurukulEventRunner
-  router: {fileID: 1708496278}
   scriptCatalog: {fileID: 11400000, guid: 9e5cef175b0b4b4428f91d64f01d39c6, type: 2}
   eventDatabase: {fileID: 11400000, guid: f4910906567e90041a4c67aa1bd1b761, type: 2}
   cameraRig: {fileID: 882913018}
@@ -1961,7 +1928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cb00f6d56b061744a4821ea9b970229, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulMarkerManager
-  router: {fileID: 1708496278}
   cameraRig: {fileID: 882913018}
   edgeIndicators: {fileID: 520349009}
   markerColor: {r: 1, g: 0.85, b: 0.3, a: 1}
@@ -1977,7 +1943,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73de4ccb487b3404786bbbdfe1e13db3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationTransition
-  router: {fileID: 1708496278}
   loader: {fileID: 1708496286}
 --- !u!114 &1708496286
 MonoBehaviour:
@@ -1995,23 +1960,6 @@ MonoBehaviour:
   locationDatabase: {fileID: 11400000, guid: 3a75d527744d4e64284a41aab0efd422, type: 2}
   unitDatabase: {fileID: 11400000, guid: 8cf1ddc7cbb7fa34f944d8b6a8e3f53b, type: 2}
   castRoot: {fileID: 919515350}
---- !u!114 &1708496287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1708496277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf7afb27be17b3b4db32f4ecd37ec30f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulVisitDirector
-  interactionDriver: {fileID: 1708496279}
-  scriptCatalog: {fileID: 11400000, guid: 9e5cef175b0b4b4428f91d64f01d39c6, type: 2}
-  transitions: {fileID: 1708496285}
-  events: {fileID: 1708496283}
-  departures: {fileID: 1708496281}
 --- !u!4 &1708496289
 Transform:
   m_ObjectHideFlags: 0
@@ -2027,6 +1975,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1708496290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708496277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7025d5d58bfb586449a2e3585e8f07a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Hub.HubProgressionListener
+  events: {fileID: 1708496283}
 --- !u!1 &1728906555
 GameObject:
   m_ObjectHideFlags: 0

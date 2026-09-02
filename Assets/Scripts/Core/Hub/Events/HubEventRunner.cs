@@ -20,7 +20,6 @@ namespace ProjectAstra.Core.Hub.Events
         // A frame that moves less than a hundredth of a pixel counts as no progress at all.
         private const float MinProgressSqr = 1e-8f;
 
-        [SerializeField] private HubInputRouter router;
         [Tooltip("Turns a conversation id into the script to play.")]
         [SerializeField] private DialogueScriptCatalog scriptCatalog;
         [SerializeField] private HubEventDatabase eventDatabase;
@@ -35,14 +34,20 @@ namespace ProjectAstra.Core.Hub.Events
 
         public bool IsRunning => guard != null && guard.IsBusy;
 
-        private void Awake()
+        // Rebuilt per visit, because the guard reads the visit's completed-event list. An
+        // objective's effect can ask for an event by name, and this is the thing that plays one.
+        public void BindToVisit()
         {
-            if (router == null) router = FindFirstObjectByType<HubInputRouter>();
+            guard = new EventQueueGuard(HubProgressService.Instance?.State);
 
+            ObjectiveSequenceRunner objectives = HubProgressService.Instance?.Objectives;
+            if (objectives == null) return;
+
+            objectives.EventRequested -= OnEventRequested;
+            objectives.EventRequested += OnEventRequested;
         }
 
-        // Rebuilt per visit, because the guard reads the visit's completed-event list.
-        public void BindToVisit() => guard = new EventQueueGuard(HubProgressService.Instance?.State);
+        private void OnEventRequested(string eventId) => TryPlay(eventId);
 
         public bool TryPlay(string eventId)
         {

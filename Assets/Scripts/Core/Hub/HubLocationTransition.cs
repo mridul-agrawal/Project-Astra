@@ -17,14 +17,13 @@ namespace ProjectAstra.Core.Hub
         // a change of place, not to every door in a courtyard.
         private const float DoorFadeSeconds = 0.2f;
 
-        [SerializeField] private HubInputRouter router;
         [SerializeField] private HubLocationLoader loader;
 
-        public bool IsTransitioning => router.Gate.IsHandoverInFlight;
+        public bool IsTransitioning => HubControlGate.Instance.IsHandoverInFlight;
 
         public bool TryUse(HubDoor door)
         {
-            if (!router.Gate.TryBeginHandover()) return false;
+            if (!HubControlGate.Instance.TryBeginHandover()) return false;
 
             StartCoroutine(Travel(door));
             return true;
@@ -40,7 +39,7 @@ namespace ProjectAstra.Core.Hub
 
             // Ending the handover re-arms the buttons, so the press that opened the door can't
             // immediately open the one she just arrived next to.
-            router.Gate.EndHandover();
+            HubControlGate.Instance.EndHandover();
         }
 
         // The one blackout the whole game uses. Without it — pressing Play on this scene alone, so
