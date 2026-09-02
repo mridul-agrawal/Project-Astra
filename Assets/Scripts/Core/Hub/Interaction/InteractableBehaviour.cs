@@ -7,7 +7,6 @@ namespace ProjectAstra.Core.Hub.Interaction
     //
     // Its own trigger is its reach region, so a wide counter is a wide collider and a designer
     // draws it rather than typing a number. Subclasses say what they are and what a press does.
-    [RequireComponent(typeof(Collider2D))]
     public abstract class InteractableBehaviour : MonoBehaviour, IInteractable
     {
         [Tooltip("Off for something reachable from any side — a noticeboard, a wide counter.")]
@@ -17,6 +16,13 @@ namespace ProjectAstra.Core.Hub.Interaction
         [SerializeField] private bool requiresLineOfSight = true;
 
         private PlayerInteractionController registeredWith;
+
+        // Not a RequireComponent, because Collider2D is abstract and Unity cannot add one for you.
+        private void Awake()
+        {
+            if (GetComponent<Collider2D>() == null)
+                Debug.LogError($"[{GetType().Name}] has no trigger collider, so nothing can reach it.", this);
+        }
 
         public abstract HubVerb Verb { get; }
         public abstract bool IsAvailable { get; }

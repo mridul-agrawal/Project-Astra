@@ -5,6 +5,7 @@ using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -28,6 +29,9 @@ namespace ProjectAstra.Core.Editor
 
         private const string Folder = "Assets/Gurukul";
         private const string ArtFolder = Folder + "/Greybox";
+
+        // The sprite pivots bottom-left, so this shifts the interaction point to the middle of its base.
+        private static readonly Vector2 TreeFootOffset = new(0.5f, 0f);
         private const string DataFolder = Folder + "/Data";
         private const string PropsPrefabPath = ArtFolder + "/GreyboxProps.prefab";
 
@@ -190,9 +194,22 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("interactableId").stringValue = "greybox_tree";
             serialized.FindProperty("kind").enumValueIndex = (int)HubTargetKind.Inspectable;
             serialized.FindProperty("verb").enumValueIndex = (int)HubVerb.Inspect;
-            serialized.FindProperty("footOffset").vector2Value = new Vector2(0.5f, 0f);
+            serialized.FindProperty("footOffset").vector2Value = TreeFootOffset;
             serialized.FindProperty("conversationId").stringValue = "greybox_tree_look";
             serialized.ApplyModifiedProperties();
+
+            AddTreeReachRegion(treeGo);
+        }
+
+        // The same tree on the new interaction path, which asks the tree itself rather than a
+        // central sweep. Its trigger is the region she has to be standing in.
+        private static void AddTreeReachRegion(GameObject treeGo)
+        {
+            InteractionPhysics.AttachReachRegion(treeGo, TreeFootOffset);
+
+            var reachable = treeGo.AddComponent<InspectableInteractable>();
+            reachable.Configure("greybox_tree", HubVerb.Inspect, TreeFootOffset, "greybox_tree_look",
+                gate: null, denied: null, critical: false, HubInteractableState.Available);
         }
 
         // --- Locations ---

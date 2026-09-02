@@ -1,7 +1,7 @@
 using UnityEngine;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Hub.Events;
-
+using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Hub
@@ -32,9 +32,13 @@ namespace ProjectAstra.Core.Hub
         [Tooltip("Fallback visit for pressing Play directly in this scene, when the campaign isn't running.")]
         [SerializeField] private HubVisitData fallbackVisit;
 
+        [Tooltip("Turns a conversation id into a script, for interactables the loader builds at runtime.")]
+        [SerializeField] private DialogueScriptCatalog scriptCatalog;
+
         private void Start()
         {
             HubWorld.Clear();
+            HubInteractionCatalog.Bind(scriptCatalog);
 
             HubVisitData visit = ResolveVisit();
             if (visit == null)

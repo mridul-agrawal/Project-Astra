@@ -8,6 +8,10 @@ namespace ProjectAstra.Core.Hub.Interaction
     // anything with its own idea of reach overrides CanReach instead of calling these.
     public static class InteractionReachRules
     {
+        // The spec's "within one environmental tile". The size a trigger is built to when nobody
+        // authored one by hand.
+        public const float DefaultReachTiles = 1.0f;
+
         // A bit over half a tile, so standing slightly off to one side still counts as facing it.
         public const float DefaultLateralTolerance = 0.6f;
 

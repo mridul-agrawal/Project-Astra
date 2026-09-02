@@ -2,6 +2,8 @@ using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Units;
 
+using ProjectAstra.Core.Hub.Interaction;
+
 namespace ProjectAstra.Core.Hub
 {
     // Puts a room on screen: its art, its collision, the people standing in it, and the protagonist
@@ -39,6 +41,7 @@ namespace ProjectAstra.Core.Hub
 
             PlacePlayer(playerSpawn, playerFacing);
             SpawnCast(locationId);
+            SpawnDoors(location);
             return true;
         }
 
@@ -53,7 +56,25 @@ namespace ProjectAstra.Core.Hub
         public HubActor CreatePlayer(string unitId, Vector2 spawn, Facing facing, Transform parent)
         {
             Player = BuildActor(unitId, spawn, facing, parent, conversationId: null, solid: false);
+            if (Player != null) InteractionPhysics.AttachPlayerProbe(Player.gameObject);
             return Player;
+        }
+
+        // A door is authored as data on the room; this is where it becomes something she can walk
+        // up to. Built under the room's host so a doorway takes the old room's doors with it.
+        private void SpawnDoors(HubLocationData location)
+        {
+            if (location.Doors == null) return;
+
+            foreach (HubDoor door in location.Doors)
+            {
+                var go = new GameObject($"Door_{door.doorId}");
+                go.transform.SetParent(locationHost.transform, false);
+                go.transform.position = door.position;
+
+                InteractionPhysics.AttachReachRegion(go, Vector2.zero);
+                go.AddComponent<DoorInteractable>().Configure(door);
+            }
         }
 
         // Only the people the visit puts in this room. Their placement comes through the progress
@@ -96,7 +117,16 @@ namespace ProjectAstra.Core.Hub
                 Debug.LogError($"[HubLocationLoader] No UnitDefinition for '{unitId}'.");
                 return null;
             }
-            return HubActorFactory.Create(definition, parent, position, facing, conversationId, solid);
+            HubActor built = HubActorFactory.Create(definition, parent, position, facing, conversationId, solid);
+            if (built != null && !string.IsNullOrEmpty(conversationId)) AttachTalkTarget(built);
+            return built;
+        }
+
+        // Only someone with something to say is worth walking up to.
+        private static void AttachTalkTarget(HubActor actor)
+        {
+            InteractionPhysics.AttachReachRegion(actor.gameObject, Vector2.zero);
+            actor.gameObject.AddComponent<CharacterInteractable>();
         }
     }
 }
