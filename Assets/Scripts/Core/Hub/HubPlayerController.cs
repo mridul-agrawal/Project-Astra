@@ -1,12 +1,13 @@
 using UnityEngine;
 using ProjectAstra.Core.Animation;
-
+using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Hub.Interaction;
+using ProjectAstra.Core.Input;
+using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Walks the protagonist. Reads the router's resolved direction, asks HubMover where that
-    // lands against the collision map, and puts her there.
+    // Walks the protagonist and works out what a press in front of her would act on.
     //
     // Runs after HubInputRouter, which resolves the direction earlier in the frame.
     [RequireComponent(typeof(HubActor))]
@@ -31,13 +32,32 @@ namespace ProjectAstra.Core.Hub
         {
             actor = GetComponent<HubActor>();
             if (router == null) router = FindFirstObjectByType<HubInputRouter>();
+            if (router != null) router.Gate.HandoverEnded += Interaction.SuppressCurrentPress;
+        }
+
+        private void OnEnable() => EventService.Instance?.SubscribeGameStateChanged(OnGameStateChanged);
+
+        private void OnDisable() => EventService.Instance?.UnsubscribeGameStateChanged(OnGameStateChanged);
+
+        private void OnDestroy()
+        {
+            if (router != null) router.Gate.HandoverEnded -= Interaction.SuppressCurrentPress;
         }
 
         private void Update()
         {
             if (router == null || HubLocationService.Instance == null) return;
 
-            Facing? intent = router.MoveIntent;
+            Walk(router.MoveIntent);
+
+            // After the walk, so the reach check uses where she ended up this frame rather than
+            // where she started it.
+            Interaction.Enabled = router.Gate.AcceptsWorldInteraction;
+            Interaction.Tick(new InteractorPose(actor.Position, actor.Facing), IsConfirmHeld);
+        }
+
+        private void Walk(Facing? intent)
+        {
             if (intent.HasValue) actor.SetFacing(intent.Value);
 
             Vector2 next = HubMover.Move(
@@ -48,5 +68,14 @@ namespace ProjectAstra.Core.Hub
             IsWalking = moved;
             if (moved) actor.SetPosition(next);
         }
+
+        // Read raw rather than taking the router's edge, because the press latch that turns it into
+        // one interaction lives on the interaction controller and is what suppression re-arms.
+        private static bool IsConfirmHeld =>
+            InputManager.Instance != null && InputManager.Instance.IsActionHeld(GameInputAction.Confirm);
+
+        // A conversation or a scripted sequence taking over must not leave a held button armed for
+        // the moment control comes back.
+        private void OnGameStateChanged(StateChangeArgs args) => Interaction.SuppressCurrentPress();
     }
 }

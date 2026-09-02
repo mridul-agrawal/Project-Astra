@@ -1,4 +1,5 @@
 using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Hub.Prompt
@@ -11,8 +12,13 @@ namespace ProjectAstra.Core.UI.Hub.Prompt
         public InteractionPromptModel promptModel;
 
         private readonly InputGlyphData glyphs;
+
+        // Only the prompt smooths the target. A press acts on the live one, or she could talk to
+        // something she has already turned away from.
+        private readonly PromptHysteresis<IInteractable> settling = new();
+
         private InputDeviceType device = InputDeviceType.Keyboard;
-        private HubVerb? verb;
+        private IInteractable target;
 
         public InteractionPromptController(InteractionPromptView view, InputGlyphData glyphData)
         {
@@ -22,9 +28,11 @@ namespace ProjectAstra.Core.UI.Hub.Prompt
             Render();
         }
 
-        public void HandleTargetChanged(HubInteractionCandidate? target)
+        public void HandleTargetChanged(IInteractable newTarget) => target = newTarget;
+
+        public void Tick(float deltaTime)
         {
-            verb = target?.Verb;
+            settling.Tick(target, deltaTime);
             Render();
         }
 
@@ -35,12 +43,22 @@ namespace ProjectAstra.Core.UI.Hub.Prompt
             Render();
         }
 
+        // For entering a conversation or changing room, where the prompt should go at once.
+        public void Clear()
+        {
+            target = null;
+            settling.Clear();
+            Render();
+        }
+
         private void Render()
         {
-            promptModel.Visible = verb.HasValue;
-            if (verb.HasValue)
+            IInteractable shown = settling.Current;
+
+            promptModel.Visible = shown != null;
+            if (shown != null)
             {
-                promptModel.Verb = verb.Value.ToString();
+                promptModel.Verb = shown.Verb.ToString();
                 promptModel.GlyphLabel = GlyphLabel();
             }
             promptView.Render(promptModel);

@@ -1875,7 +1875,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1708496277}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 603b73903cfa6714f877e2c9799a6722, type: 3}
   m_Name: 
@@ -2152,8 +2152,7 @@ MonoBehaviour:
   promptView: {fileID: 1729706517}
   objectiveView: {fileID: 2116031237}
   glyphData: {fileID: 11400000, guid: 7d44fcc30c5c0304e86f46f95618fb0a, type: 2}
-  interactionDriver: {fileID: 1708496279}
-  router: {fileID: 1708496278}
+  player: {fileID: 0}
 --- !u!114 &2106318084
 MonoBehaviour:
   m_ObjectHideFlags: 0

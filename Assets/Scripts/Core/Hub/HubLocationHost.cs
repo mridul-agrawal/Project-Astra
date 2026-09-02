@@ -17,6 +17,9 @@ namespace ProjectAstra.Core.Hub
 
         public HubLocationData Current { get; private set; }
 
+        // What a room's contents hang off, so anything added to a room is torn down with it.
+        public Transform Room => current != null ? current.transform : transform;
+
         public void Show(HubLocationData location)
         {
             Clear();

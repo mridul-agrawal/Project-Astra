@@ -833,7 +833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.GameStateManager
   transitionTable: {fileID: 11400000, guid: 5a25e2f8fb709f140bfaa1bb9be5d6dc, type: 2}
-  initialState: 14
+  initialState: 16
 --- !u!4 &1755540676
 Transform:
   m_ObjectHideFlags: 0

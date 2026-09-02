@@ -8,10 +8,10 @@ namespace ProjectAstra.Core.Tests.Hub
     {
         private const float Delay = 0.1f;
 
-        private PromptHysteresis prompt;
+        private PromptHysteresis<string> prompt;
 
         [SetUp]
-        public void SetUp() => prompt = new PromptHysteresis(Delay);
+        public void SetUp() => prompt = new PromptHysteresis<string>(Delay);
 
         [Test]
         public void ATargetComingIntoReach_ShowsAtOnce()

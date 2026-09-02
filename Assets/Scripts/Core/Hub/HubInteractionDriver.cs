@@ -15,7 +15,7 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private HubActor player;
 
         private readonly List<HubInteractionCandidate> candidates = new();
-        private readonly PromptHysteresis prompt = new();
+        private readonly PromptHysteresis<string> prompt = new();
         private readonly Dictionary<string, HubInteractionCandidate> byId = new();
 
         // The target the prompt should be showing, or null. Fires only when it actually changes.

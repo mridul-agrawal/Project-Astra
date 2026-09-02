@@ -33,6 +33,11 @@ namespace ProjectAstra.Core.Hub.Interaction
         private bool IsShut =>
             !string.IsNullOrEmpty(requiredGate) && Progression != null && !Progression.IsGateOpen(requiredGate);
 
+        // Facing only. She is standing in the doorway, and the wall the door is set into would
+        // fail a line-of-sight check every time.
+        public override bool CanReach(InteractorPose player) =>
+            InteractionReachRules.IsFacing(player, InteractionPoint);
+
         public override void Interact(InteractorPose player)
         {
             if (IsShut) { Play(deniedConversationId); return; }

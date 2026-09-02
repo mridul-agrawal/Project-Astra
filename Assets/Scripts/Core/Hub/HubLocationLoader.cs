@@ -69,7 +69,7 @@ namespace ProjectAstra.Core.Hub
             foreach (HubDoor door in location.Doors)
             {
                 var go = new GameObject($"Door_{door.doorId}");
-                go.transform.SetParent(locationHost.transform, false);
+                go.transform.SetParent(locationHost.Room, false);
                 go.transform.position = door.position;
 
                 InteractionPhysics.AttachReachRegion(go, Vector2.zero);

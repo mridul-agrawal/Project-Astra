@@ -6,12 +6,12 @@ namespace ProjectAstra.Core.Hub
     // Asymmetric on purpose: a target is picked up the instant it becomes valid, so the prompt feels
     // immediate, but it is only let go after it has stayed invalid for a moment. Swapping straight
     // from one target to another is instant too — that reads as intent, not as flicker.
-    public class PromptHysteresis
+    public class PromptHysteresis<T> where T : class
     {
         public const float DefaultReleaseDelay = 0.12f;
 
         private readonly float releaseDelay;
-        private string current;
+        private T current;
         private float invalidFor;
 
         public PromptHysteresis(float releaseDelay = DefaultReleaseDelay)
@@ -19,20 +19,20 @@ namespace ProjectAstra.Core.Hub
             this.releaseDelay = releaseDelay;
         }
 
-        public string Current => current;
+        public T Current => current;
 
         // Feed the freshly resolved target each frame — null when nothing is in reach. Returns the
         // target the prompt should actually be showing.
-        public string Tick(string resolved, float deltaTime)
+        public T Tick(T resolved, float deltaTime)
         {
-            if (!string.IsNullOrEmpty(resolved))
+            if (resolved != null)
             {
                 current = resolved;
                 invalidFor = 0f;
                 return current;
             }
 
-            if (string.IsNullOrEmpty(current)) return null;
+            if (current == null) return null;
 
             invalidFor += deltaTime;
             if (invalidFor >= releaseDelay) current = null;
