@@ -18,6 +18,13 @@ namespace ProjectAstra.Core.Camera
         private PixelPerfectCamera pixelPerfect;
         private UnityEngine.Camera cam;
 
+        // What one screenful covers, in tiles, and how many pixels a tile is. Both are decided
+        // here, so both are answered here rather than re-derived by whoever needs them — the
+        // battle camera and the hub camera each want them for clamping.
+        public float PixelsPerUnit => assetsPPU;
+        public Vector2 ViewSizeTiles => new(referenceResolutionX / (float)assetsPPU,
+                                            referenceResolutionY / (float)assetsPPU);
+
         private void Awake()
         {
             cam = GetComponent<UnityEngine.Camera>();

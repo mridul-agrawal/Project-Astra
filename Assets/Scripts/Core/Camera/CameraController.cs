@@ -209,16 +209,17 @@ namespace ProjectAstra.Core.Camera
             return 0;
         }
 
-        // PixelPerfectCamera path: ref resolution and PPU are deterministic and set in
-        // MapCamera.Awake, so we can trust them. Returns false when no PPC is present (or
-        // it's misconfigured) so the caller can fall back to the orthographic-camera path.
+        // MapCamera decides the reference resolution and PPU, so it is asked rather than the
+        // numbers being derived again here. Returns false when there is no MapCamera, so the
+        // caller can fall back to measuring the orthographic camera.
         private bool TryRecalculateFromPixelPerfectCamera()
         {
-            var ppc = GetComponent<PixelPerfectCamera>();
-            if (ppc == null || ppc.assetsPPU <= 0) return false;
+            var mapCamera = GetComponent<MapCamera>();
+            if (mapCamera == null || mapCamera.PixelsPerUnit <= 0f) return false;
 
-            viewportTilesW = ppc.refResolutionX / ppc.assetsPPU;
-            viewportTilesH = ppc.refResolutionY / ppc.assetsPPU;
+            Vector2 view = mapCamera.ViewSizeTiles;
+            viewportTilesW = Mathf.FloorToInt(view.x);
+            viewportTilesH = Mathf.FloorToInt(view.y);
             return true;
         }
 
