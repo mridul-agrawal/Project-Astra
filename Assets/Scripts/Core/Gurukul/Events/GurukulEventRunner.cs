@@ -24,7 +24,7 @@ namespace ProjectAstra.Core.Gurukul.Events
         [Tooltip("Turns a conversation id into the script to play.")]
         [SerializeField] private DialogueScriptCatalog scriptCatalog;
         [SerializeField] private GurukulEventDatabase eventDatabase;
-        [SerializeField] private GurukulCameraRig cameraRig;
+        [SerializeField] private HubCameraController cameraRig;
 
         private EventQueueGuard guard;
 

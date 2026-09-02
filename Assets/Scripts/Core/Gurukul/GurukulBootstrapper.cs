@@ -18,7 +18,7 @@ namespace ProjectAstra.Core.Gurukul
     {
         [Header("Scene")]
         [SerializeField] private GurukulLocationLoader loader;
-        [SerializeField] private GurukulCameraRig cameraRig;
+        [SerializeField] private HubCameraController cameraRig;
         [SerializeField] private GurukulInputRouter router;
         [SerializeField] private GurukulInteractionDriver interactionDriver;
         [SerializeField] private GurukulEventRunner events;

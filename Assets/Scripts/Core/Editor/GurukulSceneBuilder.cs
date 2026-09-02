@@ -29,7 +29,7 @@ namespace ProjectAstra.Core.Editor
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
-            GurukulCameraRig cameraRig = CreateCamera();
+            HubCameraController cameraRig = CreateCamera();
             GurukulLocationHost host = CreateLocationHost();
             GurukulInteractionDriver driver = CreateHubRoot(host, cameraRig);
             WireHud(driver);
@@ -49,7 +49,7 @@ namespace ProjectAstra.Core.Editor
 
         // MapCamera owns the 480x270 / 32 PPU pixel-perfect setup and adds the PixelPerfectCamera
         // itself on Awake, so the hub reads at the same scale without restating any of it.
-        private static GurukulCameraRig CreateCamera()
+        private static HubCameraController CreateCamera()
         {
             var go = new GameObject("Main Camera") { tag = "MainCamera" };
             var camera = go.AddComponent<UnityEngine.Camera>();
@@ -59,7 +59,7 @@ namespace ProjectAstra.Core.Editor
             go.transform.position = new Vector3(0f, 0f, -10f);
 
             go.AddComponent<MapCamera>();
-            return go.AddComponent<GurukulCameraRig>();
+            return go.AddComponent<HubCameraController>();
         }
 
         private static GurukulLocationHost CreateLocationHost()
@@ -68,7 +68,7 @@ namespace ProjectAstra.Core.Editor
             return go.AddComponent<GurukulLocationHost>();
         }
 
-        private static GurukulInteractionDriver CreateHubRoot(GurukulLocationHost host, GurukulCameraRig cameraRig)
+        private static GurukulInteractionDriver CreateHubRoot(GurukulLocationHost host, HubCameraController cameraRig)
         {
             var go = new GameObject("Gurukul");
             var router = go.AddComponent<GurukulInputRouter>();
@@ -115,7 +115,7 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void WireBootstrapper(GurukulBootstrapper bootstrapper, GurukulLocationLoader loader,
-            GurukulCameraRig cameraRig, GurukulInputRouter router, GurukulInteractionDriver driver, Transform playerRoot)
+            HubCameraController cameraRig, GurukulInputRouter router, GurukulInteractionDriver driver, Transform playerRoot)
         {
             var serialized = new SerializedObject(bootstrapper);
             serialized.FindProperty("loader").objectReferenceValue = loader;
@@ -150,7 +150,7 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void WireEvents(GurukulEventRunner events, GurukulAreaTriggerWatcher areaTriggers,
-            GurukulInputRouter router, GurukulCameraRig cameraRig,
+            GurukulInputRouter router, HubCameraController cameraRig,
             GurukulLocationLoader loader)
         {
             var eventDatabase = FindAsset<GurukulEventDatabase>();
@@ -171,7 +171,7 @@ namespace ProjectAstra.Core.Editor
         }
 
         private static void WireMarkers(GurukulMarkerManager markers, GurukulInputRouter router,
-            GurukulCameraRig cameraRig)
+            HubCameraController cameraRig)
         {
             var serialized = new SerializedObject(markers);
             serialized.FindProperty("router").objectReferenceValue = router;

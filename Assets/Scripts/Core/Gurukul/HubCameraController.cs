@@ -16,10 +16,11 @@ namespace ProjectAstra.Core.Gurukul
     //      character, which reads as her jittering inside the frame. Movement here is constant
     //      speed and cardinal, so there is nothing for smoothing to smooth.
     //
-    // Separate from CameraController, which is welded to the grid cursor, stores its position as a
-    // Vector2Int, and scrolls a whole tile at a time.
+    // The hub's counterpart to CameraController, which does the same job for the battle map but
+    // from an entirely different input: that one is welded to the grid cursor, stores its position
+    // as a Vector2Int, and scrolls a whole tile at a time. Nothing here quantises to tiles.
     [DefaultExecutionOrder(100)]
-    public sealed class GurukulCameraRig : MonoBehaviour
+    public sealed class HubCameraController : MonoBehaviour
     {
         private const float FallbackViewWidthTiles = 480f / 32f;
         private const float FallbackViewHeightTiles = 270f / 32f;

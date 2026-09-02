@@ -14,7 +14,7 @@ namespace ProjectAstra.Core.Gurukul
     // World markers are parented to what they mark, so a character who walks or is relocated carries
     // theirs along — the trick the battle map's HP bars use, and the reason nothing chases a moving
     // target.
-    // Runs after GurukulCameraRig, which moves in LateUpdate at 100. Reading the camera before it
+    // Runs after HubCameraController, which moves in LateUpdate at 100. Reading the camera before it
     // has settled would decide what is off screen from where the camera was last frame — which on
     // the first frame is the origin, so every target would briefly read as off screen at once.
     [DefaultExecutionOrder(110)]
@@ -28,7 +28,7 @@ namespace ProjectAstra.Core.Gurukul
         private const float EdgeInsetCanvasPixels = 48f;
 
         [SerializeField] private GurukulInputRouter router;
-        [SerializeField] private GurukulCameraRig cameraRig;
+        [SerializeField] private HubCameraController cameraRig;
         [SerializeField] private EdgeIndicatorView edgeIndicators;
         [SerializeField] private Color markerColor = new(1f, 0.85f, 0.3f, 1f);
 
@@ -39,7 +39,7 @@ namespace ProjectAstra.Core.Gurukul
         private void Awake()
         {
             if (router == null) router = FindFirstObjectByType<GurukulInputRouter>();
-            if (cameraRig == null) cameraRig = FindFirstObjectByType<GurukulCameraRig>();
+            if (cameraRig == null) cameraRig = FindFirstObjectByType<HubCameraController>();
         }
 
         private void LateUpdate()
