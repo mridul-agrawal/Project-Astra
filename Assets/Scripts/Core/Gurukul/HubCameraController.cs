@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+using ProjectAstra.Core.Camera;
 
 namespace ProjectAstra.Core.Gurukul
 {
@@ -20,76 +20,39 @@ namespace ProjectAstra.Core.Gurukul
     // from an entirely different input: that one is welded to the grid cursor, stores its position
     // as a Vector2Int, and scrolls a whole tile at a time. Nothing here quantises to tiles.
     [DefaultExecutionOrder(100)]
+    [RequireComponent(typeof(MapCamera))]
     public sealed class HubCameraController : MonoBehaviour
     {
-        private const float FallbackViewWidthTiles = 480f / 32f;
-        private const float FallbackViewHeightTiles = 270f / 32f;
-        private const int FallbackPixelsPerUnit = 32;
-
         [SerializeField] private Transform target;
 
         [Tooltip("Raises the camera off the target's feet so she sits centred rather than low.")]
         [SerializeField] private float targetHeightOffset = 0.5f;
 
-        private PixelPerfectCamera pixelPerfect;
-        private float viewWidthTiles = FallbackViewWidthTiles;
-        private float viewHeightTiles = FallbackViewHeightTiles;
-        private int pixelsPerUnit = FallbackPixelsPerUnit;
+        private MapCamera mapCamera;
 
         public void Follow(Transform newTarget) => target = newTarget;
+
+        // Who the camera is on, so a caller that borrows it can put it back.
+        public Transform Target => target;
 
         // What the camera can currently see, for working out whether something is off-screen and
         // which edge to point at it from.
         public Vector2 Centre => transform.position;
-        public Vector2 ViewSizeTiles => new(viewWidthTiles, viewHeightTiles);
+        public Vector2 ViewSizeTiles => MapCameraOrNull != null ? MapCameraOrNull.ViewSizeTiles : Vector2.zero;
 
-        private void Awake()
-        {
-            pixelPerfect = GetComponent<PixelPerfectCamera>();
-            ReadViewportFromCamera();
-        }
+        private MapCamera MapCameraOrNull => mapCamera != null ? mapCamera : mapCamera = GetComponent<MapCamera>();
 
         private void LateUpdate()
         {
             if (target == null || GurukulLocationService.Instance == null) return;
 
             var desired = new Vector2(target.position.x, target.position.y + targetHeightOffset);
-            Vector2 contained = ContainWithinRoom(desired);
+            Vector2 contained = CameraContainment.Contain(
+                desired, GurukulLocationService.Instance.Bounds, ViewSizeTiles);
 
-            transform.position = new Vector3(
-                RoundToPixel(contained.x), RoundToPixel(contained.y), transform.position.z);
+            // Rounded after containing, so the room's edge lands on a whole pixel too.
+            Vector2 snapped = CameraContainment.RoundToPixel(contained, MapCameraOrNull.PixelsPerUnit);
+            transform.position = new Vector3(snapped.x, snapped.y, transform.position.z);
         }
-
-        // The pixel-perfect component is added at runtime by MapCamera, so read it late rather than
-        // requiring it in the inspector.
-        private void ReadViewportFromCamera()
-        {
-            if (pixelPerfect == null) pixelPerfect = GetComponent<PixelPerfectCamera>();
-            if (pixelPerfect == null || pixelPerfect.assetsPPU <= 0) return;
-
-            pixelsPerUnit = pixelPerfect.assetsPPU;
-            viewWidthTiles = pixelPerfect.refResolutionX / (float)pixelsPerUnit;
-            viewHeightTiles = pixelPerfect.refResolutionY / (float)pixelsPerUnit;
-        }
-
-        // A room narrower than the view is centred instead of clamped, which would otherwise ask for
-        // a minimum above the maximum.
-        private Vector2 ContainWithinRoom(Vector2 desired)
-        {
-            Rect room = GurukulLocationService.Instance.Bounds;
-            return new Vector2(
-                ContainAxis(desired.x, room.xMin, room.xMax, viewWidthTiles),
-                ContainAxis(desired.y, room.yMin, room.yMax, viewHeightTiles));
-        }
-
-        private static float ContainAxis(float desired, float min, float max, float viewSize)
-        {
-            float half = viewSize * 0.5f;
-            if (max - min <= viewSize) return (min + max) * 0.5f;
-            return Mathf.Clamp(desired, min + half, max - half);
-        }
-
-        // Rounded after clamping, so the room's edge lands on a whole pixel too.
-        private float RoundToPixel(float value) => Mathf.Round(value * pixelsPerUnit) / pixelsPerUnit;
     }
 }
