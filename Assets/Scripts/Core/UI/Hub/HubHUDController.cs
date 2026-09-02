@@ -7,9 +7,7 @@ using ProjectAstra.Core.UI.Hub.Prompt;
 
 namespace ProjectAstra.Core.UI.Hub
 {
-    // Composition root for the hub HUD. Owns the views, news up the controllers, and is the single
-    // place anything subscribes — the same arrangement BattleHUDUIController uses for the battle
-    // map, so both HUDs read the same way.
+    // Composition root for the hub HUD: owns the views, news up the controllers, subscribes once.
     public sealed class HubHUDController : MonoBehaviour
     {
         [SerializeField] private InteractionPromptView promptView;

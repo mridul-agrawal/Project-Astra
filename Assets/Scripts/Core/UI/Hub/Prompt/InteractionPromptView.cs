@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.UI.Hub.Prompt
 {
-    // Draws the contextual prompt at the bottom of the screen. Programmer art for now — the whole
-    // hub HUD goes through the Figma pipeline in one batch later, and nothing above this layer
-    // changes when it does.
+    // Draws the contextual prompt at the bottom of the screen.
     public sealed class InteractionPromptView : MonoBehaviour
     {
         public GameObject content;

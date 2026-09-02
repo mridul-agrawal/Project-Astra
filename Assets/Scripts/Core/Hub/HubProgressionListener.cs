@@ -5,10 +5,6 @@ using ProjectAstra.Core.Hub.Interaction;
 namespace ProjectAstra.Core.Hub
 {
     // Reports what just happened in the hub to the visit's objectives.
-    //
-    // Everything arrives as an announcement — a conversation ended, an object was looked at, a flag
-    // went up — and only the kind an objective actually asked for will match. Nothing that raises
-    // one of these ever finds out whether it completed anything.
     public sealed class HubProgressionListener : MonoBehaviour
     {
         [SerializeField] private HubEventRunner events;

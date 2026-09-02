@@ -5,12 +5,7 @@ using ProjectAstra.Core.Scenes;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Takes her through a doorway: lock, fade, swap the room, put her down on the other side, fade
-    // back, hand control over.
-    //
-    // Rooms are swapped inside the one hub scene rather than loaded as scenes. SceneLoader only
-    // loads in single mode, so a doorway routed through it would tear down the whole hub — and with
-    // it every relocation and completed conversation the visit had accumulated.
+    // Takes her through a doorway: lock, fade, swap the room, put her down, fade back, hand over.
     public sealed class HubLocationTransition : MonoBehaviour
     {
         // A doorway is shorter than a scene load, and silent — the transition whoosh belongs to
@@ -35,6 +30,8 @@ namespace ProjectAstra.Core.Hub
             RememberWayBack(door);
             ResolveDestination(door, out string locationId, out Vector2 spawn, out Facing facing);
 
+            // Swapped inside the one hub scene. Routed through SceneLoader it would tear the whole hub
+            // down, and with it every relocation and finished conversation the visit had accumulated.
             yield return FadeThrough(() => loader.Load(locationId, spawn, facing, door.houseIdentityId));
 
             // Ending the handover re-arms the buttons, so the press that opened the door can't

@@ -2,9 +2,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Single source of truth for "which room are we standing in and what blocks movement in it".
-    // Set once per location load, then read anywhere via HubLocationService.Instance — the same
-    // shape as MapService, and the reason nothing else needs a serialized reference to the map.
+    // Single source of truth for which room she is in and what blocks movement in it.
     public class HubLocationService
     {
         public static HubLocationService Instance { get; private set; }

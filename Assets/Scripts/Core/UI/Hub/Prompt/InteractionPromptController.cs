@@ -4,8 +4,7 @@ using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.UI.Hub.Prompt
 {
-    // Turns "she is standing in front of this" into the line the prompt shows. Plain C# — the view
-    // owns the pixels, this owns what they say.
+    // Turns "she is standing in front of this" into the line the prompt shows.
     public sealed class InteractionPromptController
     {
         public InteractionPromptView promptView;

@@ -13,13 +13,7 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Builds the Hub scene: the pixel-perfect camera the hub shares with the battle map, the
-    // transform rooms get instantiated under, and the two components that drive a visit.
-    //
-    // No 2D light, deliberately — the battle map has none either; its map and unit sprites are
-    // unlit, so adding one would only make the hub read differently from every other scene.
-    //
-    // Rebuilding replaces the scene file, so keep anything hand-placed out of it.
+    // Builds the Hub scene from scratch. Rebuilding replaces the file, so keep hand-placed work out.
     public static class HubSceneBuilder
     {
         private const string ScenePath = "Assets/Scenes/HubExploration.unity";

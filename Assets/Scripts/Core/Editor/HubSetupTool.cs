@@ -11,11 +11,8 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Teaches the three shipped ScriptableObject assets about the Hub state. Code defaults only
-    // seed brand-new assets, so the ones already on disk have to be patched by hand — and patched
-    // additively, because regenerating them would drop every row a designer added since.
-    //
-    // Safe to run repeatedly: each step checks before it writes and reports only what it changed.
+    // Patches the three shipped ScriptableObject assets to know about the Hub state. Safe to re-run.
+    // Additive on purpose: regenerating them would drop every row a designer has added since.
     public static class HubSetupTool
     {
         private const string HubScenePath = "Assets/Scenes/HubExploration.unity";

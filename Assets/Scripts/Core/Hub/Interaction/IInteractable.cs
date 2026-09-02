@@ -4,8 +4,6 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // Which rung of the spec's ladder a target sits on when several are in range. Lower wins.
-    // The spec's first rung — an open menu or a running line — never reaches here, because the
-    // controller is silent unless the hub has control.
     public enum InteractionPriority
     {
         Character = 0,
@@ -14,8 +12,7 @@ namespace ProjectAstra.Core.Hub.Interaction
         Inspectable = 3
     }
 
-    // Where the player is and which way she is looking, which is all a target needs to decide
-    // whether she can reach it.
+    // Where the player is and which way she is looking — all a target needs to judge reach.
     public readonly struct InteractorPose
     {
         public readonly Vector2 Position;

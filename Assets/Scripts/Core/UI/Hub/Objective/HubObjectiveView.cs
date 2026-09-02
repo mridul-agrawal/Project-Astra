@@ -5,10 +5,6 @@ using ProjectAstra.Core.UI.BattleMap.HUD;
 namespace ProjectAstra.Core.UI.Hub.Objective
 {
     // What the hub currently wants her to do, plus a count when the objective has several targets.
-    //
-    // Reuses ObjectiveRowVM, which already carries exactly this shape, but not the battle panel's
-    // controller or GameObject — that one is welded to MapService, TurnManager and literal WIN/LOSE
-    // headers, and is authored inline in BattleMap.unity rather than as a prefab.
     public sealed class HubObjectiveModel
     {
         public bool Visible;

@@ -7,15 +7,6 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.Hub
 {
     // Leaves the hub for the battle the visit points at.
-    //
-    // Both of the spec's modes end up here. An automatic departure is the Depart action at the end
-    // of a scripted sequence; a confirmed one is a conversation whose "yes" branch raises the
-    // departure flag. Neither needs its own machinery — the conversation graph already does
-    // confirmations, and routing both through one place means the checks can't be skipped by
-    // taking the other road.
-    //
-    // Leaving is a handover, not a mode, so it holds the hub's lock rather than being a state. That
-    // is also what lets a refused departure hand control back: a terminal state had nowhere to go.
     public sealed class HubDepartureController : MonoBehaviour
     {
         // The flag a confirmation conversation raises on its "leave" branch.

@@ -3,8 +3,7 @@ using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Turns the four map facings into unit vectors and back. The hub deals in whole directions
-    // rather than angles, so this is the only place the two representations meet.
+    // Turns the four map facings into unit vectors and back.
     public static class Cardinal
     {
         public static Vector2 ToVector(Facing facing) => facing switch

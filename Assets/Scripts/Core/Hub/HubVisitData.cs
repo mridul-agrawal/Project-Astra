@@ -13,8 +13,7 @@ namespace ProjectAstra.Core.Hub
         ConfirmedInteraction
     }
 
-    // Where a character stands for this visit and what talking to them opens. Placement belongs to
-    // the visit, not the character, so the same cast can be arranged differently every time.
+    // Where a character stands for this visit, and what talking to them opens.
     [Serializable]
     public struct HubCharacterPlacement
     {
@@ -53,9 +52,7 @@ namespace ProjectAstra.Core.Hub
         public string departureTargetId;
     }
 
-    // One authored visit to the Hub: where the player starts, where everyone is standing, what
-    // has to be done, and which battle it leads to. A visit is a complete starting state, not a
-    // continuation — loading one replaces whatever the previous visit left behind.
+    // One authored visit: where she starts, who stands where, what to do, which battle follows.
     [CreateAssetMenu(fileName = "HubVisitData", menuName = "Project Astra/Hub/Visit Data")]
     public class HubVisitData : ScriptableObject
     {

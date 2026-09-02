@@ -17,9 +17,6 @@ namespace ProjectAstra.Core.UI.Hub.Marker
     }
 
     // Points at the objective targets that are currently off screen.
-    //
-    // Kept restrained on purpose: the spec allows an edge indicator but rules out a minimap, a
-    // compass, distance numbers and a route line, so this is an arrow on the edge and nothing else.
     public sealed class EdgeIndicatorView : MonoBehaviour
     {
         public GameObject content;

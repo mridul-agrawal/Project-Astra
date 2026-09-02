@@ -3,10 +3,6 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // Builds the two colliders interaction needs, so their shapes are decided in one place.
-    //
-    // The player carries a small probe and the body that makes triggers fire at all; each
-    // interactable carries the region she has to be standing in. Nothing here collides with
-    // anything — walls are still HubCollisionMap's job.
     public static class InteractionPhysics
     {
         // Small enough that being "in range" means her feet are in the target's region rather than

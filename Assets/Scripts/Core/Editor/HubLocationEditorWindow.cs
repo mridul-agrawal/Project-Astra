@@ -6,16 +6,7 @@ using ProjectAstra.Core.Hub;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Visual authoring tool for hub rooms. A designer imports a painted PNG (which sets the room
-    // size), paints where you can walk, drags out the blocking areas of tall props, and saves a
-    // HubLocationData that the hub loads straight away.
-    //
-    // Written fresh rather than sharing code with the Map Editor: that one paints a per-tile terrain
-    // type for a battle map, this one paints half-tile walkability for free movement. The shape of
-    // the tool is deliberately the same so a designer only learns it once.
-    //
-    // Editing happens on in-memory working state and is written back only on Save, so painting stays
-    // responsive on a room several screens wide.
+    // Authoring tool for a hub room: import the art, paint where she can walk, save the asset.
     public class HubLocationEditorWindow : EditorWindow
     {
         private enum Tool { Walkability, Props }

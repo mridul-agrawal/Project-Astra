@@ -6,13 +6,7 @@ using ProjectAstra.Core.Dialogue;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Brings up the visit the campaign is on: loads its progression, builds its opening room, and
-    // puts the cast where the visit says they stand. Runs early so everything exists before the
-    // camera and the HUD look for it.
-    //
-    // Same shape as MapBootstrapper, including the fallback for pressing Play straight into this
-    // scene. The room itself is built by HubLocationLoader, which every doorway uses too, so
-    // arriving at a room always means the same thing.
+    // Brings up the visit the campaign is on: its progression, its opening room, and its cast.
     [DefaultExecutionOrder(-100)]
     public sealed class HubBootstrapper : MonoBehaviour
     {

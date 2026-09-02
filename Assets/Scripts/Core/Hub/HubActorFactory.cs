@@ -4,13 +4,7 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Builds a hub actor out of a character's authored definition. Assembled in code rather than
-    // instantiated from a prefab because the project has no character prefabs at all — battle units
-    // are built the same way, in UnitSpawner.
-    //
-    // Identity, map sprite, walk animations and dialogue speaker all come from the existing
-    // UnitDefinition, so a character is authored once and shows up correctly in both the hub and a
-    // battle.
+    // Builds a hub actor out of a character's authored UnitDefinition.
     public static class HubActorFactory
     {
         private const string SpriteChildName = "Sprite";

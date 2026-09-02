@@ -6,12 +6,7 @@ using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Puts a room on screen: its art, its collision, the people standing in it, and the protagonist
-    // wherever she is meant to arrive.
-    //
-    // One path for both the opening of a visit and every doorway after it, so a room is built the
-    // same way however she got there — which is what stops a door round trip from duplicating a
-    // character or forgetting a relocation.
+    // Puts a room on screen: its art, its collision, the cast standing in it, and the protagonist.
     public sealed class HubLocationLoader : MonoBehaviour
     {
         [SerializeField] private HubLocationHost locationHost;

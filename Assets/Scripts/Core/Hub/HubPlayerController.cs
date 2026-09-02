@@ -8,9 +8,6 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.Hub
 {
     // Walks the protagonist and works out what a press in front of her would act on.
-    //
-    // Polling rather than subscribing sidesteps DelayedAutoShift: its 0.4s-then-0.1s cadence is
-    // grid-cursor feel, and walking needs the raw held state.
     [RequireComponent(typeof(HubActor))]
     public sealed class HubPlayerController : MonoBehaviour
     {

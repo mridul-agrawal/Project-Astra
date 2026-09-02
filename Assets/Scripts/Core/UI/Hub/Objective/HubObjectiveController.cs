@@ -5,10 +5,6 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.UI.Hub.Objective
 {
     // Keeps the objective line and its counter in step with the visit's progression.
-    //
-    // Hidden while a conversation or an event is running and restored with current text when the
-    // player gets control back, which is what the spec asks for — the HUD should never talk over a
-    // scene.
     public sealed class HubObjectiveController
     {
         public HubObjectiveView objectiveView;

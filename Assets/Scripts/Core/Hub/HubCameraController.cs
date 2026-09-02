@@ -4,21 +4,6 @@ using ProjectAstra.Core.Camera;
 namespace ProjectAstra.Core.Hub
 {
     // Follows the protagonist and never shows past the edges of the room she is in.
-    //
-    // Three rules keep this from shimmering, all of them consequences of the pixel-perfect camera
-    // being set to snap sprites to the pixel grid:
-    //
-    //   1. Her position is never rounded. At 112 px/s she covers under two pixels a frame, so
-    //      rounding the character would stutter. Snapping is the camera's job, not hers.
-    //   2. The camera IS rounded, to whole pixels. If it sat on a fraction while sprites snapped,
-    //      different sprites would round different ways and the whole scene would crawl.
-    //   3. The follow is hard, with no smoothing. A lerped camera quantises out of phase with the
-    //      character, which reads as her jittering inside the frame. Movement here is constant
-    //      speed and cardinal, so there is nothing for smoothing to smooth.
-    //
-    // The hub's counterpart to CameraController, which does the same job for the battle map but
-    // from an entirely different input: that one is welded to the grid cursor, stores its position
-    // as a Vector2Int, and scrolls a whole tile at a time. Nothing here quantises to tiles.
     [DefaultExecutionOrder(100)]
     [RequireComponent(typeof(MapCamera))]
     public sealed class HubCameraController : MonoBehaviour
@@ -42,6 +27,8 @@ namespace ProjectAstra.Core.Hub
 
         private MapCamera MapCameraOrNull => mapCamera != null ? mapCamera : mapCamera = GetComponent<MapCamera>();
 
+        // A hard follow, and only the camera is rounded to whole pixels. Smoothing it, or rounding
+        // her as well, makes the two quantise out of step and the whole scene crawls.
         private void LateUpdate()
         {
             if (target == null || HubLocationService.Instance == null) return;

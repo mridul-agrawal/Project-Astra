@@ -10,14 +10,8 @@ using ProjectAstra.Core.Units;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Builds Hub Interaction 1 as the spec's sequence: speak to the other five students, collect the
-    // report card from the Guru, then the training-ground beat that leads into Map 1.
-    //
-    // The SHAPE here is real — the objectives, the counter, the branching, the departure checks are
-    // all the shipping systems. The CONTENT is not. Every line reads PLACEHOLDER, and the cast all
-    // stand in the greybox courtyard rather than the authored Hub, because neither the map nor
-    // the script exists yet. docs/hub/hub1-content-owed.md lists exactly what design still owes;
-    // the spec is explicit that programmers don't invent any of it.
+    // Builds Hub Interaction 1's placeholder content: five students, the report card, the departure.
+    // Every line reads PLACEHOLDER; docs/hub/hub1-content-owed.md lists what design still owes.
     public static class Hub1Builder
     {
         private const string DataFolder = "Assets/Gurukul/Hub1";

@@ -4,10 +4,6 @@ using ProjectAstra.Core.Dialogue;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // Shared by everything whose whole answer to a press is "say something".
-    //
-    // Which conversation, and whether this thing is worth walking up to at all, are left to the
-    // subclass; getting the words on screen and announcing that they finished is the same job
-    // either way.
     public abstract class ConversationInteractable : InteractableBehaviour
     {
         [SerializeField] private DialogueScriptCatalog scriptCatalog;

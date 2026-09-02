@@ -1,10 +1,6 @@
 namespace ProjectAstra.Core.Hub.Events
 {
-    // Decides whether an event is allowed to start.
-    //
-    // Two rules, both from the spec: a one-time event never runs twice, and nothing interrupts an
-    // event already in progress. Keeping them here rather than scattered through the runner means
-    // both are one place and both are testable.
+    // Decides whether an event may start: never twice if it is one-time, never over a running one.
     public class EventQueueGuard
     {
         private readonly HubRuntimeState state;

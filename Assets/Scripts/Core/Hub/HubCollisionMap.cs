@@ -3,16 +3,10 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub
 {
     // What the protagonist can and can't walk through, at half-tile resolution.
-    //
-    // Half a tile rather than a whole one because a tall sprite blocks only its lower part — a tree
-    // that stops you at its trunk while you pass behind its canopy is a 16px rect, not a 32px cell.
-    // Whole-tile blocking would also stop the player far enough from a wall to look wrong at this
-    // zoom.
-    //
-    // Props are reference-counted rather than baked flat, so an interactable that opens or is
-    // removed mid-visit can un-stamp exactly what it stamped, even where two props overlap.
     public class HubCollisionMap
     {
+        // Half a tile, because a tall sprite blocks only its lower part: a tree stops you at its
+        // trunk while you walk behind its canopy.
         public const float CellSize = 0.5f;
         private const float Epsilon = 1e-4f;
 
@@ -46,6 +40,7 @@ namespace ProjectAstra.Core.Hub
             groundBlocked[Index(cellX, cellY)] = blocked;
         }
 
+        // Counted rather than baked flat, so overlapping props each un-stamp exactly what they added.
         public void Stamp(Rect footprint) => AddToCells(footprint, 1);
         public void Unstamp(Rect footprint) => AddToCells(footprint, -1);
 

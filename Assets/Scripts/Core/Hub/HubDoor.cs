@@ -4,10 +4,7 @@ using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub
 {
-    // A way between two rooms. Authored on the location it stands in.
-    //
-    // A doorway is an interaction, not a walk-through hole: she has to stand at it, face it, and
-    // press INTERACT. Walking into a door does nothing, which is what the spec asks for.
+    // A way between two rooms, authored on the room it stands in.
     [Serializable]
     public struct HubDoor
     {

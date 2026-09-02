@@ -2,10 +2,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub.Interaction
 {
-    // Something in the world she can look at: a shelf, a report card on a table, a noticeboard.
-    //
-    // Its availability lives in the visit's runtime state rather than on the component, so an
-    // objective can switch it on, gate it or use it up without finding the GameObject.
+    // Something in the world she can look at: a shelf, a report card, a noticeboard.
     public sealed class InspectableInteractable : ConversationInteractable
     {
         [SerializeField] private string interactableId;

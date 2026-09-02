@@ -2,12 +2,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Where something in the world sits on screen, and which way to point when it isn't on screen
-    // at all.
-    //
-    // Also the one place the project's two resolutions meet. Gameplay renders at 480x270 with 32px
-    // tiles; the UI canvas is 1920x1080. That exact 4x mapping is currently restated by hand in
-    // every HUD file — this is where it stops being restated.
+    // Where something in the world sits on screen, and which way to point when it is off screen.
     public static class HubScreenSpace
     {
         public const float GameplayWidth = 480f;
@@ -39,10 +34,7 @@ namespace ProjectAstra.Core.Hub
         }
     }
 
-    // Works out where on the screen edge to draw a nudge toward something the player can't see.
-    //
-    // The spec allows a restrained edge indicator and rules out a minimap, a compass, distance
-    // numbers or a route line — so this returns a position and a direction and nothing else.
+    // Where on the screen edge to draw a nudge toward something the player can't see.
     public static class EdgeIndicatorSolver
     {
         // Where the line from the middle of the screen toward the target crosses the edge, pulled in

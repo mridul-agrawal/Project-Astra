@@ -7,18 +7,7 @@ using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Points at everything the active objective still needs.
-    //
-    // One marker per target, drawn one of two ways: over its head while it is on screen, and as an
-    // arrow on the screen edge while it isn't. They are the same thing to a player — "go here" —
-    // so they are decided together rather than by two systems that could disagree.
-    //
-    // World markers are parented to what they mark, so a character who walks or is relocated carries
-    // theirs along — the trick the battle map's HP bars use, and the reason nothing chases a moving
-    // target.
-    // Runs after HubCameraController, which moves in LateUpdate at 100. Reading the camera before it
-    // has settled would decide what is off screen from where the camera was last frame — which on
-    // the first frame is the origin, so every target would briefly read as off screen at once.
+    // Points at everything the active objective still needs, over its head or on the screen edge.
     [DefaultExecutionOrder(110)]
     public sealed class HubMarkerManager : MonoBehaviour
     {
@@ -42,6 +31,8 @@ namespace ProjectAstra.Core.Hub
             if (cameraRig == null) cameraRig = FindFirstObjectByType<HubCameraController>();
         }
 
+        // Runs after HubCameraController, which moves at 100. Reading the camera before it settles
+        // would judge what is off screen from where it stood last frame.
         private void LateUpdate()
         {
             offScreen.Clear();

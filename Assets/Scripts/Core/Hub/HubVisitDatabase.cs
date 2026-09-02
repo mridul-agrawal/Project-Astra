@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Lookup from a string visit id to its HubVisitData asset, so a campaign step can name a visit
-    // without holding a direct asset reference. Mirrors MapCatalog.
+    // Lookup from a visit id to its HubVisitData asset.
     [CreateAssetMenu(fileName = "HubVisitDatabase", menuName = "Project Astra/Hub/Visit Database")]
     public class HubVisitDatabase : ScriptableObject
     {

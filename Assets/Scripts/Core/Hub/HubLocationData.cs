@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // A prop whose blocking area is smaller than its picture. Kept as a rect rather than baked into
-    // the mask so an interactable that opens or is cleared away can un-stamp exactly what it added.
+    // A prop whose blocking area is smaller than its picture.
     [Serializable]
     public struct HubPropFootprint
     {
@@ -18,12 +17,7 @@ namespace ProjectAstra.Core.Hub
         public bool startsSolid;
     }
 
-    // One walkable space in the Hub: the courtyard, the Library, a student's house. Art is one
-    // painted PNG; where you can walk is separate data painted over it in the location editor.
-    //
-    // Its own type rather than a battle MapData because the two want different things — MapData
-    // caps at 64x64, routes passability through a per-movement-type cost table the hub is not
-    // allowed to use, and has nowhere to put sub-tile footprints.
+    // One walkable space in the hub: a painted PNG, plus the walkability painted over it.
     [CreateAssetMenu(fileName = "HubLocationData", menuName = "Project Astra/Hub/Location Data")]
     public class HubLocationData : ScriptableObject
     {

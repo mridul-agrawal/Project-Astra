@@ -23,12 +23,7 @@ namespace ProjectAstra.Core.Hub
         Exhausted
     }
 
-    // One world change an objective applies when it completes. Effects write into the visit's
-    // runtime state rather than touching the scene, so the same list replays identically whether
-    // the player is standing outside or is three rooms away inside a house.
-    //
-    // One class covers every kind, so most fields are blank for any given effect — the drawer shows
-    // only the ones that kind uses, the way CampaignStepDrawer does.
+    // One world change an objective applies when it completes.
     [Serializable]
     public class HubEffect
     {

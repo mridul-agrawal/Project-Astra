@@ -3,9 +3,6 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub.Events
 {
     // Watches for her walking into a patch of ground an event is waiting on.
-    //
-    // Checked only during free exploration, so an event can't set itself off while another one is
-    // already moving her through the same spot.
     [DefaultExecutionOrder(45)]
     public sealed class HubAreaTriggerWatcher : MonoBehaviour
     {

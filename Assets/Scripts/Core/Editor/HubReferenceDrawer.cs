@@ -5,9 +5,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Draws a [HubRef] ScriptableObject field as: object picker + [+] create-new + [↗] open-in-hub.
-    // "+" makes a fresh asset of the field's type (a menu of concrete kinds when the field type is
-    // abstract, e.g. ItemDefinition), wires it into the property, and jumps to it in the Data Hub.
+    // Draws a [HubRef] field as a picker, plus buttons to create the asset and open the Data Hub.
     [CustomPropertyDrawer(typeof(HubRefAttribute))]
     public class HubReferenceDrawer : PropertyDrawer
     {

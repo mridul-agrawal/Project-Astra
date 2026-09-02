@@ -4,9 +4,6 @@ using ProjectAstra.Core.Animation;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // A way between two rooms.
-    //
-    // A shut one still answers: it plays its denial line rather than being an invisible wall, which
-    // is why being locked does not make it unavailable.
     public sealed class DoorInteractable : ConversationInteractable
     {
         [SerializeField] private string doorId;

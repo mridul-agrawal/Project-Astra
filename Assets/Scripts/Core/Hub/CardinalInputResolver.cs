@@ -3,16 +3,7 @@ using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Turns four held direction buttons into the single direction the protagonist should walk.
-    // Fed the raw held state every frame rather than subscribing to anything, so it is pure C# and
-    // the whole rule set unit-tests without an input device.
-    //
-    // The rules, all from the movement spec:
-    //   - one cardinal axis at a time; never a diagonal
-    //   - when two perpendicular directions are held, the one pressed most recently wins
-    //   - when both are first pressed on the same update, horizontal wins
-    //   - when both directions on one axis are held, that axis goes neutral until one is released
-    //   - releasing the active direction resumes the other held one at once, with no new press
+    // Turns four held direction buttons into the one direction the protagonist should walk.
     public class CardinalInputResolver
     {
         // Most recently pressed last, so resolving walks it backwards.

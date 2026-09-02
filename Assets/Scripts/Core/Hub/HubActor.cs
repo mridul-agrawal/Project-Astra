@@ -4,10 +4,6 @@ using ProjectAstra.Core.Animation;
 namespace ProjectAstra.Core.Hub
 {
     // Anyone who stands in the hub: the protagonist and every character she can walk up to.
-    //
-    // Position is a float in tiles, measured at the feet, and the transform simply follows it. That
-    // is the whole reason this isn't TestUnit — a battle unit's position is a Vector2Int that gets
-    // snapped back to a tile centre in half a dozen places, including from OnValidate.
     public sealed class HubActor : MonoBehaviour
     {
         [Tooltip("Blocking box relative to the feet, in tiles. Narrower than the sprite so she can stand close to walls without her shoulders stopping her.")]
@@ -19,6 +15,8 @@ namespace ProjectAstra.Core.Hub
         private bool solid;
         private Rect stamped;
 
+        // A float in tiles, measured at the feet, with the transform following it. That is the whole
+        // reason this isn't TestUnit, whose position snaps back to a tile centre in half a dozen places.
         public Vector2 Position { get; private set; }
         public Facing Facing => facing;
         public Rect FootprintOffset => footprintOffset;

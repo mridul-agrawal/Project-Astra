@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Lookup from a string location id to its HubLocationData asset, so visits and doors can name a
-    // room without holding a direct reference. Mirrors MapCatalog.
+    // Lookup from a location id to its HubLocationData asset.
     [CreateAssetMenu(fileName = "HubLocationDatabase", menuName = "Project Astra/Hub/Location Database")]
     public class HubLocationDatabase : ScriptableObject
     {

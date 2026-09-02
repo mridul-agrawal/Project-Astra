@@ -7,11 +7,7 @@ using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Hub.Events
 {
-    // Plays an authored sequence: locks control, works through the actions in order, then hands
-    // control back only once every final position and state is settled.
-    //
-    // Movement here goes through the same HubMover the player uses, so a character walking a
-    // route respects the same walls she does and arrives looking the same way she would.
+    // Plays an authored sequence: locks control, works through the actions, hands control back.
     [DefaultExecutionOrder(40)]
     public sealed class HubEventRunner : MonoBehaviour
     {

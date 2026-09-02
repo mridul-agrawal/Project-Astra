@@ -1,11 +1,6 @@
 namespace ProjectAstra.Core.Hub
 {
-    // Stops the interaction prompt strobing when she stands right on the edge of a target's reach,
-    // where a few pixels of drift flips it in and out every frame.
-    //
-    // Asymmetric on purpose: a target is picked up the instant it becomes valid, so the prompt feels
-    // immediate, but it is only let go after it has stayed invalid for a moment. Swapping straight
-    // from one target to another is instant too — that reads as intent, not as flicker.
+    // Stops the prompt strobing when she stands right on the edge of a target's reach.
     public class PromptHysteresis<T> where T : class
     {
         public const float DefaultReleaseDelay = 0.12f;

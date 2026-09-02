@@ -19,13 +19,7 @@ namespace ProjectAstra.Core.Editor
         }
     }
 
-    // One pass over every authored hub asset, surfacing the things the inspector can't: an objective
-    // nobody can finish, a marker over something that isn't there, a door with no way back, a
-    // conversation branch that leads nowhere.
-    //
-    // The spec calls these blocking content errors and expects them found before play rather than
-    // during it, so this is the checklist in code. Same shape as DataHubProblems, and shown the same
-    // way.
+    // One pass over every authored hub asset, surfacing the mistakes the inspector can't show.
     public static class HubProblems
     {
         // The spec's travel target: no mandatory route should take longer than this at walking pace.

@@ -5,11 +5,6 @@ using ProjectAstra.Core.State;
 namespace ProjectAstra.Core.Hub
 {
     // Answers one question for the whole hub: may anything here act right now?
-    //
-    // Conversations and scripted sequences used to be states in here; they are high-level
-    // GameStates now, so this asks GameStateManager about those. Walking through a doorway and
-    // leaving for the battle used to be states too, but neither is a mode the player is *in* —
-    // each is a handover in flight, so each is a lock that is held while it runs.
     public class HubControlGate
     {
         // Read anywhere via HubControlGate.Instance, the same shape as HubLocationService — half

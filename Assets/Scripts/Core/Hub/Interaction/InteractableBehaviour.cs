@@ -4,9 +4,6 @@ using ProjectAstra.Core.Animation;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // Everything an interactable needs that has nothing to do with what it is.
-    //
-    // Its own trigger is its reach region, so a wide counter is a wide collider and a designer
-    // draws it rather than typing a number. Subclasses say what they are and what a press does.
     public abstract class InteractableBehaviour : MonoBehaviour, IInteractable
     {
         [Tooltip("Off for something reachable from any side — a noticeboard, a wide counter.")]

@@ -3,13 +3,7 @@ using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub.Events
 {
-    // Works out which way a character should step to reach the next corner of an authored route.
-    //
-    // Horizontal first, then vertical, so a leg is always one cardinal direction — the same rule the
-    // player moves under, and the reason a scripted walk never produces a diagonal.
-    //
-    // Arrival has a tolerance and the caller snaps to the corner on reaching it, so a character
-    // settles instead of shuffling back and forth over the last fraction of a pixel.
+    // Works out which way a character steps next to reach the corner of an authored route.
     public static class CardinalRouteFollower
     {
         // Under a third of a pixel at 32px tiles: close enough to snap, far enough not to trip early.
@@ -18,7 +12,8 @@ namespace ProjectAstra.Core.Hub.Events
         public static bool HasArrived(Vector2 from, Vector2 to) =>
             Mathf.Abs(to.x - from.x) <= ArrivalTolerance && Mathf.Abs(to.y - from.y) <= ArrivalTolerance;
 
-        // Null once the corner is reached.
+        // Horizontal first, then vertical, so a leg is always one cardinal direction and a scripted
+        // walk never produces a diagonal. Null once the corner is reached.
         public static Facing? NextStep(Vector2 from, Vector2 to)
         {
             float dx = to.x - from.x;

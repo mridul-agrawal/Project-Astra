@@ -3,9 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // One stage of a hub visit: the line the player reads, what finishes it, and what changes about
-    // the world when it does. Its own asset because content iterates on these constantly and a
-    // visit that owned them inline would be an unmergeable wall of YAML.
+    // One stage of a visit: the line she reads, what finishes it, and what changes when it does.
     [CreateAssetMenu(fileName = "HubObjectiveData", menuName = "Project Astra/Hub/Objective Data")]
     public class HubObjectiveData : ScriptableObject
     {

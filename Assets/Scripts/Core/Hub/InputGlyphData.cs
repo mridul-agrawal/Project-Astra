@@ -5,11 +5,7 @@ using ProjectAstra.Core.Input;
 
 namespace ProjectAstra.Core.Hub
 {
-    // What to draw on a prompt for a given action, per input device. The first thing in the project
-    // to use InputManager's device detection, which has been sitting there with no consumers.
-    //
-    // Labels now, sprites when the art pass lands — the field is already here so nothing downstream
-    // changes when they arrive.
+    // What to draw on a prompt for a given action, per input device.
     [CreateAssetMenu(fileName = "InputGlyphData", menuName = "Project Astra/Hub/Input Glyph Data")]
     public class InputGlyphData : ScriptableObject
     {

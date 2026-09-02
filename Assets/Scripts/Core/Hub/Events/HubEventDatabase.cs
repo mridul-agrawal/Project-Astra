@@ -3,8 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub.Events
 {
-    // Lookup from an event id to its asset, and the list the area-trigger watcher walks. Mirrors
-    // MapCatalog.
+    // Lookup from an event id to its asset, and the list the area-trigger watcher walks.
     [CreateAssetMenu(fileName = "HubEventDatabase", menuName = "Project Astra/Hub/Event Database")]
     public class HubEventDatabase : ScriptableObject
     {

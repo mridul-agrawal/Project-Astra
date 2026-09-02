@@ -3,9 +3,7 @@ using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub.Interaction
 {
-    // The two questions most interactables ask about the player, kept pure so the awkward angles
-    // have tests. Offered, not imposed — a signboard readable from any side ignores IsFacing, and
-    // anything with its own idea of reach overrides CanReach instead of calling these.
+    // The two questions most interactables ask about the player: is she facing it, can she see it.
     public static class InteractionReachRules
     {
         // The spec's "within one environmental tile". The size a trigger is built to when nobody

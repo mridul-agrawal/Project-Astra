@@ -3,13 +3,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Walks one visit's objectives in order and owns the only path by which progress is credited.
-    // Pure C# and driven entirely by Report(), so the whole progression model unit-tests without a
-    // scene — same shape as DialogueRunner and CursorStateMachine.
-    //
-    // Callers report a target only once its conversation or event has actually finished. That is
-    // what makes the GDD's completion order hold: the trigger ends, then the objective completes,
-    // then its effects land, then the next objective appears.
+    // Walks one visit's objectives in order, and owns the only path by which progress is credited.
     public class ObjectiveSequenceRunner
     {
         private readonly HubObjectiveData[] objectives;

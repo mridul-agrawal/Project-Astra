@@ -11,18 +11,8 @@ using ProjectAstra.Core.UI.Hub.Prompt;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Builds the hub HUD as plain boxes and text: every surface the hub needs, working, with looks
-    // that are meant to be replaced.
-    //
-    // Styling is done by hand afterwards, so this deliberately doesn't try to be pretty — it exists
-    // so the systems underneath have something real to drive. The MVC behind each surface is the
-    // shipping code, so restyling only ever touches sprites, fonts and colours.
-    //
-    // Rebuilding the scene regenerates all of this, so hand-styling belongs on a prefab or on the
-    // saved scene rather than in here.
-    //
-    // Sizes are authored in the 480x270 gameplay space and multiplied by 4 for the 1920x1080 UI
-    // canvas, the same convention every other HUD script in the project follows.
+    // Builds the hub HUD as plain boxes and text, for the designer to style by hand afterwards.
+    // Rebuilding regenerates all of it, so hand-styling belongs on the saved scene, never here.
     public static class HubHudBuilder
     {
         private const float Scale = 4f;

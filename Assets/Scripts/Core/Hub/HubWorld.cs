@@ -4,8 +4,7 @@ using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Who and what is currently standing in the loaded room, by id — so an objective marker can
-    // be hung on "the blackboard" without anything having to know where the blackboard is.
+    // Who and what is standing in the loaded room, by id.
     public static class HubWorld
     {
         private static readonly List<HubActor> actors = new();
@@ -43,6 +42,7 @@ namespace ProjectAstra.Core.Hub
             return null;
         }
 
+        // So an objective marker can be hung on "the blackboard" without knowing where it stands.
         public static InspectableInteractable FindInspectable(string interactableId)
         {
             foreach (InspectableInteractable inspectable in inspectables)

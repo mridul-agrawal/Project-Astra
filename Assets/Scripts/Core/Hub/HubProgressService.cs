@@ -2,12 +2,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Single source of truth for "which visit are we in and how far through it are we". Loaded once
-    // per visit by HubBootstrapper, then read anywhere via HubProgressService.Instance —
-    // same shape as MapService.
-    //
-    // Session-scoped by design: a visit is a complete authored starting state, so loading one
-    // deliberately throws away whatever the previous visit left behind.
+    // Single source of truth for which visit she is in and how far through it she is.
     public class HubProgressService
     {
         public static HubProgressService Instance { get; private set; }

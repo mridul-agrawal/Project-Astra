@@ -7,9 +7,6 @@ using ProjectAstra.Core.Input;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // Holds the one thing a press would act on, and acts on it.
-    //
-    // Plain C# and fed rather than fetching: whoever owns the player hands it the pose and whether
-    // confirm is down, so every rule below is testable without a scene.
     public sealed class PlayerInteractionController
     {
         private readonly List<IInteractable> inRange = new();

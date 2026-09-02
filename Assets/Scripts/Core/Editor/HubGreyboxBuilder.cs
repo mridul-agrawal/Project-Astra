@@ -10,11 +10,7 @@ using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Makes a programmer-art Hub to build against: a courtyard wider than the screen, walls to
-    // bump into, a tree tall enough to walk behind, and a house to go inside.
-    //
-    // Everything here is placeholder. Real art drops into the same fields on the same assets with
-    // no code change — the point is only that the hub systems have somewhere to run today.
+    // Makes the programmer-art hub to build against: a courtyard, walls, a tree, and a house.
     public static class HubGreyboxBuilder
     {
         private const int TilePixels = 32;

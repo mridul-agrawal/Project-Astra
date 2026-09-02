@@ -30,13 +30,7 @@ namespace ProjectAstra.Core.Hub
         public string conversationId;
     }
 
-    // Everything that has changed about the current visit since it loaded. Lives for the session
-    // only — nothing is written to disk yet — but it is kept as plain serializable data with lists
-    // instead of dictionaries and asset ids instead of asset references, so the eventual save
-    // ticket is wiring rather than a rewrite.
-    //
-    // Lookups are linear because these collections hold a few dozen entries at most; a dictionary
-    // would cost more in serialization awkwardness than it saves in time.
+    // Everything that has changed about the current visit since it loaded. Session-scoped.
     [Serializable]
     public class HubRuntimeState : IDialogueMemory, IProgressionQuery
     {

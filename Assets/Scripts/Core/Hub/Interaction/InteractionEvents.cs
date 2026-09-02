@@ -3,10 +3,6 @@ using System;
 namespace ProjectAstra.Core.Hub.Interaction
 {
     // What an interactable announces after it has done something, in its own words.
-    //
-    // The other half of the progression seam. Reads go out through IProgressionQuery; this is the
-    // way back, and it is deliberately one-way — an interactable says what happened and never
-    // finds out whether it completed anything.
     public static class InteractionEvents
     {
         // "Enter Play Mode" with domain reload off keeps statics between sessions, which would

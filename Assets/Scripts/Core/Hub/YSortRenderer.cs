@@ -2,12 +2,8 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Orders a sprite by how far down the screen it stands, so the protagonist passes behind a tree
-    // whose base is below her and in front of one whose base is above.
-    //
-    // Done per renderer rather than by switching the project's transparency sort to a custom axis:
-    // that setting lives in both GraphicsSettings and Renderer2D, no test guards it, and flipping it
-    // would silently reorder every sprite on the battle map too.
+    // Orders a sprite by how far down the screen it stands, so she can pass behind a tree.
+    // Per renderer, because the project's own sort axis would reorder the battle map too.
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class YSortRenderer : MonoBehaviour
     {

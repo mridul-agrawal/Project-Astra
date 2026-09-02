@@ -18,10 +18,6 @@ namespace ProjectAstra.Core.Hub.Events
     }
 
     // The things an event can do. Append only.
-    //
-    // Between them these cover the spec's action list: locking control and hiding prompts are
-    // handled by the event state itself rather than being actions, and an objective update is a
-    // raised flag, since that is how the objective system already listens.
     public enum HubEventActionKind
     {
         PlayConversation,
@@ -62,9 +58,6 @@ namespace ProjectAstra.Core.Hub.Events
     }
 
     // An authored sequence: characters walking, lines being spoken, the world being rearranged.
-    //
-    // Its own asset rather than living inside a visit, because the same event is often wanted in
-    // more than one and a visit that owned them inline would be unmergeable.
     [CreateAssetMenu(fileName = "HubEventData", menuName = "Project Astra/Hub/Event Data")]
     public class HubEventData : ScriptableObject
     {

@@ -4,14 +4,6 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub
 {
     // How long it takes to walk somewhere, and whether it can be walked to at all.
-    //
-    // The spec asks for every mandatory route in a visit to be timed against a 10-12 second target
-    // at the standard speed, and for anything slower to be reported to design rather than quietly
-    // patched with a teleport or a per-route speed. This is what does the timing.
-    //
-    // Searched over the same half-tile cells movement uses, four-connected because she only ever
-    // walks in cardinal directions, and testing the whole footprint at each step so a route that
-    // needs her to be narrower than she is doesn't count as walkable.
     public static class WalkableRouteTimer
     {
         public static bool TryMeasureSeconds(HubCollisionMap map, Rect footprintOffset,

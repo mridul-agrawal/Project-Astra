@@ -2,13 +2,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Holds whichever room is currently loaded. One at a time: the old one is destroyed and the new
-    // one built from its asset.
-    //
-    // Rooms are instantiated on demand rather than all sitting in the scene, because six student
-    // houses plus the Library and the Guru's Quarters would make a scene file nobody could merge —
-    // and rather than loaded as scenes, because SceneLoader only loads in single mode and would
-    // take the whole hub down with it at every doorway.
+    // Holds whichever room is currently loaded, one at a time.
     public sealed class HubLocationHost : MonoBehaviour
     {
         private const string GroundSortingLayer = "Ground";

@@ -4,11 +4,6 @@ using ProjectAstra.Core.Animation;
 namespace ProjectAstra.Core.Hub
 {
     // Moves a footprint through the collision map at a constant speed, one axis at a time.
-    //
-    // Constant velocity on purpose: the spec asks for movement that starts and stops on the frame
-    // the button does, with no acceleration, deceleration or drift.
-    //
-    // Static and map-in so the whole thing tests without a scene.
     public static class HubMover
     {
         // 3.5 tiles per second is 112 px/s at the project's 32px tiles.
@@ -24,6 +19,8 @@ namespace ProjectAstra.Core.Hub
 
         private const float MovedThreshold = 1e-5f;
 
+        // Constant velocity: she starts and stops on the frame the button does, with no acceleration,
+        // deceleration or drift.
         public static Vector2 Move(HubCollisionMap map, Vector2 position, Rect footprintOffset,
             Facing? direction, float deltaTime, out bool moved, float speed = DefaultSpeedTilesPerSecond)
         {

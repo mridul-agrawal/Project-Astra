@@ -4,8 +4,7 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Editor
 {
-    // Shows everything wrong with the authored hub content, with a click through to the asset that
-    // owns each one. The spec calls these blocking content errors; this is where they surface.
+    // Lists everything wrong with the authored hub content, with a click through to the asset.
     public class HubProblemsWindow : EditorWindow
     {
         private List<HubProblem> problems;
