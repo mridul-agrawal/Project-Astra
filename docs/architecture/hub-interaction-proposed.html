@@ -146,16 +146,16 @@
           <text x="1035" y="774" font-size="10" fill="var(--ink-soft)">a collider, and nothing else</text>
 
           <rect x="180" y="840" width="410" height="90" rx="3" fill="var(--accent-bg)" stroke="var(--accent)" stroke-dasharray="6 3"/>
-          <text x="385" y="866" font-size="12.5" fill="var(--accent)">IProgressionQuery</text>
-          <text x="385" y="887" font-size="10" fill="var(--accent)">declared here, implemented by the quest system</text>
-          <text x="385" y="905" font-size="10" fill="var(--accent)">IsGateOpen &#183; IsObjectiveActive &#183; HasCompleted</text>
-          <text x="385" y="922" font-size="10" fill="var(--accent)">availability is asked, never worked out in here</text>
+          <text x="385" y="864" font-size="12.5" fill="var(--accent)">asks &#8212; IProgressionQuery</text>
+          <text x="385" y="885" font-size="10" fill="var(--accent)">IsGateOpen &#183; IsObjectiveActive &#183; HasCompleted</text>
+          <text x="385" y="903" font-size="10" fill="var(--accent)">declared here, implemented by the quest system</text>
+          <text x="385" y="921" font-size="10" fill="var(--accent)">a locked door never learns what an objective is</text>
 
           <rect x="620" y="840" width="410" height="90" rx="3" fill="var(--ground)" stroke="var(--ink-soft)" stroke-dasharray="6 3"/>
-          <text x="825" y="866" font-size="12.5" fill="var(--ink-soft)">first consequences</text>
-          <text x="825" y="887" font-size="10" fill="var(--ink-soft)">a conversation &#183; a room change &#183; a departure</text>
-          <text x="825" y="905" font-size="10" fill="var(--ink-soft)">each interactable calls its own, directly</text>
-          <text x="825" y="922" font-size="10" fill="var(--ink-soft)">no central switch deciding which one this was</text>
+          <text x="825" y="864" font-size="12.5" fill="var(--ink-soft)">announces &#8212; an event</text>
+          <text x="825" y="885" font-size="10" fill="var(--ink-soft)">&#8220;this conversation finished&#8221; &#183; &#8220;this object was inspected&#8221;</text>
+          <text x="825" y="903" font-size="10" fill="var(--ink-soft)">said in its own words; progression decides what it means</text>
+          <text x="825" y="921" font-size="10" fill="var(--ink-soft)">and does its own thing: a conversation, a room, a departure</text>
         </g>
 
         <g font-size="10.5" fill="currentColor">
@@ -164,8 +164,8 @@
           <text x="606" y="320">talks only to</text>
           <text x="606" y="500">implements</text>
           <text x="290" y="562" text-anchor="end">uses</text>
-          <text x="388" y="828">IsAvailable &#183; locked?</text>
-          <text x="828" y="828">Interact()</text>
+          <text x="388" y="828">reads</text>
+          <text x="828" y="828">writes</text>
         </g>
         <g font-size="10.5" fill="var(--good)">
           <text x="928" y="368">registers itself when the player</text>
@@ -180,7 +180,7 @@
     <div class="key">
       <p><b>The interface is the whole idea.</b> The controller knows one type, <code>IInteractable</code>, and never asks what kind of thing it is holding. A door, a student, a noticeboard and the departure point are four classes that answer the same five questions differently.</p>
       <p><b>Adding a kind means adding a class.</b> Nothing else is edited — no enum, no gather step, no switch in a director. That is the test this design has to pass, and the reason to prefer it.</p>
-      <p><b>Availability is asked, not computed.</b> <code>IProgressionQuery</code> is declared by the interaction system and implemented by the quest system, so a door knows it is locked without anything in here knowing what an objective is. This is the part of your sketch that matters most for keeping the systems separable.</p>
+      <p><b>Nothing in here knows what a quest is.</b> Reads go out through <code>IProgressionQuery</code> &mdash; declared by the interaction system, implemented by the quest system &mdash; so a door can know it is locked without knowing why. Writes go the other way as events: an interactable announces <i>&ldquo;this conversation finished&rdquo;</i> in its own words, and progression decides whether that completes anything. Two narrow seams, both pointing outward.</p>
     </div>
   </section>
 
