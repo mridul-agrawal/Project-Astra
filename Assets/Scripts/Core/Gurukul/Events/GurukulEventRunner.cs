@@ -83,6 +83,10 @@ namespace ProjectAstra.Core.Gurukul.Events
         {
             bool departed = false;
 
+            // Borrowed, not given away. An event is free to point the camera at whoever is
+            // speaking; the player must not be left following them once it ends.
+            Transform cameraTargetBefore = cameraRig != null ? cameraRig.Target : null;
+
             foreach (GurukulEventAction action in authored.Actions)
             {
                 yield return Perform(action);
@@ -99,8 +103,11 @@ namespace ProjectAstra.Core.Gurukul.Events
             guard.Finish(authored.EventId, authored.OneTime);
             EventFinished?.Invoke(authored.EventId);
 
-            // An event that leaves for battle must not flicker back through exploration on the way.
+            // An event that leaves for battle must not flicker back through exploration on the way,
+            // and has no camera to hand back — the hub is going away.
             if (departed) yield break;
+
+            RestoreCameraTarget(cameraTargetBefore);
             GameStateManager.Instance?.RequestTransition(GameState.HubExploration, nameof(GurukulEventRunner));
         }
 
@@ -185,6 +192,15 @@ namespace ProjectAstra.Core.Gurukul.Events
 
             GurukulActor actor = GurukulWorld.FindActor(action.targetId);
             if (actor != null) cameraRig.Follow(actor.transform);
+        }
+
+        // Put back whoever the camera was on before the sequence borrowed it. A target that has
+        // since been destroyed — a character the event relocated out of the room — is left alone
+        // rather than followed into nothing.
+        private void RestoreCameraTarget(Transform previous)
+        {
+            if (cameraRig == null || previous == null) return;
+            cameraRig.Follow(previous);
         }
 
         // The sequence keeps hold of the moment while a conversation plays inside it: the service
