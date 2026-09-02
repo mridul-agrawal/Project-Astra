@@ -1,0 +1,269 @@
+<meta charset="utf-8">
+<title>Hub Quest System</title>
+<style>
+  :root {
+    --ink:#1a1a1a; --muted:#5c5c5c; --faint:#8a8a8a;
+    --bg:#ffffff; --panel:#f6f6f4; --line:#d3d3ce; --rule:#e4e4e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:#e8e8e6; --muted:#a6a6a2; --faint:#7d7d79;
+      --bg:#131315; --panel:#1c1c1f; --line:#3a3a3e; --rule:#2a2a2e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:#e8e8e6; --muted:#a6a6a2; --faint:#7d7d79;
+    --bg:#131315; --panel:#1c1c1f; --line:#3a3a3e; --rule:#2a2a2e;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0; padding: 40px 28px 90px;
+  }
+  main { max-width: 1280px; margin: 0 auto; }
+  h1 { font-size: 25px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 40px; font-size: 14px; }
+  h2 { font-size: 17px; font-weight: 600; margin: 46px 0 6px; }
+  h2 + p.note { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  figure { margin: 0 0 10px; overflow-x: auto; }
+  figure svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0 4px; }
+  th { text-align: left; font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+  td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td:first-child, th:first-child { width: 30%; }
+  ol.findings { padding-left: 20px; margin: 6px 0; }
+  ol.findings li { margin-bottom: 13px; }
+  ul.holds { padding-left: 20px; margin: 6px 0; }
+  ul.holds li { margin-bottom: 7px; }
+  svg .bx { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+  svg .panel { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 3; }
+  svg .bx.dash { fill: none; stroke: var(--faint); stroke-dasharray: 5 4; }
+  svg .t { font: 600 13px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
+  svg .d { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--muted); }
+  svg .band { font: 600 12px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--faint); letter-spacing: 0.04em; }
+  svg .ptitle { font: 600 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--faint); letter-spacing: 0.05em; }
+  svg .lbl { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--muted); }
+  svg .qn { font: 600 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
+  svg .qw { font: 10px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--muted); }
+  svg .arr { stroke: var(--ink); stroke-width: 1.3; fill: none; }
+  svg .arr.dash { stroke-dasharray: 5 4; }
+  svg .hair { stroke: var(--rule); stroke-width: 1; }
+</style>
+
+<main>
+<h1>Hub Quest System</h1>
+<p class="sub">Every script in the project that has a hand in tracking a hub visit's objectives, and how a finished
+conversation actually becomes progress. Read off the code as it stands today.</p>
+
+<h2>What a quest is made of</h2>
+<p class="note">Four authored types. There is no quest script anywhere &mdash; a visit is entirely data.</p>
+<figure>
+  <svg viewBox="0 0 1220 300" role="img" aria-label="HubVisitData holds an ordered array of HubObjectiveData. Each objective has one HubCondition that finishes it and a list of HubEffects that change the world when it does.">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs>
+  <rect class="bx" x="40" y="60" width="300" height="132" rx="5"/>
+<text class="t" x="53" y="84">HubVisitData</text>
+<text class="d" x="53" y="101">objectives[]  — an ordered array</text>
+<text class="d" x="53" y="116">characterPlacements[]</text>
+<text class="d" x="53" y="131">openGates[] · interactableOverrides[]</text>
+<text class="d" x="53" y="146">departure { mapId, mode }</text>
+<rect class="bx" x="440" y="60" width="300" height="110" rx="5"/>
+<text class="t" x="453" y="84">HubObjectiveData</text>
+<text class="d" x="453" y="101">objectiveId</text>
+<text class="d" x="453" y="116">displayText  — the line she reads</text>
+<text class="d" x="453" y="131">markerTargetIds[]  — who to point at</text>
+<rect class="bx" x="840" y="30" width="340" height="96" rx="5"/>
+<text class="t" x="853" y="54">HubCondition</text>
+<text class="d" x="853" y="71">kind  — one of five, never a mix</text>
+<text class="d" x="853" y="86">targetIds[]  — all must be satisfied</text>
+<text class="d" x="853" y="101">showCounter  — draw 0/5 or not</text>
+<rect class="bx" x="840" y="160" width="340" height="116" rx="5"/>
+<text class="t" x="853" y="184">HubEffect[]</text>
+<text class="d" x="853" y="201">SetGate · SetInteractableState</text>
+<text class="d" x="853" y="216">RelocateCharacter</text>
+<text class="d" x="853" y="231">SetCharacterConversation</text>
+<text class="d" x="853" y="246">FireEvent</text>
+<line class="arr" x1="340" y1="116" x2="436" y2="116" marker-end="url(#a)"/>
+<text class="lbl" x="388" y="108" text-anchor="middle">in order</text>
+<line class="arr" x1="740" y1="96" x2="836" y2="78" marker-end="url(#a)"/>
+<text class="lbl" x="800" y="62" text-anchor="end">finishes it</text>
+<line class="arr" x1="740" y1="140" x2="836" y2="200" marker-end="url(#a)"/>
+<text class="lbl" x="832" y="238" text-anchor="end">changes the world</text>
+  </svg>
+  <figcaption>A visit is an ordered array. One objective is active at a time and the index only ever moves forward
+  &mdash; there is no branching, no optional strand, and no second quest running alongside.</figcaption>
+</figure>
+
+<h2>How progress actually happens</h2>
+<p class="note">Top to bottom: something happens, it is announced, one listener translates it, the machine records it,
+and everyone else either gets told or asks.</p>
+<figure>
+  <svg viewBox="0 0 1240 1000" role="img" aria-label="Interactables, DialogueService and HubEventRunner raise announcements. HubProgressionListener is the only caller of Report. ObjectiveSequenceRunner and HubRuntimeState hold the quest inside HubProgressService. The HUD and the event runner are pushed events, while the marker manager, departure controller, location loader and interactables poll.">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs>
+  <text class="band" x="40" y="34">1 — Something happens in the world</text>
+<rect class="bx" x="40" y="48" width="350" height="74" rx="5"/>
+<text class="t" x="53" y="72">ConversationInteractable</text>
+<text class="d" x="53" y="89">a character is talked to, or an object</text>
+<text class="d" x="53" y="104">is looked at, and the words finish</text>
+<rect class="bx" x="420" y="48" width="320" height="74" rx="5"/>
+<text class="t" x="433" y="72">DialogueService</text>
+<text class="d" x="433" y="89">a line inside the script raises a</text>
+<text class="d" x="433" y="104">signal, mid-conversation</text>
+<rect class="bx" x="770" y="48" width="430" height="74" rx="5"/>
+<text class="t" x="783" y="72">HubEventRunner</text>
+<text class="d" x="783" y="89">a scripted sequence hits a RaiseFlag action,</text>
+<text class="d" x="783" y="104">or a signal in the conversation it is playing</text>
+<text class="band" x="40" y="166">2 — It is announced</text>
+<rect class="bx" x="40" y="180" width="700" height="58" rx="5"/>
+<text class="t" x="53" y="204">InteractionEvents   (static)</text>
+<text class="d" x="53" y="221">ConversationFinished  ·  ObjectInspected  ·  FlagRaised</text>
+<rect class="bx" x="770" y="180" width="430" height="58" rx="5"/>
+<text class="t" x="783" y="204">HubEventRunner.FlagRaised   (C# event)</text>
+<text class="d" x="783" y="221">raised again for signals inside its own conversations</text>
+<rect class="bx dash" x="880" y="252" width="320" height="34" rx="5"/>
+<text class="d" x="893" y="276">EventFinished — nothing subscribes to it</text>
+<text class="band" x="40" y="322">3 — One listener turns it into progress</text>
+<rect class="bx" x="330" y="336" width="580" height="78" rx="5"/>
+<text class="t" x="343" y="360">HubProgressionListener</text>
+<text class="d" x="343" y="377">the only caller of Report(kind, targetId) in the project</text>
+<text class="d" x="343" y="392">a flag is reported twice: once as QuizPassed, once as EventCompleted</text>
+<text class="band" x="40" y="446">4 — The machine</text>
+<rect class="panel" x="40" y="462" width="1160" height="250" rx="5"/>
+<text class="ptitle" x="60" y="486" text-anchor="start">HubProgressService — one static instance per visit</text>
+<rect class="bx" x="70" y="500" width="490" height="190" rx="5"/>
+<text class="t" x="83" y="524">ObjectiveSequenceRunner</text>
+<text class="d" x="83" y="541">Report()  — does the active objective accept this id?</text>
+<text class="d" x="83" y="556">advances the index when every target is satisfied</text>
+<text class="d" x="83" y="571">applies the finished objective&#x27;s effects</text>
+<text class="d" x="83" y="586">fires ObjectiveChanged · ProgressChanged ·</text>
+<text class="d" x="83" y="601">ObjectiveCompleted · EventRequested</text>
+<rect class="bx" x="690" y="500" width="480" height="190" rx="5"/>
+<text class="t" x="703" y="524">HubRuntimeState</text>
+<text class="d" x="703" y="541">objectiveIndex  ·  satisfiedTargets (cleared on advance)</text>
+<text class="d" x="703" y="556">completedObjectiveIds · completedConversationIds</text>
+<text class="d" x="703" y="571">openGates · interactableStates · relocations</text>
+<text class="d" x="703" y="586">also the dialogue system&#x27;s IDialogueMemory,</text>
+<text class="d" x="703" y="601">and the interactables&#x27; IProgressionQuery</text>
+<line class="arr" x1="560" y1="558" x2="690" y2="558" marker-end="url(#a)"/>
+<text class="lbl" x="625" y="550" text-anchor="middle">writes</text>
+<line class="arr" x1="690" y1="632" x2="560" y2="632" marker-end="url(#a)"/>
+<text class="lbl" x="625" y="624" text-anchor="middle">reads</text>
+<text class="band" x="40" y="746">5 — Who finds out</text>
+<rect class="panel" x="40" y="760" width="590" height="216" rx="5"/>
+<text class="ptitle" x="60" y="784" text-anchor="start">TOLD   —   pushed by C# events</text>
+<rect class="bx" x="64" y="800" width="280" height="158" rx="5"/>
+<text class="t" x="77" y="824">HubObjectiveController</text>
+<text class="d" x="77" y="841">renders HubObjectiveView:</text>
+<text class="d" x="77" y="856">the objective line, the 0/5</text>
+<text class="d" x="77" y="871">counter, and the done cue</text>
+<text class="d" x="77" y="886">hidden unless the state is</text>
+<text class="d" x="77" y="901">HubExploration</text>
+<rect class="bx" x="358" y="800" width="248" height="158" rx="5"/>
+<text class="t" x="371" y="824">HubEventRunner</text>
+<text class="d" x="371" y="841">plays the authored event</text>
+<text class="d" x="371" y="856">an objective asked for</text>
+<text class="d" x="371" y="871">when it completed</text>
+<text class="d" x="371" y="886">which is how Hub 1 reaches</text>
+<text class="d" x="371" y="901">its departure</text>
+<rect class="panel" x="660" y="760" width="540" height="216" rx="5"/>
+<text class="ptitle" x="680" y="784" text-anchor="start">ASKED   —   read on demand, or polled every frame</text>
+<text class="qn" x="682" y="814">HubMarkerManager</text>
+<text class="qw" x="682" y="829">ActiveObjective, IsMarkerTargetOutstanding — every LateUpdate</text>
+<line class="hair" x1="678" y1="839" x2="1182" y2="839"/>
+<text class="qn" x="682" y="856">HubDepartureController</text>
+<text class="qw" x="682" y="871">CanDepart, via DepartureGate — on the press that leaves</text>
+<line class="hair" x1="678" y1="881" x2="1182" y2="881"/>
+<text class="qn" x="682" y="898">HubLocationLoader</text>
+<text class="qw" x="682" y="913">TryGetPlacement — on every room load</text>
+<line class="hair" x1="678" y1="923" x2="1182" y2="923"/>
+<text class="qn" x="682" y="940">the interactables</text>
+<text class="qw" x="682" y="955">IsGateOpen, GetInteractableState — every frame, per target</text>
+<line class="arr" x1="215" y1="122" x2="260" y2="178" marker-end="url(#a)"/>
+<line class="arr" x1="580" y1="122" x2="500" y2="178" marker-end="url(#a)"/>
+<line class="arr" x1="985" y1="122" x2="985" y2="178" marker-end="url(#a)"/>
+<line class="arr" x1="390" y1="238" x2="500" y2="334" marker-end="url(#a)"/>
+<line class="arr" x1="800" y1="238" x2="870" y2="334" marker-end="url(#a)"/>
+<line class="arr" x1="430" y1="414" x2="430" y2="496" marker-end="url(#a)"/>
+<text class="lbl" x="442" y="452" text-anchor="start">Report(kind, targetId)</text>
+<polyline class="arr" points="230,690 230,734 250,734 250,798" marker-end="url(#a)"/>
+<text class="lbl" x="226" y="720" text-anchor="end">3 events</text>
+<polyline class="arr" points="470,690 470,734 500,734 500,798" marker-end="url(#a)"/>
+<text class="lbl" x="520" y="722" text-anchor="start">EventRequested</text>
+<line class="arr dash" x1="930" y1="758" x2="930" y2="716" marker-end="url(#a)"/>
+<text class="lbl" x="1000" y="740" text-anchor="start">pull</text>
+  </svg>
+  <figcaption>Solid arrows are pushed. The dashed arrow is pulled &mdash; read on demand, or polled every frame.
+  The dashed box is a signal with no subscribers.</figcaption>
+</figure>
+
+<h2>Every script involved</h2>
+<table>
+  <tr><th>Script</th><th>Its part in the quest system</th></tr>
+  <tr><td><code>HubVisitData</code></td><td>The visit asset. Owns the ordered <code>objectives[]</code>, plus the cast, the baseline gates and the departure.</td></tr>
+  <tr><td><code>HubObjectiveData</code></td><td>One stage: the line she reads, what finishes it, what changes when it does, who to point a marker at.</td></tr>
+  <tr><td><code>HubCondition</code></td><td>What finishes a stage. A kind and a list of ids; <code>Accepts()</code> is a kind match plus an <code>Array.IndexOf</code>.</td></tr>
+  <tr><td><code>HubEffect</code></td><td>One world change applied on completion &mdash; open a gate, move someone, swap their conversation, fire an event.</td></tr>
+  <tr><td><code>ObjectiveSequenceRunner</code></td><td>The machine. Plain C#, fully unit-tested. Judges reports, advances the index, applies effects, fires four events.</td></tr>
+  <tr><td><code>HubRuntimeState</code></td><td>The ledger. Which stage, which targets cleared, what has been said, which gates are open, who has moved.</td></tr>
+  <tr><td><code>HubProgressService</code></td><td>Static instance holding the visit, the state and the runner. Also answers <code>CanDepart</code>.</td></tr>
+  <tr><td><code>HubProgressionListener</code></td><td>The translator. Turns announcements into <code>Report()</code> calls. The only caller in the project.</td></tr>
+  <tr><td><code>InteractionEvents</code></td><td>The static seam interactables announce through. Knows nothing about objectives.</td></tr>
+  <tr><td><code>HubEventRunner</code></td><td>Both a producer (raises flags) and a consumer (plays the event an objective asked for).</td></tr>
+  <tr><td><code>HubObjectiveController</code> / <code>View</code></td><td>The HUD line, the counter and the done cue. The only push consumer of progress.</td></tr>
+  <tr><td><code>HubMarkerManager</code></td><td>Polls the active objective every LateUpdate to decide where the markers go.</td></tr>
+  <tr><td><code>HubDepartureController</code> / <code>DepartureGate</code></td><td>Refuses to leave the visit until <code>IsVisitComplete</code>.</td></tr>
+  <tr><td><code>HubLocationLoader</code></td><td>Asks where a character stands now, so an objective that moved someone survives a room change.</td></tr>
+  <tr><td><code>HubBootstrapper</code></td><td>Loads the visit and calls <code>Begin()</code> once the world is up.</td></tr>
+  <tr><td><code>HubProblems</code></td><td>Editor-time content check: an objective nobody can finish, a marker over something that is not there.</td></tr>
+</table>
+
+<h2>What holds up</h2>
+<ul class="holds">
+  <li><b>One entry point.</b> <code>Report(kind, targetId)</code> is the only way progress is ever credited, and there is exactly one caller.</li>
+  <li><b>The machine is testable.</b> <code>ObjectiveSequenceRunner</code> and <code>HubRuntimeState</code> are plain C# &mdash; no scene, no Unity types in the logic.</li>
+  <li><b>Genuinely data-driven.</b> Adding a stage is an asset, not a script.</li>
+  <li><b>The completion order is right.</b> Nothing reports until its trigger has actually finished, so the exchange ends, then the stage completes, then its effects land, then the next line appears.</li>
+  <li><b>Effects write to state, not the scene.</b> The same list replays identically whether she is standing there or three rooms away.</li>
+</ul>
+
+<h2>What does not</h2>
+<ol class="findings">
+  <li><b>One of the five condition kinds cannot fire.</b> <code>HubEventRunner.EventFinished</code> is declared and raised,
+  and nothing anywhere subscribes to it. An objective authored as &ldquo;wait for event X to finish&rdquo; would never
+  complete. The only thing that reports <code>EventCompleted</code> is a raised flag that happens to share the name.</li>
+
+  <li><b>A second kind is indistinguishable from it.</b> One <code>FlagRaised</code> is reported twice, as
+  <code>QuizPassed</code> and again as <code>EventCompleted</code>, so at runtime the two are the same thing. Three of the
+  five kinds do real work; two are decoration.</li>
+
+  <li><b><code>HubRuntimeState</code> is four things.</b> The quest ledger, the dialogue system's <code>IDialogueMemory</code>,
+  the interactables' <code>IProgressionQuery</code>, and the room and return-door bookkeeping &mdash; one class, one file,
+  linear list lookups throughout.</li>
+
+  <li><b>The runner both judges and mutates.</b> It decides whether a stage is done and then reaches into the world:
+  opens gates, relocates characters, rewrites conversations, fires events. Deciding and doing are the same object.</li>
+
+  <li><b>Strictly one stage at a time, forever forward.</b> <code>objectiveIndex++</code>, and nothing else. No branching,
+  no side quest, no optional objective, no quest log, and no way to have two things outstanding at once.</li>
+
+  <li><b>The same data is delivered two ways.</b> The HUD is pushed through C# events; the markers poll the runner every
+  LateUpdate for the same facts. Two mechanisms that can disagree by a frame.</li>
+
+  <li><b>Everything is loose string matching.</b> Condition ids, flag ids, gate names and character ids are bare strings
+  compared with <code>IndexOf</code>. A typo fails silently at runtime; <code>HubProblems</code> catches some of it at author
+  time, not all.</li>
+
+  <li><b><code>Report</code> answers a question nobody asks.</b> It returns a bool saying whether the report counted, and
+  every call site discards it. A report that was rejected &mdash; wrong stage, wrong kind, unknown id &mdash; leaves no
+  trace anywhere.</li>
+</ol>
+
+<h2>The short version</h2>
+<p>The spine is sound: one entry point, one machine, plain C#, tested, data-driven. This is not the pattern of a system
+built beside a working one, the way the dialogue stack and the screen fade were.</p>
+<p>What is wrong is narrower, and mostly at the edges. Two of the five ways an objective can complete do not work as
+authored. The state object has collected four unrelated jobs. And the model only describes a straight line of stages
+&mdash; which is fine for Hub 1 as it stands, and will not stretch to a quest log, a side objective, or anything the
+player can hold two of at once.</p>
+</main>
