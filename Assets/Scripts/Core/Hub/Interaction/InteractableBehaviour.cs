@@ -26,7 +26,7 @@ namespace ProjectAstra.Core.Hub.Interaction
         public abstract InteractionPriority Priority { get; }
         public virtual Vector2 InteractionPoint => transform.position;
 
-        protected static IProgressionQuery Progression => HubProgressService.Instance?.State;
+        protected static HubWorldFlags Flags => HubVisitService.Instance?.Flags;
 
         // Close enough is already answered by the trigger. This is the rest of it, and it is
         // virtual so a thing with its own idea of reach simply says so.

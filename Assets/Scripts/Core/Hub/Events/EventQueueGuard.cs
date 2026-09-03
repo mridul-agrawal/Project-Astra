@@ -3,12 +3,12 @@ namespace ProjectAstra.Core.Hub.Events
     // Decides whether an event may start: never twice if it is one-time, never over a running one.
     public class EventQueueGuard
     {
-        private readonly HubRuntimeState state;
+        private readonly HubEventLedger ledger;
         private string running;
 
-        public EventQueueGuard(HubRuntimeState state)
+        public EventQueueGuard(HubEventLedger ledger)
         {
-            this.state = state;
+            this.ledger = ledger;
         }
 
         public bool IsBusy => !string.IsNullOrEmpty(running);
@@ -18,7 +18,7 @@ namespace ProjectAstra.Core.Hub.Events
         {
             if (string.IsNullOrEmpty(eventId)) return false;
             if (IsBusy) return false;
-            return !oneTime || state == null || !state.HasCompletedEvent(eventId);
+            return !oneTime || ledger == null || !ledger.HasCompletedEvent(eventId);
         }
 
         public bool TryBegin(string eventId, bool oneTime)
@@ -34,9 +34,9 @@ namespace ProjectAstra.Core.Hub.Events
         {
             if (running != eventId) return;
             running = null;
-            if (oneTime) state?.MarkEventCompleted(eventId);
+            if (oneTime) ledger?.MarkEventCompleted(eventId);
         }
 
-        public bool HasCompleted(string eventId) => state != null && state.HasCompletedEvent(eventId);
+        public bool HasCompleted(string eventId) => ledger != null && ledger.HasCompletedEvent(eventId);
     }
 }

@@ -20,7 +20,7 @@ namespace ProjectAstra.Core.Hub
 
         // Written to the visit's flags. Whether a door opens on it is the door's business.
         public void SetFlag(string flagId, bool open) =>
-            HubProgressService.Instance?.State.SetGate(flagId, open);
+            HubVisitService.Instance?.Flags.SetGate(flagId, open);
 
         public void PlayDialogue(string dialogueId)
         {
@@ -32,7 +32,7 @@ namespace ProjectAstra.Core.Hub
             }
 
             DialogueService.Instance?.Play(script, DialogueTriggeringContext.Conversation,
-                onComplete: null, HubProgressService.Instance?.State, InteractionEvents.RaiseFlag);
+                onComplete: null, HubVisitService.Instance?.Dialogue, InteractionEvents.RaiseFlag);
         }
 
         public void PlayAuthoredEvent(string eventId)

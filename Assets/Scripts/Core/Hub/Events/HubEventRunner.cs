@@ -30,20 +30,9 @@ namespace ProjectAstra.Core.Hub.Events
 
         public bool IsRunning => guard != null && guard.IsBusy;
 
-        // Rebuilt per visit, because the guard reads the visit's completed-event list. An
-        // objective's effect can ask for an event by name, and this is the thing that plays one.
-        public void BindToVisit()
-        {
-            guard = new EventQueueGuard(HubProgressService.Instance?.State);
-
-            ObjectiveSequenceRunner objectives = HubProgressService.Instance?.Objectives;
-            if (objectives == null) return;
-
-            objectives.EventRequested -= OnEventRequested;
-            objectives.EventRequested += OnEventRequested;
-        }
-
-        private void OnEventRequested(string eventId) => TryPlay(eventId);
+        // Rebuilt per visit, because the guard reads the visit's completed-event list. A quest
+        // asks for an event through HubQuestWorld, which calls TryPlay directly.
+        public void BindToVisit() => guard = new EventQueueGuard(HubVisitService.Instance?.Events);
 
         public bool TryPlay(string eventId)
         {
@@ -131,7 +120,7 @@ namespace ProjectAstra.Core.Hub.Events
         // them is over before the next visible beat.
         private void Apply(HubEventAction action)
         {
-            HubRuntimeState state = HubProgressService.Instance?.State;
+            HubWorldFlags flags = HubVisitService.Instance?.Flags;
 
             switch (action.kind)
             {
@@ -140,7 +129,7 @@ namespace ProjectAstra.Core.Hub.Events
                     break;
 
                 case HubEventActionKind.RelocateCharacter:
-                    state?.Relocate(action.targetId, action.valueId, action.position, action.facing);
+                    flags?.Relocate(action.targetId, action.valueId, action.position, action.facing);
                     RelocateHere(action);
                     break;
 
@@ -150,11 +139,11 @@ namespace ProjectAstra.Core.Hub.Events
                     break;
 
                 case HubEventActionKind.SetInteractableState:
-                    state?.SetInteractableState(action.targetId, action.state);
+                    flags?.SetInteractableState(action.targetId, action.state);
                     break;
 
                 case HubEventActionKind.SetGate:
-                    state?.SetGate(action.targetId, action.flag);
+                    flags?.SetGate(action.targetId, action.flag);
                     break;
 
                 case HubEventActionKind.RaiseFlag:
@@ -178,7 +167,7 @@ namespace ProjectAstra.Core.Hub.Events
             HubActor actor = HubWorld.FindActor(action.targetId);
             if (actor == null) return;
 
-            string here = HubProgressService.Instance?.State.CurrentLocationId;
+            string here = HubVisitService.Instance?.Location.CurrentLocationId;
             if (!string.IsNullOrEmpty(action.valueId) && action.valueId != here)
             {
                 Destroy(actor.gameObject);
@@ -218,7 +207,7 @@ namespace ProjectAstra.Core.Hub.Events
 
             bool finished = false;
             DialogueService.Instance.Play(script, DialogueTriggeringContext.Conversation,
-                () => finished = true, HubProgressService.Instance?.State, RaiseFlag);
+                () => finished = true, HubVisitService.Instance?.Dialogue, RaiseFlag);
 
             while (!finished) yield return null;
         }

@@ -93,8 +93,12 @@ namespace ProjectAstra.Core.Editor
 
         private static void CheckObjective(HubObjectiveData objective, List<HubProblem> problems)
         {
-            if (!ObjectiveSequenceRunner.IsAuthoredCorrectly(objective, out string problem))
-                problems.Add(new HubProblem(objective, $"{objective.name}: {problem}"));
+            if (string.IsNullOrEmpty(objective.ObjectiveId))
+                problems.Add(new HubProblem(objective, $"{objective.name}: empty objectiveId"));
+            if (string.IsNullOrEmpty(objective.DisplayText))
+                problems.Add(new HubProblem(objective, $"{objective.name}: no player-facing text"));
+            if (objective.Completion == null || objective.Completion.RequiredCount == 0)
+                problems.Add(new HubProblem(objective, $"{objective.name}: nothing can complete it"));
 
             var seen = new HashSet<string>();
             foreach (string target in objective.Completion.targetIds)

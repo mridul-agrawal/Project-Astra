@@ -40,7 +40,7 @@ namespace ProjectAstra.Core.Hub
                 return;
             }
 
-            HubProgressService.Load(visit);
+            HubVisitService.Load(visit);
             OpenVisit(visit);
         }
 

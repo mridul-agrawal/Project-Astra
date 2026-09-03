@@ -28,7 +28,7 @@ namespace ProjectAstra.Core.Hub.Interaction
         protected override string ActiveConversationId => IsShut ? deniedConversationId : null;
 
         private bool IsShut =>
-            !string.IsNullOrEmpty(requiredGate) && Progression != null && !Progression.IsGateOpen(requiredGate);
+            !string.IsNullOrEmpty(requiredGate) && Flags != null && !Flags.IsGateOpen(requiredGate);
 
         // Facing only. She is standing in the doorway, and the wall the door is set into would
         // fail a line-of-sight check every time.

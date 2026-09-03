@@ -56,13 +56,13 @@ namespace ProjectAstra.Core.Hub.Interaction
         protected override string InspectedId => IsLocked ? null : interactableId;
 
         private HubInteractableState State =>
-            HubProgressService.Instance != null
-                ? HubProgressService.Instance.State.GetInteractableState(interactableId, defaultState)
+            HubVisitService.Instance != null
+                ? HubVisitService.Instance.Flags.GetInteractableState(interactableId, defaultState)
                 : defaultState;
 
         private bool IsLocked =>
             State == HubInteractableState.Gated ||
-            (!string.IsNullOrEmpty(requiredGate) && Progression != null && !Progression.IsGateOpen(requiredGate));
+            (!string.IsNullOrEmpty(requiredGate) && Flags != null && !Flags.IsGateOpen(requiredGate));
 
         // Everything a spawner needs to stand one of these up from authored data.
         public void Configure(string id, HubVerb showAs, Vector2 offset, string conversation,

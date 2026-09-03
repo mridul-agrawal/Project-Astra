@@ -6,6 +6,7 @@ using ProjectAstra.Core.Camera;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Events;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.UI.Hub;
 using ProjectAstra.Core.UI.Dialogue.Choice;
 using ProjectAstra.Core.UI.Hub.Marker;
@@ -71,7 +72,8 @@ namespace ProjectAstra.Core.Editor
             var events = go.AddComponent<HubEventRunner>();
             var areaTriggers = go.AddComponent<HubAreaTriggerWatcher>();
             var departures = go.AddComponent<HubDepartureController>();
-            go.AddComponent<HubProgressionListener>();
+            var questWorld = go.AddComponent<HubQuestWorld>();
+            var quests = go.AddComponent<QuestManager>();
             var bootstrapper = go.AddComponent<HubBootstrapper>();
 
             var cast = new GameObject("Cast").transform;
@@ -83,6 +85,7 @@ namespace ProjectAstra.Core.Editor
             WireDeparture(departures, events);
             WireMarkers(markers, cameraRig);
             WireEvents(events, areaTriggers, cameraRig, loader);
+            WireQuests(quests, questWorld, events);
         }
 
         private static void WireLoader(HubLocationLoader loader, HubLocationHost host, Transform cast)
@@ -138,6 +141,19 @@ namespace ProjectAstra.Core.Editor
             watcher.FindProperty("eventDatabase").objectReferenceValue = eventDatabase;
             watcher.FindProperty("loader").objectReferenceValue = loader;
             watcher.ApplyModifiedProperties();
+        }
+
+        private static void WireQuests(QuestManager quests, HubQuestWorld world, HubEventRunner events)
+        {
+            var manager = new SerializedObject(quests);
+            manager.FindProperty("catalog").objectReferenceValue = FindAsset<QuestCatalog>();
+            manager.FindProperty("worldBehaviour").objectReferenceValue = world;
+            manager.ApplyModifiedProperties();
+
+            var questWorld = new SerializedObject(world);
+            questWorld.FindProperty("events").objectReferenceValue = events;
+            questWorld.FindProperty("scriptCatalog").objectReferenceValue = FindAsset<DialogueScriptCatalog>();
+            questWorld.ApplyModifiedProperties();
         }
 
         private static void WireMarkers(HubMarkerManager markers, HubCameraController cameraRig)

@@ -2,6 +2,7 @@ using UnityEngine;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Hub.Events;
 using ProjectAstra.Core.Hub.Interaction;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.Hub
@@ -50,11 +51,11 @@ namespace ProjectAstra.Core.Hub
         {
             if (HasDeparted) return false;
 
-            HubProgressService progress = HubProgressService.Instance;
+            HubVisitService progress = HubVisitService.Instance;
             if (progress == null) return false;
 
             string nextInCampaign = GameFlow.Instance != null ? GameFlow.Instance.NextBattleMapId : null;
-            if (!DepartureGate.CanDepart(progress.CanDepart, progress.DestinationMapId, nextInCampaign, out string problem))
+            if (!DepartureGate.CanDepart(QuestIsFinished, progress.DestinationMapId, nextInCampaign, out string problem))
             {
                 Debug.LogError($"[HubDeparture] Can't leave visit '{progress.Visit.VisitId}': {problem}.");
                 return false;
@@ -66,7 +67,11 @@ namespace ProjectAstra.Core.Hub
         // Locked before the battle is asked for, so nothing can be pressed during the handover; and
         // only written off as departed once the state actually changed, so a battle that fails to
         // load leaves her standing in the hub rather than nowhere.
-        private bool Commit(HubProgressService progress)
+        // The GDD's one hard rule about leaving a visit: every authored objective first.
+        private static bool QuestIsFinished =>
+            QuestManager.Instance != null && QuestManager.Instance.IsQuestComplete;
+
+        private bool Commit(HubVisitService progress)
         {
             if (!HubControlGate.Instance.TryBeginHandover()) return false;
 
@@ -81,7 +86,7 @@ namespace ProjectAstra.Core.Hub
 
             // The lock is deliberately still held: the hub is going away, and nothing here should
             // answer another press on the way out.
-            progress.State.MarkDeparted();
+            progress.MarkDeparted();
             HasDeparted = true;
             return true;
         }

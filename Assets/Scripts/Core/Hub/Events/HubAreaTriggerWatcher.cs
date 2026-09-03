@@ -15,7 +15,7 @@ namespace ProjectAstra.Core.Hub.Events
             if (!CanTrigger()) return;
 
             Vector2 here = loader.Player.Position;
-            string room = HubProgressService.Instance?.State.CurrentLocationId;
+            string room = HubVisitService.Instance?.Location.CurrentLocationId;
 
             foreach (HubEventData authored in eventDatabase.All)
             {

@@ -57,7 +57,7 @@ namespace ProjectAstra.Core.Hub
         // facing the other way.
         private void RememberWayBack(HubDoor door)
         {
-            HubRuntimeState state = HubProgressService.Instance?.State;
+            HubLocationState state = HubVisitService.Instance?.Location;
             if (state == null || loader.Player == null) return;
             if (door.ReturnsToPreviousRoom) return;
 
@@ -77,7 +77,7 @@ namespace ProjectAstra.Core.Hub
                 return;
             }
 
-            HubRuntimeState state = HubProgressService.Instance?.State;
+            HubLocationState state = HubVisitService.Instance?.Location;
             if (state != null && state.TryGetReturn(out locationId, out spawn, out facing)) return;
 
             Debug.LogError($"[HubLocationTransition] Door '{door.doorId}' leads back the way she came, but nothing recorded how she got here.");

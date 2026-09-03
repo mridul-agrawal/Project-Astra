@@ -7,13 +7,13 @@ namespace ProjectAstra.Core.Tests.Hub
     [TestFixture]
     public class EventQueueGuardTests
     {
-        private HubRuntimeState state;
+        private HubEventLedger state;
         private EventQueueGuard guard;
 
         [SetUp]
         public void SetUp()
         {
-            state = new HubRuntimeState("hub1");
+            state = new HubEventLedger();
             guard = new EventQueueGuard(state);
         }
 

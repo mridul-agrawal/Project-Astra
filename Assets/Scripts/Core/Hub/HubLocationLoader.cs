@@ -31,7 +31,7 @@ namespace ProjectAstra.Core.Hub
             HubLocationService.Load(location);
             locationHost.Show(location);
 
-            HubProgressService.Instance?.State.EnterLocation(locationId, houseIdentity);
+            HubVisitService.Instance?.Location.EnterLocation(locationId, houseIdentity);
             ApplyHouseIdentity();
 
             PlacePlayer(playerSpawn, playerFacing);
@@ -76,12 +76,12 @@ namespace ProjectAstra.Core.Hub
         // service, so an objective that has since moved someone wins over the authored baseline.
         private void SpawnCast(string locationId)
         {
-            HubVisitData visit = HubProgressService.Instance?.Visit;
+            HubVisitData visit = HubVisitService.Instance?.Visit;
             if (visit == null) return;
 
             foreach (HubCharacterPlacement authored in visit.CharacterPlacements)
             {
-                if (!HubProgressService.Instance.TryGetPlacement(authored.characterId, out var placement)) continue;
+                if (!HubVisitService.Instance.TryGetPlacement(authored.characterId, out var placement)) continue;
                 if (placement.locationId != locationId) continue;
                 BuildActor(placement.characterId, placement.position, placement.facing, castRoot,
                     placement.conversationId, solid: true);
@@ -99,7 +99,7 @@ namespace ProjectAstra.Core.Hub
         // only the pieces belonging to the house she actually walked into.
         private void ApplyHouseIdentity()
         {
-            string identity = HubProgressService.Instance?.State.HouseIdentity;
+            string identity = HubVisitService.Instance?.Location.HouseIdentity;
             foreach (HubHouseIdentity tagged in locationHost.GetComponentsInChildren<HubHouseIdentity>(true))
                 tagged.ApplyIdentity(identity);
         }

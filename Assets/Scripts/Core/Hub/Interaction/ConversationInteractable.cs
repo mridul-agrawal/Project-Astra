@@ -32,7 +32,7 @@ namespace ProjectAstra.Core.Hub.Interaction
 
             DialogueService.Instance.Play(script, DialogueTriggeringContext.Conversation,
                 () => Finished(conversationId),
-                HubProgressService.Instance?.State,
+                HubVisitService.Instance?.Dialogue,
                 InteractionEvents.RaiseFlag);
         }
 
