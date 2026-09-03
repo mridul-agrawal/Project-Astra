@@ -2,6 +2,7 @@ using UnityEngine;
 using ProjectAstra.Core.Events;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Input;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.UI.Hub.Objective;
 using ProjectAstra.Core.UI.Hub.Prompt;
 
@@ -25,12 +26,12 @@ namespace ProjectAstra.Core.UI.Hub
             objectives = new HubObjectiveController(objectiveView);
         }
 
-        // Bound in Start, after the bootstrapper has loaded the visit — and Bind refreshes rather
-        // than waiting for an event, so the opening objective it already announced isn't missed.
+        // The opening objective is announced during the bootstrapper's Start, before this one runs,
+        // so the first line is caught by asking rather than by waiting for the next event.
         private void Start()
         {
-            objectives.Bind(HubProgressService.Instance?.Objectives);
             BindPlayer();
+            RefreshObjective();
         }
 
         private void OnEnable() => Subscribe();
@@ -56,6 +57,10 @@ namespace ProjectAstra.Core.UI.Hub
         {
             BindPlayer();
             EventService.Instance?.SubscribeGameStateChanged(objectives.HandleGameStateChanged);
+            EventService.Instance?.SubscribeObjectiveActivated(objectives.HandleObjectiveActivated);
+            EventService.Instance?.SubscribeObjectiveProgressed(objectives.HandleObjectiveProgressed);
+            EventService.Instance?.SubscribeObjectiveCompleted(objectives.HandleObjectiveCompleted);
+            EventService.Instance?.SubscribeQuestCompleted(objectives.HandleQuestCompleted);
             if (InputManager.Instance != null) InputManager.Instance.OnDeviceChanged += prompt.HandleDeviceChanged;
         }
 
@@ -65,8 +70,17 @@ namespace ProjectAstra.Core.UI.Hub
             boundToPlayer = false;
 
             EventService.Instance?.UnsubscribeGameStateChanged(objectives.HandleGameStateChanged);
+            EventService.Instance?.UnsubscribeObjectiveActivated(objectives.HandleObjectiveActivated);
+            EventService.Instance?.UnsubscribeObjectiveProgressed(objectives.HandleObjectiveProgressed);
+            EventService.Instance?.UnsubscribeObjectiveCompleted(objectives.HandleObjectiveCompleted);
+            EventService.Instance?.UnsubscribeQuestCompleted(objectives.HandleQuestCompleted);
             if (InputManager.Instance != null) InputManager.Instance.OnDeviceChanged -= prompt.HandleDeviceChanged;
-            objectives.Unbind();
+        }
+
+        private void RefreshObjective()
+        {
+            QuestRunner runner = QuestManager.Instance?.Runner;
+            if (runner != null) objectives.HandleObjectiveActivated(runner.Status);
         }
     }
 }

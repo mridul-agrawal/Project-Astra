@@ -15,8 +15,8 @@ namespace ProjectAstra.Core.Quests
         private bool settling;
 
         public event Action<QuestData> QuestStarted;
-        public event Action<QuestObjective> ObjectiveActivated;
-        public event Action<QuestObjective> ObjectiveProgressed;
+        public event Action<ObjectiveStatus> ObjectiveActivated;
+        public event Action<ObjectiveStatus> ObjectiveProgressed;
         public event Action<QuestObjective> ObjectiveCompleted;
         public event Action<QuestData> QuestCompleted;
 
@@ -38,6 +38,9 @@ namespace ProjectAstra.Core.Quests
         public int CurrentProgress => progress.Tracker?.Current ?? 0;
         public int RequiredProgress => progress.Tracker?.Required ?? 0;
         public bool ShowsCounter => ActiveObjective != null && ActiveObjective.ShowCounter;
+
+        // What a listener would need to draw right now.
+        public ObjectiveStatus Status => new(ActiveObjective, CurrentProgress, RequiredProgress);
 
         // Call once the world is ready. Announces the opening stage and settles any run of stages
         // that finish the instant they start.
@@ -65,7 +68,7 @@ namespace ProjectAstra.Core.Quests
 
             progress.BeginObjective(active);
             progress.RestoreTracker(saved.creditedTargetIds);
-            ObjectiveActivated?.Invoke(active);
+            ObjectiveActivated?.Invoke(Status);
         }
 
         // The single entry point for progress. True only when this signal was new, wanted, and for
@@ -96,7 +99,7 @@ namespace ProjectAstra.Core.Quests
             if (active == null || progress.Tracker == null) return false;
             if (!progress.Tracker.TryCredit(signal)) return false;
 
-            ObjectiveProgressed?.Invoke(active);
+            ObjectiveProgressed?.Invoke(Status);
             if (progress.Tracker.IsSatisfied) Complete(active);
             return true;
         }
@@ -121,7 +124,7 @@ namespace ProjectAstra.Core.Quests
 
             progress.BeginObjective(next);
             Run(next.OnStart);
-            ObjectiveActivated?.Invoke(next);
+            ObjectiveActivated?.Invoke(Status);
 
             // A stage with nothing to wait for is already done, and a run of them settles here.
             if (progress.Tracker != null && progress.Tracker.IsSatisfied) Complete(next);

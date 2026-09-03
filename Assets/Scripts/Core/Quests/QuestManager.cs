@@ -61,8 +61,8 @@ namespace ProjectAstra.Core.Quests
         private void Forward()
         {
             Runner.QuestStarted += quest => EventService.Instance?.RaiseQuestStarted(quest);
-            Runner.ObjectiveActivated += o => EventService.Instance?.RaiseObjectiveActivated(o);
-            Runner.ObjectiveProgressed += o => EventService.Instance?.RaiseObjectiveProgressed(o);
+            Runner.ObjectiveActivated += s => EventService.Instance?.RaiseObjectiveActivated(s);
+            Runner.ObjectiveProgressed += s => EventService.Instance?.RaiseObjectiveProgressed(s);
             Runner.ObjectiveCompleted += o => EventService.Instance?.RaiseObjectiveCompleted(o);
             Runner.QuestCompleted += quest => EventService.Instance?.RaiseQuestCompleted(quest);
         }

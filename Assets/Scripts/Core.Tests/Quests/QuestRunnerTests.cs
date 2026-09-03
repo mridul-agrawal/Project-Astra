@@ -22,8 +22,8 @@ namespace ProjectAstra.Core.Tests.Quests
             runner = new QuestRunner(progress, world);
             log = world.Log;
 
-            runner.ObjectiveActivated += o => log.Add($"activated:{o.ObjectiveId}");
-            runner.ObjectiveProgressed += o => log.Add($"progressed:{o.ObjectiveId}");
+            runner.ObjectiveActivated += s => log.Add($"activated:{s.Objective.ObjectiveId}");
+            runner.ObjectiveProgressed += s => log.Add($"progressed:{s.Objective.ObjectiveId}");
             runner.ObjectiveCompleted += o => log.Add($"completed:{o.ObjectiveId}");
             runner.QuestCompleted += q => log.Add($"quest-done:{q.QuestId}");
         }

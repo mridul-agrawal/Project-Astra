@@ -4,6 +4,7 @@ using UnityEngine;
 using ProjectAstra.Core.UI.Hub.Marker;
 
 using ProjectAstra.Core.Hub.Interaction;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Hub
 {
@@ -25,6 +26,7 @@ namespace ProjectAstra.Core.Hub
         private readonly Dictionary<string, GameObject> markers = new();
         private readonly List<EdgeIndicator> offScreen = new();
         private readonly List<string> stale = new();
+        private readonly HashSet<string> shown = new();
 
         private void Awake()
         {
@@ -33,54 +35,69 @@ namespace ProjectAstra.Core.Hub
 
         // Runs after HubCameraController, which moves at 100. Reading the camera before it settles
         // would judge what is off screen from where it stood last frame.
+        // Runs after HubCameraController, which moves at 100. Reading the camera before it settles
+        // would judge what is off screen from where it stood last frame.
         private void LateUpdate()
         {
             offScreen.Clear();
 
-            HubObjectiveData active = ActiveObjectiveWhileExploring();
-            if (active == null)
+            if (!ExploringFreely())
             {
                 ClearAll();
                 edgeIndicators?.Render(offScreen);
                 return;
             }
 
-            SyncMarkers(HubProgressService.Instance.Objectives, active);
+            SyncMarkers();
             edgeIndicators?.Render(offScreen);
         }
 
         // Wayfinding belongs to free exploration. During a conversation or an event the spec wants
         // the screen clear, and a marker must never draw over a dialogue box.
-        private HubObjectiveData ActiveObjectiveWhileExploring()
-        {
-            if (HubControlGate.Instance != null && !HubControlGate.Instance.AcceptsMovement) return null;
-            return HubProgressService.Instance?.Objectives?.ActiveObjective;
-        }
+        private static bool ExploringFreely() =>
+            HubControlGate.Instance == null || HubControlGate.Instance.AcceptsMovement;
 
-        private void SyncMarkers(ObjectiveSequenceRunner objectives, HubObjectiveData active)
+        // The quest says what is still outstanding; the condition says who to stand over. A stage
+        // that has nothing in the world to point at gets an authored list instead.
+        private void SyncMarkers()
         {
-            foreach (string targetId in active.MarkerTargetIds)
+            QuestRunner runner = QuestManager.Instance?.Runner;
+            QuestObjective active = runner?.ActiveObjective;
+            if (active == null)
             {
-                if (!objectives.IsMarkerTargetOutstanding(targetId))
-                {
-                    Remove(targetId);
-                    continue;
-                }
-
-                Transform anchor = AnchorFor(targetId);
-                if (anchor == null) continue;
-
-                if (TrySolveEdgeIndicator(anchor.position, out EdgeIndicator indicator))
-                {
-                    offScreen.Add(indicator);
-                    Remove(targetId);
-                    continue;
-                }
-
-                if (!markers.ContainsKey(targetId)) markers[targetId] = BuildMarker(anchor);
+                ClearAll();
+                return;
             }
 
-            DropMarkersNotInThisObjective(active);
+            shown.Clear();
+            foreach (string targetId in Wanted(runner, active))
+            {
+                string anchorId = runner.MarkerFor(targetId) ?? targetId;
+                shown.Add(anchorId);
+                Place(anchorId);
+            }
+            DropMarkersNotWanted();
+        }
+
+        private IEnumerable<string> Wanted(QuestRunner runner, QuestObjective active)
+        {
+            if (active.MarkerTargetIds.Length > 0) return active.MarkerTargetIds;
+            return runner.OutstandingTargets();
+        }
+
+        private void Place(string anchorId)
+        {
+            Transform anchor = AnchorFor(anchorId);
+            if (anchor == null) return;
+
+            if (TrySolveEdgeIndicator(anchor.position, out EdgeIndicator indicator))
+            {
+                offScreen.Add(indicator);
+                Remove(anchorId);
+                return;
+            }
+
+            if (!markers.ContainsKey(anchorId)) markers[anchorId] = BuildMarker(anchor);
         }
 
         private bool TrySolveEdgeIndicator(Vector2 worldPosition, out EdgeIndicator indicator)
@@ -97,13 +114,13 @@ namespace ProjectAstra.Core.Hub
         }
 
         // Changing objective replaces the whole set, so anything left over from the last one goes.
-        private void DropMarkersNotInThisObjective(HubObjectiveData active)
+        private void DropMarkersNotWanted()
         {
             stale.Clear();
-            foreach (string shown in markers.Keys)
-                if (System.Array.IndexOf(active.MarkerTargetIds, shown) < 0) stale.Add(shown);
+            foreach (string anchorId in markers.Keys)
+                if (!shown.Contains(anchorId)) stale.Add(anchorId);
 
-            foreach (string targetId in stale) Remove(targetId);
+            foreach (string anchorId in stale) Remove(anchorId);
         }
 
         private static Transform AnchorFor(string targetId)

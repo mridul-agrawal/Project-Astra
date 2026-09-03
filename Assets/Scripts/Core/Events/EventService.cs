@@ -110,13 +110,13 @@ namespace ProjectAstra.Core.Events
         public void SubscribeQuestStarted(Action<QuestData> handler) => quest?.RegisterQuestStarted(handler);
         public void UnsubscribeQuestStarted(Action<QuestData> handler) => quest?.UnregisterQuestStarted(handler);
 
-        public void RaiseObjectiveActivated(QuestObjective objective) => quest?.RaiseObjectiveActivated(objective);
-        public void SubscribeObjectiveActivated(Action<QuestObjective> handler) => quest?.RegisterObjectiveActivated(handler);
-        public void UnsubscribeObjectiveActivated(Action<QuestObjective> handler) => quest?.UnregisterObjectiveActivated(handler);
+        public void RaiseObjectiveActivated(ObjectiveStatus status) => quest?.RaiseObjectiveActivated(status);
+        public void SubscribeObjectiveActivated(Action<ObjectiveStatus> handler) => quest?.RegisterObjectiveActivated(handler);
+        public void UnsubscribeObjectiveActivated(Action<ObjectiveStatus> handler) => quest?.UnregisterObjectiveActivated(handler);
 
-        public void RaiseObjectiveProgressed(QuestObjective objective) => quest?.RaiseObjectiveProgressed(objective);
-        public void SubscribeObjectiveProgressed(Action<QuestObjective> handler) => quest?.RegisterObjectiveProgressed(handler);
-        public void UnsubscribeObjectiveProgressed(Action<QuestObjective> handler) => quest?.UnregisterObjectiveProgressed(handler);
+        public void RaiseObjectiveProgressed(ObjectiveStatus status) => quest?.RaiseObjectiveProgressed(status);
+        public void SubscribeObjectiveProgressed(Action<ObjectiveStatus> handler) => quest?.RegisterObjectiveProgressed(handler);
+        public void UnsubscribeObjectiveProgressed(Action<ObjectiveStatus> handler) => quest?.UnregisterObjectiveProgressed(handler);
 
         public void RaiseObjectiveCompleted(QuestObjective objective) => quest?.RaiseObjectiveCompleted(objective);
         public void SubscribeObjectiveCompleted(Action<QuestObjective> handler) => quest?.RegisterObjectiveCompleted(handler);

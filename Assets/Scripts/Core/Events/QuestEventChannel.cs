@@ -11,8 +11,8 @@ namespace ProjectAstra.Core.Events
     public class QuestEventChannel : ScriptableObject
     {
         private Action<QuestData> onQuestStarted;
-        private Action<QuestObjective> onObjectiveActivated;
-        private Action<QuestObjective> onObjectiveProgressed;
+        private Action<ObjectiveStatus> onObjectiveActivated;
+        private Action<ObjectiveStatus> onObjectiveProgressed;
         private Action<QuestObjective> onObjectiveCompleted;
         private Action<QuestData> onQuestCompleted;
 
@@ -20,13 +20,13 @@ namespace ProjectAstra.Core.Events
         public void UnregisterQuestStarted(Action<QuestData> listener) => onQuestStarted -= listener;
         public void RaiseQuestStarted(QuestData quest) => onQuestStarted?.Invoke(quest);
 
-        public void RegisterObjectiveActivated(Action<QuestObjective> listener) => onObjectiveActivated += listener;
-        public void UnregisterObjectiveActivated(Action<QuestObjective> listener) => onObjectiveActivated -= listener;
-        public void RaiseObjectiveActivated(QuestObjective objective) => onObjectiveActivated?.Invoke(objective);
+        public void RegisterObjectiveActivated(Action<ObjectiveStatus> listener) => onObjectiveActivated += listener;
+        public void UnregisterObjectiveActivated(Action<ObjectiveStatus> listener) => onObjectiveActivated -= listener;
+        public void RaiseObjectiveActivated(ObjectiveStatus status) => onObjectiveActivated?.Invoke(status);
 
-        public void RegisterObjectiveProgressed(Action<QuestObjective> listener) => onObjectiveProgressed += listener;
-        public void UnregisterObjectiveProgressed(Action<QuestObjective> listener) => onObjectiveProgressed -= listener;
-        public void RaiseObjectiveProgressed(QuestObjective objective) => onObjectiveProgressed?.Invoke(objective);
+        public void RegisterObjectiveProgressed(Action<ObjectiveStatus> listener) => onObjectiveProgressed += listener;
+        public void UnregisterObjectiveProgressed(Action<ObjectiveStatus> listener) => onObjectiveProgressed -= listener;
+        public void RaiseObjectiveProgressed(ObjectiveStatus status) => onObjectiveProgressed?.Invoke(status);
 
         public void RegisterObjectiveCompleted(Action<QuestObjective> listener) => onObjectiveCompleted += listener;
         public void UnregisterObjectiveCompleted(Action<QuestObjective> listener) => onObjectiveCompleted -= listener;

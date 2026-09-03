@@ -1,17 +1,15 @@
-using ProjectAstra.Core.Events;
-using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.State;
 
 namespace ProjectAstra.Core.UI.Hub.Objective
 {
-    // Keeps the objective line and its counter in step with the visit's progression.
+    // Keeps the objective line and its counter in step with the quest.
     public sealed class HubObjectiveController
     {
         public HubObjectiveView objectiveView;
         public HubObjectiveModel objectiveModel;
 
-        private ObjectiveSequenceRunner objectives;
-        private bool hasObjective;
+        private ObjectiveStatus status = ObjectiveStatus.None;
         private bool suppressed;
 
         public HubObjectiveController(HubObjectiveView view)
@@ -21,63 +19,48 @@ namespace ProjectAstra.Core.UI.Hub.Objective
             Render();
         }
 
-        public void Bind(ObjectiveSequenceRunner runner)
+        public void HandleObjectiveActivated(ObjectiveStatus activated)
         {
-            Unbind();
-            objectives = runner;
-            if (objectives == null) return;
-
-            objectives.ObjectiveChanged += HandleObjectiveChanged;
-            objectives.ProgressChanged += HandleProgressChanged;
-            objectives.ObjectiveCompleted += HandleObjectiveCompleted;
-            Refresh();
+            status = activated;
+            Render();
         }
 
-        public void Unbind()
+        public void HandleObjectiveProgressed(ObjectiveStatus progressed)
         {
-            if (objectives == null) return;
-            objectives.ObjectiveChanged -= HandleObjectiveChanged;
-            objectives.ProgressChanged -= HandleProgressChanged;
-            objectives.ObjectiveCompleted -= HandleObjectiveCompleted;
-            objectives = null;
+            status = progressed;
+            Render();
         }
 
-        // Free roaming is the only state the objective belongs on screen in — a conversation or a
-        // scripted sequence owns the screen while it runs.
+        // The cue for the stage that just ended, not the one starting. Skipped while a conversation
+        // or an event owns the screen, which is the spec's deferred update.
+        public void HandleObjectiveCompleted(QuestObjective completed)
+        {
+            if (suppressed || completed == null) return;
+            objectiveView.ShowCompletedCue(completed.DisplayText);
+        }
+
+        public void HandleQuestCompleted(QuestData quest)
+        {
+            status = ObjectiveStatus.None;
+            Render();
+        }
+
+        // Free roaming is the only state the objective belongs on screen in.
         public void HandleGameStateChanged(StateChangeArgs args)
         {
             suppressed = args.NewState != GameState.HubExploration;
             Render();
         }
 
-        private void HandleObjectiveChanged(HubObjectiveData objective) => Refresh();
-        private void HandleProgressChanged() => Refresh();
-
-        // Skipped while a conversation or event owns the screen — an objective that completes
-        // mid-scene has its cue deferred until control comes back, which is what the spec asks for.
-        private void HandleObjectiveCompleted(HubObjectiveData objective)
-        {
-            if (suppressed) return;
-            objectiveView.ShowCompletedCue(objective.DisplayText);
-        }
-
-        private void Refresh()
-        {
-            HubObjectiveData active = objectives?.ActiveObjective;
-            hasObjective = active != null;
-
-            if (hasObjective)
-            {
-                objectiveModel.Row.Text = active.DisplayText;
-                objectiveModel.Row.Current = objectives.CurrentProgress;
-                objectiveModel.Row.Max = objectives.ShowsCounter ? objectives.RequiredProgress : 0;
-            }
-            Render();
-        }
-
         private void Render()
         {
-            objectiveModel.Visible = hasObjective && !suppressed;
+            objectiveModel.Visible = status.HasObjective && !suppressed;
+            if (status.HasObjective)
+            {
+                objectiveModel.Row.Text = status.DisplayText;
+                objectiveModel.Row.Current = status.Current;
+                objectiveModel.Row.Max = status.ShowsCounter ? status.Required : 0;
+            }
             objectiveView.Render(objectiveModel);
         }
     }

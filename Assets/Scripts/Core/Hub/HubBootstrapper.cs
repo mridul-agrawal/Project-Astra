@@ -66,7 +66,6 @@ namespace ProjectAstra.Core.Hub
             if (!loader.Load(visit.StartLocationId, visit.PlayerSpawn, visit.PlayerFacing, houseIdentity: null)) return;
 
             events.BindToVisit();
-            HubProgressService.Instance.Objectives.Begin();
             QuestManager.Instance?.BeginQuest(visit.QuestId);
 
             // Runs before she is given control, so a visit can open mid-scene rather than on a

@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Hub
 {
@@ -29,9 +30,9 @@ namespace ProjectAstra.Core.Hub
         public HubRuntimeState State => state;
         public ObjectiveSequenceRunner Objectives => objectives;
 
-        // Departure stays shut until every authored objective is done — the GDD's one hard rule
+        // Departure stays shut until the visit's quest is finished — the GDD's one hard rule
         // about leaving a visit.
-        public bool CanDepart => objectives.IsVisitComplete;
+        public bool CanDepart => QuestManager.Instance == null || QuestManager.Instance.IsQuestComplete;
 
         public string DestinationMapId => visit != null ? visit.Departure.destinationMapId : null;
 
