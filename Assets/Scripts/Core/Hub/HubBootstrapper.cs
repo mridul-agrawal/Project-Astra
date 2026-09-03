@@ -33,7 +33,8 @@ namespace ProjectAstra.Core.Hub
             HubControlGate.Begin();
             HubInteractionCatalog.Bind(scriptCatalog);
 
-            HubVisitData visit = ResolveVisit();
+            HubLaunchRequest.Request asked = HubLaunchRequest.Take();
+            HubVisitData visit = ResolveVisit(asked);
             if (visit == null)
             {
                 Debug.LogError("[HubBootstrapper] No visit to load — assign a fallback visit or start from the campaign.");
@@ -41,32 +42,44 @@ namespace ProjectAstra.Core.Hub
             }
 
             HubVisitService.Load(visit);
-            OpenVisit(visit);
+            OpenVisit(visit, asked);
         }
 
-        // The campaign's visit wins, starting the campaign at its first hub step if something
-        // skipped straight here. The serialized fallback is only for a scene with no GameFlow alive.
-        private HubVisitData ResolveVisit()
+        // Someone testing a particular visit wins over everything, then the campaign, starting it
+        // at its first hub step if something skipped straight here. The serialized fallback is only
+        // for a scene with no GameFlow alive.
+        private HubVisitData ResolveVisit(HubLaunchRequest.Request asked)
         {
             GameFlow flow = GameFlow.Instance;
+
+            if (asked.IsSomething)
+            {
+                HubVisitData wanted = flow != null ? flow.VisitNamed(asked.VisitId) : null;
+                if (wanted != null) return wanted;
+
+                Debug.LogWarning($"[HubBootstrapper] Asked to start '{asked.VisitId}', which no visit is.");
+            }
+
             HubVisitData campaignVisit = flow != null ? flow.EnsureHubStepStarted() : null;
             return campaignVisit != null ? campaignVisit : fallbackVisit;
         }
 
-        private void OpenVisit(HubVisitData visit)
+        private void OpenVisit(HubVisitData visit, HubLaunchRequest.Request asked)
         {
             // She is built before the room so the loader has someone to place, and left non-solid —
             // the only thing her footprint could collide with is itself.
-            HubActor player = loader.CreatePlayer(protagonistUnitId, visit.PlayerSpawn, visit.PlayerFacing, playerRoot);
+            Vector2 spawn = asked.HasSpawn ? asked.Spawn : visit.PlayerSpawn;
+
+            HubActor player = loader.CreatePlayer(protagonistUnitId, spawn, visit.PlayerFacing, playerRoot);
             if (player == null) return;
 
             player.gameObject.AddComponent<HubPlayerController>();
             if (cameraRig != null) cameraRig.Follow(player.transform);
 
-            if (!loader.Load(visit.StartLocationId, visit.PlayerSpawn, visit.PlayerFacing, houseIdentity: null)) return;
+            if (!loader.Load(visit.StartLocationId, spawn, visit.PlayerFacing, houseIdentity: null)) return;
 
             events.BindToVisit();
-            QuestManager.Instance?.BeginQuest(visit.QuestId);
+            QuestManager.Instance?.BeginQuestAt(visit.QuestId, asked.Stage);
 
             // Runs before she is given control, so a visit can open mid-scene rather than on a
             // player standing still waiting for something to happen.

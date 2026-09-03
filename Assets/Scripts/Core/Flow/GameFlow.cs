@@ -55,6 +55,11 @@ namespace ProjectAstra.Core.Flow
         }
 
         // Start a new game from the top of the campaign.
+        // Any visit by name, not only the one the campaign is on, so a designer can ask to start
+        // in the middle of a later one.
+        public HubVisitData VisitNamed(string visitId) =>
+            visitDatabase != null ? visitDatabase.Get(visitId) : null;
+
         public void Begin() => EnterStep(0);
 
         // Entering the battle map without having walked the campaign to it — pressing Play on

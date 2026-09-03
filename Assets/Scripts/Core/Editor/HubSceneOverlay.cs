@@ -128,6 +128,10 @@ namespace ProjectAstra.Core.Editor
 
                 int picked = EditorGUILayout.Popup(current, names);
                 if (picked != current) HubVisitLens.Visit = picked == 0 ? null : visits[picked - 1];
+
+                using (new EditorGUI.DisabledScope(!HubLaunch.CanLaunch || HubVisitLens.Visit == null))
+                    if (GUILayout.Button("Play", EditorStyles.miniButton, GUILayout.Width(48)))
+                        HubLaunch.PlayFrom(HubVisitLens.Visit, 0, null);
             }
 
             DrawWhatChanged(visits);

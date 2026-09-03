@@ -55,6 +55,19 @@ namespace ProjectAstra.Core.Quests
             return true;
         }
 
+        // Starts a quest already part-way through, for testing a later stage without playing the
+        // earlier ones. What those earlier stages would have done has not happened.
+        public bool BeginQuestAt(string questId, int stage)
+        {
+            if (stage <= 0) return BeginQuest(questId);
+
+            QuestData quest = catalog != null ? catalog.Get(questId) : null;
+            if (quest == null) return false;
+
+            Runner.Resume(quest, new QuestProgressDto { questId = questId, objectiveIndex = stage });
+            return true;
+        }
+
         private void OnGameplaySignal(GameplaySignal signal) => Runner.Report(signal);
 
         // The runner speaks plain C#; everyone else hears it through the facade.
