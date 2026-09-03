@@ -33,6 +33,7 @@ namespace ProjectAstra.Core.Editor
             HubRoom room = HubEditing.EditingRoom;
 
             DrawRoomPicker(room);
+            DrawVisitPicker();
             EditorGUILayout.Space(2);
             DrawOverlayToggles();
 
@@ -111,6 +112,41 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
+        // Which visit the room is being shown as. Picking one stands its cast in the room, so the
+        // same room can be looked at as it is on the first day and as it is on the fourth.
+        private void DrawVisitPicker()
+        {
+            HubVisitData[] visits = HubVisitLens.All().ToArray();
+            if (visits.Length == 0) return;
+
+            string[] names = new[] { "the empty room" }.Concat(visits.Select(v => v.VisitId)).ToArray();
+            int current = System.Array.IndexOf(visits, HubVisitLens.Visit) + 1;
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("As", GUILayout.Width(38));
+
+                int picked = EditorGUILayout.Popup(current, names);
+                if (picked != current) HubVisitLens.Visit = picked == 0 ? null : visits[picked - 1];
+            }
+
+            DrawWhatChanged(visits);
+        }
+
+        // What this visit does differently from the one before it, so flipping between them says
+        // what actually moved rather than leaving it to be spotted.
+        private static void DrawWhatChanged(HubVisitData[] visits)
+        {
+            HubVisitData visit = HubVisitLens.Visit;
+            if (visit == null) return;
+
+            int index = System.Array.IndexOf(visits, visit);
+            if (index <= 0) { EditorGUILayout.LabelField("The first one.", EditorStyles.miniLabel); return; }
+
+            foreach (string line in HubVisitDiff.Describe(visits[index - 1], visit))
+                EditorGUILayout.LabelField(line, EditorStyles.miniLabel);
+        }
+
         private void DrawOverlayToggles()
         {
             using (new EditorGUILayout.HorizontalScope())
@@ -118,6 +154,7 @@ namespace ProjectAstra.Core.Editor
                 Toggle(HubEditing.Overlay.Extent, "Edge");
                 Toggle(HubEditing.Overlay.Blocking, "Blocking");
                 Toggle(HubEditing.Overlay.Interaction, "Reach");
+                Toggle(HubEditing.Overlay.Spawns, "Start");
             }
         }
 

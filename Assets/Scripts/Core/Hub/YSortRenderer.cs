@@ -36,11 +36,19 @@ namespace ProjectAstra.Core.Hub
             if (updatesEveryFrame) Apply();
         }
 
-        private void Apply()
+        // Public so a room being composed can be ordered the moment something is placed, rather
+        // than looking flat until the game runs.
+        public void Apply()
         {
-            spriteRenderer.sortingLayerName = sortingLayer;
+            SpriteRenderer target = Renderer;
+            if (target == null) return;
+
+            target.sortingLayerName = sortingLayer;
             float baseline = transform.position.y + baselineOffset;
-            spriteRenderer.sortingOrder = Mathf.Clamp(Mathf.RoundToInt(-baseline * StepsPerTile), -Limit, Limit);
+            target.sortingOrder = Mathf.Clamp(Mathf.RoundToInt(-baseline * StepsPerTile), -Limit, Limit);
         }
+
+        private SpriteRenderer Renderer =>
+            spriteRenderer != null ? spriteRenderer : spriteRenderer = GetComponent<SpriteRenderer>();
     }
 }

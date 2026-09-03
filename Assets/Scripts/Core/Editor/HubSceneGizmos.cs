@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
+using System.Linq;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -31,6 +32,17 @@ namespace ProjectAstra.Core.Editor
             if (HubEditing.Shows(HubEditing.Overlay.Extent)) DrawExtent(room);
             if (HubEditing.Shows(HubEditing.Overlay.Blocking)) DrawBlocking(room);
             if (HubEditing.Shows(HubEditing.Overlay.Interaction)) DrawInteractions(room);
+            if (HubEditing.Shows(HubEditing.Overlay.Spawns)) DrawWhereSheStarts(room);
+        }
+
+        // Only for the visit being looked at, because where she starts is a visit's decision and
+        // not the room's.
+        private static void DrawWhereSheStarts(HubRoom room)
+        {
+            HubVisitData visit = HubVisitLens.Visit;
+            if (visit == null || visit.StartLocationId != room.LocationId) return;
+
+            DrawSpawn(visit.PlayerSpawn, $"she starts here  ·  {visit.VisitId}");
         }
 
         // The room's own edge: the camera never shows past it and she cannot walk out of it.
@@ -76,8 +88,32 @@ namespace ProjectAstra.Core.Editor
                 Handles.DrawWireDisc(at, Vector3.forward, InteractionReachRules.DefaultReachTiles);
 
                 Label(at + Vector3.up * (InteractionReachRules.DefaultReachTiles + 0.2f),
-                    $"{interactable.Verb}  ·  {interactable.name}", ReachColour);
+                    $"{interactable.Verb}  ·  {interactable.name}{ThisVisit(interactable)}", ReachColour);
             }
+        }
+
+        // What the visit being looked at does to this thing: a door it leaves shut, or an object it
+        // starts in some other state.
+        private static string ThisVisit(InteractableBehaviour interactable)
+        {
+            HubVisitData visit = HubVisitLens.Visit;
+            if (visit == null) return "";
+
+            if (interactable is DoorInteractable door) return ShutBy(visit, door.RequiredGate);
+            if (interactable is InspectableInteractable thing) return Overridden(visit, thing.InteractableId);
+            return "";
+        }
+
+        private static string ShutBy(HubVisitData visit, string gate) =>
+            !string.IsNullOrEmpty(gate) && !visit.OpenGates.Contains(gate)
+                ? $"   [ shut until '{gate}' ]"
+                : "";
+
+        private static string Overridden(HubVisitData visit, string interactableId)
+        {
+            foreach (HubInteractableOverride change in visit.InteractableOverrides)
+                if (change.interactableId == interactableId) return $"   [ {change.state} this visit ]";
+            return "";
         }
 
         public static void DrawSpawn(Vector2 at, string caption)

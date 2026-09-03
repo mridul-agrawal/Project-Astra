@@ -19,6 +19,7 @@ namespace ProjectAstra.Core.Editor
 
             placed.transform.SetParent(GroupFor(entry, room), false);
             placed.transform.position = OriginFor(entry, SnapToPixel(at));
+            SortNow(placed);
 
             Undo.RegisterCreatedObjectUndo(placed, $"Place {entry.label}");
             Selection.activeGameObject = placed;
@@ -57,7 +58,7 @@ namespace ProjectAstra.Core.Editor
             renderer.sprite = entry.sprite;
 
             if (entry.kind == HubPalette.Kind.Ground) MakeGround(renderer);
-            else MakeObject(built, renderer, entry);
+            else MakeObject(built, entry);
 
             return built;
         }
@@ -68,16 +69,21 @@ namespace ProjectAstra.Core.Editor
             renderer.sortingOrder = 0;
         }
 
-        private static void MakeObject(GameObject built, SpriteRenderer renderer, HubPalette.Entry entry)
+        private static void MakeObject(GameObject built, HubPalette.Entry entry)
         {
-            renderer.sortingLayerName = "Object";
-
             // Depth is measured from the base of the art rather than the pivot, so a tall tree still
             // hides her only once she is behind its trunk.
-            var sorter = built.AddComponent<YSortRenderer>();
-            sorter.MeasureFrom(AnchorIn(entry).y);
+            built.AddComponent<YSortRenderer>().MeasureFrom(AnchorIn(entry).y);
 
             if (entry.blocks) AddFootprint(built, entry);
+        }
+
+        // Depth sorting normally happens once the game runs. Doing it here means the room being
+        // composed shows the order it will really have, rather than looking flat.
+        private static void SortNow(GameObject placed)
+        {
+            foreach (YSortRenderer sorter in placed.GetComponentsInChildren<YSortRenderer>(true))
+                sorter.Apply();
         }
 
         // The box sits on the base of the art rather than around all of it, so she can walk behind a
