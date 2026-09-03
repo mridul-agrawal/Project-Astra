@@ -52,6 +52,7 @@ MonoBehaviour:
   interactableOverrides: []
   openGates: []
   environmentSet: 
+  questId: hub1
   objectives:
   - {fileID: 11400000, guid: f0c805bbd2ab97f4e8fc42bcf230f4e2, type: 2}
   - {fileID: 11400000, guid: 490de380004f7ad41b4f48caf6e38bee, type: 2}

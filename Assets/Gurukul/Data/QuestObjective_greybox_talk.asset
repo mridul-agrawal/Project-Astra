@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88d36e5a13dec9e4cb928e4d5f79f2d2, type: 3}
+  m_Name: QuestObjective_greybox_talk
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Quests.QuestObjective
+  objectiveId: greybox_talk
+  displayText: Talk to Arjun
+  showCounter: 0
+  completion:
+    rid: 3597979824794108079
+  onStart: []
+  onComplete: []
+  markerTargetIds: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3597979824794108079
+      type: {class: TalkCondition, ns: ProjectAstra.Core.Quests, asm: ProjectAstra.Core}
+      data:
+        targets:
+        - conversationId: greybox_arjun_talk
+          characterId: arjun

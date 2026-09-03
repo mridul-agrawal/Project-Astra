@@ -78,6 +78,9 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private string environmentSet;
 
         [Header("Progression")]
+        [Tooltip("The quest this visit runs, by id, looked up in the QuestCatalog.")]
+        [SerializeField] private string questId;
+
         [Tooltip("Worked through in order. The next one activates only once the current one completes and its effects are applied.")]
         [SerializeField] private HubObjectiveData[] objectives = Array.Empty<HubObjectiveData>();
 
@@ -93,6 +96,7 @@ namespace ProjectAstra.Core.Hub
         public HubInteractableOverride[] InteractableOverrides => interactableOverrides;
         public string[] OpenGates => openGates;
         public string EnvironmentSet => environmentSet;
+        public string QuestId => questId;
         public HubObjectiveData[] Objectives => objectives;
         public HubDeparture Departure => departure;
     }

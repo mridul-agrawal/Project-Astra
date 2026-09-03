@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6dceee3ce560bc40b767e347bf9f95d, type: 3}
+  m_Name: Quest_Hub1
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Quests.QuestData
+  questId: hub1
+  displayName: hub1
+  objectives:
+  - {fileID: 11400000, guid: 668aaf757cc8d5342b67ac4ff73b3ccd, type: 2}
+  - {fileID: 11400000, guid: 5256e62f952d01d479baa62a0a6fc736, type: 2}
+  onStart: []
+  onComplete: []
+  references:
+    version: 2
+    RefIds: []

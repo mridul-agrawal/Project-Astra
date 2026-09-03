@@ -1,4 +1,6 @@
 using System;
+using ProjectAstra.Core.Events;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Hub.Interaction
 {
@@ -20,12 +22,27 @@ namespace ProjectAstra.Core.Hub.Interaction
         public static event Action<string> ObjectInspected;
         public static event Action<string> FlagRaised;
 
-        public static void RaiseConversationFinished(string conversationId) =>
+        public static void RaiseConversationFinished(string conversationId)
+        {
             ConversationFinished?.Invoke(conversationId);
+            Signal(GameplaySignal.Conversation(conversationId));
+        }
 
-        public static void RaiseObjectInspected(string interactableId) =>
+        public static void RaiseObjectInspected(string interactableId)
+        {
             ObjectInspected?.Invoke(interactableId);
+            Signal(GameplaySignal.Inspection(interactableId));
+        }
 
-        public static void RaiseFlag(string flagId) => FlagRaised?.Invoke(flagId);
+        public static void RaiseFlag(string flagId)
+        {
+            FlagRaised?.Invoke(flagId);
+            Signal(GameplaySignal.Signal(flagId));
+        }
+
+        // The same announcement, said again on the seam the quest system listens to. Both paths
+        // are live while the old progression is still driving the HUD.
+        private static void Signal(GameplaySignal signal) =>
+            EventService.Instance?.RaiseGameplaySignal(signal);
     }
 }

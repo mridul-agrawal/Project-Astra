@@ -1847,6 +1847,8 @@ GameObject:
   - component: {fileID: 1708496281}
   - component: {fileID: 1708496280}
   - component: {fileID: 1708496290}
+  - component: {fileID: 1708496292}
+  - component: {fileID: 1708496291}
   m_Layer: 0
   m_Name: Hub
   m_TagString: Untagged
@@ -1988,6 +1990,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Hub.HubProgressionListener
   events: {fileID: 1708496283}
+--- !u!114 &1708496291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708496277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f626f6189f9656459aa007aeed93348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Quests.QuestManager
+  catalog: {fileID: 11400000, guid: 4130094cf3f64574e9b50a1eb2fd84fb, type: 2}
+  worldBehaviour: {fileID: 1708496292}
+--- !u!114 &1708496292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1708496277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f027b33e2cc8760449145a8b08a7ecf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Hub.HubQuestWorld
+  events: {fileID: 1708496283}
+  scriptCatalog: {fileID: 11400000, guid: 9e5cef175b0b4b4428f91d64f01d39c6, type: 2}
 --- !u!1 &1728906555
 GameObject:
   m_ObjectHideFlags: 0

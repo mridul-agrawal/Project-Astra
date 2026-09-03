@@ -3,6 +3,7 @@ using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Hub.Events;
 using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Hub
 {
@@ -66,6 +67,7 @@ namespace ProjectAstra.Core.Hub
 
             events.BindToVisit();
             HubProgressService.Instance.Objectives.Begin();
+            QuestManager.Instance?.BeginQuest(visit.QuestId);
 
             // Runs before she is given control, so a visit can open mid-scene rather than on a
             // player standing still waiting for something to happen.

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6dceee3ce560bc40b767e347bf9f95d, type: 3}
+  m_Name: Quest_Greybox
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Quests.QuestData
+  questId: greybox
+  displayName: greybox
+  objectives:
+  - {fileID: 11400000, guid: 0a18a1ccd2b101c43a7cb3e7ba086670, type: 2}
+  - {fileID: 11400000, guid: 60e6fbc88af715240bb36056f2d7100a, type: 2}
+  onStart: []
+  onComplete: []
+  references:
+    version: 2
+    RefIds: []

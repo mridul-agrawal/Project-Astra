@@ -27,6 +27,7 @@ MonoBehaviour:
   interactableOverrides: []
   openGates: []
   environmentSet: 
+  questId: greybox
   objectives:
   - {fileID: 11400000, guid: bc8b64f481966e2408418712f5366ae5, type: 2}
   - {fileID: 11400000, guid: 42256e9b5fd7ff4469d744f22e52bee1, type: 2}
