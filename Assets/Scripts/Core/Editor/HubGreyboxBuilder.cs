@@ -66,240 +66,28 @@ namespace ProjectAstra.Core.Editor
             yield return new RectInt(wide - 1, 0, 1, high);
         }
 
-        [MenuItem("Project Astra/Hub/Build Greybox Location")]
+        // Rebuilds only the greybox's data: the visit, its quest and its events. The rooms
+        // themselves are authored prefabs under Assets/Gurukul/Rooms and are never touched here.
+        [MenuItem("Project Astra/Hub/Build Greybox Data")]
         public static void Build()
         {
-            EnsureFolders();
+            HubLocationData courtyard = Find("Location_GreyboxCourtyard");
+            if (courtyard == null)
+            {
+                Debug.LogError("[HubGreybox] No Location_GreyboxCourtyard to build a visit against.");
+                return;
+            }
 
-            Sprite courtyardArt = ImportSprite($"{ArtFolder}/greybox_courtyard.png",
-                PaintRoom(CourtyardWide, CourtyardHigh, Grass, GrassLine, CourtyardWalls()));
-            Sprite houseArt = ImportSprite($"{ArtFolder}/greybox_house.png",
-                PaintRoom(HouseWide, HouseHigh, Floor, FloorLine, HouseWalls()));
-            Sprite tree = ImportSprite($"{ArtFolder}/greybox_tree.png", PaintTree());
-
-            GameObject props = BuildPropsPrefab(tree);
-
-            HubLocationData courtyard = BuildCourtyard(courtyardArt, props);
-            HubLocationData house = BuildHouse(houseArt);
-            HubVisitData visit = BuildVisit(courtyard);
-
-            RegisterInCatalogs(visit, courtyard, house);
             BuildEvents();
+            BuildVisit(courtyard);
 
             AssetDatabase.SaveAssets();
-            Selection.activeObject = courtyard;
-            Debug.Log($"[HubGreybox] Built the courtyard, a house to go inside, props and visit '{visit.VisitId}'.");
+            AssetDatabase.Refresh();
+            Debug.Log("[HubGreybox] Rebuilt the greybox visit, quest and events.");
         }
 
-        // --- Art ---
-
-        private static Texture2D PaintRoom(int tilesWide, int tilesHigh, Color fill, Color line,
-            IEnumerable<RectInt> walls)
-        {
-            int width = tilesWide * TilePixels;
-            int height = tilesHigh * TilePixels;
-            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
-
-            for (int y = 0; y < height; y++)
-                for (int x = 0; x < width; x++)
-                {
-                    bool onTileEdge = x % TilePixels == 0 || y % TilePixels == 0;
-                    texture.SetPixel(x, y, onTileEdge ? line : fill);
-                }
-
-            foreach (RectInt wall in walls) FillTiles(texture, wall, Stone);
-
-            texture.Apply();
-            return texture;
-        }
-
-        // A 1x2-tile tree: trunk on the bottom tile, canopy on the top. Only the trunk blocks, which
-        // is what lets her walk behind the canopy.
-        private static Texture2D PaintTree()
-        {
-            var texture = new Texture2D(TilePixels, TilePixels * 2, TextureFormat.RGBA32, false);
-
-            for (int y = 0; y < TilePixels * 2; y++)
-                for (int x = 0; x < TilePixels; x++)
-                {
-                    bool isTrunk = y < TilePixels && x >= 12 && x < 20;
-                    bool isCanopy = y >= TilePixels - 6;
-                    Color color = isCanopy ? TreeCanopy : isTrunk ? TreeTrunk : Color.clear;
-                    texture.SetPixel(x, y, color);
-                }
-
-            texture.Apply();
-            return texture;
-        }
-
-        private static void FillTiles(Texture2D texture, RectInt tiles, Color color)
-        {
-            for (int ty = tiles.yMin; ty < tiles.yMax; ty++)
-                for (int tx = tiles.xMin; tx < tiles.xMax; tx++)
-                    for (int y = 0; y < TilePixels; y++)
-                        for (int x = 0; x < TilePixels; x++)
-                            texture.SetPixel(tx * TilePixels + x, ty * TilePixels + y, color);
-        }
-
-        private static Sprite ImportSprite(string path, Texture2D texture)
-        {
-            File.WriteAllBytes(path, texture.EncodeToPNG());
-            Object.DestroyImmediate(texture);
-            AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-
-            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
-            importer.textureType = TextureImporterType.Sprite;
-            importer.spriteImportMode = SpriteImportMode.Single;
-            importer.spritePixelsPerUnit = TilePixels;
-            importer.filterMode = FilterMode.Point;
-            importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.mipmapEnabled = false;
-
-            // Bottom-left pivot so a sprite dropped at the origin lines up with tile (0,0).
-            var settings = new TextureImporterSettings();
-            importer.ReadTextureSettings(settings);
-            settings.spriteAlignment = (int)SpriteAlignment.BottomLeft;
-            importer.SetTextureSettings(settings);
-            importer.SaveAndReimport();
-
-            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
-        }
-
-        private static GameObject BuildPropsPrefab(Sprite tree)
-        {
-            var root = new GameObject("GreyboxProps");
-            var treeGo = new GameObject("Tree");
-            treeGo.transform.SetParent(root.transform, false);
-            treeGo.transform.localPosition = new Vector3(TreeFootPosition.x, TreeFootPosition.y, 0f);
-
-            treeGo.AddComponent<SpriteRenderer>().sprite = tree;
-            treeGo.AddComponent<YSortRenderer>();
-            MakeTreeInspectable(treeGo);
-
-            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PropsPrefabPath);
-            Object.DestroyImmediate(root);
-            return prefab;
-        }
-
-        // The tree doubles as something to walk up to, so the prompt has a target without needing
-        // any more placeholder art. Its trigger is the region she has to be standing in.
-        private static void MakeTreeInspectable(GameObject treeGo)
-        {
-            InteractionPhysics.AttachReachRegion(treeGo, TreeFootOffset);
-
-            treeGo.AddComponent<InspectableInteractable>().Configure(
-                "greybox_tree", HubVerb.Inspect, TreeFootOffset, "greybox_tree_look",
-                gate: null, denied: null, critical: false, HubInteractableState.Available);
-        }
-
-        // --- Locations ---
-
-        private static HubLocationData BuildCourtyard(Sprite art, GameObject props)
-        {
-            var location = LoadOrCreate<HubLocationData>($"{DataFolder}/Location_GreyboxCourtyard.asset");
-            var serialized = new SerializedObject(location);
-
-            WriteLocationBasics(serialized, "greybox_courtyard", "Greybox Courtyard", art, props,
-                CourtyardWide, CourtyardHigh, CourtyardWalls());
-            WriteTreeFootprint(serialized.FindProperty("propFootprints"));
-            WriteCourtyardDoor(serialized.FindProperty("doors"));
-
-            serialized.ApplyModifiedProperties();
-            EditorUtility.SetDirty(location);
-            return location;
-        }
-
-        private static HubLocationData BuildHouse(Sprite art)
-        {
-            var location = LoadOrCreate<HubLocationData>($"{DataFolder}/Location_GreyboxHouse.asset");
-            var serialized = new SerializedObject(location);
-
-            WriteLocationBasics(serialized, "greybox_house", "Greybox House", art, null,
-                HouseWide, HouseHigh, HouseWalls());
-            serialized.FindProperty("propFootprints").arraySize = 0;
-            WriteHouseExit(serialized.FindProperty("doors"));
-
-            serialized.ApplyModifiedProperties();
-            EditorUtility.SetDirty(location);
-            return location;
-        }
-
-        private static void WriteLocationBasics(SerializedObject serialized, string id, string name,
-            Sprite art, GameObject props, int tilesWide, int tilesHigh, IEnumerable<RectInt> walls)
-        {
-            serialized.FindProperty("locationId").stringValue = id;
-            serialized.FindProperty("displayName").stringValue = name;
-            serialized.FindProperty("baseArt").objectReferenceValue = art;
-            serialized.FindProperty("propsPrefab").objectReferenceValue = props;
-            serialized.FindProperty("tileWidth").intValue = tilesWide;
-            serialized.FindProperty("tileHeight").intValue = tilesHigh;
-            WriteBlockedCells(serialized.FindProperty("blockedCells"), tilesWide, tilesHigh, walls);
-        }
-
-        // The painted walls, expanded from tiles to the half-tile cells the collision map uses.
-        private static void WriteBlockedCells(SerializedProperty cells, int tilesWide, int tilesHigh,
-            IEnumerable<RectInt> walls)
-        {
-            int cellsWide = tilesWide * HubLocationData.CellsPerTile;
-            int cellsHigh = tilesHigh * HubLocationData.CellsPerTile;
-
-            cells.arraySize = cellsWide * cellsHigh;
-            for (int i = 0; i < cells.arraySize; i++)
-                cells.GetArrayElementAtIndex(i).boolValue = false;
-
-            foreach (RectInt wall in walls)
-                for (int ty = wall.yMin; ty < wall.yMax; ty++)
-                    for (int tx = wall.xMin; tx < wall.xMax; tx++)
-                        BlockTile(cells, cellsWide, tx, ty);
-        }
-
-        private static void BlockTile(SerializedProperty cells, int cellsWide, int tileX, int tileY)
-        {
-            for (int dy = 0; dy < HubLocationData.CellsPerTile; dy++)
-                for (int dx = 0; dx < HubLocationData.CellsPerTile; dx++)
-                {
-                    int cellX = tileX * HubLocationData.CellsPerTile + dx;
-                    int cellY = tileY * HubLocationData.CellsPerTile + dy;
-                    cells.GetArrayElementAtIndex(cellY * cellsWide + cellX).boolValue = true;
-                }
-        }
-
-        // Half a tile wide and half a tile deep at the base — the trunk, not the whole picture.
-        private static void WriteTreeFootprint(SerializedProperty footprints)
-        {
-            footprints.arraySize = 1;
-            SerializedProperty entry = footprints.GetArrayElementAtIndex(0);
-            entry.FindPropertyRelative("propId").stringValue = "greybox_tree";
-            entry.FindPropertyRelative("startsSolid").boolValue = true;
-            entry.FindPropertyRelative("footprint").rectValue =
-                new Rect(TreeFootPosition.x + 0.25f, TreeFootPosition.y, 0.5f, 0.5f);
-        }
-
-        // Set into the north wall, so she walks up to it from inside the courtyard and faces it.
-        private static void WriteCourtyardDoor(SerializedProperty doors)
-        {
-            doors.arraySize = 1;
-            SerializedProperty door = doors.GetArrayElementAtIndex(0);
-            door.FindPropertyRelative("doorId").stringValue = "greybox_house_door";
-            door.FindPropertyRelative("position").vector2Value = new Vector2(10f, 17f);
-            door.FindPropertyRelative("verb").enumValueIndex = (int)HubVerb.Enter;
-            door.FindPropertyRelative("targetLocationId").stringValue = "greybox_house";
-            door.FindPropertyRelative("targetSpawn").vector2Value = new Vector2(8f, 1.5f);
-            door.FindPropertyRelative("targetFacing").enumValueIndex = (int)Facing.North;
-            door.FindPropertyRelative("houseIdentityId").stringValue = "greybox_house_a";
-        }
-
-        // No destination, so it sends her back out through whichever door she came in by — the
-        // arrangement that lets six student houses share one interior.
-        private static void WriteHouseExit(SerializedProperty doors)
-        {
-            doors.arraySize = 1;
-            SerializedProperty door = doors.GetArrayElementAtIndex(0);
-            door.FindPropertyRelative("doorId").stringValue = "greybox_house_exit";
-            door.FindPropertyRelative("position").vector2Value = new Vector2(8f, 0f);
-            door.FindPropertyRelative("verb").enumValueIndex = (int)HubVerb.Leave;
-            door.FindPropertyRelative("targetLocationId").stringValue = "";
-        }
+        private static HubLocationData Find(string assetName) =>
+            AssetDatabase.LoadAssetAtPath<HubLocationData>($"{DataFolder}/{assetName}.asset");
 
         // --- Visit ---
 

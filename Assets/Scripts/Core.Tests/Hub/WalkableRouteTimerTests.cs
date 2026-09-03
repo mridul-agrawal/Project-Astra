@@ -9,20 +9,21 @@ namespace ProjectAstra.Core.Tests.Hub
     {
         private static readonly Rect Footprint = new(-0.25f, 0f, 0.5f, 0.25f);
 
-        private HubCollisionMap map;
+        private FakeSolidSpace space;
 
         [SetUp]
-        public void SetUp() => map = new HubCollisionMap(40, 40);   // 20x20 tiles, all clear
+        public void SetUp() => space = new FakeSolidSpace(20f, 20f);
 
         private void BlockColumn(int cellX, int fromY, int toY)
         {
-            for (int y = fromY; y <= toY; y++) map.SetGroundBlocked(cellX, y, true);
+            space.Block(cellX * HubMover.Resolution, fromY * HubMover.Resolution,
+                HubMover.Resolution, (toY - fromY + 1) * HubMover.Resolution);
         }
 
         [Test]
         public void AStraightWalk_TakesDistanceOverSpeed()
         {
-            Assert.IsTrue(WalkableRouteTimer.TryMeasureSeconds(map, Footprint,
+            Assert.IsTrue(WalkableRouteTimer.TryMeasureSeconds(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(9f, 2f), out float seconds));
 
             // Seven tiles at 3.5 tiles a second.
@@ -32,7 +33,7 @@ namespace ProjectAstra.Core.Tests.Hub
         [Test]
         public void StandingOnTheTarget_TakesNoTime()
         {
-            Assert.IsTrue(WalkableRouteTimer.TryMeasureSeconds(map, Footprint,
+            Assert.IsTrue(WalkableRouteTimer.TryMeasureSeconds(space, Footprint,
                 new Vector2(4f, 4f), new Vector2(4f, 4f), out float seconds));
             Assert.AreEqual(0f, seconds, 0.001f);
         }
@@ -42,7 +43,7 @@ namespace ProjectAstra.Core.Tests.Hub
         [Test]
         public void ADiagonalTarget_IsMeasuredAsTwoLegs()
         {
-            WalkableRouteTimer.TryMeasureCells(map, Footprint, new Vector2(2f, 2f), new Vector2(5f, 6f), out int cells);
+            WalkableRouteTimer.TryMeasureCells(space, Footprint, new Vector2(2f, 2f), new Vector2(5f, 6f), out int cells);
 
             Assert.AreEqual(14, cells, 2, "Three tiles across and four up is fourteen half-tile steps.");
         }
@@ -52,7 +53,7 @@ namespace ProjectAstra.Core.Tests.Hub
         {
             BlockColumn(12, 0, 30);   // a wall with a gap above cellY 30
 
-            Assert.IsTrue(WalkableRouteTimer.TryMeasureCells(map, Footprint,
+            Assert.IsTrue(WalkableRouteTimer.TryMeasureCells(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(10f, 2f), out int detoured));
             Assert.Greater(detoured, 16, "Going round the wall must cost more than going straight through.");
         }
@@ -62,16 +63,16 @@ namespace ProjectAstra.Core.Tests.Hub
         {
             BlockColumn(12, 0, 39);   // a wall all the way across
 
-            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(map, Footprint,
+            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(10f, 2f), out _));
         }
 
         [Test]
         public void StartingInsideSomethingSolid_CannotBeRoutedFrom()
         {
-            map.SetGroundBlocked(4, 4, true);
+            space.Block(4 * HubMover.Resolution, 4 * HubMover.Resolution, HubMover.Resolution, HubMover.Resolution);
 
-            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(map, Footprint,
+            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(space, Footprint,
                 new Vector2(2.25f, 2.1f), new Vector2(9f, 9f), out _));
         }
 
@@ -80,12 +81,12 @@ namespace ProjectAstra.Core.Tests.Hub
         [Test]
         public void ATargetStandingInSomethingSolid_IsStillReachableBeside()
         {
-            map.Stamp(new Rect(8.75f, 8f, 0.5f, 0.5f));
+            space.Block(new Rect(8.75f, 8f, 0.5f, 0.5f));
 
-            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(map, Footprint,
+            Assert.IsFalse(WalkableRouteTimer.TryMeasureSeconds(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(9f, 8.1f), out _));
 
-            Assert.IsTrue(WalkableRouteTimer.CanReachNeighbour(map, Footprint,
+            Assert.IsTrue(WalkableRouteTimer.CanReachNeighbour(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(9f, 8.1f), out float seconds));
             Assert.Greater(seconds, 0f);
         }
@@ -95,7 +96,7 @@ namespace ProjectAstra.Core.Tests.Hub
         {
             BlockColumn(12, 0, 39);
 
-            Assert.IsFalse(WalkableRouteTimer.CanReachNeighbour(map, Footprint,
+            Assert.IsFalse(WalkableRouteTimer.CanReachNeighbour(space, Footprint,
                 new Vector2(2f, 2f), new Vector2(10f, 2f), out _));
         }
     }

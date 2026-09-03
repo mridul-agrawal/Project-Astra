@@ -12,6 +12,8 @@ namespace ProjectAstra.Core.Hub.Interaction
         [SerializeField] private HubLocationTransition transitions;
 
         public string DoorId => door.doorId;
+        public string TargetLocationId => door.targetLocationId;
+        public bool ReturnsToPreviousRoom => door.ReturnsToPreviousRoom;
 
         public override HubVerb Verb => door.verb;
         public override InteractionPriority Priority => InteractionPriority.Door;

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
@@ -66,24 +67,24 @@ namespace ProjectAstra.Core.Editor
                     $"{viewWide:0.#}x{viewHigh:0.#} the camera shows"));
         }
 
+        // Doors live in the room now, so they are read off the prefab rather than a list.
         private static void CheckDoors(HubLocationData location, List<HubProblem> problems)
         {
-            var seen = new HashSet<string>();
+            if (location.RoomPrefab == null) return;
 
-            foreach (HubDoor door in location.Doors)
+            var seen = new HashSet<string>();
+            foreach (DoorInteractable door in location.RoomPrefab.GetComponentsInChildren<DoorInteractable>(true))
             {
-                if (string.IsNullOrEmpty(door.doorId))
+                if (string.IsNullOrEmpty(door.DoorId))
                     problems.Add(new HubProblem(location, $"{location.name}: a door has no id"));
-                else if (!seen.Add(door.doorId))
-                    problems.Add(new HubProblem(location, $"{location.name}: duplicate door id '{door.doorId}'"));
+                else if (!seen.Add(door.DoorId))
+                    problems.Add(new HubProblem(location, $"{location.name}: duplicate door id '{door.DoorId}'"));
 
                 if (door.ReturnsToPreviousRoom) continue;
 
-                if (FindLocation(door.targetLocationId) == null)
+                if (FindLocation(door.TargetLocationId) == null)
                     problems.Add(new HubProblem(location,
-                        $"{location.name}: door '{door.doorId}' leads to '{door.targetLocationId}', which doesn't exist"));
-
-                if (!location.TryGetDoor(door.doorId, out _)) continue;
+                        $"{location.name}: door '{door.DoorId}' leads to '{door.TargetLocationId}', which doesn't exist"));
             }
         }
 
@@ -156,10 +157,10 @@ namespace ProjectAstra.Core.Editor
 
         private static void CheckSpawn(HubVisitData visit, HubLocationData start, List<HubProblem> problems)
         {
-            HubCollisionMap map = start.BuildCollisionMap();
-            Rect footprint = HubMover.FootprintAt(visit.PlayerSpawn, PlayerFootprint);
+            using var room = new RoomUnderTest(start);
+            if (room.Space == null) return;
 
-            if (map.IsRectBlocked(footprint))
+            if (room.Space.IsBlocked(HubMover.FootprintAt(visit.PlayerSpawn, PlayerFootprint)))
                 problems.Add(new HubProblem(visit,
                     $"{visit.name}: she spawns at {visit.PlayerSpawn}, which is inside something solid"));
         }
@@ -208,13 +209,14 @@ namespace ProjectAstra.Core.Editor
         // slower than the target. Reported, not corrected — the fix is design's.
         private static void CheckRouteTimes(HubVisitData visit, HubLocationData start, List<HubProblem> problems)
         {
-            HubCollisionMap map = start.BuildCollisionMap();
+            using var room = new RoomUnderTest(start);
+            if (room.Space == null) return;
 
             foreach (HubCharacterPlacement placement in visit.CharacterPlacements)
             {
                 if (placement.locationId != visit.StartLocationId) continue;
 
-                if (!WalkableRouteTimer.CanReachNeighbour(map, PlayerFootprint, visit.PlayerSpawn,
+                if (!WalkableRouteTimer.CanReachNeighbour(room.Space, PlayerFootprint, visit.PlayerSpawn,
                         placement.position, out float seconds))
                 {
                     problems.Add(new HubProblem(visit,
@@ -257,6 +259,65 @@ namespace ProjectAstra.Core.Editor
             foreach (QuestData candidate in LoadAll<QuestData>())
                 if (candidate.QuestId == questId) return candidate;
             return null;
+        }
+
+        // The room's colliders, stood up in a scene of their own so a content check never disturbs
+        // whatever the designer happens to have open, and never sees its colliders either.
+        private sealed class RoomUnderTest : System.IDisposable
+        {
+            private readonly UnityEngine.SceneManagement.Scene scene;
+            private readonly bool opened;
+
+            public ISolidSpace Space { get; }
+
+            public RoomUnderTest(HubLocationData location)
+            {
+                if (location == null || location.RoomPrefab == null) return;
+
+                scene = EditorSceneManager.NewPreviewScene();
+                opened = true;
+
+                GameObject room = Object.Instantiate(location.RoomPrefab);
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(room, scene);
+                Physics2D.SyncTransforms();
+
+                Space = new PreviewSolidSpace(scene, location.Bounds);
+            }
+
+            public void Dispose()
+            {
+                if (opened) EditorSceneManager.ClosePreviewScene(scene);
+            }
+        }
+
+        // The same question PhysicsSolidSpace answers, asked of one preview scene's own physics.
+        private sealed class PreviewSolidSpace : ISolidSpace
+        {
+            private static readonly Collider2D[] Hit = new Collider2D[1];
+
+            private readonly PhysicsScene2D physics;
+            private readonly Rect bounds;
+            private readonly ContactFilter2D filter;
+
+            public PreviewSolidSpace(UnityEngine.SceneManagement.Scene scene, Rect bounds)
+            {
+                physics = scene.GetPhysicsScene2D();
+                this.bounds = bounds;
+                filter = new ContactFilter2D
+                {
+                    useTriggers = false,
+                    useLayerMask = true,
+                    layerMask = LayerMask.GetMask(PhysicsSolidSpace.SolidLayer)
+                };
+            }
+
+            public bool IsBlocked(Rect footprint) =>
+                !Inside(footprint) ||
+                physics.OverlapBox(footprint.center, footprint.size, 0f, filter, Hit) > 0;
+
+            private bool Inside(Rect footprint) =>
+                footprint.xMin >= bounds.xMin && footprint.xMax <= bounds.xMax &&
+                footprint.yMin >= bounds.yMin && footprint.yMax <= bounds.yMax;
         }
 
         // --- Lookups ---

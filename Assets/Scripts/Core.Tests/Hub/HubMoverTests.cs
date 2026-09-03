@@ -11,18 +11,18 @@ namespace ProjectAstra.Core.Tests.Hub
         // A half-tile-wide box sitting at the feet, which is what a 32px character blocks on.
         private static readonly Rect Footprint = new(-0.25f, 0f, 0.5f, 0.25f);
 
-        private HubCollisionMap map;
+        private FakeSolidSpace space;
 
         [SetUp]
-        public void SetUp() => map = new HubCollisionMap(16, 16);   // 8x8 tiles
+        public void SetUp() => space = new FakeSolidSpace(8f, 8f);
 
         private Vector2 Move(Vector2 from, Facing? direction, float deltaTime, out bool moved) =>
-            HubMover.Move(map, from, Footprint, direction, deltaTime, out moved);
+            HubMover.Move(space, from, Footprint, direction, deltaTime, out moved);
 
+        // A wall running the whole height of the room, half a tile thick.
         private void BlockColumn(int cellX)
         {
-            for (int y = 0; y < map.CellsHigh; y++)
-                map.SetGroundBlocked(cellX, y, true);
+            space.Block(cellX * HubMover.Resolution, 0f, HubMover.Resolution, 8f);
         }
 
         [Test]
