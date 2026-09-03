@@ -1,0 +1,1253 @@
+<meta charset="utf-8">
+<title>Authoring the Gurukul Hub</title>
+
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --dim: #5c5c5c;
+    --faint: #8a8a8a;
+    --rule: #d8d6d2;
+    --ground: #ffffff;
+    --panel: #f6f5f3;
+    --accent: #7a4a1e;
+    --warn-bg: #fdf4e6;
+    --warn-edge: #e0b878;
+    --stop-bg: #fbeceb;
+    --stop-edge: #dfa6a1;
+    --code-bg: #f0efec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #e6e4e1;
+      --dim: #a8a5a0;
+      --faint: #7d7a76;
+      --rule: #35332f;
+      --ground: #16150e;
+      --panel: #1e1d1a;
+      --accent: #d8a86a;
+      --warn-bg: #2a2114;
+      --warn-edge: #6b5326;
+      --stop-bg: #2b1a18;
+      --stop-edge: #6d3a34;
+      --code-bg: #23221e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e6e4e1;
+    --dim: #a8a5a0;
+    --faint: #7d7a76;
+    --rule: #35332f;
+    --ground: #16150e;
+    --panel: #1e1d1a;
+    --accent: #d8a86a;
+    --warn-bg: #2a2114;
+    --warn-edge: #6b5326;
+    --stop-bg: #2b1a18;
+    --stop-edge: #6d3a34;
+    --code-bg: #23221e;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 16px/1.62 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 44px; max-width: 1240px; margin: 0 auto; padding: 40px 28px 120px; }
+  @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; gap: 20px; } nav { position: static !important; max-height: none !important; } }
+
+  nav { position: sticky; top: 28px; align-self: start; max-height: calc(100vh - 60px); overflow-y: auto; font-size: 13.5px; line-height: 1.5; }
+  nav strong { display: block; font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--faint); margin: 18px 0 7px; }
+  nav strong:first-child { margin-top: 0; }
+  nav a { display: block; color: var(--dim); text-decoration: none; padding: 2.5px 0; }
+  nav a:hover { color: var(--accent); }
+
+  main { min-width: 0; }
+  h1 { font-size: 30px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .lede { color: var(--dim); font-size: 17px; margin: 0 0 8px; max-width: 62ch; }
+  .stamp { color: var(--faint); font-size: 13px; margin: 0 0 40px; }
+
+  h2 { font-size: 22px; margin: 54px 0 4px; padding-top: 20px; border-top: 1px solid var(--rule); letter-spacing: -0.01em; }
+  h2 .num { color: var(--faint); font-weight: 400; margin-right: 10px; }
+  h3 { font-size: 17px; margin: 30px 0 4px; }
+  h4 { font-size: 15px; margin: 22px 0 2px; color: var(--dim); }
+  p { max-width: 68ch; }
+  p, ul, ol { margin: 10px 0; }
+  ul, ol { padding-left: 22px; max-width: 68ch; }
+  li { margin: 5px 0; }
+  a { color: var(--accent); }
+
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font: 13.5px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+  .path { white-space: nowrap; }
+
+  figure { margin: 22px 0; }
+  figure img { display: block; max-width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; }
+  figcaption { color: var(--faint); font-size: 13px; margin-top: 7px; max-width: 68ch; }
+
+  .steps { counter-reset: step; list-style: none; padding-left: 0; max-width: 68ch; }
+  .steps > li { counter-increment: step; position: relative; padding-left: 40px; margin: 16px 0; }
+  .steps > li::before {
+    content: counter(step); position: absolute; left: 0; top: 1px;
+    width: 26px; height: 26px; border-radius: 50%; background: var(--panel);
+    border: 1px solid var(--rule); color: var(--dim);
+    font-size: 13px; font-weight: 600; display: grid; place-items: center;
+  }
+  .steps > li > strong { display: block; }
+
+  .note, .warn, .stop {
+    border-left: 3px solid var(--rule); background: var(--panel);
+    padding: 12px 16px; margin: 20px 0; max-width: 68ch; border-radius: 0 4px 4px 0;
+  }
+  .warn { background: var(--warn-bg); border-left-color: var(--warn-edge); }
+  .stop { background: var(--stop-bg); border-left-color: var(--stop-edge); }
+  .note p:first-child, .warn p:first-child, .stop p:first-child { margin-top: 0; }
+  .note p:last-child, .warn p:last-child, .stop p:last-child { margin-bottom: 0; }
+  .note > b:first-child, .warn > b:first-child, .stop > b:first-child { display: block; margin-bottom: 3px; }
+
+  .tablewrap { overflow-x: auto; margin: 20px 0; }
+  table { border-collapse: collapse; font-size: 14.5px; min-width: 100%; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 16px 8px 0; border-bottom: 1px solid var(--rule); }
+  th { font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); font-weight: 600; white-space: nowrap; }
+  td:first-child, th:first-child { padding-left: 0; }
+  td code { white-space: nowrap; }
+
+  .where { display: grid; grid-template-columns: max-content 1fr; gap: 4px 20px; margin: 16px 0; max-width: 68ch; font-size: 14.5px; }
+  .where dt { color: var(--faint); }
+  .where dd { margin: 0; }
+
+  .kbd { border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; font-size: 13px; background: var(--panel); }
+</style>
+
+<div class="wrap">
+<nav>
+  <strong>Start here</strong>
+  <a href="#what">What you are making</a>
+  <a href="#words">The eight words</a>
+  <a href="#tools">Your four tools</a>
+
+  <strong>Building</strong>
+  <a href="#art">1 · Art from your artist</a>
+  <a href="#room">2 · A room from scratch</a>
+  <a href="#walls">3 · What blocks her</a>
+  <a href="#doors">4 · Doors between rooms</a>
+
+  <strong>Writing</strong>
+  <a href="#interactive">5 · Something to look at</a>
+  <a href="#conversations">6 · Conversations</a>
+  <a href="#branching">7 · Choices and branches</a>
+
+  <strong>Peopling</strong>
+  <a href="#visits">8 · Visits and the cast</a>
+  <a href="#quests">9 · Quests and stages</a>
+  <a href="#events">10 · Scripted moments</a>
+  <a href="#gates">11 · Gates and signals</a>
+
+  <strong>Working</strong>
+  <a href="#testing">12 · Testing anything</a>
+  <a href="#problems">13 · When it is wrong</a>
+  <a href="#scale">14 · Search and rename</a>
+
+  <strong>Worked example</strong>
+  <a href="#example">Build a new Gurukul</a>
+
+  <strong>Reference</strong>
+  <a href="#ref-fields">Every field</a>
+  <a href="#ref-rules">Rules and limits</a>
+  <a href="#ref-naming">Naming</a>
+  <a href="#ref-programmer">Ask a programmer</a>
+  <a href="#ref-never">Never do this</a>
+</nav>
+
+<main>
+
+<h1>Authoring the Gurukul Hub</h1>
+<p class="lede">Everything a designer needs to build, populate, write and test the hub. No code, no
+programmer, nothing typed from memory.</p>
+<p class="stamp">Project Astra · Unity 6.4 · written for the tools as they stand on 3 September 2026</p>
+
+<div class="note">
+  <b>Read this much and you can start</b>
+  <p>Sections <a href="#words">The eight words</a> and <a href="#tools">Your four tools</a> take five
+  minutes and give you the whole vocabulary. Then jump to whichever job you have. The
+  <a href="#example">worked example</a> at the end builds a complete new Gurukul from an empty folder,
+  step by numbered step, if you would rather learn by following along.</p>
+</div>
+
+<h2 id="what"><span class="num">0</span>What you are making</h2>
+
+<p>The hub is the Gurukul between battles. She walks around it freely, talks to people, looks at
+things, and eventually leaves for the next fight. It is not a grid and it is not turn-based — she
+walks where she likes, and the camera follows her.</p>
+
+<p>A finished hub is five kinds of thing stacked on each other:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Thing</th><th>What it is</th><th>Example</th></tr>
+  <tr><td><b>Rooms</b></td><td>The places, made of your artist's images</td><td>the courtyard, the archery field, a student house</td></tr>
+  <tr><td><b>Things in them</b></td><td>Props she can walk into, and objects she can act on</td><td>a tree, a well, a noticeboard, a door</td></tr>
+  <tr><td><b>Conversations</b></td><td>What gets said, including branching</td><td>Arjun's training talk, with three answers</td></tr>
+  <tr><td><b>Visits</b></td><td>One trip to the hub: who is there, where, saying what</td><td>the first morning; the day after the raid</td></tr>
+  <tr><td><b>Quests</b></td><td>What she is meant to do on that visit, in order</td><td>talk to five students, then collect your report card</td></tr>
+</table>
+</div>
+
+<p>You build them roughly in that order, and you can test any of them on its own at any point without
+playing what comes before.</p>
+
+<h2 id="words"><span class="num">0</span>The eight words</h2>
+
+<p>These are the only terms you need. They are the words the tools use, so learning them here means
+never being surprised by a label.</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Word</th><th>Means</th></tr>
+  <tr><td><b>Room</b> <span style="color:var(--faint)">(also “place”)</span></td>
+      <td>One walkable space. The courtyard is a room. A student house interior is a room. She is in exactly one at a time, and the camera never shows past its edges.</td></tr>
+  <tr><td><b>Visit</b></td>
+      <td>One trip to the hub. A visit says which room she starts in, who is standing where, what each of them says <em>this time</em>, and which quest is running. Visit 1 and Visit 4 use the same rooms and differ entirely in their visits.</td></tr>
+  <tr><td><b>Quest</b></td>
+      <td>An ordered list of <b>stages</b>. Only one stage is active at a time; finishing it starts the next. The active stage's text is what she reads on screen.</td></tr>
+  <tr><td><b>Conversation</b></td>
+      <td>An authored script: lines, who says them, and any branching. One conversation is one asset with one name.</td></tr>
+  <tr><td><b>Interactable</b></td>
+      <td>Anything she can walk up to and act on. Shows a prompt like <em>Inspect · noticeboard</em>. A door is one. A person is one. A tree can be one.</td></tr>
+  <tr><td><b>Event</b></td>
+      <td>A scripted moment where the game takes over: someone walks across the yard, a line plays, the camera moves. She has no control while one runs.</td></tr>
+  <tr><td><b>Gate</b></td>
+      <td>A named switch that is open or shut. A door can be shut until a gate opens. You decide what gates exist simply by naming one.</td></tr>
+  <tr><td><b>Signal</b></td>
+      <td>An announcement that something happened, which a quest stage can be waiting for. Also named by you.</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <b>Gate or signal?</b>
+  <p>A <b>gate</b> is a state — it stays open. Use it for “the north road is passable now”. A
+  <b>signal</b> is a moment — it fires once. Use it for “she finished the quiz”. If a stage is waiting
+  for something to <em>happen</em>, that is a signal. If a door needs to know whether something
+  <em>has happened</em>, that is a gate.</p>
+</div>
+
+<h2 id="tools"><span class="num">0</span>Your four tools</h2>
+
+<p>Everything lives in four places. Three are windows on the <b>Project Astra</b> menu; the fourth is a
+panel inside the Scene view.</p>
+
+<div class="where">
+  <dt><b>Hub</b> panel</dt>
+  <dd>In the Scene view, top-right. Building rooms, placing things, seeing what is invisible.</dd>
+  <dt><span class="path">Project Astra ▸ Hub Editor</span></dt>
+  <dd>Rooms, visits, quests, events, search, problems. Everything that is not a position.</dd>
+  <dt><span class="path">Project Astra ▸ Conversations</span></dt>
+  <dd>Writing what gets said, and hearing it.</dd>
+  <dt><span class="path">Project Astra ▸ Hub Testing</span></dt>
+  <dd>Starting anywhere, and finding out why something is not happening.</dd>
+</div>
+
+<h3>Opening the hub for work</h3>
+
+<ol class="steps">
+  <li><strong>Open the Hub scene.</strong> In the Project window, <span class="path">Assets ▸ Scenes ▸ HubExploration</span>. Double-click it.</li>
+  <li><strong>Find the Hub panel.</strong> Look at the top-right corner of the Scene view. If you only
+      see a small chip reading <em>Hub</em>, click the little arrow on it to expand it. You can drag it
+      anywhere in the Scene view.</li>
+  <li><strong>Pick a room.</strong> Use the <b>Room</b> dropdown. Picking one hides every other room
+      and frames the camera on it — otherwise all the rooms sit on top of each other at the origin and
+      nothing makes sense.</li>
+</ol>
+
+<figure>
+  <img src="images/scene-workspace.png" alt="The Scene view showing a hub room with the Hub panel open beside it">
+  <figcaption>The Hub panel. <b>Room</b> picks what you are working on. <b>As</b> shows that room as a
+  particular visit leaves it — here the cast of <code>hub1</code> is standing in the courtyard, and the
+  list underneath says what this visit changes from the one before. <b>Edge</b>, <b>Blocking</b>,
+  <b>Reach</b> and <b>Start</b> turn on the coloured guides. The row of thumbnails at the bottom is your
+  palette.</figcaption>
+</figure>
+
+<div class="warn">
+  <b>Picking a room is not a change</b>
+  <p>Isolating a room, choosing a visit to view, and toggling the guides are all just <em>your view</em>.
+  They are never saved into the scene and never show up as a change to commit. Work however you like.</p>
+</div>
+
+<h2 id="art"><span class="num">1</span>Art from your artist</h2>
+
+<p>Your artist gives you PNGs. You put them in a folder. They appear in your palette. That is the whole
+process — you never open an import inspector.</p>
+
+<h3>What to ask your artist for</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Rule</th><th>Why</th></tr>
+  <tr><td><b>32 pixels = 1 tile</b></td><td>Everything in the game is measured in tiles. A 4-tile-wide hut is 128 px wide.</td></tr>
+  <tr><td><b>PNG with real transparency</b></td><td>Anything that is not a floor needs to sit on top of the floor.</td></tr>
+  <tr><td><b>Trim the empty space</b></td><td>The image's bottom edge is treated as where the thing stands. Empty pixels underneath push it up off the ground.</td></tr>
+  <tr><td><b>Floors as one big image</b></td><td>A whole courtyard floor as a single seamless painting is easier to place and looks better than tiles.</td></tr>
+  <tr><td><b>No baked-in shadows onto the floor</b></td><td>She walks between props; a shadow painted into the floor cannot move.</td></tr>
+</table>
+</div>
+
+<h3>Where to put them</h3>
+
+<p>Make a folder under <span class="path">Assets/Gurukul/</span> and drop the images in. <b>The folder
+name becomes the palette category</b>, so file them the way you want to find them:</p>
+
+<div class="where">
+  <dt><span class="path">Assets/Gurukul/Ground/</span></dt>
+  <dd>Floors. Anything in a folder called <code>Ground</code>, <code>Grounds</code> or <code>Floors</code> is treated as a floor she walks over.</dd>
+  <dt><span class="path">Assets/Gurukul/Buildings/</span></dt>
+  <dd>Huts, the hall, the shrine.</dd>
+  <dt><span class="path">Assets/Gurukul/Nature/</span></dt>
+  <dd>Trees, rocks, bushes.</dd>
+  <dt><span class="path">Assets/Gurukul/Props/</span></dt>
+  <dd>Benches, barrels, the noticeboard, targets.</dd>
+</div>
+
+<p>Drop the files in, wait a second, and open the Hub panel. There is a new category tab with your art
+in it. Nothing else was needed: the size, the crispness, and the fact that it stands on its base were
+all set for you the moment the file arrived.</p>
+
+<div class="note">
+  <b>If you later change an import setting by hand, it sticks</b>
+  <p>The automatic settings are applied once, when the file first arrives. If you deliberately change
+  something afterwards, re-importing will not undo it.</p>
+</div>
+
+<h2 id="room"><span class="num">2</span>A room from scratch</h2>
+
+<p>A room is two things that have to agree: a <b>record</b> saying it exists and how big it is, and an
+<b>object in the scene</b> that is the actual place. The Hub Editor makes the record; the scene holds
+the place.</p>
+
+<h3>Step one — make the record</h3>
+
+<ol class="steps">
+  <li><strong>Open <span class="path">Project Astra ▸ Hub Editor</span> and click <b>Rooms</b>.</strong></li>
+  <li><strong>Click <b>+ New</b>.</strong> A room appears called something like <code>new_location</code>.</li>
+  <li><strong>Set <b>Location Id</b>.</strong> This is the name everything else refers to it by. Lower
+      case, underscores, no spaces: <code>gurukul_courtyard</code>.</li>
+  <li><strong>Set <b>Display Name</b>.</strong> What you want to read in the tools:
+      <em>Gurukul Courtyard</em>. Not shown to players.</li>
+  <li><strong>Set <b>Tile Width</b> and <b>Tile Height</b>.</strong> The size of the room in tiles. This
+      is the hard edge of the world: the camera never shows past it and she cannot walk out of it.</li>
+</ol>
+
+<figure>
+  <img src="images/hub-editor-rooms.png" alt="The Hub Editor on the Rooms tab, showing a room's id, display name and tile size">
+  <figcaption>The Rooms tab. The rail on the left picks what kind of thing you are editing, the middle
+  lists them, and the right edits the one you picked. <b>Show in scene</b> jumps to it and frames it.</figcaption>
+</figure>
+
+<div class="warn">
+  <b>Minimum room size: 15 × 9 tiles</b>
+  <p>The camera shows 15 tiles across and about 8.5 down. A room smaller than that leaves the camera
+  with nothing to hold on to and shows the void past the edges. If your art is smaller, do not shrink
+  the room — pad it out with impassable scenery (a treeline, a wall, a cliff) so the room stays at least
+  15 × 9 and she simply cannot reach the filler.</p>
+</div>
+
+<h3>Step two — make the place in the scene</h3>
+
+<p>The quickest way is to let the tools notice it is missing:</p>
+
+<ol class="steps">
+  <li><strong>Go to the <b>Problems</b> tab.</strong> It will be complaining:
+      <em>no room in the Hub scene is this place, so it cannot be shown</em>.</li>
+  <li><strong>Click <b>Make an empty room for it</b>.</strong> That creates the object in the scene, with
+      its groups, already pointing at the record you just made.</li>
+  <li><strong>Go back to the Scene view and pick your new room in the <b>Room</b> dropdown.</strong>
+      You will see a blue rectangle showing its edge, with its name and size written under it. Empty,
+      but real.</li>
+</ol>
+
+<p>A room is organised into four groups, and the palette puts things into the right one automatically:</p>
+
+<figure>
+  <img src="images/room-hierarchy.png" alt="The Hierarchy window showing a room object with Ground, Walls, Props and Doors groups">
+  <figcaption>Each room is one object in the Hub scene with four groups inside it. You will rarely need
+  to touch this — the palette files things for you — but this is where everything lives.</figcaption>
+</figure>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Group</th><th>Holds</th></tr>
+  <tr><td><b>Ground</b></td><td>The floor. Drawn under everything.</td></tr>
+  <tr><td><b>Walls</b></td><td>Invisible blocking shapes: the room's fences, building footprints, the river bank.</td></tr>
+  <tr><td><b>Props</b></td><td>Everything else you place. Trees, buildings, benches, noticeboards.</td></tr>
+  <tr><td><b>Doors</b></td><td>The ways out.</td></tr>
+</table>
+</div>
+
+<h3>Step three — lay the floor</h3>
+
+<ol class="steps">
+  <li><strong>In the Hub panel, click the category tab your floor art is in</strong> (probably <b>Ground</b>).</li>
+  <li><strong>Click the thumbnail of your floor.</strong> Its settings appear underneath. Check that
+      <b>Is</b> reads <b>Ground</b>.</li>
+  <li><strong>Click in the Scene view at the room's bottom-left corner.</strong> A floor is held by its
+      corner, so clicking at (0, 0) lays it flush with the room's edge.</li>
+</ol>
+
+<p>You will see a ghost of the image following your mouse before you click, so you always know what you
+are about to get. Press <span class="kbd">Esc</span> or right-click to put it down.</p>
+
+<h3>Step four — place things</h3>
+
+<ol class="steps">
+  <li><strong>Click a category tab, then a thumbnail.</strong></li>
+  <li><strong>Set what it is.</strong> <b>Is</b> should read <b>Object</b> for anything that stands on
+      the floor. <b>Stops her</b> decides whether she can walk through it. <b>Footprint</b> is the size of
+      the part she cannot walk through, in tiles, measured from the base.</li>
+  <li><strong>Click where it should stand.</strong> The click marks the spot the thing <em>stands on</em> —
+      not its middle, not its corner. Where you click is where its feet go.</li>
+  <li><strong>Hold <span class="kbd">Shift</span> while clicking</strong> to keep placing the same thing.
+      Good for a row of fence posts or a stand of trees.</li>
+  <li><strong>Tick <b>Keep to hand</b></strong> on anything you use constantly. It gets its own
+      <b>Favourites</b> tab. The last few things you placed are always in <b>Recent</b>.</li>
+</ol>
+
+<div class="note">
+  <b>Everything snaps to the pixel</b>
+  <p>You cannot place something half a pixel off, so the art never looks blurry or jittery. You do not
+  have to be careful about it.</p>
+  <p>Depth sorting is automatic too: something standing further down the screen is drawn in front. She
+  walks behind a tree's canopy and in front of its trunk without you doing anything. Move something and
+  its depth follows.</p>
+</div>
+
+<h3>Step five — walk it</h3>
+
+<p>Do not wait until the room is finished. In the Hub panel, click <b>Play</b> next to the <b>As</b>
+dropdown. The game starts, in this room, and you can walk about. Stop, adjust, go again.</p>
+
+<h2 id="walls"><span class="num">3</span>What blocks her</h2>
+
+<p>Three things stop her, and you should know which is which:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>What</th><th>How you make it</th></tr>
+  <tr><td><b>The room's edge</b></td><td>Automatic. The room's tile size <em>is</em> the boundary. You never fence the outside of a room.</td></tr>
+  <tr><td><b>A prop's footprint</b></td><td>Tick <b>Stops her</b> on the palette entry before placing it. The blocked box sits under the base of the art, not around all of it.</td></tr>
+  <tr><td><b>A shape you draw</b></td><td>For building walls, river banks and cliff edges, where the blocking does not match one prop. Covered below.</td></tr>
+</table>
+</div>
+
+<p>Turn on <b>Blocking</b> in the Hub panel and every blocked area is drawn in red. This is the single
+most useful guide while building — a gap you did not mean to leave is obvious, and so is a doorway you
+accidentally sealed.</p>
+
+<h3>Drawing a blocking shape</h3>
+
+<ol class="steps">
+  <li><strong>In the Hierarchy, expand your room and click the <b>Walls</b> group.</strong></li>
+  <li><strong>Right-click it and choose <span class="path">Create Empty</span>.</strong> Name it for what
+      it is: <code>Wall_hall_north</code>.</li>
+  <li><strong>Set its <b>Layer</b> to <code>HubSolid</code></strong> — the dropdown at the top right of
+      the Inspector. This is what makes it block.</li>
+  <li><strong>Click <b>Add Component</b> and add a <b>Box Collider 2D</b>.</strong></li>
+  <li><strong>Click <b>Edit Collider</b> and drag its handles</strong> until the red shape covers what
+      should be solid.</li>
+</ol>
+
+<div class="warn">
+  <b>Only block what she would bump into at foot height</b>
+  <p>Block the base of a building, not its roof. Block the trunk, not the canopy. If you block the whole
+  image, she has to walk around the top of a tree, which looks wrong and feels worse.</p>
+</div>
+
+<h2 id="doors"><span class="num">4</span>Doors between rooms</h2>
+
+<p>A door is an interactable that moves her to another room. It is authored in the room it stands in.</p>
+
+<ol class="steps">
+  <li><strong>Make the second room first</strong> (section 2), so there is somewhere to go.</li>
+  <li><strong>In the Hierarchy, select the <b>Doors</b> group of the room you are leaving, right-click,
+      <span class="path">Create Empty</span>.</strong> Name it <code>Door_to_hall</code>.</li>
+  <li><strong>Add Component ▸ <b>Door Interactable</b>.</strong></li>
+  <li><strong>Add Component ▸ <b>Circle Collider 2D</b>, and tick <b>Is Trigger</b>.</strong> Set
+      <b>Radius</b> to <code>1</code>. This is the area she has to be standing in.</li>
+  <li><strong>Fill in the door.</strong> Every name is a dropdown:
+    <ul>
+      <li><b>Name</b> — this door's own id, e.g. <code>to_hall</code>.</li>
+      <li><b>Stands at</b> — where in the room it is, in tiles.</li>
+      <li><b>Reads as</b> — the prompt verb. <b>Enter</b> for a way in, <b>Leave</b> for a way out.</li>
+      <li><b>Leads to</b> — the room on the other side. <em>Leave this empty on an exit</em> and she goes
+          back through whichever door she came in by, which is how six student houses share one interior.</li>
+      <li><b>Arrives at</b> and <b>Facing</b> — where she appears in the other room. Put it just in front
+          of the matching door, not on top of it.</li>
+    </ul>
+  </li>
+  <li><strong>Make the matching door in the other room</strong>, pointing back.</li>
+  <li><strong>Turn on <b>Reach</b></strong> in the Hub panel. Each door draws a yellow circle with its
+      prompt beside it. Walk through both ways with <b>Play</b>.</li>
+</ol>
+
+<div class="note">
+  <b>Locking a door</b>
+  <p>Set <b>Shut until</b> to a gate name. A new field appears: <b>Says while shut</b>. Put a conversation
+  there — a locked door she can walk up to owes her a reason. The field only appears once the door can
+  actually be shut, so you cannot forget it.</p>
+</div>
+
+<h2 id="interactive"><span class="num">5</span>Something to look at</h2>
+
+<p>This is the shortest loop in the whole tool, and worth learning first.</p>
+
+<ol class="steps">
+  <li><strong>Place the prop.</strong> A noticeboard, say. Section 2, step four.</li>
+  <li><strong>With it still selected, look at the bottom of the Hub panel.</strong> It names what you have
+      selected and offers <b>Make it something she can look at</b>. Click that.</li>
+  <li><strong>That is it.</strong> It now has a name taken from the object (<code>noticeboard</code>), an
+      area she has to stand in, and a prompt. Turn on <b>Reach</b> and you will see the yellow circle.</li>
+  <li><strong>Give it something to say.</strong> In the Inspector, find <b>Conversation Id</b> and pick
+      one from the dropdown — or pick <b>New Conversation…</b>, type a name, and one is made for you and
+      registered where the game will find it.</li>
+  <li><strong>Hear it.</strong> Section 12.</li>
+</ol>
+
+<figure>
+  <img src="images/interactable-inspector.png" alt="The Inspector showing an Inspectable Interactable component with dropdowns for conversation, gate and denied conversation">
+  <figcaption>An interactive object. Every name is a dropdown of what exists — there is nothing here to
+  spell wrong. <b>Verb</b> is the word in the prompt. <b>Interaction Offset</b> is where she stands
+  relative to the object, already set to the foot of the art for you.</figcaption>
+</figure>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Field</th><th>What it does</th></tr>
+  <tr><td><b>Interactable Id</b></td><td>Its name. Quests point at this to mark it or to know she looked at it.</td></tr>
+  <tr><td><b>Verb</b></td><td>The prompt word: Talk, Inspect, Enter, Leave, Report, Depart.</td></tr>
+  <tr><td><b>Conversation Id</b></td><td>What plays when she acts on it.</td></tr>
+  <tr><td><b>Required Gate</b></td><td>Leave empty for something always usable. Set it and the object is locked until that gate opens.</td></tr>
+  <tr><td><b>Denied Conversation Id</b></td><td>What it says while locked.</td></tr>
+  <tr><td><b>Default State</b></td><td><b>Available</b> normally. <b>Inactive</b> hides it from her entirely. A visit can override this per object.</td></tr>
+  <tr><td><b>Objective Critical</b></td><td>Tick for something a quest stage points at, so it wins over a nearby door when both are in reach.</td></tr>
+  <tr><td><b>Requires Facing</b></td><td>Untick for something reachable from any side — a wide counter, a noticeboard you can read from an angle.</td></tr>
+  <tr><td><b>Requires Line Of Sight</b></td><td>Untick for something visible over an obstacle it stands behind.</td></tr>
+</table>
+</div>
+
+<p>Changed your mind? The Hub panel offers <b>Not interactive any more</b>, which takes back exactly what
+it added and leaves the prop alone.</p>
+
+<h2 id="conversations"><span class="num">6</span>Conversations</h2>
+
+<p>Open <span class="path">Project Astra ▸ Conversations</span>.</p>
+
+<figure>
+  <img src="images/conversations.png" alt="The Conversations window showing a script list, the flow of a branching conversation, and the fields of one line">
+  <figcaption>Left: every conversation in the game. Middle: the shape of the one you picked, read as runs
+  of lines and where each run goes. Right: the line you clicked. <b>Hear it</b> plays it in the real
+  dialogue box with the real portraits.</figcaption>
+</figure>
+
+<h3>Writing a straight conversation</h3>
+
+<ol class="steps">
+  <li><strong>Click <b>+ New</b></strong> and rename it in the Inspector's <b>Script Id</b> field.
+      Lower case with underscores: <code>gurukul_madhavi_first</code>.</li>
+  <li><strong>Add a segment.</strong> A conversation is made of <b>segments</b>, and a segment holds
+      <b>lines</b>. One segment is enough unless you want to change the background or the typing speed
+      part-way. Expand <b>Segments</b> in the Inspector and set the size to 1.</li>
+  <li><strong>Check the segment's <b>Text Speed</b> reads <code>-1</code></strong> so it uses the game's
+      normal speed, and leave <b>Auto Advance Delay</b> at <code>0</code> so it waits for the player.
+      A speed of <code>0</code> means the text never appears.</li>
+  <li><strong>Add lines.</strong> For each one: pick a <b>Speaker Id</b> from the dropdown, and type the
+      <b>Text</b>.</li>
+  <li><strong>Click a line in the middle pane</strong> to edit it on the right without hunting through
+      the Inspector.</li>
+</ol>
+
+<div class="stop">
+  <b>A line with no speaker is silently skipped</b>
+  <p>If a line has no <b>Speaker Id</b>, the game cannot decide whose portrait to show and skips the line
+  without complaining. For narration with no speaker, choose <b>Narrator</b> from the dropdown — do not
+  leave it blank. This is the single most common reason a conversation "does nothing".</p>
+</div>
+
+<h3>The fields on a line</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Field</th><th>What it does</th></tr>
+  <tr><td><b>Speaker Id</b></td><td>Who says it. <b>Narrator</b> for text with no speaker.</td></tr>
+  <tr><td><b>Expression</b></td><td>Which portrait mood to use.</td></tr>
+  <tr><td><b>Portrait Position</b></td><td>Which side of the screen the portrait sits on.</td></tr>
+  <tr><td><b>Portrait Facing</b></td><td>Which way it looks. Art faces left by default; <b>Right</b> flips it.</td></tr>
+  <tr><td><b>Text</b></td><td>What is said.</td></tr>
+  <tr><td><b>Kind</b></td><td><b>Line</b> speaks. <b>Choice</b> asks. <b>Jump</b> goes somewhere. <b>Signal</b> announces something happened.</td></tr>
+  <tr><td><b>Label</b></td><td>A name for this entry so a choice or a jump can target it. Only needed if something points here.</td></tr>
+</table>
+</div>
+
+<h3>Attaching a conversation</h3>
+
+<p>The same conversation can be reached three ways, and you will use all three:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Where</th><th>Set</th><th>Use for</th></tr>
+  <tr><td>On an object in the room</td><td><b>Conversation Id</b> on the interactable</td><td>Something that always says the same thing — a signpost, a shrine</td></tr>
+  <tr><td>On a person, per visit</td><td><b>Conversation Id</b> in the visit's cast entry</td><td>What a character says <em>this visit</em>. The usual case.</td></tr>
+  <tr><td>Inside an event or a quest stage</td><td>a <b>Play Conversation</b> action, or a stage effect</td><td>Something said <em>at</em> her rather than because she pressed a button</td></tr>
+</table>
+</div>
+
+<h2 id="branching"><span class="num">7</span>Choices and branches</h2>
+
+<p>Branching is built from two things: a <b>Label</b> on the entry you want to reach, and a
+<b>Target Label</b> on the thing that reaches it. There is no wiring and no graph to keep in sync.</p>
+
+<h3>Asking a question</h3>
+
+<ol class="steps">
+  <li><strong>Add a line and set its <b>Kind</b> to <b>Choice</b>.</strong></li>
+  <li><strong>Give it a <b>Label</b></strong> so you can come back to it — <code>menu</code> is the usual
+      name for a topic list.</li>
+  <li><strong>Expand <b>Options</b> and add one per answer.</strong> Each option has:
+    <ul>
+      <li><b>Label</b> — the words on the button.</li>
+      <li><b>Target Label</b> — where picking it goes. Leave it empty to end the conversation.</li>
+      <li><b>Option Id</b> — a name so the game can remember she has picked it.</li>
+      <li><b>Ask Once</b> — tick to grey it out after it has been taken, rather than removing it. A topic
+          list must not reshuffle under the player.</li>
+      <li><b>Repeat Target Label</b> — where to go instead if she picks it again.</li>
+    </ul>
+  </li>
+  <li><strong>Write the branches.</strong> Add lines further down, and give the <em>first line of each
+      branch</em> the <b>Label</b> that the option targets.</li>
+  <li><strong>Send each branch back.</strong> At the end of a branch, add a line with <b>Kind</b> set to
+      <b>Jump</b> and <b>Target Label</b> set to <code>menu</code>. Now she returns to the question.</li>
+</ol>
+
+<h3>Reading the flow</h3>
+
+<p>The middle pane splits the conversation at every label and shows you the runs and the arrows out of
+each. Every arrow is a button — click it and you jump to that run. This is how you check a branching
+conversation without reading it top to bottom.</p>
+
+<p>It also tells you when the branching is broken, in plain words:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>What it says</th><th>What to do</th></tr>
+  <tr><td><em>nothing is labelled ‘x’</em></td><td>Something branches to a label that does not exist, so the conversation will just stop there. Either fix the target or add the label.</td></tr>
+  <tr><td><em>… lines come after it has already branched away, so nothing reaches them</em></td><td>You wrote lines after a jump or a choice in the same run. Give the first one a label, or move them.</td></tr>
+  <tr><td><em>two entries are both labelled ‘x’</em></td><td>Only the first can ever be reached. Rename one.</td></tr>
+  <tr><td><em>“Say nothing” · ends the conversation</em></td><td>Not a problem — just telling you that answer has nowhere to go. Fine if intended.</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <b>Saying it differently the second time</b>
+  <p>Set <b>Repeat Entry Label</b> on the conversation itself. The first time it plays from the top; every
+  time after, it starts at that label. One asset holds both the full exchange and the short version.</p>
+</div>
+
+<h2 id="visits"><span class="num">8</span>Visits and the cast</h2>
+
+<p>A visit is one trip to the hub. This is where you decide who is there and what they say.</p>
+
+<figure>
+  <img src="images/hub-editor-visits.png" alt="The Hub Editor on the Visits tab showing a visit's opening, cast, gates and quest">
+  <figcaption>A visit. Everything with a dropdown is a name that already exists somewhere else in the
+  game, so there is nothing to keep in step by hand.</figcaption>
+</figure>
+
+<h3>Making one</h3>
+
+<ol class="steps">
+  <li><strong>Hub Editor ▸ <b>Visits</b> ▸ <b>+ New</b>.</strong></li>
+  <li><strong>Set <b>Visit Id</b></strong> — <code>gurukul_2</code> — and a <b>Display Name</b> for
+      yourself.</li>
+  <li><strong>Opening.</strong> <b>Start Location Id</b> is the room she wakes up in. <b>Player Spawn</b>
+      is where she stands, in tiles. <b>Player Facing</b> is which way she looks.
+      <b>Opening Event Id</b> is a scripted moment that runs <em>before</em> she gets control — leave it
+      empty to start in plain free exploration.</li>
+  <li><strong>Cast.</strong> Expand <b>Character Placements</b> and add one entry per person present:
+    <ul>
+      <li><b>Character Id</b> — who, from the dropdown.</li>
+      <li><b>Location Id</b> — which room they are in.</li>
+      <li><b>Position</b> — where they stand, in tiles.</li>
+      <li><b>Facing</b> — which way.</li>
+      <li><b>Conversation Id</b> — what talking to them opens <em>this visit</em>. Leave it empty and
+          they are present but not worth approaching.</li>
+    </ul>
+  </li>
+  <li><strong>Quest Id</strong> — which quest runs. Section 9.</li>
+</ol>
+
+<h3>Placing the cast by dragging</h3>
+
+<p>Typing coordinates is the slow way. Instead:</p>
+
+<ol class="steps">
+  <li><strong>In the Scene view, pick the room in <b>Room</b> and your visit in <b>As</b>.</strong></li>
+  <li><strong>The cast appears, standing where the visit says</strong> — built by the same code the game
+      uses, so what you see is what will be there.</li>
+  <li><strong>Drag one.</strong> When you let go, the visit is updated. Pixel-snapped, and the scene file
+      is never touched.</li>
+</ol>
+
+<div class="note">
+  <b>Reading a visit as a difference</b>
+  <p>Under the <b>As</b> dropdown is a list of what this visit does differently from the one before it:
+  <em>kaal is here now</em>, <em>arjun has gone</em>, <em>madhavi says something else</em>,
+  <em>‘north_road’ starts open</em>. Understanding Visit 9 does not mean reading Visits 1 to 8.</p>
+</div>
+
+<h3>The rest of a visit</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Field</th><th>What it does</th></tr>
+  <tr><td><b>Interactable Overrides</b></td><td>Start a particular object in a different state this visit — <b>Gated</b> until something happens, or <b>Inactive</b> so it is not there at all.</td></tr>
+  <tr><td><b>Open Gates</b></td><td>Gates that start open. Everything not listed starts shut.</td></tr>
+  <tr><td><b>Environment Set</b></td><td>Names the dressing for this visit — a post-flood state, say. A note for now.</td></tr>
+  <tr><td><b>Departure ▸ Destination Map Id</b></td><td>The battle this visit leads to. Always chosen, never guessed.</td></tr>
+  <tr><td><b>Departure ▸ Mode</b></td><td><b>Automatic</b>: the closing event runs straight into the battle. <b>Confirmed Interaction</b>: she walks to something and confirms.</td></tr>
+  <tr><td><b>Departure ▸ Departure Target Id</b></td><td>Confirmed mode only — the object that offers <em>Depart</em> once every stage is done.</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <b>New characters come from the Data Hub</b>
+  <p>The people you can place are the game's characters, and they are defined in
+  <span class="path">Project Astra ▸ Data Hub</span> — their name, their portraits, their walking sprite.
+  If someone you need is not in the <b>Character Id</b> dropdown, make them there first. The hub only
+  decides where they stand and what they say.</p>
+</div>
+
+<h2 id="quests"><span class="num">9</span>Quests and stages</h2>
+
+<p>A quest is what she is meant to be doing. One stage is active at a time, and its text is what she
+reads on screen.</p>
+
+<figure>
+  <img src="images/hub-editor-quests.png" alt="The Hub Editor on the Quests tab showing a quest's stages in order with reorder and remove controls">
+  <figcaption>The stages of a quest, in the order she works through them, each showing the line the
+  player reads. The arrows reorder, the ✕ removes, and clicking a stage opens it.</figcaption>
+</figure>
+
+<h3>Making one</h3>
+
+<ol class="steps">
+  <li><strong>Hub Editor ▸ <b>Quests</b> ▸ <b>+ New</b>.</strong> Set <b>Quest Id</b> and
+      <b>Display Name</b>.</li>
+  <li><strong>Click <b>+ New stage</b>.</strong> It is made and added to the end.</li>
+  <li><strong>Click the stage to open it</strong> and fill it in:
+    <ul>
+      <li><b>Objective Id</b> — its name.</li>
+      <li><b>Display Text</b> — what she reads. Short and active: <em>Talk to the other students</em>.</li>
+      <li><b>Show Counter</b> — tick to show <em>0/5</em> beside the text.</li>
+    </ul>
+  </li>
+  <li><strong>Set <b>Completion</b></strong> — what finishes it. See below.</li>
+  <li><strong>Reorder with the arrows</strong> until the sequence is right.</li>
+  <li><strong>Point the visit at the quest</strong> — <b>Quest Id</b> on the visit. A visit's page has an
+      <b>Open it</b> button to jump straight to its quest.</li>
+</ol>
+
+<h3>What finishes a stage</h3>
+
+<p><b>Completion</b> has a kind, and the kind decides what you fill in:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Kind</th><th>Finishes when</th><th>You give it</th></tr>
+  <tr><td><b>Talk Condition</b></td><td>Conversations have been heard through to the end</td><td>One entry per target: the <b>Conversation Id</b> that counts, and the <b>Character Id</b> so the marker knows who to hover over. Several entries make the <em>0/5</em> counter.</td></tr>
+  <tr><td><b>Inspect Condition</b></td><td>Objects have been looked at</td><td>A list of <b>Interactable Id</b>s. One id is a single object; several make a set.</td></tr>
+  <tr><td><b>Signal Condition</b></td><td>Named signals have been raised</td><td>A list of signal names. Use this for anything that is not a conversation or an object.</td></tr>
+  <tr><td><b>Immediate Condition</b></td><td>Straight away</td><td>Nothing. For a stage whose only job is to run its effects and move on.</td></tr>
+</table>
+</div>
+
+<h3>What a stage does</h3>
+
+<p><b>On Start</b> runs the moment the stage becomes active; <b>On Complete</b> runs when it finishes,
+before the next stage is announced. Each is a list, and each entry has a kind:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Kind</th><th>Does</th></tr>
+  <tr><td><b>Play Dialog Event</b></td><td>Says something — the stage's own line, not a character's.</td></tr>
+  <tr><td><b>Set Flag Event</b></td><td>Opens or shuts a gate.</td></tr>
+  <tr><td><b>Play Authored Event Event</b></td><td>Hands over to a scripted moment, which owns the scene while it runs.</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <b>Markers</b>
+  <p>She gets a marker over whatever the active stage is still waiting on, worked out automatically. Only
+  set <b>Marker Target Ids</b> if you want to point somewhere else instead.</p>
+  <p>The validator checks this: a marker over something the visit never places, or over an object no room
+  declares, is reported before you play.</p>
+</div>
+
+<h2 id="events"><span class="num">10</span>Scripted moments</h2>
+
+<p>An event is a moment where the game takes over: someone walks over, says something, the camera moves,
+the world rearranges. She has no control while it runs.</p>
+
+<figure>
+  <img src="images/hub-editor-events.png" alt="The Hub Editor on the Events tab showing an event's trigger and its action list with a Walk Character action expanded">
+  <figcaption>An event and its actions. Each action shows only the fields its kind actually uses, with a
+  line saying what it does — so there is never a column of blank boxes to guess at.</figcaption>
+</figure>
+
+<h3>Making one</h3>
+
+<ol class="steps">
+  <li><strong>Hub Editor ▸ <b>Events</b> ▸ <b>+ New</b>.</strong> Set <b>Event Id</b>.</li>
+  <li><strong>Pick a <b>Trigger</b>:</strong>
+    <ul>
+      <li><b>Visit Load</b> — runs as the visit opens, before she gets control. Point a visit's
+          <b>Opening Event Id</b> at it.</li>
+      <li><b>Area Entered</b> — runs when she walks into a patch of ground. Set <b>Trigger Area</b>
+          (x, y, width, height in tiles) and <b>Trigger Location Id</b>.</li>
+      <li><b>Called</b> — runs when a quest stage or another event asks for it.</li>
+    </ul>
+  </li>
+  <li><strong><b>One Time</b></strong> — leave ticked for anything with consequences; untick for a
+      repeatable bark.</li>
+  <li><strong>Add actions</strong> with the <b>+</b> at the bottom of the list. They run in order.</li>
+</ol>
+
+<h3>Every kind of action</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Do</th><th>What happens</th><th>You fill in</th></tr>
+  <tr><td><b>Play Conversation</b></td><td>Somebody says something, and the event waits for it to finish</td><td>Conversation</td></tr>
+  <tr><td><b>Set Facing</b></td><td>Turns someone to look a different way</td><td>Who, Facing</td></tr>
+  <tr><td><b>Walk Character</b></td><td>Walks someone along a route. Each leg goes across then up, never diagonally</td><td>Who, Route (corners in order), Speed in tiles per second or 0 for normal</td></tr>
+  <tr><td><b>Relocate Character</b></td><td>Moves someone at once, in this room or another</td><td>Who, To room, Where, Facing</td></tr>
+  <tr><td><b>Set Character Present</b></td><td>Puts someone in the room, or takes them out</td><td>Who, Present</td></tr>
+  <tr><td><b>Set Interactable State</b></td><td>Changes what an object does when she walks up to it</td><td>Which object, State</td></tr>
+  <tr><td><b>Set Gate</b></td><td>Opens or shuts a gate</td><td>Gate, Open</td></tr>
+  <tr><td><b>Raise Flag</b></td><td>Announces something happened, for a stage to be waiting on</td><td>Signal</td></tr>
+  <tr><td><b>Focus Camera</b></td><td>Points the camera at someone until the event ends</td><td>Who</td></tr>
+  <tr><td><b>Wait</b></td><td>Holds for a moment before the next action</td><td>Seconds</td></tr>
+  <tr><td><b>Depart</b></td><td>Ends the visit and starts a battle</td><td>Battle</td></tr>
+</table>
+</div>
+
+<div class="warn">
+  <b>Routes have no diagonals</b>
+  <p>Each leg of a <b>Walk Character</b> route goes across and then up. If you want a diagonal-looking
+  path, give it more corners. Two corners that need a diagonal will produce an L.</p>
+</div>
+
+<h2 id="gates"><span class="num">11</span>Gates and signals</h2>
+
+<p>You invent these. Nothing has to be declared anywhere first — pick <b>New…</b> in any gate or signal
+dropdown, type a name, and it exists. From then on it is in the dropdown everywhere.</p>
+
+<h3>A worked example: a road that opens</h3>
+
+<ol class="steps">
+  <li><strong>On the door to the north road, set <b>Shut until</b> to <b>New…</b></strong> and type
+      <code>north_road</code>.</li>
+  <li><strong>Set <b>Says while shut</b></strong> to a conversation explaining why she cannot go yet.</li>
+  <li><strong>On the quest stage that should open it,</strong> add an <b>On Complete</b> entry of kind
+      <b>Set Flag Event</b>, set <b>Flag Id</b> to <code>north_road</code>, and leave <b>Open</b> ticked.</li>
+  <li><strong>To have it start open on a later visit,</strong> add <code>north_road</code> to that visit's
+      <b>Open Gates</b>.</li>
+  <li><strong>Check it.</strong> With that visit picked in <b>As</b>, the door draws
+      <em>[ shut until ‘north_road’ ]</em> beside it in the Scene view — or does not, if the visit opens it.</li>
+</ol>
+
+<h3>A signal for something with no object</h3>
+
+<p>Suppose a stage should finish when she has watched a scripted moment through:</p>
+
+<ol class="steps">
+  <li><strong>In the event, add a <b>Raise Flag</b> action at the end</strong> and name the signal
+      <code>saw_the_raid</code>.</li>
+  <li><strong>On the stage, set <b>Completion</b> to <b>Signal Condition</b></strong> and add
+      <code>saw_the_raid</code> to its list.</li>
+</ol>
+
+<h2 id="testing"><span class="num">12</span>Testing anything</h2>
+
+<p>You never have to play from the beginning. Open
+<span class="path">Project Astra ▸ Hub Testing</span>.</p>
+
+<figure>
+  <img src="images/hub-testing-start.png" alt="The Hub Testing window with a visit and stage picked, warning that earlier stages have not run">
+  <figcaption>Pick a visit, pick which stage to start on, press <b>Play from here</b>.</figcaption>
+</figure>
+
+<div class="warn">
+  <b>Starting part-way does not replay what came before</b>
+  <p>Jumping to stage 3 puts the quest on stage 3. It does <em>not</em> apply what stages 1 and 2 would
+  have done — gates they would have opened are still shut, characters they would have moved are still
+  where the visit put them. The window says so, and the levers at the bottom let you set up whatever you
+  need by hand.</p>
+</div>
+
+<h3>While it is running</h3>
+
+<figure>
+  <img src="images/hub-testing-live.png" alt="The Hub Testing window in play mode showing where she is, what she is meant to be doing, what she could act on and why">
+  <figcaption>The live panel. Everything here is a question you would otherwise have to guess at.</figcaption>
+</figure>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Section</th><th>Tells you</th></tr>
+  <tr><td><b>Where she is</b></td><td>Which visit is actually loaded, which room, and her exact position — so you can put a coordinate straight into a visit or an event.</td></tr>
+  <tr><td><b>What she is meant to be doing</b></td><td>The active stage, its progress, and each thing it is still waiting on by name.</td></tr>
+  <tr><td><b>What she could act on</b></td><td>Everything near enough to be a candidate, and for each one, why it is or is not being offered.</td></tr>
+  <tr><td><b>Make something happen</b></td><td>Play any conversation on the spot. Open or shut any gate.</td></tr>
+</table>
+</div>
+
+<h3>“I press the button and nothing happens”</h3>
+
+<p>This is the question the panel exists for. Look at <b>What she could act on</b>:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>It says</th><th>Meaning</th><th>Fix</th></tr>
+  <tr><td><em>this is what a press would do</em></td><td>It is working. Something else is wrong.</td><td>Check the conversation itself — most often a line with no speaker.</td></tr>
+  <tr><td><em>it has nothing to offer right now</em></td><td>No conversation set, or its state is Inactive, or a gate has it locked with nothing to say.</td><td>Set <b>Conversation Id</b>, or check the visit's overrides and gates.</td></tr>
+  <tr><td><em>she is not facing it</em></td><td>She is beside it, not in front of it.</td><td>Approach from the front, or untick <b>Requires Facing</b> if it should be reachable from any side.</td></tr>
+  <tr><td><em>something is between her and it</em></td><td>A wall or footprint is in the way.</td><td>Turn on <b>Blocking</b> and look, or untick <b>Requires Line Of Sight</b>.</td></tr>
+  <tr><td><em>X is being offered instead</em></td><td>Two things are in reach and the other one won.</td><td>Move them apart, or tick <b>Objective Critical</b> on the one that should win.</td></tr>
+  <tr><td><em>Nothing is near enough</em></td><td>She is not inside its reach area at all.</td><td>Turn on <b>Reach</b> and check the circle is where you think.</td></tr>
+</table>
+</div>
+
+<h3>Hearing one conversation</h3>
+
+<p>In the Conversations window, pick the conversation, pick a visit in the dropdown next to it, and click
+<b>Hear it</b>. The game starts and plays that conversation as soon as she has control — you do not walk
+anywhere. If you are already in play mode the button reads <b>Hear it now</b> and plays it immediately.</p>
+
+<div class="note">
+  <b>Your scene and your boot settings are put back</b>
+  <p>Starting the game from a tool changes where the game boots to, and puts it back the moment you stop
+  — even if you close Unity in between. You will never accidentally ship a game that opens in the middle
+  of the hub.</p>
+</div>
+
+<h2 id="problems"><span class="num">13</span>When it is wrong</h2>
+
+<p>You do not have to go looking. The tools check continuously while you work.</p>
+
+<h3>In the scene</h3>
+
+<figure>
+  <img src="images/problem-in-scene.png" alt="The Scene view with an orange marker on a broken door and a problem count in the Hub panel">
+  <figcaption>A problem is drawn <em>on the thing that is wrong</em>, and the Hub panel carries a count
+  with a way through to the list.</figcaption>
+</figure>
+
+<h3>In the list</h3>
+
+<figure>
+  <img src="images/hub-editor-problems.png" alt="The Hub Editor Problems tab showing a problem with Take me there and a fix button">
+  <figcaption><b>Take me there</b> selects the thing. When there is exactly one sensible fix, it is
+  offered as a button that says what it will do.</figcaption>
+</figure>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Message</th><th>What it means</th></tr>
+  <tr><td><em>no room in the Hub scene is this place</em></td><td>You made the record but not the place. Click the fix.</td></tr>
+  <tr><td><em>this place has no name</em></td><td>Empty <b>Location Id</b>. Click the fix, or type one.</td></tr>
+  <tr><td><em>a door has no name</em> / <em>two doors are both called ‘x’</em></td><td>Doors need unique names. Click the fix.</td></tr>
+  <tr><td><em>door ‘x’ leads to ‘y’, which doesn't exist</em></td><td>The destination room is gone or misnamed. Repick <b>Leads to</b>.</td></tr>
+  <tr><td><em>12x8 tiles is smaller than the 15x8.4 the camera shows</em></td><td>Room too small. Enlarge it and pad with impassable scenery.</td></tr>
+  <tr><td><em>she starts at (x, y), which is inside something solid</em></td><td>The visit's <b>Player Spawn</b> is inside a wall or a prop. Turn on <b>Blocking</b> and move it.</td></tr>
+  <tr><td><em>‘x’ is placed more than once</em></td><td>A character is in the cast twice. They can only be in one room.</td></tr>
+  <tr><td><em>‘x’ at (…) cannot be walked to from where she starts</em></td><td>Someone is sealed off. Check <b>Blocking</b> for a gap you meant to leave.</td></tr>
+  <tr><td><em>walking to ‘x’ takes 18s, over the 12s target</em></td><td>Not broken, but further than the game wants a mandatory walk to be. A design call.</td></tr>
+  <tr><td><em>marks ‘x’, which ‘visit’ neither places nor declares</em></td><td>A stage points a marker at someone not in this visit, or an object no room has.</td></tr>
+  <tr><td><em>names quest ‘x’, which doesn't exist</em></td><td>The visit's <b>Quest Id</b> is stale. Repick it.</td></tr>
+  <tr><td><em>the event does nothing</em></td><td>An event with no actions.</td></tr>
+  <tr><td><em>a walk action for ‘x’ has no route</em></td><td>A <b>Walk Character</b> with an empty route.</td></tr>
+</table>
+</div>
+
+<div class="note">
+  <b>Two kinds of check</b>
+  <p>The quick checks — names, references, duplicates — run every time anything changes. The slower ones,
+  which stand a room up and actually try to walk it, run when you open the <b>Problems</b> tab or press
+  <b>Look again</b>. Do that before you hand a visit over.</p>
+</div>
+
+<h2 id="scale"><span class="num">14</span>Search and rename</h2>
+
+<p>Once there are a dozen visits and hundreds of conversations, the useful question stops being "what
+exists" and becomes "where is this used".</p>
+
+<figure>
+  <img src="images/hub-editor-search.png" alt="The Hub Editor Search tab showing a conversation used three times, each place listed, with a rename field">
+  <figcaption>Every name of a kind, how often each is used, and exactly where. <b>Show</b> takes you to
+  each place. <b>Everywhere</b> renames it in all of them at once.</figcaption>
+</figure>
+
+<ol class="steps">
+  <li><strong>Hub Editor ▸ <b>Search</b>.</strong> Pick a kind in the dropdown at the top right —
+      Conversation, Character, Gate, and so on.</li>
+  <li><strong>Type in <b>Find</b></strong> to narrow the list.</li>
+  <li><strong>Click a name</strong> to see every place it is used, described in words:
+      <em>Visit_Greybox · Character Placements 1, Conversation Id</em>.</li>
+  <li><strong>To rename it, type the new name and click <b>Everywhere</b>.</strong> Every reference is
+      updated in one go, and it tells you how many places changed.</li>
+</ol>
+
+<div class="stop">
+  <b>Never rename an id by hand</b>
+  <p>Typing a new id into one field leaves every other reference pointing at the old name. Nothing will
+  complain loudly and the hub will quietly stop working. Always rename through <b>Everywhere</b>.</p>
+</div>
+
+<h3>Copying a configured object to another room</h3>
+
+<p>Select something you have set up — a noticeboard with its conversation, its gate, its offset — and in
+the Hub panel click <b>Send a copy to another room</b>. It lands in the same group in the room you pick,
+keeping everything it was given, renamed so two objects never answer to one name.</p>
+
+<h2 id="example"><span class="num">★</span>Worked example: build a new Gurukul</h2>
+
+<p>An artist has just handed you a folder of images for a new, larger Gurukul courtyard. This is the whole
+job, end to end. Nothing here needs a programmer.</p>
+
+<h4>Get the art in</h4>
+<ol class="steps">
+  <li>In the Project window, make <span class="path">Assets/Gurukul/Ground/</span> and drop
+      <code>courtyard_floor.png</code> in it.</li>
+  <li>Make <span class="path">Assets/Gurukul/Buildings/</span> and drop the hall, the shrine and the huts
+      in it.</li>
+  <li>Make <span class="path">Assets/Gurukul/Nature/</span> and drop the trees and rocks in.</li>
+  <li>Open <span class="path">Assets ▸ Scenes ▸ HubExploration</span>. Expand the <b>Hub</b> panel in the
+      Scene view. You should see three new category tabs with your art in them.</li>
+</ol>
+
+<h4>Make the room</h4>
+<ol class="steps" start="5" style="counter-reset: step 4">
+  <li>Open <span class="path">Project Astra ▸ Hub Editor</span>, <b>Rooms</b>, <b>+ New</b>.</li>
+  <li>Set <b>Location Id</b> to <code>gurukul_courtyard</code>, <b>Display Name</b> to
+      <em>Gurukul Courtyard</em>.</li>
+  <li>Set <b>Tile Width</b> and <b>Tile Height</b> to your floor art divided by 32. A 1280 × 704 image is
+      40 × 22 tiles.</li>
+  <li>Go to <b>Problems</b>. Click <b>Make an empty room for it</b>.</li>
+  <li>Back in the Scene view, pick <code>gurukul_courtyard</code> in <b>Room</b>. You get a blue rectangle
+      40 × 22 tiles.</li>
+</ol>
+
+<h4>Dress it</h4>
+<ol class="steps" start="10" style="counter-reset: step 9">
+  <li>Click the <b>Ground</b> tab, click your floor, check <b>Is</b> says <b>Ground</b>, and click at the
+      room's bottom-left corner.</li>
+  <li>Click <b>Buildings</b>, click the hall. Set <b>Is</b> to <b>Object</b>, tick <b>Stops her</b>, and
+      set <b>Footprint</b> to the size of its base in tiles — for a 6-tile-wide hall whose front wall is
+      a tile deep, that is <code>6 × 1</code>.</li>
+  <li>Click where the hall should stand. Repeat for the shrine and the huts.</li>
+  <li>Click <b>Nature</b>, place trees. Hold <span class="kbd">Shift</span> to keep placing. Tick
+      <b>Keep to hand</b> on the tree so it is in <b>Favourites</b> from now on.</li>
+  <li>Turn on <b>Blocking</b> and look. Fix any footprint that is wrong by selecting the object and
+      dragging its collider.</li>
+  <li>Pad the edges. Line the outside with trees and rocks so the 40 × 22 room never shows bare ground at
+      its boundary.</li>
+</ol>
+
+<h4>Make something to do</h4>
+<ol class="steps" start="16" style="counter-reset: step 15">
+  <li>Place a noticeboard. With it selected, click <b>Make it something she can look at</b> in the Hub
+      panel.</li>
+  <li>In the Inspector, check <b>Interactable Id</b> reads <code>noticeboard</code>. Set <b>Verb</b> to
+      <b>Inspect</b>.</li>
+  <li>Open <span class="path">Project Astra ▸ Conversations</span>. Click <b>+ New</b>. Set
+      <b>Script Id</b> to <code>gurukul_noticeboard</code>.</li>
+  <li>Expand <b>Segments</b>, set its size to 1. Check that segment's <b>Text Speed</b> reads <code>-1</code>.</li>
+  <li>Expand its <b>Lines</b>, set the size to 2. For each line pick <b>Speaker Id</b> ▸ <b>Narrator</b>
+      and type the text.</li>
+  <li>Back on the noticeboard, set <b>Conversation Id</b> to <code>gurukul_noticeboard</code>.</li>
+  <li>In the Conversations window, with that script selected, pick a visit and click <b>Hear it</b>. Read
+      it in the real dialogue box. Stop.</li>
+</ol>
+
+<h4>People it</h4>
+<ol class="steps" start="23" style="counter-reset: step 22">
+  <li>Hub Editor ▸ <b>Visits</b> ▸ <b>+ New</b>. Set <b>Visit Id</b> to <code>gurukul_1</code>.</li>
+  <li>Set <b>Start Location Id</b> to <code>gurukul_courtyard</code> and <b>Player Spawn</b> to somewhere
+      open — turn on <b>Blocking</b> first and pick a clear tile.</li>
+  <li>Expand <b>Character Placements</b> and add one entry per person. For each: pick
+      <b>Character Id</b>, set <b>Location Id</b> to <code>gurukul_courtyard</code>, and leave
+      <b>Position</b> for now.</li>
+  <li>Write each person a conversation (steps 18 to 20) and set it as their
+      <b>Conversation Id</b> in the cast entry.</li>
+  <li>In the Scene view, pick <code>gurukul_1</code> in <b>As</b>. The cast appears. Drag each person
+      where they belong.</li>
+</ol>
+
+<h4>Give her something to achieve</h4>
+<ol class="steps" start="28" style="counter-reset: step 27">
+  <li>Hub Editor ▸ <b>Quests</b> ▸ <b>+ New</b>. Set <b>Quest Id</b> to <code>gurukul_1</code>.</li>
+  <li>Click <b>+ New stage</b>. Set <b>Display Text</b> to <em>Read the noticeboard</em>. Set
+      <b>Completion</b> to <b>Inspect Condition</b> and add <code>noticeboard</code> to its list.</li>
+  <li>Click <b>+ New stage</b> again. Set <b>Display Text</b> to <em>Talk to the other students</em> and
+      tick <b>Show Counter</b>. Set <b>Completion</b> to <b>Talk Condition</b> and add one entry per
+      student, each with the conversation that counts and the character it belongs to.</li>
+  <li>Check the order with the arrows.</li>
+  <li>Back on the visit, set <b>Quest Id</b> to <code>gurukul_1</code>.</li>
+  <li>Set <b>Departure ▸ Destination Map Id</b> to the battle this leads to, and pick a <b>Mode</b>.</li>
+</ol>
+
+<h4>Check and play</h4>
+<ol class="steps" start="34" style="counter-reset: step 33">
+  <li>Hub Editor ▸ <b>Problems</b> ▸ <b>Look again</b>. Work through anything it reports. Aim for empty.</li>
+  <li>Open <span class="path">Project Astra ▸ Hub Testing</span>. Pick <code>gurukul_1</code>, leave
+      <b>Stage</b> at <em>from the start</em>, click <b>Play from here</b>.</li>
+  <li>Play it through. Keep the Hub Testing window visible — if something does not respond, it tells you
+      why.</li>
+  <li>To retest just the second stage, stop, set <b>Stage</b> to it, and play again.</li>
+</ol>
+
+<p>That is a complete visit: a room built from new art, an object she can read, a cast with things to
+say, and a quest with two stages and a battle at the end.</p>
+
+<h2 id="ref-fields"><span class="num">A</span>Every field, in one place</h2>
+
+<h3>Room</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>Field</th><th>Meaning</th></tr>
+  <tr><td><b>Location Id</b></td><td>Its name. Everything refers to the room by this.</td></tr>
+  <tr><td><b>Display Name</b></td><td>What you read in the tools. Not shown to players.</td></tr>
+  <tr><td><b>Tile Width / Tile Height</b></td><td>Size in tiles. Also the hard edge of the world.</td></tr>
+</table>
+</div>
+
+<h3>Door</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>Field</th><th>Meaning</th></tr>
+  <tr><td><b>Name</b></td><td>This door's id, unique within the room.</td></tr>
+  <tr><td><b>Stands at</b></td><td>Where it is, in tiles.</td></tr>
+  <tr><td><b>Reads as</b></td><td>Prompt verb: Enter for a way in, Leave for a way out.</td></tr>
+  <tr><td><b>Leads to</b></td><td>The room beyond. Empty means back the way she came.</td></tr>
+  <tr><td><b>Arrives at / Facing</b></td><td>Where and which way she appears over there.</td></tr>
+  <tr><td><b>Which house</b></td><td>For the shared student-house interior. Empty for a room that is only itself.</td></tr>
+  <tr><td><b>Shut until</b></td><td>Gate that unlocks it. Empty means always usable.</td></tr>
+  <tr><td><b>Says while shut</b></td><td>Conversation played while locked. Only appears once a gate is set.</td></tr>
+</table>
+</div>
+
+<h3>Interactable states</h3>
+<div class="tablewrap">
+<table>
+  <tr><th>State</th><th>Means</th></tr>
+  <tr><td><b>Available</b></td><td>Normal. She can act on it.</td></tr>
+  <tr><td><b>Gated</b></td><td>Locked. Plays its denied conversation.</td></tr>
+  <tr><td><b>Inactive</b></td><td>Not there as far as she is concerned. No prompt.</td></tr>
+  <tr><td><b>Exhausted</b></td><td>Used up. Still there, nothing left to give.</td></tr>
+</table>
+</div>
+
+<h2 id="ref-rules"><span class="num">B</span>Rules and limits</h2>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Rule</th><th>Number</th></tr>
+  <tr><td>Pixels to a tile</td><td>32</td></tr>
+  <tr><td>What the camera shows</td><td>15 × 8.4 tiles (480 × 270 pixels)</td></tr>
+  <tr><td>Smallest usable room</td><td>15 × 9 tiles</td></tr>
+  <tr><td>Room coordinates</td><td>Always start at (0, 0) in the bottom-left</td></tr>
+  <tr><td>How close she must be to act on something</td><td>1 tile</td></tr>
+  <tr><td>Longest a mandatory walk should be</td><td>12 seconds — reported, not enforced</td></tr>
+  <tr><td>Rooms she can be in at once</td><td>One</td></tr>
+  <tr><td>Rooms a character can be in per visit</td><td>One</td></tr>
+</table>
+</div>
+
+<h3>How long things should take you</h3>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Task</th><th>Budget</th></tr>
+  <tr><td>Place a decorative prop</td><td>2 clicks, under 5s</td></tr>
+  <tr><td>Place twenty of them</td><td>under 30s</td></tr>
+  <tr><td>Make an object interactive and give it a conversation</td><td>under 30s, no ids typed</td></tr>
+  <tr><td>Change where a character stands in a visit</td><td>under 10s, by dragging</td></tr>
+  <tr><td>Test one specific conversation</td><td>under 10s</td></tr>
+  <tr><td>Add a stage to a quest</td><td>under 60s</td></tr>
+  <tr><td>Add a room and connect it by a door</td><td>under 3 min</td></tr>
+  <tr><td>Find and reach the cause of a problem</td><td>under 15s, one click</td></tr>
+</table>
+</div>
+
+<p>If something is taking much longer than this, the tool is at fault rather than you. Say so.</p>
+
+<h2 id="ref-naming"><span class="num">C</span>Naming</h2>
+
+<div class="tablewrap">
+<table>
+  <tr><th>Kind</th><th>Shape</th><th>Example</th></tr>
+  <tr><td>Room</td><td><code>place</code></td><td><code>gurukul_courtyard</code></td></tr>
+  <tr><td>Visit</td><td><code>place_number</code></td><td><code>gurukul_2</code></td></tr>
+  <tr><td>Quest</td><td>same as its visit</td><td><code>gurukul_2</code></td></tr>
+  <tr><td>Stage</td><td><code>visit_whatitis</code></td><td><code>gurukul_2_report_card</code></td></tr>
+  <tr><td>Conversation</td><td><code>visit_who_what</code></td><td><code>gurukul_2_madhavi_first</code></td></tr>
+  <tr><td>Object</td><td><code>whatitis</code></td><td><code>noticeboard</code>, <code>report_card</code></td></tr>
+  <tr><td>Door</td><td><code>to_where</code></td><td><code>to_hall</code></td></tr>
+  <tr><td>Gate</td><td>what it unlocks</td><td><code>north_road</code></td></tr>
+  <tr><td>Signal</td><td>what happened</td><td><code>saw_the_raid</code></td></tr>
+  <tr><td>Event</td><td><code>visit_whathappens</code></td><td><code>gurukul_2_opening</code></td></tr>
+</table>
+</div>
+
+<p>Lower case, underscores, no spaces, no capitals. Ids are matched exactly, and every tool offers them
+as dropdowns, so the only thing consistency buys you is being able to find things — but that is worth a
+lot by visit nine.</p>
+
+<h2 id="ref-programmer"><span class="num">D</span>When to ask a programmer</h2>
+
+<p>Everything above is yours. These are not, and asking is the right move rather than a workaround:</p>
+
+<div class="tablewrap">
+<table>
+  <tr><th>You want</th><th>Why it needs code</th></tr>
+  <tr><td>A new prompt verb</td><td>The verbs are a fixed list: Talk, Inspect, Enter, Leave, Report, Depart.</td></tr>
+  <tr><td>A new kind of event action</td><td>The eleven kinds are what the game knows how to do.</td></tr>
+  <tr><td>A new way for a stage to finish</td><td>Talk, Inspect, Signal and Immediate are the four.</td></tr>
+  <tr><td>A quiz she can get wrong</td><td>Not built yet. A branching conversation with an <b>Ask Once</b> choice gets close.</td></tr>
+  <tr><td>Progress that survives quitting</td><td>Saving is not wired up yet.</td></tr>
+  <tr><td>A different player character</td><td>The protagonist is fixed per scene.</td></tr>
+  <tr><td>A new character entirely</td><td>You make them in <span class="path">Project Astra ▸ Data Hub</span> — but their portraits and walking sprite have to exist first.</td></tr>
+  <tr><td>Something to happen on a timer while she walks around</td><td>Events run to completion; they do not tick in the background.</td></tr>
+</table>
+</div>
+
+<h2 id="ref-never"><span class="num">E</span>Never do this</h2>
+
+<div class="stop">
+  <p><b>Never rename an id by typing over it.</b> Use <b>Search ▸ Everywhere</b>. Typing leaves every
+  other reference pointing at a name that no longer exists, and nothing will shout about it.</p>
+  <p><b>Never delete a conversation asset without checking Search first.</b> Look at who uses it and fix
+  them, or you get silent nothing where a character should speak.</p>
+  <p><b>Never edit a shared list by clearing it and rebuilding.</b> The catalogues that index
+  conversations, events and quests are added to, never regenerated. Removing an entry someone else added
+  is very hard to notice.</p>
+  <p><b>Never make a room smaller than 15 × 9 tiles.</b> Pad it with impassable scenery instead.</p>
+  <p><b>Never move the camera to fit a small room.</b> The camera is fixed on purpose; the room is what
+  changes.</p>
+</div>
+
+<div class="note" style="margin-top:44px">
+  <b>Something missing from this guide?</b>
+  <p>If you tried to do something and could not find it here, that is worth reporting — either the guide
+  is short or the tool is. Both are fixable.</p>
+</div>
+
+</main>
+</div>
