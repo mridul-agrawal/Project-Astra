@@ -27,11 +27,9 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private string locationId;
         [SerializeField] private string displayName;
 
-        [Header("Art")]
-        [SerializeField] private Sprite baseArt;
-
-        [Tooltip("Animated dressing — trees, cloth, smoke. Instantiated under the location when it loads.")]
-        [SerializeField] private GameObject propsPrefab;
+        [Header("The room")]
+        [Tooltip("Everything permanent in this room, laid out by hand. Open it to design the place.")]
+        [SerializeField] private GameObject roomPrefab;
 
         [Header("Size")]
         [SerializeField] private int tileWidth = 15;
@@ -48,8 +46,7 @@ namespace ProjectAstra.Core.Hub
 
         public string LocationId => locationId;
         public string DisplayName => displayName;
-        public Sprite BaseArt => baseArt;
-        public GameObject PropsPrefab => propsPrefab;
+        public GameObject RoomPrefab => roomPrefab;
         public int TileWidth => tileWidth;
         public int TileHeight => tileHeight;
         public int CellsWide => tileWidth * CellsPerTile;

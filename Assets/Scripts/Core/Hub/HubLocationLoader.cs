@@ -36,7 +36,6 @@ namespace ProjectAstra.Core.Hub
 
             PlacePlayer(playerSpawn, playerFacing);
             SpawnCast(locationId);
-            SpawnDoors(location);
             return true;
         }
 
@@ -53,23 +52,6 @@ namespace ProjectAstra.Core.Hub
             Player = BuildActor(unitId, spawn, facing, parent, conversationId: null, solid: false);
             if (Player != null) InteractionPhysics.AttachPlayerProbe(Player.gameObject);
             return Player;
-        }
-
-        // A door is authored as data on the room; this is where it becomes something she can walk
-        // up to. Built under the room's host so a doorway takes the old room's doors with it.
-        private void SpawnDoors(HubLocationData location)
-        {
-            if (location.Doors == null) return;
-
-            foreach (HubDoor door in location.Doors)
-            {
-                var go = new GameObject($"Door_{door.doorId}");
-                go.transform.SetParent(locationHost.Room, false);
-                go.transform.position = door.position;
-
-                InteractionPhysics.AttachReachRegion(go, Vector2.zero);
-                go.AddComponent<DoorInteractable>().Configure(door);
-            }
         }
 
         // Only the people the visit puts in this room. Their placement comes through the progress

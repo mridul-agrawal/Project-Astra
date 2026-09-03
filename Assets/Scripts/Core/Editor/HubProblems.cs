@@ -46,8 +46,8 @@ namespace ProjectAstra.Core.Editor
         {
             if (string.IsNullOrEmpty(location.LocationId))
                 problems.Add(new HubProblem(location, $"{location.name}: empty locationId"));
-            if (location.BaseArt == null)
-                problems.Add(new HubProblem(location, $"{location.name}: no base art"));
+            if (location.RoomPrefab == null)
+                problems.Add(new HubProblem(location, $"{location.name}: no room prefab, so it cannot be shown"));
 
             CheckRoomIsBigEnough(location, problems);
             CheckDoors(location, problems);

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Hub;
@@ -18,7 +19,7 @@ namespace ProjectAstra.Core.Tests.Hub.Interaction
             go = new GameObject("Door");
             go.AddComponent<CircleCollider2D>().isTrigger = true;
             door = go.AddComponent<DoorInteractable>();
-            door.Configure(new HubDoor { doorId = "exit", position = Vector2.zero, verb = HubVerb.Leave });
+            Author(door, new HubDoor { doorId = "exit", position = Vector2.zero, verb = HubVerb.Leave });
         }
 
         [TearDown]
@@ -55,21 +56,22 @@ namespace ProjectAstra.Core.Tests.Hub.Interaction
 
         // A shut door is still worth walking up to — it owes her an answer rather than silence.
 
+        // A door in the room is always worth walking up to; a shut one owes her an answer.
         [Test]
-        public void AnUnconfiguredDoor_IsNotAvailable()
-        {
-            var bare = new GameObject("Bare");
-            bare.AddComponent<CircleCollider2D>().isTrigger = true;
-            var unconfigured = bare.AddComponent<DoorInteractable>();
-
-            Assert.IsFalse(unconfigured.IsAvailable);
-            Object.DestroyImmediate(bare);
-        }
-
-        [Test]
-        public void AConfiguredDoor_IsAvailable()
+        public void ADoorIsAlwaysAvailable()
         {
             Assert.IsTrue(door.IsAvailable);
+        }
+
+        // A door is authored in its room, so the test stands in for the inspector.
+        private static void Author(DoorInteractable target, HubDoor authored)
+        {
+            var serialized = new UnityEditor.SerializedObject(target);
+            SerializedProperty field = serialized.FindProperty("door");
+            field.FindPropertyRelative("doorId").stringValue = authored.doorId;
+            field.FindPropertyRelative("position").vector2Value = authored.position;
+            field.FindPropertyRelative("verb").enumValueIndex = (int)authored.verb;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
         }
 
         [Test]
