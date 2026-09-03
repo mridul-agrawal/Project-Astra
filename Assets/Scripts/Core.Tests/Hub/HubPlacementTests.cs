@@ -33,6 +33,10 @@ namespace ProjectAstra.Core.Tests.Hub
             foreach (Object made in spawned)
                 if (made != null) Object.DestroyImmediate(made, true);
             spawned.Clear();
+
+            // Placing and configuring register undo steps. The test runner replays the undo
+            // stack when it finishes, and would be replaying it against objects that are gone.
+            Undo.ClearAll();
         }
 
         [Test]

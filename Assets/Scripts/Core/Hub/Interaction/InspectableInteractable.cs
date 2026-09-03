@@ -1,4 +1,5 @@
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Hub.Interaction
 {
@@ -15,18 +16,22 @@ namespace ProjectAstra.Core.Hub.Interaction
         [Tooltip("Where she has to stand next to, relative to this transform.")]
         [SerializeField] private Vector2 interactionOffset;
 
+        [HubPick(HubIdKind.Conversation)]
         [SerializeField] private string conversationId;
 
         [Tooltip("Blocks the normal result until this gate opens. Empty for something always usable.")]
+        [HubPick(HubIdKind.Gate)]
         [SerializeField] private string requiredGate;
 
         [Tooltip("Played instead while the gate is shut. A gated thing she can walk up to must say why.")]
+        [HubPick(HubIdKind.Conversation)]
         [SerializeField] private string deniedConversationId;
 
         [Tooltip("State to fall back on when the visit doesn't mention this one.")]
         [SerializeField] private HubInteractableState defaultState = HubInteractableState.Available;
 
         public string InteractableId => interactableId;
+        public string RequiredGate => requiredGate;
 
         // Listed by id as well as by trigger, so an objective marker can find this without knowing
         // where in the room it stands.

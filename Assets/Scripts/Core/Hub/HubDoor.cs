@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core;
 using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub
@@ -17,7 +18,7 @@ namespace ProjectAstra.Core.Hub
         public HubVerb verb;
 
         [Tooltip("Room this leads to. Leave empty on an exit to send her back through whichever door she came in by — which is how six student houses share one interior.")]
-        public string targetLocationId;
+        [HubPick(HubIdKind.Location)] public string targetLocationId;
 
         public Vector2 targetSpawn;
         public Facing targetFacing;
@@ -26,10 +27,10 @@ namespace ProjectAstra.Core.Hub
         public string houseIdentityId;
 
         [Tooltip("Shut until this gate opens. Empty for a door that is always usable.")]
-        public string requiredGate;
+        [HubPick(HubIdKind.Gate)] public string requiredGate;
 
         [Tooltip("Played instead while the door is shut. A gated door she can walk up to has to say why.")]
-        public string deniedConversationId;
+        [HubPick(HubIdKind.Conversation)] public string deniedConversationId;
 
         // An exit with no authored destination goes back the way she came.
         public bool ReturnsToPreviousRoom => string.IsNullOrEmpty(targetLocationId);

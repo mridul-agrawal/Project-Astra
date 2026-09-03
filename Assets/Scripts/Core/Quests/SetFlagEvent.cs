@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Quests
 {
@@ -7,8 +8,11 @@ namespace ProjectAstra.Core.Quests
     [Serializable]
     public sealed class SetFlagEvent : QuestEvent
     {
+        [HubPick(HubIdKind.Gate)]
         [SerializeField] private string flagId;
         [SerializeField] private bool open = true;
+
+        public string FlagId => flagId;
 
         public override void Run(IQuestWorld world) => world.SetFlag(flagId, open);
 

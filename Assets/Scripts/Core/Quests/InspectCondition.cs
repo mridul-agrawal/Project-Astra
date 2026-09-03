@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Quests
 {
@@ -9,6 +10,7 @@ namespace ProjectAstra.Core.Quests
     public sealed class InspectCondition : ObjectiveCondition
     {
         [Tooltip("Every one of these must be inspected. One id is a single object; several make a set.")]
+        [HubPick(HubIdKind.Interactable)]
         [SerializeField] private string[] interactableIds = Array.Empty<string>();
 
         public override IReadOnlyList<string> Targets => interactableIds;

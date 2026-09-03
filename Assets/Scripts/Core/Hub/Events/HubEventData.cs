@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core;
 using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub.Events
@@ -68,6 +69,7 @@ namespace ProjectAstra.Core.Hub.Events
         [SerializeField] private Rect triggerArea;
 
         [Tooltip("AreaEntered: which room the patch is in.")]
+        [HubPick(HubIdKind.Location)]
         [SerializeField] private string triggerLocationId;
 
         [Tooltip("Off for something that can happen again — a repeatable barks. On for anything with consequences.")]

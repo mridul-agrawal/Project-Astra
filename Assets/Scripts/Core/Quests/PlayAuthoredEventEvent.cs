@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Quests
 {
@@ -7,7 +8,10 @@ namespace ProjectAstra.Core.Quests
     [Serializable]
     public sealed class PlayAuthoredEventEvent : QuestEvent
     {
+        [HubPick(HubIdKind.Event)]
         [SerializeField] private string eventId;
+
+        public string EventId => eventId;
 
         public override void Run(IQuestWorld world) => world.PlayAuthoredEvent(eventId);
 

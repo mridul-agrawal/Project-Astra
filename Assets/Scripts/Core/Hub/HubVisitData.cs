@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using ProjectAstra.Core;
 using ProjectAstra.Core.Animation;
 
 namespace ProjectAstra.Core.Hub
@@ -17,10 +18,10 @@ namespace ProjectAstra.Core.Hub
     [Serializable]
     public struct HubCharacterPlacement
     {
-        [Tooltip("UnitDefinition.unitId — the character's identity, portraits and map animation come from there.")]
-        public string characterId;
+        [Tooltip("Whose it is. Their portraits and map animation come from their character definition.")]
+        [HubPick(HubIdKind.Character)] public string characterId;
 
-        public string locationId;
+        [HubPick(HubIdKind.Location)] public string locationId;
 
         [Tooltip("Foot position in tiles, within the location.")]
         public Vector2 position;
@@ -28,28 +29,28 @@ namespace ProjectAstra.Core.Hub
         public Facing facing;
 
         [Tooltip("Conversation opened by talking to them. Leave empty and they are present but not interactable.")]
-        public string conversationId;
+        [HubPick(HubIdKind.Conversation)] public string conversationId;
     }
 
     // An interactable that starts this visit in something other than its authored default.
     [Serializable]
     public struct HubInteractableOverride
     {
-        public string interactableId;
+        [HubPick(HubIdKind.Interactable)] public string interactableId;
         public HubInteractableState state;
-        public string conversationId;
+        [HubPick(HubIdKind.Conversation)] public string conversationId;
     }
 
     [Serializable]
     public struct HubDeparture
     {
-        [Tooltip("MapData.mapId of the battle this visit leads to. Always authored — never inferred from the current map number.")]
-        public string destinationMapId;
+        [Tooltip("The battle this visit leads to. Always authored, never inferred from the current map number.")]
+        [HubPick(HubIdKind.Map)] public string destinationMapId;
 
         public HubDepartureMode mode;
 
         [Tooltip("Confirmed mode only: the interactable that offers Depart once every objective is done.")]
-        public string departureTargetId;
+        [HubPick(HubIdKind.Interactable)] public string departureTargetId;
     }
 
     // One authored visit: where she starts, who stands where, what to do, which battle follows.
@@ -60,11 +61,13 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private string displayName;
 
         [Header("Opening")]
+        [HubPick(HubIdKind.Location)]
         [SerializeField] private string startLocationId;
         [SerializeField] private Vector2 playerSpawn;
         [SerializeField] private Facing playerFacing = Facing.South;
 
         [Tooltip("Event that runs before the player gets control. Leave empty to start in free exploration.")]
+        [HubPick(HubIdKind.Event)]
         [SerializeField] private string openingEventId;
 
         [Header("Baseline world state")]
@@ -72,13 +75,15 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private HubInteractableOverride[] interactableOverrides = Array.Empty<HubInteractableOverride>();
 
         [Tooltip("Gates that start open. Everything not listed starts closed.")]
+        [HubPick(HubIdKind.Gate)]
         [SerializeField] private string[] openGates = Array.Empty<string>();
 
         [Tooltip("Names the authored environment dressing for this visit, e.g. the post-flood state.")]
         [SerializeField] private string environmentSet;
 
         [Header("Progression")]
-        [Tooltip("The quest this visit runs, by id, looked up in the QuestCatalog.")]
+        [Tooltip("The quest this visit runs.")]
+        [HubPick(HubIdKind.Quest)]
         [SerializeField] private string questId;
 
 

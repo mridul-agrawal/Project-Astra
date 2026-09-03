@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Quests
 {
@@ -9,6 +10,7 @@ namespace ProjectAstra.Core.Quests
     public sealed class SignalCondition : ObjectiveCondition
     {
         [Tooltip("Every one of these must be raised. The names are design's, not the code's.")]
+        [HubPick(HubIdKind.Signal)]
         [SerializeField] private string[] signalIds = Array.Empty<string>();
 
         public override IReadOnlyList<string> Targets => signalIds;

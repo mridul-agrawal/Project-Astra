@@ -14,6 +14,7 @@ namespace ProjectAstra.Core.Hub.Interaction
         public string DoorId => door.doorId;
         public string TargetLocationId => door.targetLocationId;
         public bool ReturnsToPreviousRoom => door.ReturnsToPreviousRoom;
+        public string RequiredGate => door.requiredGate;
 
         public override HubVerb Verb => door.verb;
         public override InteractionPriority Priority => InteractionPriority.Door;

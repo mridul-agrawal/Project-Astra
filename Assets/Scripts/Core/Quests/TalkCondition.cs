@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using ProjectAstra.Core;
 
 namespace ProjectAstra.Core.Quests
 {
@@ -14,10 +15,10 @@ namespace ProjectAstra.Core.Quests
         public struct Target
         {
             [Tooltip("The conversation that must reach its end for this target to count.")]
-            public string conversationId;
+            [HubPick(HubIdKind.Conversation)] public string conversationId;
 
             [Tooltip("Whose conversation it is. Leave empty for one nobody needs pointing at.")]
-            public string characterId;
+            [HubPick(HubIdKind.Character)] public string characterId;
         }
 
         [SerializeField] private Target[] targets = Array.Empty<Target>();

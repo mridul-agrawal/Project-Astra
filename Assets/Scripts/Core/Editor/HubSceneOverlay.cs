@@ -5,6 +5,7 @@ using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.UIElements;
 using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -43,6 +44,44 @@ namespace ProjectAstra.Core.Editor
 
             EditorGUILayout.Space(4);
             DrawPalette(room);
+
+            EditorGUILayout.Space(4);
+            DrawSelection();
+        }
+
+        // What is selected and what can be done to it, so making a prop interactive never means
+        // remembering which component to add.
+        private static void DrawSelection()
+        {
+            GameObject selected = Selection.activeGameObject;
+            if (selected == null) return;
+
+            EditorGUILayout.LabelField(selected.name, EditorStyles.boldLabel);
+
+            if (HubAuthoring.IsInteractive(selected)) DrawInteractive(selected);
+            else if (GUILayout.Button("Make it something she can look at"))
+                Select(HubAuthoring.MakeInspectable(selected));
+        }
+
+        private static void DrawInteractive(GameObject selected)
+        {
+            var inspectable = selected.GetComponent<InspectableInteractable>();
+            if (inspectable != null)
+            {
+                EditorGUILayout.LabelField($"She can look at this  ·  {inspectable.InteractableId}",
+                    EditorStyles.miniLabel);
+                EditorGUILayout.LabelField("Give it a conversation in the Inspector.", EditorStyles.miniLabel);
+
+                if (GUILayout.Button("Not interactive any more")) HubAuthoring.Revert(selected);
+                return;
+            }
+
+            EditorGUILayout.LabelField("She can already walk up to this.", EditorStyles.miniLabel);
+        }
+
+        private static void Select(Object made)
+        {
+            if (made is Component component) Selection.activeGameObject = component.gameObject;
         }
 
         private void DrawRoomPicker(HubRoom current)
