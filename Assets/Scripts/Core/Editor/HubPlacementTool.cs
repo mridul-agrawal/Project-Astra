@@ -33,6 +33,8 @@ namespace ProjectAstra.Core.Editor
             if (IsPlacingClick(input))
             {
                 HubPlacement.Place(entry, room, at);
+                HubPalette.Load().JustUsed(entry);
+
                 if (!input.shift) HubSceneOverlay.Disarm();
                 input.Use();
             }

@@ -224,19 +224,19 @@ namespace ProjectAstra.Core.Editor
                     return;
                 }
 
-                editable.Update();
+                Editable.Update();
                 lineScroll = EditorGUILayout.BeginScrollView(lineScroll);
                 EditorGUILayout.PropertyField(entry, new GUIContent("This entry"), true);
                 EditorGUILayout.EndScrollView();
-                editable.ApplyModifiedProperties();
+                Editable.ApplyModifiedProperties();
             }
         }
 
         private SerializedProperty Entry()
         {
-            if (editable == null || segment < 0 || line < 0) return null;
+            if (Editable == null || segment < 0 || line < 0) return null;
 
-            SerializedProperty segments = editable.FindProperty("segments");
+            SerializedProperty segments = Editable.FindProperty("segments");
             if (segment >= segments.arraySize) return null;
 
             SerializedProperty lines = segments.GetArrayElementAtIndex(segment).FindPropertyRelative("lines");
@@ -249,7 +249,9 @@ namespace ProjectAstra.Core.Editor
         // which segment and which line inside it.
         private (int, int) Locate(int nodeIndex)
         {
-            SerializedProperty segments = editable.FindProperty("segments");
+            if (Editable == null) return (-1, -1);
+
+            SerializedProperty segments = Editable.FindProperty("segments");
             int seen = 0;
 
             for (int s = 0; s < segments.arraySize; s++)
@@ -264,8 +266,21 @@ namespace ProjectAstra.Core.Editor
         private void Select(DialogueScript wanted)
         {
             script = wanted;
-            editable = wanted != null ? new SerializedObject(wanted) : null;
+            editable = null;
             segment = line = -1;
+        }
+
+        // Made when it is needed rather than when a script is picked, because a recompile throws
+        // it away while the script it was editing survives.
+        private SerializedObject Editable
+        {
+            get
+            {
+                if (script == null) return editable = null;
+                if (editable != null && editable.targetObject == script) return editable;
+
+                return editable = new SerializedObject(script);
+            }
         }
 
         private bool Matches(DialogueScript candidate) =>

@@ -17,7 +17,7 @@ namespace ProjectAstra.Core.Editor
     // this window follow each other, so picking a room here shows it there and back again.
     public class HubEditorWindow : EditorWindow
     {
-        private enum Tab { Rooms, Visits, Quests, Events, Problems }
+        private enum Tab { Rooms, Visits, Quests, Events, Search, Problems }
 
         private const float RailWidth = 110f;
         private const float ListWidth = 230f;
@@ -29,6 +29,8 @@ namespace ProjectAstra.Core.Editor
         private Vector2 listScroll, detailScroll;
         private List<HubProblem> problems;
         private UnityEngine.Object pendingSelect;
+        private HubIdKind searchKind = HubIdKind.Conversation;
+        private string searching, renameTo = "";
 
         [MenuItem("Project Astra/Hub Editor")]
         public static void Open()
@@ -57,6 +59,7 @@ namespace ProjectAstra.Core.Editor
             {
                 DrawRail();
                 if (tab == Tab.Problems) DrawProblems();
+                else if (tab == Tab.Search) DrawSearch();
                 else { DrawList(); DrawDetail(); }
             }
 
@@ -286,6 +289,92 @@ namespace ProjectAstra.Core.Editor
         {
             if (stage == null) return "(missing)";
             return string.IsNullOrEmpty(stage.DisplayText) ? stage.ObjectiveId : stage.DisplayText;
+        }
+
+        // --- Where is this used ---
+
+        // Every name in the hub, and everywhere each one is used. Renaming one changes it in all
+        // of them, because doing that by hand means missing one and never finding out.
+        private void DrawSearch()
+        {
+            using (new EditorGUILayout.VerticalScope())
+            {
+                DrawSearchHeader();
+
+                listScroll = EditorGUILayout.BeginScrollView(listScroll);
+                foreach (string name in Named().Take(200)) DrawName(name);
+                EditorGUILayout.EndScrollView();
+            }
+        }
+
+        private void DrawSearchHeader()
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Every name, and where it is used", EditorStyles.boldLabel);
+                searchKind = (HubIdKind)EditorGUILayout.EnumPopup(searchKind, GUILayout.Width(110));
+            }
+
+            filter = EditorGUILayout.TextField("Find", filter);
+            EditorGUILayout.Space(2);
+        }
+
+        private IEnumerable<string> Named() =>
+            HubIds.Of(searchKind).Where(name =>
+                string.IsNullOrEmpty(filter) ||
+                name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+
+        private void DrawName(string name)
+        {
+            using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                DrawNameHeader(name);
+                if (searching != name) return;
+
+                foreach (HubUsage usage in HubUsages.Of(name)) DrawUsage(usage);
+                DrawRenameTo(name);
+            }
+        }
+
+        private void DrawNameHeader(string name)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                bool open = searching == name;
+                if (GUILayout.Toggle(open, name, EditorStyles.miniButton) != open)
+                {
+                    searching = open ? null : name;
+                    renameTo = name;
+                }
+
+                EditorGUILayout.LabelField($"used {HubUsages.CountOf(name)}×",
+                    EditorStyles.miniLabel, GUILayout.Width(70));
+            }
+        }
+
+        private void DrawUsage(HubUsage usage)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Space(14);
+                EditorGUILayout.LabelField(usage.Reads, EditorStyles.miniLabel);
+
+                if (GUILayout.Button("Show", EditorStyles.miniButton, GUILayout.Width(50)))
+                    GoTo(usage.In);
+            }
+        }
+
+        private void DrawRenameTo(string name)
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                GUILayout.Space(14);
+                renameTo = EditorGUILayout.TextField("Rename to", renameTo);
+
+                using (new EditorGUI.DisabledScope(!HubRename.CanRename(name, renameTo)))
+                    if (GUILayout.Button("Everywhere", GUILayout.Width(90)))
+                        ShowNotification(new GUIContent(HubRename.Everywhere(name, renameTo).Reads));
+            }
         }
 
         // --- Problems ---

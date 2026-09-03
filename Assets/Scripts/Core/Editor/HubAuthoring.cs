@@ -4,6 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
+using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
 
 namespace ProjectAstra.Core.Editor
@@ -56,6 +57,51 @@ namespace ProjectAstra.Core.Editor
 
             Object.DestroyImmediate(inspectable, true);
             EditorUtility.SetDirty(target);
+        }
+
+        // The same object in another room, keeping everything it was configured with. Its name has
+        // to change, because two objects answering to one name means only one is ever found.
+        public static GameObject CopyInto(GameObject original, HubRoom room)
+        {
+            if (original == null || room == null) return null;
+
+            var copy = Object.Instantiate(original, GroupLike(original, room));
+            copy.name = original.name;
+
+            Rename(copy);
+            Undo.RegisterCreatedObjectUndo(copy, $"Send a copy to {room.LocationId}");
+            EditorUtility.SetDirty(copy);
+            return copy;
+        }
+
+        // Into the group it came from, so a prop stays with the props and a door with the doors.
+        private static Transform GroupLike(GameObject original, HubRoom room)
+        {
+            Transform was = original.transform.parent;
+            string wanted = was != null ? was.name : "Props";
+
+            Transform group = room.transform.Find(wanted);
+            if (group != null) return group;
+
+            var made = new GameObject(wanted);
+            made.transform.SetParent(room.transform, false);
+            return made.transform;
+        }
+
+        private static void Rename(GameObject copy)
+        {
+            var inspectable = copy.GetComponent<InspectableInteractable>();
+            if (inspectable == null) return;
+
+            Name(inspectable, Unused(inspectable.InteractableId, HubIds.Of(HubIdKind.Interactable)));
+        }
+
+        private static void Name(InspectableInteractable inspectable, string id)
+        {
+            var editable = new SerializedObject(inspectable);
+            editable.FindProperty("interactableId").stringValue = id;
+            editable.ApplyModifiedProperties();
+            HubIds.Forget();
         }
 
         // A name a person would recognise, in the shape the rest of the ids are in.

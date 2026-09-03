@@ -36,15 +36,72 @@ namespace ProjectAstra.Core.Editor
             public bool IsUsable => Source != null;
         }
 
+        // What a designer keeps reaching for, and what they reached for last. Kept per project
+        // rather than in the asset, because they are one person's habits and not the game's content.
+        public const string Favourites = "Favourites";
+        public const string Recent = "Recent";
+
+        private const string FavouritesKey = "ProjectAstra.Hub.Palette.Favourites";
+        private const string RecentKey = "ProjectAstra.Hub.Palette.Recent";
+        private const int RecentKept = 8;
+
         [SerializeField] private List<Entry> entries = new();
 
         public IReadOnlyList<Entry> Entries => entries;
 
-        public IEnumerable<string> Categories =>
-            entries.Select(e => e.category).Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c);
+        // Favourites and recents come first, because a palette of two hundred pieces of art is
+        // otherwise scrolled through every time.
+        public IEnumerable<string> Categories
+        {
+            get
+            {
+                if (Kept(FavouritesKey).Any()) yield return Favourites;
+                if (Kept(RecentKey).Any()) yield return Recent;
 
-        public IEnumerable<Entry> InCategory(string category) =>
-            entries.Where(e => e.IsUsable && (category == null || e.category == category));
+                foreach (string category in entries.Select(e => e.category)
+                             .Where(c => !string.IsNullOrEmpty(c)).Distinct().OrderBy(c => c))
+                    yield return category;
+            }
+        }
+
+        public IEnumerable<Entry> InCategory(string category) => category switch
+        {
+            Favourites => Named(Kept(FavouritesKey)),
+            Recent => Named(Kept(RecentKey)),
+            null => entries.Where(e => e.IsUsable),
+            _ => entries.Where(e => e.IsUsable && e.category == category)
+        };
+
+        public bool IsFavourite(Entry entry) => entry != null && Kept(FavouritesKey).Contains(entry.label);
+
+        public void ToggleFavourite(Entry entry)
+        {
+            if (entry == null) return;
+
+            List<string> kept = Kept(FavouritesKey).ToList();
+            if (!kept.Remove(entry.label)) kept.Add(entry.label);
+
+            EditorPrefs.SetString(FavouritesKey, string.Join("\n", kept));
+        }
+
+        // Called when something is placed, so the last few things used are always to hand.
+        public void JustUsed(Entry entry)
+        {
+            if (entry == null) return;
+
+            List<string> kept = Kept(RecentKey).ToList();
+            kept.Remove(entry.label);
+            kept.Insert(0, entry.label);
+
+            EditorPrefs.SetString(RecentKey, string.Join("\n", kept.Take(RecentKept)));
+        }
+
+        private IEnumerable<Entry> Named(IEnumerable<string> labels) =>
+            labels.Select(label => entries.FirstOrDefault(e => e.IsUsable && e.label == label))
+                .Where(entry => entry != null);
+
+        private static IEnumerable<string> Kept(string key) =>
+            EditorPrefs.GetString(key, "").Split('\n').Where(one => !string.IsNullOrEmpty(one));
 
         // Art dropped into the hub folder becomes placeable without anyone adding it by hand. The
         // folder it was put in becomes its category, so an artist's own filing is the palette's.

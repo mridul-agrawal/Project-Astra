@@ -75,10 +75,31 @@ namespace ProjectAstra.Core.Editor
                 EditorGUILayout.LabelField("Give it a conversation in the Inspector.", EditorStyles.miniLabel);
 
                 if (GUILayout.Button("Not interactive any more")) HubAuthoring.Revert(selected);
+                DrawSendToRoom(selected);
                 return;
             }
 
             EditorGUILayout.LabelField("She can already walk up to this.", EditorStyles.miniLabel);
+        }
+
+        // A noticeboard that took a while to configure is worth having in the other room too, with
+        // everything it was given rather than as a fresh empty one.
+        private static void DrawSendToRoom(GameObject selected)
+        {
+            HubRoom[] elsewhere = HubRooms.InLoadedScenes()
+                .Where(room => room != selected.GetComponentInParent<HubRoom>()).ToArray();
+            if (elsewhere.Length == 0) return;
+
+            if (!GUILayout.Button("Send a copy to another room")) return;
+
+            var menu = new GenericMenu();
+            foreach (HubRoom room in elsewhere)
+            {
+                HubRoom captured = room;
+                menu.AddItem(new GUIContent(room.LocationId), false,
+                    () => Selection.activeGameObject = HubAuthoring.CopyInto(selected, captured));
+            }
+            menu.ShowAsContext();
         }
 
         private static void Select(Object made)
@@ -253,6 +274,9 @@ namespace ProjectAstra.Core.Editor
             EditorGUILayout.LabelField(armed.label, EditorStyles.boldLabel);
 
             EditorGUI.BeginChangeCheck();
+
+            bool loved = palette.IsFavourite(armed);
+            if (EditorGUILayout.Toggle("Keep to hand", loved) != loved) palette.ToggleFavourite(armed);
 
             armed.kind = (HubPalette.Kind)EditorGUILayout.EnumPopup("Is", armed.kind);
             if (armed.kind == HubPalette.Kind.Object)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -76,6 +77,26 @@ namespace ProjectAstra.Core.Editor
 
             return problems;
         }
+
+        // Asking the asset database for the same things on every pass is what made checking too
+        // slow to run continuously. Held until something actually changes instead.
+        private static readonly Dictionary<System.Type, object> Remembered = new();
+        private static HashSet<string> declaredInteractables;
+
+        public static void Forget()
+        {
+            Remembered.Clear();
+            declaredInteractables = null;
+        }
+
+        private sealed class Watcher : AssetPostprocessor
+        {
+            private static void OnPostprocessAllAssets(
+                string[] imported, string[] deleted, string[] moved, string[] movedFrom) => Forget();
+        }
+
+        [InitializeOnLoadMethod]
+        private static void WatchTheScene() => EditorApplication.hierarchyChanged += Forget;
 
         // --- Locations ---
 
@@ -377,10 +398,12 @@ namespace ProjectAstra.Core.Editor
 
         private static bool SceneDeclaresInteractable(string interactableId)
         {
-            foreach (InspectableInteractable candidate in
-                     Resources.FindObjectsOfTypeAll<InspectableInteractable>())
-                if (candidate.InteractableId == interactableId) return true;
-            return false;
+            declaredInteractables ??= new HashSet<string>(
+                Resources.FindObjectsOfTypeAll<InspectableInteractable>()
+                    .Where(found => found != null)
+                    .Select(found => found.InteractableId));
+
+            return declaredInteractables.Contains(interactableId);
         }
 
         private static HubLocationData FindLocation(string locationId)
@@ -393,12 +416,16 @@ namespace ProjectAstra.Core.Editor
 
         private static List<T> LoadAll<T>() where T : Object
         {
+            if (Remembered.TryGetValue(typeof(T), out object kept)) return (List<T>)kept;
+
             var found = new List<T>();
             foreach (string guid in AssetDatabase.FindAssets($"t:{typeof(T).Name}"))
             {
                 var asset = AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid));
                 if (asset != null) found.Add(asset);
             }
+
+            Remembered[typeof(T)] = found;
             return found;
         }
     }
