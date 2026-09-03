@@ -14,6 +14,7 @@ namespace ProjectAstra.Core.Hub
         private const string SpawnKey = "ProjectAstra.Hub.Launch.Spawn";
         private const string SpawnXKey = "ProjectAstra.Hub.Launch.SpawnX";
         private const string SpawnYKey = "ProjectAstra.Hub.Launch.SpawnY";
+        private const string HearKey = "ProjectAstra.Hub.Launch.Hear";
 
         public readonly struct Request
         {
@@ -22,20 +23,26 @@ namespace ProjectAstra.Core.Hub
             public readonly bool HasSpawn;
             public readonly Vector2 Spawn;
 
-            public Request(string visitId, int stage, bool hasSpawn, Vector2 spawn)
+            // A conversation to play the moment she has control, for hearing one without walking
+            // to whoever says it.
+            public readonly string Hear;
+
+            public Request(string visitId, int stage, bool hasSpawn, Vector2 spawn, string hear)
             {
                 VisitId = visitId;
                 Stage = stage;
                 HasSpawn = hasSpawn;
                 Spawn = spawn;
+                Hear = hear;
             }
 
             public bool IsSomething => !string.IsNullOrEmpty(VisitId);
         }
 
-        public static void Set(string visitId, int stage = 0, Vector2? spawn = null)
+        public static void Set(string visitId, int stage = 0, Vector2? spawn = null, string hear = null)
         {
             PlayerPrefs.SetString(VisitKey, visitId ?? "");
+            PlayerPrefs.SetString(HearKey, hear ?? "");
             PlayerPrefs.SetInt(StageKey, Mathf.Max(0, stage));
             PlayerPrefs.SetInt(SpawnKey, spawn.HasValue ? 1 : 0);
             PlayerPrefs.SetFloat(SpawnXKey, spawn?.x ?? 0f);
@@ -51,7 +58,8 @@ namespace ProjectAstra.Core.Hub
                 PlayerPrefs.GetString(VisitKey, ""),
                 PlayerPrefs.GetInt(StageKey, 0),
                 PlayerPrefs.GetInt(SpawnKey, 0) == 1,
-                new Vector2(PlayerPrefs.GetFloat(SpawnXKey, 0f), PlayerPrefs.GetFloat(SpawnYKey, 0f)));
+                new Vector2(PlayerPrefs.GetFloat(SpawnXKey, 0f), PlayerPrefs.GetFloat(SpawnYKey, 0f)),
+                PlayerPrefs.GetString(HearKey, ""));
 
             Clear();
             return asked;
@@ -59,7 +67,7 @@ namespace ProjectAstra.Core.Hub
 
         public static void Clear()
         {
-            foreach (string key in new[] { VisitKey, StageKey, SpawnKey, SpawnXKey, SpawnYKey })
+            foreach (string key in new[] { VisitKey, StageKey, SpawnKey, SpawnXKey, SpawnYKey, HearKey })
                 PlayerPrefs.DeleteKey(key);
             PlayerPrefs.Save();
         }

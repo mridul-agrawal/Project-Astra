@@ -29,14 +29,15 @@ namespace ProjectAstra.Core.Editor
                 if (state == PlayModeStateChange.EnteredEditMode) PutEverythingBack();
             };
 
-        // Play, starting in this visit, at this stage, optionally standing somewhere in particular.
-        public static void PlayFrom(HubVisitData visit, int stage, Vector2? spawn)
+        // Play, starting in this visit, at this stage, optionally standing somewhere in particular
+        // and optionally hearing one conversation the moment she has control.
+        public static void PlayFrom(HubVisitData visit, int stage, Vector2? spawn, string hear = null)
         {
             if (visit == null || !CanLaunch) return;
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
             EditorPrefs.SetString(ReturnSceneKey, SceneManager.GetActiveScene().path);
-            HubLaunchRequest.Set(visit.VisitId, stage, spawn);
+            HubLaunchRequest.Set(visit.VisitId, stage, spawn, hear);
 
             if (!SendBootToTheHub()) { Forget(); return; }
 

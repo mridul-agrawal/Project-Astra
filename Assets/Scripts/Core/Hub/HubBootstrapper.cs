@@ -84,6 +84,23 @@ namespace ProjectAstra.Core.Hub
             // Runs before she is given control, so a visit can open mid-scene rather than on a
             // player standing still waiting for something to happen.
             if (!string.IsNullOrEmpty(visit.OpeningEventId)) events.TryPlay(visit.OpeningEventId);
+
+            if (!string.IsNullOrEmpty(asked.Hear)) Say(asked.Hear);
+        }
+
+        // Somebody testing a conversation asked to hear it, so it is played instead of being walked
+        // to. Nothing in the game does this — only the request left by the tools.
+        private void Say(string conversationId)
+        {
+            DialogueScript script = scriptCatalog != null ? scriptCatalog.Get(conversationId) : null;
+            if (script == null)
+            {
+                Debug.LogError($"[HubBootstrapper] Asked to play '{conversationId}', which no script is.");
+                return;
+            }
+
+            DialogueService.Instance?.Play(script, DialogueTriggeringContext.Conversation, null,
+                HubVisitService.Instance?.Dialogue, InteractionEvents.RaiseFlag);
         }
     }
 }
