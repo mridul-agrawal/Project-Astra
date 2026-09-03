@@ -37,6 +37,12 @@ namespace ProjectAstra.Core.Editor
             window.minSize = new Vector2(860, 540);
         }
 
+        public static void OpenOnProblems()
+        {
+            var window = GetWindow<HubEditorWindow>("Hub Editor");
+            window.Show(Tab.Problems);
+        }
+
         private void OnEnable() => Selection.selectionChanged += FollowTheScene;
 
         private void OnDisable()
@@ -312,10 +318,21 @@ namespace ProjectAstra.Core.Editor
             {
                 EditorGUILayout.HelpBox(problem.Message, MessageType.Warning);
 
-                using (new EditorGUI.DisabledScope(problem.Asset == null))
-                    if (GUILayout.Button("Take me there", GUILayout.Width(110), GUILayout.Height(38)))
-                        GoTo(problem.Asset);
+                using (new EditorGUILayout.VerticalScope(GUILayout.Width(150)))
+                {
+                    using (new EditorGUI.DisabledScope(problem.Asset == null))
+                        if (GUILayout.Button("Take me there")) GoTo(problem.Asset);
+
+                    if (problem.Fix != null && GUILayout.Button(problem.Fix.Label)) Repair(problem);
+                }
             }
+        }
+
+        private void Repair(HubProblem problem)
+        {
+            problem.Fix.Apply();
+            problems = null;
+            HubWatch.LookAgainSoon();
         }
 
         private void GoTo(UnityEngine.Object asset)

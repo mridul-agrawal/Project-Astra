@@ -34,6 +34,7 @@ namespace ProjectAstra.Core.Editor
 
             DrawRoomPicker(room);
             DrawVisitPicker();
+            DrawWhatIsWrong();
             EditorGUILayout.Space(2);
             DrawOverlayToggles();
 
@@ -149,6 +150,23 @@ namespace ProjectAstra.Core.Editor
 
             foreach (string line in HubVisitDiff.Describe(visits[index - 1], visit))
                 EditorGUILayout.LabelField(line, EditorStyles.miniLabel);
+        }
+
+        // Always there, so a broken hub is something you already know about rather than something
+        // you find out by pressing Play.
+        private static void DrawWhatIsWrong()
+        {
+            int wrong = HubWatch.Count;
+            if (wrong == 0) return;
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField(wrong == 1 ? "1 problem" : $"{wrong} problems",
+                    EditorStyles.miniLabel);
+
+                if (GUILayout.Button("Show me", EditorStyles.miniButton, GUILayout.Width(70)))
+                    HubEditorWindow.OpenOnProblems();
+            }
         }
 
         private void DrawOverlayToggles()

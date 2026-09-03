@@ -9,15 +9,41 @@ using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
 {
+    // Something a designer can do about a problem, when there is exactly one sensible thing to do.
+    public sealed class HubFix
+    {
+        public readonly string Label;
+        private readonly System.Action apply;
+
+        public HubFix(string label, System.Action apply)
+        {
+            Label = label;
+            this.apply = apply;
+        }
+
+        public void Apply() => apply?.Invoke();
+    }
+
     public struct HubProblem
     {
         public readonly string Message;
         public readonly Object Asset;
 
-        public HubProblem(Object asset, string message)
+        // Where in the world it is, for the badge that puts it on the thing itself rather than in
+        // a list somewhere else. Null for a problem that is not anywhere in particular.
+        public readonly Vector2? Where;
+        public readonly string LocationId;
+
+        public readonly HubFix Fix;
+
+        public HubProblem(Object asset, string message, Vector2? where = null,
+            string locationId = null, HubFix fix = null)
         {
             Asset = asset;
             Message = message;
+            Where = where;
+            LocationId = locationId;
+            Fix = fix;
         }
     }
 
@@ -29,7 +55,13 @@ namespace ProjectAstra.Core.Editor
 
         private static readonly Rect PlayerFootprint = new(-0.25f, 0f, 0.5f, 0.25f);
 
-        public static List<HubProblem> Collect()
+        public static List<HubProblem> Collect() => Collect(thorough: true);
+
+        // Everything except the checks that have to stand a room up in a scene of its own. Cheap
+        // enough to run whenever anything changes, which is what makes the count in the scene live.
+        public static List<HubProblem> CollectQuick() => Collect(thorough: false);
+
+        private static List<HubProblem> Collect(bool thorough)
         {
             var problems = new List<HubProblem>();
 
@@ -40,7 +72,7 @@ namespace ProjectAstra.Core.Editor
             foreach (HubLocationData location in LoadAll<HubLocationData>()) CheckLocation(location, problems);
             foreach (QuestObjective objective in LoadAll<QuestObjective>()) CheckObjective(objective, problems);
             foreach (HubEventData authored in LoadAll<HubEventData>()) CheckEvent(authored, problems);
-            foreach (HubVisitData visit in LoadAll<HubVisitData>()) CheckVisit(visit, problems);
+            foreach (HubVisitData visit in LoadAll<HubVisitData>()) CheckVisit(visit, problems, thorough);
 
             return problems;
         }
@@ -50,10 +82,12 @@ namespace ProjectAstra.Core.Editor
         private static void CheckLocation(HubLocationData location, List<HubProblem> problems)
         {
             if (string.IsNullOrEmpty(location.LocationId))
-                problems.Add(new HubProblem(location, $"{location.name}: empty locationId"));
+                problems.Add(new HubProblem(location, $"{location.name}: this place has no name",
+                    fix: HubRepairs.NameItAfterItsAsset(location, "locationId")));
             if (HubRooms.Find(location) == null)
                 problems.Add(new HubProblem(location,
-                    $"{location.name}: no room in the Hub scene is this place, so it cannot be shown"));
+                    $"{location.name}: no room in the Hub scene is this place, so it cannot be shown",
+                    fix: HubRepairs.MakeRoomFor(location)));
 
             CheckRoomIsBigEnough(location, problems);
             CheckDoors(location, problems);
@@ -81,16 +115,22 @@ namespace ProjectAstra.Core.Editor
             var seen = new HashSet<string>();
             foreach (DoorInteractable door in room.GetComponentsInChildren<DoorInteractable>(true))
             {
+                Vector2 at = door.InteractionPoint;
+
                 if (string.IsNullOrEmpty(door.DoorId))
-                    problems.Add(new HubProblem(location, $"{location.name}: a door has no id"));
+                    problems.Add(new HubProblem(location, $"{location.name}: a door has no name",
+                        at, location.LocationId, HubRepairs.NameDoor(door, seen)));
                 else if (!seen.Add(door.DoorId))
-                    problems.Add(new HubProblem(location, $"{location.name}: duplicate door id '{door.DoorId}'"));
+                    problems.Add(new HubProblem(location,
+                        $"{location.name}: two doors are both called '{door.DoorId}'",
+                        at, location.LocationId, HubRepairs.NameDoor(door, seen)));
 
                 if (door.ReturnsToPreviousRoom) continue;
 
                 if (FindLocation(door.TargetLocationId) == null)
                     problems.Add(new HubProblem(location,
-                        $"{location.name}: door '{door.DoorId}' leads to '{door.TargetLocationId}', which doesn't exist"));
+                        $"{location.name}: door '{door.DoorId}' leads to '{door.TargetLocationId}', which doesn't exist",
+                        at, location.LocationId));
             }
         }
 
@@ -136,7 +176,7 @@ namespace ProjectAstra.Core.Editor
 
         // --- Visits ---
 
-        private static void CheckVisit(HubVisitData visit, List<HubProblem> problems)
+        private static void CheckVisit(HubVisitData visit, List<HubProblem> problems, bool thorough)
         {
             if (string.IsNullOrEmpty(visit.VisitId))
                 problems.Add(new HubProblem(visit, $"{visit.name}: empty visitId"));
@@ -155,9 +195,11 @@ namespace ProjectAstra.Core.Editor
             else if (quest.Objectives.Length == 0)
                 problems.Add(new HubProblem(visit, $"{visit.name}: quest '{quest.QuestId}' has no objectives, so it can never be finished"));
 
-            CheckSpawn(visit, start, problems);
             CheckPlacements(visit, problems);
             CheckMarkers(visit, problems);
+
+            if (!thorough) return;
+            CheckSpawn(visit, start, problems);
             CheckRouteTimes(visit, start, problems);
         }
 
@@ -168,7 +210,8 @@ namespace ProjectAstra.Core.Editor
 
             if (room.Space.IsBlocked(HubMover.FootprintAt(visit.PlayerSpawn, PlayerFootprint)))
                 problems.Add(new HubProblem(visit,
-                    $"{visit.name}: she spawns at {visit.PlayerSpawn}, which is inside something solid"));
+                    $"{visit.name}: she starts at {visit.PlayerSpawn}, which is inside something solid",
+                    visit.PlayerSpawn, start.LocationId));
         }
 
         private static void CheckPlacements(HubVisitData visit, List<HubProblem> problems)
@@ -226,13 +269,15 @@ namespace ProjectAstra.Core.Editor
                         placement.position, out float seconds))
                 {
                     problems.Add(new HubProblem(visit,
-                        $"{visit.name}: '{placement.characterId}' at {placement.position} can't be walked to from the spawn"));
+                        $"{visit.name}: '{placement.characterId}' at {placement.position} cannot be walked to from where she starts",
+                        placement.position, start.LocationId));
                     continue;
                 }
 
                 if (seconds > MaxRouteSeconds)
                     problems.Add(new HubProblem(visit,
-                        $"{visit.name}: walking to '{placement.characterId}' takes {seconds:0.#}s, over the {MaxRouteSeconds}s target"));
+                        $"{visit.name}: walking to '{placement.characterId}' takes {seconds:0.#}s, over the {MaxRouteSeconds}s target",
+                        placement.position, start.LocationId));
             }
         }
 

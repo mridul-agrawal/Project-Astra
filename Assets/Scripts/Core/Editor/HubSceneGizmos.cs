@@ -17,6 +17,7 @@ namespace ProjectAstra.Core.Editor
         private static readonly Color ReachColour = new(1f, 0.82f, 0.25f, 0.9f);
         private static readonly Color ReachFill = new(1f, 0.82f, 0.25f, 0.08f);
         private static readonly Color SpawnColour = new(0.4f, 0.95f, 0.6f, 0.95f);
+        private static readonly Color ProblemColour = new(1f, 0.45f, 0.15f, 1f);
 
         private static GUIStyle labelStyle;
 
@@ -33,6 +34,24 @@ namespace ProjectAstra.Core.Editor
             if (HubEditing.Shows(HubEditing.Overlay.Blocking)) DrawBlocking(room);
             if (HubEditing.Shows(HubEditing.Overlay.Interaction)) DrawInteractions(room);
             if (HubEditing.Shows(HubEditing.Overlay.Spawns)) DrawWhereSheStarts(room);
+
+            DrawWhatIsWrong(room);
+        }
+
+        // On the thing itself, so a broken door is found by looking at the room rather than by
+        // reading a list and working out which door it meant.
+        private static void DrawWhatIsWrong(HubRoom room)
+        {
+            foreach (HubProblem problem in HubWatch.In(room.LocationId))
+            {
+                Vector3 at = problem.Where.Value;
+
+                Handles.color = ProblemColour;
+                Handles.DrawSolidDisc(at, Vector3.forward, 0.22f);
+                Handles.DrawWireDisc(at, Vector3.forward, 0.5f);
+
+                Label(at + Vector3.down * 0.75f, problem.Message, ProblemColour);
+            }
         }
 
         // Only for the visit being looked at, because where she starts is a visit's decision and
