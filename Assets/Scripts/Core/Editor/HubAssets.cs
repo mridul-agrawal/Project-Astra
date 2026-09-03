@@ -1,10 +1,14 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core;
 using ProjectAstra.Core.Dialogue;
+using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Events;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Editor
 {
@@ -14,46 +18,71 @@ namespace ProjectAstra.Core.Editor
     // reachable the moment it exists rather than after somebody remembers to register it.
     public static class HubAssets
     {
-        public static bool CanCreate(HubIdKind kind) =>
-            kind is HubIdKind.Conversation or HubIdKind.Event;
-
-        public static Object Create(HubIdKind kind, string id) => kind switch
+        // What each kind of name is made of, and what has to know about it afterwards.
+        private readonly struct Recipe
         {
-            HubIdKind.Conversation => Conversation(id),
-            HubIdKind.Event => Event(id),
-            _ => null
+            public readonly Type Asset;
+            public readonly string IdField;
+            public readonly Type Catalog;
+            public readonly string ListField;
+
+            public Recipe(Type asset, string idField, Type catalog = null, string listField = null)
+            {
+                Asset = asset;
+                IdField = idField;
+                Catalog = catalog;
+                ListField = listField;
+            }
+
+            public bool IsIndexed => Catalog != null;
+        }
+
+        private static readonly Dictionary<HubIdKind, Recipe> Recipes = new()
+        {
+            [HubIdKind.Conversation] = new(typeof(DialogueScript), "scriptId",
+                typeof(DialogueScriptCatalog), "scripts"),
+            [HubIdKind.Location] = new(typeof(HubLocationData), "locationId",
+                typeof(HubLocationDatabase), "locations"),
+            [HubIdKind.Event] = new(typeof(HubEventData), "eventId",
+                typeof(HubEventDatabase), "events"),
+            [HubIdKind.Quest] = new(typeof(QuestData), "questId",
+                typeof(QuestCatalog), "quests"),
+            [HubIdKind.Visit] = new(typeof(HubVisitData), "visitId",
+                typeof(HubVisitDatabase), "visits"),
+
+            // A stage belongs to its quest rather than to a catalog, so it is filed beside the
+            // quests and reached through the one that owns it.
+            [HubIdKind.Objective] = new(typeof(QuestObjective), "objectiveId"),
         };
 
-        private static Object Conversation(string id)
+        public static bool CanCreate(HubIdKind kind) => Recipes.ContainsKey(kind);
+
+        public static Type TypeOf(HubIdKind kind) =>
+            Recipes.TryGetValue(kind, out Recipe recipe) ? recipe.Asset : null;
+
+        public static UnityEngine.Object Create(HubIdKind kind, string id)
         {
-            DialogueScriptCatalog catalog = One<DialogueScriptCatalog>();
-            if (catalog == null) return Missing("Dialogue Script Catalog");
+            if (!Recipes.TryGetValue(kind, out Recipe recipe)) return null;
 
-            var script = ScriptableObject.CreateInstance<DialogueScript>();
-            Save(script, catalog, id);
-            Write(script, "scriptId", id);
-            Register(catalog, "scripts", script);
+            ScriptableObject home = FindCatalogFor(recipe);
+            if (home == null) return Missing(recipe);
 
-            return Reveal(script);
+            var made = ScriptableObject.CreateInstance(recipe.Asset);
+            AssetDatabase.CreateAsset(made, PathBeside(home, id));
+            Write(made, recipe.IdField, id);
+
+            if (recipe.IsIndexed) Register(home, recipe.ListField, made);
+            return Reveal(made);
         }
 
-        private static Object Event(string id)
+        // A stage is filed with the quests, which is where its catalog would be if it had one.
+        private static ScriptableObject FindCatalogFor(Recipe recipe) =>
+            recipe.IsIndexed ? One(recipe.Catalog) : One(typeof(QuestCatalog));
+
+        private static string PathBeside(UnityEngine.Object neighbour, string id)
         {
-            HubEventDatabase database = One<HubEventDatabase>();
-            if (database == null) return Missing("Hub Event Database");
-
-            var authored = ScriptableObject.CreateInstance<HubEventData>();
-            Save(authored, database, id);
-            Write(authored, "eventId", id);
-            Register(database, "events", authored);
-
-            return Reveal(authored);
-        }
-
-        private static void Save(ScriptableObject asset, Object beside, string id)
-        {
-            string folder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(beside)).Replace('\\', '/');
-            AssetDatabase.CreateAsset(asset, AssetDatabase.GenerateUniqueAssetPath($"{folder}/{id}.asset"));
+            string folder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(neighbour)).Replace('\\', '/');
+            return AssetDatabase.GenerateUniqueAssetPath($"{folder}/{id}.asset");
         }
 
         private static void Write(ScriptableObject asset, string field, string value)
@@ -65,7 +94,7 @@ namespace ProjectAstra.Core.Editor
 
         // Appended, never rewritten: a catalog holds whatever a designer has put in it, and
         // rebuilding one from code would quietly drop their entries.
-        private static void Register(ScriptableObject catalog, string listName, Object entry)
+        public static void Register(ScriptableObject catalog, string listName, UnityEngine.Object entry)
         {
             var editable = new SerializedObject(catalog);
             SerializedProperty list = editable.FindProperty(listName);
@@ -77,7 +106,7 @@ namespace ProjectAstra.Core.Editor
             EditorUtility.SetDirty(catalog);
         }
 
-        private static Object Reveal(Object asset)
+        private static UnityEngine.Object Reveal(UnityEngine.Object asset)
         {
             AssetDatabase.SaveAssets();
             HubIds.Forget();
@@ -85,15 +114,17 @@ namespace ProjectAstra.Core.Editor
             return asset;
         }
 
-        private static Object Missing(string what)
+        private static UnityEngine.Object Missing(Recipe recipe)
         {
+            string what = ObjectNames.NicifyVariableName((recipe.Catalog ?? typeof(QuestCatalog)).Name);
             Debug.LogError($"[HubAssets] There is no {what} in the project, so there is nowhere to put this.");
             return null;
         }
 
-        private static T One<T>() where T : Object =>
-            AssetDatabase.FindAssets($"t:{typeof(T).Name}")
-                .Select(guid => AssetDatabase.LoadAssetAtPath<T>(AssetDatabase.GUIDToAssetPath(guid)))
-                .FirstOrDefault(found => found != null);
+        private static ScriptableObject One(Type type) =>
+            AssetDatabase.FindAssets($"t:{type.Name}")
+                .Select(guid => AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(guid), type))
+                .OfType<ScriptableObject>()
+                .FirstOrDefault();
     }
 }
