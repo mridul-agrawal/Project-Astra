@@ -1,0 +1,265 @@
+<meta charset="utf-8">
+<title>Quest System Proposal</title>
+<style>
+  :root {
+    --ink:#1a1a1a; --muted:#5c5c5c; --faint:#8a8a8a;
+    --bg:#ffffff; --panel:#f6f6f4; --line:#d3d3ce; --rule:#e4e4e0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:#e8e8e6; --muted:#a6a6a2; --faint:#7d7d79;
+      --bg:#131315; --panel:#1c1c1f; --line:#3a3a3e; --rule:#2a2a2e;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:#e8e8e6; --muted:#a6a6a2; --faint:#7d7d79;
+    --bg:#131315; --panel:#1c1c1f; --line:#3a3a3e; --rule:#2a2a2e;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0; padding: 40px 28px 90px;
+  }
+  main { max-width: 1320px; margin: 0 auto; }
+  h1 { font-size: 25px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); margin: 0 0 40px; font-size: 14px; }
+  h2 { font-size: 17px; font-weight: 600; margin: 46px 0 6px; }
+  h2 + p.note { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  figure { margin: 0 0 10px; overflow-x: auto; }
+  figure svg { display: block; min-width: 760px; width: 100%; height: auto; }
+  figcaption { color: var(--muted); font-size: 13px; margin-top: 10px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0 4px; }
+  th { text-align: left; font-weight: 600; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); vertical-align: bottom; }
+  td { padding: 9px 14px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  table.compare td:first-child, table.compare th:first-child { width: 22%; }
+  table.compare td:nth-child(2), table.compare th:nth-child(2) { width: 39%; color: var(--muted); }
+  table.roles td:first-child, table.roles th:first-child { width: 26%; }
+  ol, ul { padding-left: 20px; margin: 6px 0; }
+  li { margin-bottom: 10px; }
+  svg .bx { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+  svg .bx.dash { fill: none; stroke: var(--faint); stroke-dasharray: 5 4; }
+  svg .t { font: 600 13px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--ink); }
+  svg .d { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--muted); }
+  svg .band { font: 600 12px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--faint); letter-spacing: 0.04em; }
+  svg .lbl { font: 11px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; fill: var(--muted); }
+  svg .arr { stroke: var(--ink); stroke-width: 1.3; fill: none; }
+  svg .arr.dash { stroke-dasharray: 5 4; }
+</style>
+
+<main>
+<h1>Quest System Proposal</h1>
+<p class="sub">The whiteboard, redrawn. Every box and every relationship is the one on the board; nothing added,
+nothing removed. Two views, because the board holds two separate trees.</p>
+
+<h2>The runtime</h2>
+<p class="note">What exists while the game is running.</p>
+<figure>
+  <svg viewBox="0 0 1280 350" role="img" aria-label="Gameplay Signals feed the Quest Manager. The Quest Manager raises Quest Events, which the Quest UI reads, and loads the Quest Catalog. Below it, the Quest Runner advances into Quest Progress, which holds one ObjectiveTracker per condition.">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs>
+  <text class="band" x="40" y="34">Signals in, events out</text>
+<rect class="bx" x="40" y="50" width="290" height="84" rx="5"/>
+<text class="t" x="53" y="74">Gameplay Signals</text>
+<text class="d" x="53" y="91">kills, pickups, dialogues, etc.</text>
+<rect class="bx" x="370" y="50" width="270" height="84" rx="5"/>
+<text class="t" x="383" y="74">Quest Manager</text>
+<rect class="bx" x="680" y="50" width="290" height="84" rx="5"/>
+<text class="t" x="693" y="74">Quest Events</text>
+<text class="d" x="693" y="91">Started, Updated,</text>
+<text class="d" x="693" y="106">Completed, etc.</text>
+<rect class="bx" x="1010" y="50" width="255" height="84" rx="5"/>
+<text class="t" x="1023" y="74">Quest UI</text>
+<line class="arr" x1="334" y1="92" x2="366" y2="92" marker-end="url(#a)"/>
+<line class="arr" x1="644" y1="92" x2="676" y2="92" marker-end="url(#a)"/>
+<line class="arr" x1="974" y1="92" x2="1006" y2="92" marker-end="url(#a)"/>
+<text class="band" x="40" y="190">The machine</text>
+<rect class="bx" x="40" y="206" width="280" height="116" rx="5"/>
+<text class="t" x="53" y="230">Quest Catalog</text>
+<text class="d" x="53" y="247">database of all</text>
+<text class="d" x="53" y="262">quests in the game</text>
+<rect class="bx" x="355" y="206" width="280" height="116" rx="5"/>
+<text class="t" x="368" y="230">Quest Runner</text>
+<text class="d" x="368" y="247">pure C#, no Unity</text>
+<text class="d" x="368" y="262">advances the quest data</text>
+<text class="d" x="368" y="277">for the current hub</text>
+<text class="d" x="368" y="292">interaction</text>
+<rect class="bx" x="670" y="206" width="280" height="116" rx="5"/>
+<text class="t" x="683" y="230">Quest Progress</text>
+<text class="d" x="683" y="247">keeps track of the</text>
+<text class="d" x="683" y="262">current quest and</text>
+<text class="d" x="683" y="277">its counters</text>
+<rect class="bx" x="985" y="206" width="280" height="116" rx="5"/>
+<text class="t" x="998" y="230">ObjectiveTracker</text>
+<text class="d" x="998" y="247">mutable state per</text>
+<text class="d" x="998" y="262">condition — one per</text>
+<text class="d" x="998" y="277">Objective Condition</text>
+<line class="arr" x1="400" y1="138" x2="210" y2="204" marker-end="url(#a)"/>
+<text class="lbl" x="258" y="178" text-anchor="end">loads</text>
+<line class="arr" x1="500" y1="138" x2="500" y2="204" marker-end="url(#a)"/>
+<line class="arr" x1="639" y1="264" x2="666" y2="264" marker-end="url(#a)"/>
+<line class="arr" x1="954" y1="264" x2="981" y2="264" marker-end="url(#a)"/>
+  </svg>
+  <figcaption>One way in, one way out. Everything between them is plain C#.</figcaption>
+</figure>
+
+<h2>The authored data</h2>
+<p class="note">What a designer fills in. No code per quest.</p>
+<figure>
+  <svg viewBox="0 0 1320 420" role="img" aria-label="Quest Catalog holds Quest Data, which holds Quest Objectives. Each objective has an Objective Condition that finishes it, subclassed as Kill, Collect and Talk conditions, and a Quest Event that it runs, subclassed as Give Item, Unlock Area and Play Dialog events.">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="currentColor"/></marker></defs>
+  <text class="band" x="40" y="34">What design authors</text>
+<rect class="bx" x="40" y="50" width="300" height="92" rx="5"/>
+<text class="t" x="53" y="74">Quest Catalog</text>
+<text class="d" x="53" y="91">database of all quests</text>
+<text class="d" x="53" y="106">in the game</text>
+<rect class="bx" x="380" y="50" width="300" height="92" rx="5"/>
+<text class="t" x="393" y="74">Quest Data</text>
+<text class="d" x="393" y="91">one quest, all its data,</text>
+<text class="d" x="393" y="106">all its objectives</text>
+<rect class="bx" x="720" y="50" width="300" height="92" rx="5"/>
+<text class="t" x="733" y="74">Quest Objective</text>
+<text class="d" x="733" y="91">all data for one objective:</text>
+<text class="d" x="733" y="106">type, target, count, etc.</text>
+<line class="arr" x1="344" y1="96" x2="376" y2="96" marker-end="url(#a)"/>
+<line class="arr" x1="684" y1="96" x2="716" y2="96" marker-end="url(#a)"/>
+<text class="band" x="40" y="178">Per objective</text>
+<rect class="bx" x="40" y="194" width="560" height="76" rx="5"/>
+<text class="t" x="53" y="218">Objective Condition</text>
+<text class="d" x="53" y="235">what finishes it — creates an ObjectiveTracker</text>
+<rect class="bx" x="660" y="194" width="560" height="76" rx="5"/>
+<text class="t" x="673" y="218">Quest Event</text>
+<text class="d" x="673" y="235">what it does — run on start or completion</text>
+<line class="arr" x1="870" y1="146" x2="330" y2="192" marker-end="url(#a)"/>
+<line class="arr" x1="890" y1="146" x2="930" y2="192" marker-end="url(#a)"/>
+<rect class="bx" x="40" y="318" width="180" height="76" rx="5"/>
+<text class="t" x="53" y="342">Kill Condition</text>
+<text class="d" x="53" y="359">EnemyId, count</text>
+<rect class="bx" x="240" y="318" width="190" height="76" rx="5"/>
+<text class="t" x="253" y="342">Collect Condition</text>
+<text class="d" x="253" y="359">ItemId, count</text>
+<rect class="bx" x="450" y="318" width="180" height="76" rx="5"/>
+<text class="t" x="463" y="342">Talk Condition</text>
+<text class="d" x="463" y="359">UnitId</text>
+<rect class="bx" x="660" y="318" width="200" height="76" rx="5"/>
+<text class="t" x="673" y="342">Give Item Event</text>
+<text class="d" x="673" y="359">ItemId, count</text>
+<rect class="bx" x="880" y="318" width="200" height="76" rx="5"/>
+<text class="t" x="893" y="342">Unlock Area Event</text>
+<text class="d" x="893" y="359">set a flag</text>
+<rect class="bx" x="1100" y="318" width="200" height="76" rx="5"/>
+<text class="t" x="1113" y="342">Play Dialog Event</text>
+<text class="d" x="1113" y="359">Dialog ID</text>
+<line class="arr" x1="320" y1="274" x2="130" y2="316" marker-end="url(#a)"/>
+<line class="arr" x1="320" y1="274" x2="335" y2="316" marker-end="url(#a)"/>
+<line class="arr" x1="320" y1="274" x2="540" y2="316" marker-end="url(#a)"/>
+<line class="arr" x1="940" y1="274" x2="760" y2="316" marker-end="url(#a)"/>
+<line class="arr" x1="940" y1="274" x2="980" y2="316" marker-end="url(#a)"/>
+<line class="arr" x1="940" y1="274" x2="1200" y2="316" marker-end="url(#a)"/>
+  </svg>
+  <figcaption>Two polymorphic families. A new way to finish an objective is a class; a new thing an objective can
+  do is a class.</figcaption>
+</figure>
+
+<h2>What each box is for</h2>
+<table class="roles">
+  <tr><th>Box</th><th>Its job, in the board's own words</th></tr>
+  <tr><td><code>Quest Catalog</code></td><td>Database of all quests in the game.</td></tr>
+  <tr><td><code>Quest Data</code></td><td>One quest: all its data, all its objectives.</td></tr>
+  <tr><td><code>Quest Objective</code></td><td>All data for one objective &mdash; type, target, count.</td></tr>
+  <tr><td><code>Objective Condition</code></td><td>What finishes an objective. Creates an ObjectiveTracker.</td></tr>
+  <tr><td><code>Kill</code> / <code>Collect</code> / <code>Talk Condition</code></td><td>The three authored kinds: EnemyId+count, ItemId+count, UnitId.</td></tr>
+  <tr><td><code>Quest Event</code></td><td>Something an objective does, run on start or completion.</td></tr>
+  <tr><td><code>Give Item</code> / <code>Unlock Area</code> / <code>Play Dialog Event</code></td><td>The three authored kinds: ItemId+count, set a flag, Dialog ID.</td></tr>
+  <tr><td><code>Quest Manager</code></td><td>The scene-facing entry point. Loads the catalog, takes signals in, sends events out.</td></tr>
+  <tr><td><code>Quest Runner</code></td><td>Pure C#, no Unity. Advances the quest data for the current hub interaction.</td></tr>
+  <tr><td><code>Quest Progress</code></td><td>Keeps track of the current quest and its counters.</td></tr>
+  <tr><td><code>ObjectiveTracker</code></td><td>Mutable state per condition.</td></tr>
+  <tr><td><code>Gameplay Signals</code></td><td>What happened: kills, pickups, dialogues.</td></tr>
+  <tr><td><code>Quest Events</code></td><td>What the quest system announces: Started, Updated, Completed.</td></tr>
+  <tr><td><code>Quest UI</code></td><td>Reads the events. Draws the objective.</td></tr>
+</table>
+
+<h2>Against what is in the game today</h2>
+<table class="compare">
+  <tr><th>Concern</th><th>Today</th><th>Proposed</th></tr>
+  <tr>
+    <td>What finishes an objective</td>
+    <td><code>HubCondition</code> &mdash; one class, a <code>kind</code> enum, and an <code>Array.IndexOf</code> over string ids</td>
+    <td><code>ObjectiveCondition</code> &mdash; one class per kind, each answering for itself</td>
+  </tr>
+  <tr>
+    <td>Where progress lives</td>
+    <td>A flat <code>satisfiedTargets</code> string list on a visit-wide state object</td>
+    <td>An <code>ObjectiveTracker</code> per condition, owned by <code>QuestProgress</code></td>
+  </tr>
+  <tr>
+    <td>What an objective does on completion</td>
+    <td><code>HubEffect</code> &mdash; one class, five kinds, most fields blank for any given effect</td>
+    <td><code>QuestEvent</code> &mdash; one class per effect, carrying only its own fields</td>
+  </tr>
+  <tr>
+    <td>Who applies effects</td>
+    <td>The runner, inside its own completion path &mdash; it judges and mutates</td>
+    <td>The effect object runs itself; the runner only decides</td>
+  </tr>
+  <tr>
+    <td>Where quest state sits</td>
+    <td><code>HubRuntimeState</code>, which is also dialogue memory, progression query and room bookkeeping</td>
+    <td><code>QuestProgress</code> &mdash; quest state and nothing else</td>
+  </tr>
+  <tr>
+    <td>What a quest is</td>
+    <td>An inline array of objective assets on the visit asset</td>
+    <td>A <code>QuestCatalog</code> of quests the visit refers to</td>
+  </tr>
+  <tr>
+    <td>The way in</td>
+    <td><code>InteractionEvents</code> and <code>HubEventRunner.FlagRaised</code>, translated by a listener that reports one flag twice</td>
+    <td>One named seam: <code>Gameplay Signals</code></td>
+  </tr>
+  <tr>
+    <td>The way out</td>
+    <td>Four C# events on the runner, plus four consumers that poll it every frame</td>
+    <td>One named seam: <code>Quest Events</code></td>
+  </tr>
+  <tr>
+    <td>The scene boundary</td>
+    <td>A static <code>HubProgressService</code> plus a separate listener MonoBehaviour</td>
+    <td><code>QuestManager</code></td>
+  </tr>
+</table>
+
+<h2>Verdict</h2>
+<p>Better, and not marginally. It fixes four of the structural faults in what is there now: the enum-and-switch
+condition, the effect class with five kinds and blank fields, the runner that both judges and mutates, and the state
+object doing four unrelated jobs. It also replaces two ragged seams with two named ones.</p>
+<p>The test it passes that the current design fails: a new way to finish an objective is a class, and a new thing an
+objective can do is a class. Neither requires touching an enum, a switch, or a listener.</p>
+<p>It is also readable, which was the complaint. Every box is one noun with one job.</p>
+
+<h2>What I would raise before building</h2>
+<ol>
+  <li><b>Manager and Runner have no boundary yet.</b> The board gives the Runner a job and the Manager none. Without
+  a line drawn, the Manager becomes the next wiring closet. The obvious split: Manager is the MonoBehaviour &mdash;
+  lifetime, subscriptions, the catalog &mdash; and the Runner holds every decision, in plain C#.</li>
+
+  <li><b>Kill, Collect and Give Item are not hub concepts.</b> The hub GDD rules out hub combat and item collection
+  (&sect;2.2) and inventory (&sect;12). Either this system is meant to serve battle-map objectives too, which cuts
+  against keeping the two separate, or those three are placeholders. Worth settling before the shape hardens.</li>
+
+  <li><b>Talk Condition is keyed on UnitId.</b> The requirement credits <i>a conversation completing</i>, and a
+  multi-character conversation credits an authored list rather than one per portrait. A conversation id may be the
+  truer key.</li>
+
+  <li><b>Five requirements have nowhere to live yet:</b> gating (can she enter this building), the marker's source of
+  truth (which targets are still outstanding), save/load, per-objective activation conditions, and author-time
+  validation. These are the ones most likely to bend the shape later, so they are worth placing now rather than
+  bolting on.</li>
+
+  <li><b>Nothing owns the order.</b> Quest Data holds all its objectives, but no box says who keeps the index, or
+  enforces one ACTIVE stage and no going back. Probably <code>QuestProgress</code> &mdash; but it should be said.</li>
+
+  <li><b>Quest Event hangs free on the board.</b> I have drawn it under Quest Objective, since the note reads
+  &ldquo;run on start or completion&rdquo;. Confirm whether events are authored on a quest, on an objective, or both.</li>
+</ol>
+</main>
