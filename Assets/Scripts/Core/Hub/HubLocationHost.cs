@@ -9,6 +9,17 @@ namespace ProjectAstra.Core.Hub
 
         public HubLocationData Current { get; private set; }
 
+        // Whatever a designer left sitting here is a preview, so the scene shows a real room
+        // instead of an empty transform. The visit's own room replaces it the moment play starts.
+        //
+        // Immediate, because a deferred destroy would leave the preview's colliders in the world
+        // for the rest of the frame - long enough for her to spawn inside one.
+        private void Awake()
+        {
+            for (int i = transform.childCount - 1; i >= 0; i--)
+                DestroyImmediate(transform.GetChild(i).gameObject);
+        }
+
         // What a room's contents hang off, so anything added to a room is torn down with it.
         public Transform Room => current != null ? current.transform : transform;
 
