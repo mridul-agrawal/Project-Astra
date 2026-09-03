@@ -13,7 +13,18 @@ namespace ProjectAstra.Core.Hub.Interaction
         // A bit over half a tile, so standing slightly off to one side still counts as facing it.
         public const float DefaultLateralTolerance = 0.6f;
 
-        private const float LineOfSightStep = 0.25f;
+        private static readonly RaycastHit2D[] Hit = new RaycastHit2D[1];
+        private static ContactFilter2D? solidsOnly;
+
+        // Built with useTriggers off, because a linecast otherwise obeys the project-wide
+        // queriesHitTriggers setting and an interaction volume would block the view of its own target.
+        private static ContactFilter2D SolidsOnly =>
+            solidsOnly ??= new ContactFilter2D
+            {
+                useTriggers = false,
+                useLayerMask = true,
+                layerMask = LayerMask.GetMask(PhysicsSolidSpace.SolidLayer)
+            };
 
         // Stops the sight check short of the target, because a character's own body is solid and
         // would otherwise block the view of itself.
@@ -34,22 +45,16 @@ namespace ProjectAstra.Core.Hub.Interaction
             return forward > 0f && lateral <= lateralTolerance;
         }
 
-        // Walls, counters and the river all break an interaction; the target's own body does not.
-        public static bool HasLineOfSight(Vector2 from, Vector2 to, HubCollisionMap collision)
+        // Walls, counters and the river all break an interaction; the target's own body does not,
+        // which is what the margin stops the cast reaching.
+        public static bool HasLineOfSight(Vector2 from, Vector2 to)
         {
-            if (collision == null) return true;
-
             Vector2 offset = to - from;
             float distance = offset.magnitude - TargetBodyMargin;
             if (distance <= 0f) return true;
 
-            Vector2 direction = offset.normalized;
-            for (float travelled = LineOfSightStep; travelled <= distance; travelled += LineOfSightStep)
-            {
-                Vector2 point = from + direction * travelled;
-                if (collision.IsCellBlocked(CellOf(point.x), CellOf(point.y))) return false;
-            }
-            return true;
+            Vector2 stopShortOf = from + offset.normalized * distance;
+            return Physics2D.Linecast(from, stopShortOf, SolidsOnly, Hit) == 0;
         }
 
         // How far off dead-ahead a target sits, for picking between two things in range.
@@ -60,6 +65,5 @@ namespace ProjectAstra.Core.Hub.Interaction
             return Mathf.Abs(Vector2.Dot(target - player.Position, side));
         }
 
-        private static int CellOf(float world) => Mathf.FloorToInt(world / HubCollisionMap.CellSize);
     }
 }

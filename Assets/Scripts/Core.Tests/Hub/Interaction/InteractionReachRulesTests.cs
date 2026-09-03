@@ -103,43 +103,58 @@ namespace ProjectAstra.Core.Tests.Hub.Interaction
 
         // Line of sight — the rule that stops her talking through a wall.
 
-        [Test]
-        public void WithNoCollisionMap_EverythingIsVisible()
+        private GameObject wall;
+
+        [TearDown]
+        public void TearDown()
         {
-            Assert.IsTrue(InteractionReachRules.HasLineOfSight(
-                new Vector2(0f, 0f), new Vector2(5f, 0f), null));
+            if (wall != null) Object.DestroyImmediate(wall);
+            wall = null;
+        }
+
+        private void WallAt(Vector2 centre, Vector2 size)
+        {
+            wall = new GameObject("Wall") { layer = LayerMask.NameToLayer(PhysicsSolidSpace.SolidLayer) };
+            wall.transform.position = centre;
+            BoxCollider2D box = wall.AddComponent<BoxCollider2D>();
+            box.size = size;
+            Physics2D.SyncTransforms();
         }
 
         [Test]
         public void AcrossOpenGround_IsVisible()
         {
-            var map = new HubCollisionMap(20, 20);
-
-            Assert.IsTrue(InteractionReachRules.HasLineOfSight(
-                new Vector2(1f, 1f), new Vector2(3f, 1f), map));
+            Assert.IsTrue(InteractionReachRules.HasLineOfSight(new Vector2(1f, 1f), new Vector2(3f, 1f)));
         }
 
         [Test]
-        public void ThroughABlockedCell_IsNot()
+        public void ThroughAWall_IsNot()
         {
-            var map = new HubCollisionMap(20, 20);
-            map.Stamp(new Rect(1.9f, 0.9f, 0.4f, 0.4f));
+            WallAt(new Vector2(2f, 1f), new Vector2(0.4f, 0.4f));
 
-            Assert.IsFalse(InteractionReachRules.HasLineOfSight(
-                new Vector2(1f, 1f), new Vector2(3f, 1f), map),
+            Assert.IsFalse(InteractionReachRules.HasLineOfSight(new Vector2(1f, 1f), new Vector2(3f, 1f)),
                 "a wall between them breaks the interaction");
         }
 
         // A character's own body is solid, and would otherwise block the view of itself.
         [Test]
-        public void ATargetStandingOnBlockedGround_IsStillVisible()
+        public void ATargetStandingOnSolidGround_IsStillVisible()
         {
-            var map = new HubCollisionMap(20, 20);
-            map.Stamp(new Rect(1.9f, 0.9f, 0.4f, 0.4f));
+            WallAt(new Vector2(2f, 1f), new Vector2(0.4f, 0.4f));
 
-            Assert.IsTrue(InteractionReachRules.HasLineOfSight(
-                new Vector2(1.7f, 1f), new Vector2(2f, 1f), map),
+            Assert.IsTrue(InteractionReachRules.HasLineOfSight(new Vector2(1.7f, 1f), new Vector2(2f, 1f)),
                 "standing right in front of someone solid must still count as seeing them");
+        }
+
+        [Test]
+        public void ATriggerIsNotAWall()
+        {
+            WallAt(new Vector2(2f, 1f), new Vector2(0.4f, 0.4f));
+            wall.GetComponent<BoxCollider2D>().isTrigger = true;
+            Physics2D.SyncTransforms();
+
+            Assert.IsTrue(InteractionReachRules.HasLineOfSight(new Vector2(1f, 1f), new Vector2(3f, 1f)),
+                "an interaction volume must never block the view of anything");
         }
     }
 }

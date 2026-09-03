@@ -35,8 +35,7 @@ namespace ProjectAstra.Core.Hub.Interaction
             if (requiresFacing && !InteractionReachRules.IsFacing(player, InteractionPoint)) return false;
 
             return !requiresLineOfSight ||
-                   InteractionReachRules.HasLineOfSight(player.Position, InteractionPoint,
-                       HubLocationService.Instance?.Collision);
+                   InteractionReachRules.HasLineOfSight(player.Position, InteractionPoint);
         }
 
         public abstract void Interact(InteractorPose player);

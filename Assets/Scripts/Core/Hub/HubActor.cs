@@ -12,8 +12,8 @@ namespace ProjectAstra.Core.Hub
         [SerializeField] private Facing facing = Facing.South;
 
         private UnitAnimator unitAnimator;
+        private BoxCollider2D body;
         private bool solid;
-        private Rect stamped;
 
         // A float in tiles, measured at the feet, with the transform following it. That is the whole
         // reason this isn't TestUnit, whose position snaps back to a tile centre in half a dozen places.
@@ -56,7 +56,6 @@ namespace ProjectAstra.Core.Hub
         {
             Position = position;
             transform.position = new Vector3(position.x, position.y, transform.position.z);
-            if (solid) RestampFootprint();
         }
 
         // Facing is driven by what the player pressed, not by where the sprite ended up — walking
@@ -80,31 +79,30 @@ namespace ProjectAstra.Core.Hub
         // protagonist is left non-solid — she would only ever collide with herself.
         public void SetSolid(bool value)
         {
-            if (value == solid) return;
             solid = value;
 
-            if (value) StampFootprint();
-            else UnstampFootprint();
+            // Switching off before anything was ever switched on happens on teardown, and is no
+            // reason to build a collider.
+            if (!value && body == null) return;
+            Body().enabled = value;
         }
 
-        private void RestampFootprint()
+        // Built on a child of its own, so the actor itself stays on the layer its interaction
+        // trigger expects and only the blocking part sits on the solid one.
+        private BoxCollider2D Body()
         {
-            UnstampFootprint();
-            StampFootprint();
-        }
+            if (body != null) return body;
 
-        private void StampFootprint()
-        {
-            if (HubLocationService.Instance == null) return;
-            stamped = Footprint;
-            HubLocationService.Instance.Collision.Stamp(stamped);
-        }
+            var footprint = new GameObject("Footprint")
+            {
+                layer = LayerMask.NameToLayer(PhysicsSolidSpace.SolidLayer)
+            };
+            footprint.transform.SetParent(transform, false);
 
-        private void UnstampFootprint()
-        {
-            if (HubLocationService.Instance == null || stamped.width <= 0f) return;
-            HubLocationService.Instance.Collision.Unstamp(stamped);
-            stamped = default;
+            body = footprint.AddComponent<BoxCollider2D>();
+            body.offset = footprintOffset.center;
+            body.size = footprintOffset.size;
+            return body;
         }
     }
 }
