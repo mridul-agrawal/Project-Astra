@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -32,7 +33,7 @@ namespace ProjectAstra.Core.Editor
             var problems = new List<HubProblem>();
 
             foreach (HubLocationData location in LoadAll<HubLocationData>()) CheckLocation(location, problems);
-            foreach (HubObjectiveData objective in LoadAll<HubObjectiveData>()) CheckObjective(objective, problems);
+            foreach (QuestObjective objective in LoadAll<QuestObjective>()) CheckObjective(objective, problems);
             foreach (HubEventData authored in LoadAll<HubEventData>()) CheckEvent(authored, problems);
             foreach (HubVisitData visit in LoadAll<HubVisitData>()) CheckVisit(visit, problems);
 
@@ -91,17 +92,23 @@ namespace ProjectAstra.Core.Editor
 
         // --- Objectives and events ---
 
-        private static void CheckObjective(HubObjectiveData objective, List<HubProblem> problems)
+        private static void CheckObjective(QuestObjective objective, List<HubProblem> problems)
         {
             if (string.IsNullOrEmpty(objective.ObjectiveId))
                 problems.Add(new HubProblem(objective, $"{objective.name}: empty objectiveId"));
             if (string.IsNullOrEmpty(objective.DisplayText))
                 problems.Add(new HubProblem(objective, $"{objective.name}: no player-facing text"));
-            if (objective.Completion == null || objective.Completion.RequiredCount == 0)
-                problems.Add(new HubProblem(objective, $"{objective.name}: nothing can complete it"));
+
+            if (objective.Completion == null)
+            {
+                problems.Add(new HubProblem(objective, $"{objective.name}: no completion condition"));
+                return;
+            }
+            if (!objective.Completion.IsAuthoredCorrectly(out string problem))
+                problems.Add(new HubProblem(objective, $"{objective.name}: {problem}"));
 
             var seen = new HashSet<string>();
-            foreach (string target in objective.Completion.targetIds)
+            foreach (string target in objective.Completion.Targets)
                 if (!seen.Add(target))
                     problems.Add(new HubProblem(objective, $"{objective.name}: '{target}' is listed twice as a target"));
         }
@@ -135,8 +142,11 @@ namespace ProjectAstra.Core.Editor
                 return;
             }
 
-            if (visit.Objectives.Length == 0)
-                problems.Add(new HubProblem(visit, $"{visit.name}: has no objectives, so it can never be finished"));
+            QuestData quest = FindQuest(visit.QuestId);
+            if (quest == null)
+                problems.Add(new HubProblem(visit, $"{visit.name}: names quest '{visit.QuestId}', which doesn't exist"));
+            else if (quest.Objectives.Length == 0)
+                problems.Add(new HubProblem(visit, $"{visit.name}: quest '{quest.QuestId}' has no objectives, so it can never be finished"));
 
             CheckSpawn(visit, start, problems);
             CheckPlacements(visit, problems);
@@ -180,10 +190,10 @@ namespace ProjectAstra.Core.Editor
             foreach (HubCharacterPlacement placement in visit.CharacterPlacements)
                 placed.Add(placement.characterId);
 
-            foreach (HubObjectiveData objective in visit.Objectives)
+            foreach (QuestObjective objective in ObjectivesOf(visit))
             {
                 if (objective == null) continue;
-                foreach (string target in objective.MarkerTargetIds)
+                foreach (string target in MarkersOf(objective))
                 {
                     if (string.IsNullOrEmpty(target) || placed.Contains(target)) continue;
                     if (SceneDeclaresInteractable(target)) continue;
@@ -216,6 +226,37 @@ namespace ProjectAstra.Core.Editor
                     problems.Add(new HubProblem(visit,
                         $"{visit.name}: walking to '{placement.characterId}' takes {seconds:0.#}s, over the {MaxRouteSeconds}s target"));
             }
+        }
+
+        // A visit names a quest; the quest owns the stages. An unknown id is its own problem,
+        // reported where the visit is checked.
+        private static IEnumerable<QuestObjective> ObjectivesOf(HubVisitData visit)
+        {
+            QuestData quest = FindQuest(visit.QuestId);
+            return quest != null ? quest.Objectives : System.Array.Empty<QuestObjective>();
+        }
+
+        // Markers are the condition's outstanding targets unless the objective overrides them.
+        private static IEnumerable<string> MarkersOf(QuestObjective objective)
+        {
+            if (objective.MarkerTargetIds.Length > 0) return objective.MarkerTargetIds;
+            if (objective.Completion == null) return System.Array.Empty<string>();
+
+            var anchors = new List<string>();
+            foreach (string target in objective.Completion.Targets)
+            {
+                string anchor = objective.Completion.MarkerFor(target);
+                if (!string.IsNullOrEmpty(anchor)) anchors.Add(anchor);
+            }
+            return anchors;
+        }
+
+        private static QuestData FindQuest(string questId)
+        {
+            if (string.IsNullOrEmpty(questId)) return null;
+            foreach (QuestData candidate in LoadAll<QuestData>())
+                if (candidate.QuestId == questId) return candidate;
+            return null;
         }
 
         // --- Lookups ---

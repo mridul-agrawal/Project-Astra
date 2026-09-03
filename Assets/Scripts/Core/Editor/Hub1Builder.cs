@@ -5,6 +5,7 @@ using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Flow;
 using ProjectAstra.Core.Hub;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.Hub.Events;
 using ProjectAstra.Core.Units;
 
@@ -143,66 +144,73 @@ namespace ProjectAstra.Core.Editor
             action.FindPropertyRelative("seconds").floatValue = 0f;
         }
 
-        private static HubObjectiveData BuildTalkObjective()
+        // Five equally valid targets, clearable in any order — the spec's 0/5 counter. The
+        // character on each target is only so a marker has someone to stand over.
+        private static QuestObjective BuildTalkObjective()
         {
-            var objective = LoadOrCreate<HubObjectiveData>($"{DataFolder}/Objective_hub1_students.asset");
+            var students = new TalkCondition.Target[Students.Length];
+            for (int i = 0; i < Students.Length; i++)
+                students[i] = TalkCondition.With($"hub1_talk_{Students[i].id}", Students[i].id);
+
+            var condition = new TalkCondition();
+            condition.Configure(students);
+
+            return WriteObjective("Objective_hub1_students", "hub1_students",
+                "Talk to the other students", condition, showCounter: true);
+        }
+
+        // Finishing the report card runs straight into the training ground, so control never
+        // returns to a hub with nothing left to do in it.
+        private static QuestObjective BuildReportCardObjective(HubEventData trainingGround)
+        {
+            var condition = new TalkCondition();
+            condition.Configure(TalkCondition.With("hub1_report_card", "guru"));
+
+            var training = new PlayAuthoredEventEvent();
+            training.Configure(trainingGround.EventId);
+
+            return WriteObjective("Objective_hub1_report_card", "hub1_report_card",
+                "Collect your report card", condition, showCounter: false,
+                onComplete: new QuestEvent[] { training });
+        }
+
+        private static QuestObjective WriteObjective(string assetName, string objectiveId, string text,
+            ObjectiveCondition completion, bool showCounter, QuestEvent[] onComplete = null)
+        {
+            var objective = LoadOrCreate<QuestObjective>($"{DataFolder}/{assetName}.asset");
             var serialized = new SerializedObject(objective);
 
-            serialized.FindProperty("objectiveId").stringValue = "hub1_students";
-            serialized.FindProperty("displayText").stringValue = "Talk to the other students";
+            serialized.FindProperty("objectiveId").stringValue = objectiveId;
+            serialized.FindProperty("displayText").stringValue = text;
+            serialized.FindProperty("showCounter").boolValue = showCounter;
+            serialized.FindProperty("completion").managedReferenceValue = completion;
 
-            SerializedProperty completion = serialized.FindProperty("completion");
-            completion.FindPropertyRelative("kind").enumValueIndex = (int)HubConditionKind.ConversationCompleted;
-            completion.FindPropertyRelative("showCounter").boolValue = true;
-
-            // Five equally valid targets, clearable in any order — the spec's 0/5 counter.
-            SerializedProperty targets = completion.FindPropertyRelative("targetIds");
-            SerializedProperty markers = serialized.FindProperty("markerTargetIds");
-            targets.arraySize = Students.Length;
-            markers.arraySize = Students.Length;
-
-            for (int i = 0; i < Students.Length; i++)
-            {
-                targets.GetArrayElementAtIndex(i).stringValue = $"hub1_talk_{Students[i].id}";
-                markers.GetArrayElementAtIndex(i).stringValue = Students[i].id;
-            }
+            SerializedProperty effects = serialized.FindProperty("onComplete");
+            effects.arraySize = onComplete?.Length ?? 0;
+            for (int i = 0; i < effects.arraySize; i++)
+                effects.GetArrayElementAtIndex(i).managedReferenceValue = onComplete[i];
 
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(objective);
             return objective;
         }
 
-        private static HubObjectiveData BuildReportCardObjective(HubEventData trainingGround)
+        private static QuestData BuildQuest(HubEventData trainingGround)
         {
-            var objective = LoadOrCreate<HubObjectiveData>($"{DataFolder}/Objective_hub1_report_card.asset");
-            var serialized = new SerializedObject(objective);
+            var quest = LoadOrCreate<QuestData>($"{DataFolder}/Quest_Hub1.asset");
+            var serialized = new SerializedObject(quest);
 
-            serialized.FindProperty("objectiveId").stringValue = "hub1_report_card";
-            serialized.FindProperty("displayText").stringValue = "Collect your report card";
+            serialized.FindProperty("questId").stringValue = "hub1";
+            serialized.FindProperty("displayName").stringValue = "Hub Interaction 1";
 
-            SerializedProperty completion = serialized.FindProperty("completion");
-            completion.FindPropertyRelative("kind").enumValueIndex = (int)HubConditionKind.ConversationCompleted;
-            completion.FindPropertyRelative("showCounter").boolValue = false;
-
-            SerializedProperty targets = completion.FindPropertyRelative("targetIds");
-            targets.arraySize = 1;
-            targets.GetArrayElementAtIndex(0).stringValue = "hub1_report_card";
-
-            SerializedProperty markers = serialized.FindProperty("markerTargetIds");
-            markers.arraySize = 1;
-            markers.GetArrayElementAtIndex(0).stringValue = "guru";
-
-            // Finishing the report card runs straight into the training ground, so control never
-            // returns to a hub with nothing left to do in it.
-            SerializedProperty effects = serialized.FindProperty("onComplete");
-            effects.arraySize = 1;
-            SerializedProperty fire = effects.GetArrayElementAtIndex(0);
-            fire.FindPropertyRelative("kind").enumValueIndex = (int)HubEffectKind.FireEvent;
-            fire.FindPropertyRelative("valueId").stringValue = trainingGround.EventId;
+            SerializedProperty objectives = serialized.FindProperty("objectives");
+            objectives.arraySize = 2;
+            objectives.GetArrayElementAtIndex(0).objectReferenceValue = BuildTalkObjective();
+            objectives.GetArrayElementAtIndex(1).objectReferenceValue = BuildReportCardObjective(trainingGround);
 
             serialized.ApplyModifiedProperties();
-            EditorUtility.SetDirty(objective);
-            return objective;
+            EditorUtility.SetDirty(quest);
+            return quest;
         }
 
         // --- Visit ---
@@ -219,7 +227,7 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("playerFacing").enumValueIndex = (int)Facing.South;
 
             WritePlacements(serialized.FindProperty("characterPlacements"));
-            WriteObjectives(serialized.FindProperty("objectives"), trainingGround);
+            serialized.FindProperty("questId").stringValue = BuildQuest(trainingGround).QuestId;
             WriteDeparture(serialized.FindProperty("departure"));
 
             serialized.ApplyModifiedProperties();
@@ -250,13 +258,6 @@ namespace ProjectAstra.Core.Editor
             entry.FindPropertyRelative("position").vector2Value = position;
             entry.FindPropertyRelative("facing").enumValueIndex = (int)facing;
             entry.FindPropertyRelative("conversationId").stringValue = conversationId;
-        }
-
-        private static void WriteObjectives(SerializedProperty list, HubEventData trainingGround)
-        {
-            list.arraySize = 2;
-            list.GetArrayElementAtIndex(0).objectReferenceValue = BuildTalkObjective();
-            list.GetArrayElementAtIndex(1).objectReferenceValue = BuildReportCardObjective(trainingGround);
         }
 
         private static void WriteDeparture(SerializedProperty departure)

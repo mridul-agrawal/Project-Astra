@@ -6,6 +6,7 @@ using ProjectAstra.Core.Animation;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
+using ProjectAstra.Core.Quests;
 using ProjectAstra.Core.Hub.Events;
 
 namespace ProjectAstra.Core.Editor
@@ -314,7 +315,7 @@ namespace ProjectAstra.Core.Editor
             serialized.FindProperty("playerFacing").enumValueIndex = (int)Facing.South;
             serialized.FindProperty("openingEventId").stringValue = "greybox_opening";
             WriteTestCharacter(serialized.FindProperty("characterPlacements"), location.LocationId);
-            WriteObjectives(serialized.FindProperty("objectives"));
+            serialized.FindProperty("questId").stringValue = BuildQuest().QuestId;
 
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(visit);
@@ -335,40 +336,41 @@ namespace ProjectAstra.Core.Editor
         }
 
         // Two stages, so the greybox exercises sequencing as well as a single objective: one keyed
-        // on finishing a conversation and marked over a character, one keyed on inspecting an object
-        // and marked over a prop.
-        private static void WriteObjectives(SerializedProperty list)
+        // on finishing a conversation, one on inspecting an object.
+        private static QuestData BuildQuest()
         {
-            HubObjectiveData talk = BuildObjective("greybox_talk", "Talk to Arjun",
-                HubConditionKind.ConversationCompleted, "greybox_arjun_talk", "arjun");
-            HubObjectiveData look = BuildObjective("greybox_look", "Look at the tree",
-                HubConditionKind.ObjectInspected, "greybox_tree", "greybox_tree");
+            var talk = new TalkCondition();
+            talk.Configure(TalkCondition.With("greybox_arjun_talk", "arjun"));
 
-            list.arraySize = 2;
-            list.GetArrayElementAtIndex(0).objectReferenceValue = talk;
-            list.GetArrayElementAtIndex(1).objectReferenceValue = look;
+            var look = new InspectCondition();
+            look.Configure("greybox_tree");
+
+            var quest = LoadOrCreate<QuestData>($"{DataFolder}/Quest_Greybox.asset");
+            var serialized = new SerializedObject(quest);
+            serialized.FindProperty("questId").stringValue = "greybox";
+            serialized.FindProperty("displayName").stringValue = "Greybox";
+
+            SerializedProperty objectives = serialized.FindProperty("objectives");
+            objectives.arraySize = 2;
+            objectives.GetArrayElementAtIndex(0).objectReferenceValue =
+                BuildObjective("greybox_talk", "Talk to Arjun", talk);
+            objectives.GetArrayElementAtIndex(1).objectReferenceValue =
+                BuildObjective("greybox_look", "Look at the tree", look);
+
+            serialized.ApplyModifiedProperties();
+            EditorUtility.SetDirty(quest);
+            return quest;
         }
 
-        private static HubObjectiveData BuildObjective(string objectiveId, string text,
-            HubConditionKind kind, string targetId, string markerId)
+        private static QuestObjective BuildObjective(string objectiveId, string text,
+            ObjectiveCondition completion)
         {
-            var objective = LoadOrCreate<HubObjectiveData>($"{DataFolder}/Objective_{objectiveId}.asset");
+            var objective = LoadOrCreate<QuestObjective>($"{DataFolder}/QuestObjective_{objectiveId}.asset");
             var serialized = new SerializedObject(objective);
 
             serialized.FindProperty("objectiveId").stringValue = objectiveId;
             serialized.FindProperty("displayText").stringValue = text;
-
-            SerializedProperty completion = serialized.FindProperty("completion");
-            completion.FindPropertyRelative("kind").enumValueIndex = (int)kind;
-            completion.FindPropertyRelative("showCounter").boolValue = false;
-
-            SerializedProperty targets = completion.FindPropertyRelative("targetIds");
-            targets.arraySize = 1;
-            targets.GetArrayElementAtIndex(0).stringValue = targetId;
-
-            SerializedProperty markers = serialized.FindProperty("markerTargetIds");
-            markers.arraySize = 1;
-            markers.GetArrayElementAtIndex(0).stringValue = markerId;
+            serialized.FindProperty("completion").managedReferenceValue = completion;
 
             serialized.ApplyModifiedProperties();
             EditorUtility.SetDirty(objective);

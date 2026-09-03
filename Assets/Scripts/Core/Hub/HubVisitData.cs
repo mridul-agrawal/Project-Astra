@@ -81,8 +81,6 @@ namespace ProjectAstra.Core.Hub
         [Tooltip("The quest this visit runs, by id, looked up in the QuestCatalog.")]
         [SerializeField] private string questId;
 
-        [Tooltip("Worked through in order. The next one activates only once the current one completes and its effects are applied.")]
-        [SerializeField] private HubObjectiveData[] objectives = Array.Empty<HubObjectiveData>();
 
         [SerializeField] private HubDeparture departure;
 
@@ -97,7 +95,6 @@ namespace ProjectAstra.Core.Hub
         public string[] OpenGates => openGates;
         public string EnvironmentSet => environmentSet;
         public string QuestId => questId;
-        public HubObjectiveData[] Objectives => objectives;
         public HubDeparture Departure => departure;
     }
 }
