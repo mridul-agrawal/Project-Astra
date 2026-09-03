@@ -455,6 +455,8 @@ MonoBehaviour:
   unitDeath: {fileID: 11400000, guid: c7f9861c4e2c7de4a8c9dc275bef25a3, type: 2}
   battleDialogue: {fileID: 11400000, guid: fa0cd771d97aa2f45a4ee64c38df9fa2, type: 2}
   cursor: {fileID: 11400000, guid: 54ebab6bf79551d418e6cd003a953838, type: 2}
+  quest: {fileID: 11400000, guid: 39d3d2c216395ae45ba96c9a392c699b, type: 2}
+  gameplaySignals: {fileID: 11400000, guid: e79d25a30ec658748b9c6aec82540558, type: 2}
 --- !u!4 &804415900
 Transform:
   m_ObjectHideFlags: 0

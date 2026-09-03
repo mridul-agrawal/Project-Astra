@@ -7,6 +7,7 @@ using ProjectAstra.Core.Combat;
 using ProjectAstra.Core.Cursor;
 using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Units;
+using ProjectAstra.Core.Quests;
 
 namespace ProjectAstra.Core.Events
 {
@@ -28,6 +29,8 @@ namespace ProjectAstra.Core.Events
         [SerializeField] private UnitDeathEventChannel unitDeath;
         [SerializeField] private BattleDialogueEventChannel battleDialogue;
         [SerializeField] private CursorEventChannel cursor;
+        [SerializeField] private QuestEventChannel quest;
+        [SerializeField] private GameplaySignalChannel gameplaySignals;
 
         // Publish/subscribe facade. Callers ask the service to raise or listen; the
         // channel assets stay sealed behind here so nothing else ever names a channel.
@@ -102,6 +105,32 @@ namespace ProjectAstra.Core.Events
         public void SubscribeCursorError(Action<CursorErrorKind> handler) => cursor?.RegisterErrorFeedback(handler);
         public void UnsubscribeCursorError(Action<CursorErrorKind> handler) => cursor?.UnregisterErrorFeedback(handler);
 
+        // Quests — what the quest system announces
+        public void RaiseQuestStarted(QuestData started) => quest?.RaiseQuestStarted(started);
+        public void SubscribeQuestStarted(Action<QuestData> handler) => quest?.RegisterQuestStarted(handler);
+        public void UnsubscribeQuestStarted(Action<QuestData> handler) => quest?.UnregisterQuestStarted(handler);
+
+        public void RaiseObjectiveActivated(QuestObjective objective) => quest?.RaiseObjectiveActivated(objective);
+        public void SubscribeObjectiveActivated(Action<QuestObjective> handler) => quest?.RegisterObjectiveActivated(handler);
+        public void UnsubscribeObjectiveActivated(Action<QuestObjective> handler) => quest?.UnregisterObjectiveActivated(handler);
+
+        public void RaiseObjectiveProgressed(QuestObjective objective) => quest?.RaiseObjectiveProgressed(objective);
+        public void SubscribeObjectiveProgressed(Action<QuestObjective> handler) => quest?.RegisterObjectiveProgressed(handler);
+        public void UnsubscribeObjectiveProgressed(Action<QuestObjective> handler) => quest?.UnregisterObjectiveProgressed(handler);
+
+        public void RaiseObjectiveCompleted(QuestObjective objective) => quest?.RaiseObjectiveCompleted(objective);
+        public void SubscribeObjectiveCompleted(Action<QuestObjective> handler) => quest?.RegisterObjectiveCompleted(handler);
+        public void UnsubscribeObjectiveCompleted(Action<QuestObjective> handler) => quest?.UnregisterObjectiveCompleted(handler);
+
+        public void RaiseQuestCompleted(QuestData completed) => quest?.RaiseQuestCompleted(completed);
+        public void SubscribeQuestCompleted(Action<QuestData> handler) => quest?.RegisterQuestCompleted(handler);
+        public void UnsubscribeQuestCompleted(Action<QuestData> handler) => quest?.UnregisterQuestCompleted(handler);
+
+        // Gameplay signals — what happened, in the words of whoever it happened to
+        public void RaiseGameplaySignal(GameplaySignal signal) => gameplaySignals?.Raise(signal);
+        public void SubscribeGameplaySignal(Action<GameplaySignal> handler) => gameplaySignals?.Register(handler);
+        public void UnsubscribeGameplaySignal(Action<GameplaySignal> handler) => gameplaySignals?.Unregister(handler);
+
         private void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -123,13 +152,18 @@ namespace ProjectAstra.Core.Events
             if (unitDeath == null) Debug.LogError("[EventService] UnitDeath channel is not wired.");
             if (battleDialogue == null) Debug.LogError("[EventService] BattleDialogue channel is not wired.");
             if (cursor == null) Debug.LogError("[EventService] Cursor channel is not wired.");
+            if (quest == null) Debug.LogError("[EventService] Quest channel is not wired.");
+            if (gameplaySignals == null) Debug.LogError("[EventService] GameplaySignal channel is not wired.");
         }
 
         // Awake doesn't run in EditMode tests; this lets a fixture stand the service up by hand.
         internal void InitializeForTest(GameStateEventChannel gameState, TurnEventChannel turn,
             UnitDeathEventChannel unitDeath, BattleDialogueEventChannel battleDialogue,
-            CursorEventChannel cursor = null)
+            CursorEventChannel cursor = null, QuestEventChannel quest = null,
+            GameplaySignalChannel gameplaySignals = null)
         {
+            this.quest = quest;
+            this.gameplaySignals = gameplaySignals;
             this.gameState = gameState;
             this.turn = turn;
             this.unitDeath = unitDeath;
