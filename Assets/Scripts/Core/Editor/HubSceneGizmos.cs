@@ -41,7 +41,10 @@ namespace ProjectAstra.Core.Editor
 
             Handles.color = ExtentColour;
             Handles.DrawSolidRectangleWithOutline(Corners(bounds), Color.clear, ExtentColour);
-            Label(new Vector3(bounds.xMin, bounds.yMax + 0.35f),
+
+            // Below the room, where nothing else is drawn. Above it collides with the reach label of
+            // anything standing near the top wall.
+            Label(new Vector3(bounds.xMin, bounds.yMin - 0.3f),
                 $"{room.LocationId}   {bounds.width:0}×{bounds.height:0} tiles", ExtentColour);
         }
 
