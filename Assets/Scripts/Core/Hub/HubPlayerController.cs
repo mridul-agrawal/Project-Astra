@@ -62,7 +62,7 @@ namespace ProjectAstra.Core.Hub
             if (intent.HasValue) actor.SetFacing(intent.Value);
 
             Vector2 next = HubMover.Move(
-                HubLocationService.Instance.Collision,
+                HubLocationService.Instance.Solids,
                 actor.Position, actor.FootprintOffset,
                 intent, Time.deltaTime, out bool moved, speedTilesPerSecond);
 

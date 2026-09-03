@@ -242,7 +242,7 @@ namespace ProjectAstra.Core.Hub.Events
                 if (step == null) break;
 
                 actor.SetFacing(step.Value);
-                Vector2 next = HubMover.Move(HubLocationService.Instance.Collision,
+                Vector2 next = HubMover.Move(HubLocationService.Instance.Solids,
                     actor.Position, actor.FootprintOffset, step, Time.deltaTime, out _, speed);
                 actor.SetPosition(CardinalRouteFollower.ClampToCorner(actor.Position, next, corner, step.Value));
 

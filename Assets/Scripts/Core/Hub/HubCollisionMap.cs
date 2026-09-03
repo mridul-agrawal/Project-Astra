@@ -3,7 +3,7 @@ using UnityEngine;
 namespace ProjectAstra.Core.Hub
 {
     // What the protagonist can and can't walk through, at half-tile resolution.
-    public class HubCollisionMap
+    public class HubCollisionMap : ISolidSpace
     {
         // Half a tile, because a tall sprite blocks only its lower part: a tree stops you at its
         // trunk while you walk behind its canopy.
@@ -51,6 +51,8 @@ namespace ProjectAstra.Core.Hub
             int index = Index(cellX, cellY);
             return groundBlocked[index] || propCount[index] > 0;
         }
+
+        public bool IsBlocked(Rect footprint) => IsRectBlocked(footprint);
 
         public bool IsRectBlocked(Rect footprint)
         {

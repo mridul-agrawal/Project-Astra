@@ -6,27 +6,27 @@ namespace ProjectAstra.Core.Hub
     // How long it takes to walk somewhere, and whether it can be walked to at all.
     public static class WalkableRouteTimer
     {
-        public static bool TryMeasureSeconds(HubCollisionMap map, Rect footprintOffset,
+        public static bool TryMeasureSeconds(ISolidSpace space, Rect footprintOffset,
             Vector2 from, Vector2 to, out float seconds,
             float speedTilesPerSecond = HubMover.DefaultSpeedTilesPerSecond)
         {
             seconds = 0f;
-            if (map == null || speedTilesPerSecond <= 0f) return false;
+            if (space == null || speedTilesPerSecond <= 0f) return false;
 
-            if (!TryMeasureCells(map, footprintOffset, from, to, out int cells)) return false;
+            if (!TryMeasureCells(space, footprintOffset, from, to, out int cells)) return false;
 
-            seconds = cells * HubCollisionMap.CellSize / speedTilesPerSecond;
+            seconds = cells * HubMover.Resolution / speedTilesPerSecond;
             return true;
         }
 
-        public static bool TryMeasureCells(HubCollisionMap map, Rect footprintOffset,
+        public static bool TryMeasureCells(ISolidSpace space, Rect footprintOffset,
             Vector2 from, Vector2 to, out int cells)
         {
             cells = 0;
             Vector2Int start = CellOf(from);
             Vector2Int goal = CellOf(to);
 
-            if (!Fits(map, footprintOffset, start)) return false;
+            if (!Fits(space, footprintOffset, start)) return false;
             if (start == goal) return true;
 
             var distance = new Dictionary<Vector2Int, int> { [start] = 0 };
@@ -38,7 +38,7 @@ namespace ProjectAstra.Core.Hub
                 Vector2Int here = queue.Dequeue();
                 foreach (Vector2Int next in Neighbours(here))
                 {
-                    if (distance.ContainsKey(next) || !Fits(map, footprintOffset, next)) continue;
+                    if (distance.ContainsKey(next) || !Fits(space, footprintOffset, next)) continue;
 
                     distance[next] = distance[here] + 1;
                     if (next == goal)
@@ -54,7 +54,7 @@ namespace ProjectAstra.Core.Hub
 
         // The goal often sits inside something solid — a character's own body, a door set into a
         // wall — so reaching a cell next to it counts as arriving.
-        public static bool CanReachNeighbour(HubCollisionMap map, Rect footprintOffset,
+        public static bool CanReachNeighbour(ISolidSpace space, Rect footprintOffset,
             Vector2 from, Vector2 to, out float seconds,
             float speedTilesPerSecond = HubMover.DefaultSpeedTilesPerSecond)
         {
@@ -64,7 +64,7 @@ namespace ProjectAstra.Core.Hub
             foreach (Vector2Int neighbour in Neighbours(CellOf(to)))
             {
                 Vector2 target = CentreOf(neighbour);
-                if (!TryMeasureSeconds(map, footprintOffset, from, target, out float candidate, speedTilesPerSecond)) continue;
+                if (!TryMeasureSeconds(space, footprintOffset, from, target, out float candidate, speedTilesPerSecond)) continue;
                 best = Mathf.Min(best, candidate);
             }
 
@@ -81,15 +81,15 @@ namespace ProjectAstra.Core.Hub
             yield return new Vector2Int(cell.x, cell.y - 1);
         }
 
-        private static bool Fits(HubCollisionMap map, Rect footprintOffset, Vector2Int cell) =>
-            !map.IsRectBlocked(HubMover.FootprintAt(CentreOf(cell), footprintOffset));
+        private static bool Fits(ISolidSpace space, Rect footprintOffset, Vector2Int cell) =>
+            !space.IsBlocked(HubMover.FootprintAt(CentreOf(cell), footprintOffset));
 
         private static Vector2Int CellOf(Vector2 world) => new(
-            Mathf.FloorToInt(world.x / HubCollisionMap.CellSize),
-            Mathf.FloorToInt(world.y / HubCollisionMap.CellSize));
+            Mathf.FloorToInt(world.x / HubMover.Resolution),
+            Mathf.FloorToInt(world.y / HubMover.Resolution));
 
         private static Vector2 CentreOf(Vector2Int cell) => new(
-            (cell.x + 0.5f) * HubCollisionMap.CellSize,
-            (cell.y + 0.5f) * HubCollisionMap.CellSize);
+            (cell.x + 0.5f) * HubMover.Resolution,
+            (cell.y + 0.5f) * HubMover.Resolution);
     }
 }

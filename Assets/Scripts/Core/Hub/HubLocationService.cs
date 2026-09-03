@@ -25,6 +25,9 @@ namespace ProjectAstra.Core.Hub
 
         public HubLocationData CurrentLocation => location;
         public HubCollisionMap Collision => collision;
+
+        // What movement asks. Still the cell map until the scene's colliders take over.
+        public ISolidSpace Solids => collision;
         public Rect Bounds => location != null ? location.Bounds : Rect.zero;
 
         // Props that change state mid-visit stamp and un-stamp through here, so the collision map
