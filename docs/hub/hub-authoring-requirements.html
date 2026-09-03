@@ -1,0 +1,582 @@
+<meta charset="utf-8">
+<title>Hub Authoring Requirements</title>
+<style>
+  :root {
+    --ink:#1b1b1d; --muted:#5c5a58; --faint:#8b8883;
+    --bg:#ffffff; --panel:#f5f5f3; --line:#dcdad5; --rule:#eae8e4;
+    --accent:#2d5a7b; --accent-soft:#eaf0f5;
+    --warn:#8a5a1f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:#e9e8e6; --muted:#a8a5a0; --faint:#7c7a77;
+      --bg:#141416; --panel:#1d1d20; --line:#3a393d; --rule:#29292c;
+      --accent:#7fb0d4; --accent-soft:#1b2a36;
+      --warn:#d3a463;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:#e9e8e6; --muted:#a8a5a0; --faint:#7c7a77;
+    --bg:#141416; --panel:#1d1d20; --line:#3a393d; --rule:#29292c;
+    --accent:#7fb0d4; --accent-soft:#1b2a36;
+    --warn:#d3a463;
+  }
+
+  body {
+    background: var(--bg); color: var(--ink); margin: 0;
+    padding: 56px 28px 120px;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--faint); font-weight: 600; margin: 0 0 10px;
+  }
+  h1 { font-size: 34px; line-height: 1.15; font-weight: 650; margin: 0 0 14px; letter-spacing: -0.02em; text-wrap: balance; }
+  .lede { font-size: 18px; line-height: 1.6; color: var(--muted); margin: 0 0 8px; max-width: 68ch; }
+
+  .bar {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 16px 20px; margin: 30px 0 44px; border-radius: 0 4px 4px 0;
+  }
+  .bar p { margin: 0; font-size: 16px; line-height: 1.6; }
+
+  h2 {
+    font-size: 13px; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 700;
+    color: var(--accent); margin: 60px 0 4px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+  h3 { font-size: 20px; font-weight: 620; margin: 34px 0 8px; letter-spacing: -0.01em; }
+  h4 { font-size: 15px; font-weight: 650; margin: 22px 0 6px; color: var(--ink); }
+  p { margin: 0 0 14px; max-width: 74ch; }
+  em { color: var(--muted); }
+
+  ul, ol { margin: 0 0 16px; padding-left: 22px; max-width: 74ch; }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--faint); }
+
+  table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 15px; }
+  th {
+    text-align: left; font-weight: 650; font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--faint);
+    padding: 0 16px 8px 0; border-bottom: 1px solid var(--line);
+  }
+  td { padding: 11px 16px 11px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+  table.wide td:first-child { width: 26%; }
+  table.budget td:last-child { text-align: right; white-space: nowrap; color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .principles { counter-reset: p; margin: 0; padding: 0; list-style: none; }
+  .principles li {
+    counter-increment: p; position: relative; padding-left: 46px; margin-bottom: 22px;
+  }
+  .principles li::before {
+    content: counter(p); position: absolute; left: 0; top: 1px;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--accent); color: var(--bg);
+    font-size: 13px; font-weight: 700; display: grid; place-items: center;
+  }
+  .principles b { display: block; margin-bottom: 3px; }
+
+  .journey {
+    border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; margin: 0 0 16px;
+    background: var(--panel);
+  }
+  .journey h3 { margin: 0 0 10px; font-size: 17px; }
+  .journey h3 span { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  .journey p { margin: 0 0 10px; }
+  .journey p:last-child { margin-bottom: 0; }
+
+  .req { margin-top: 40px; }
+  .req > h3 { display: flex; align-items: baseline; gap: 12px; margin-top: 0; }
+  .req > h3 .n {
+    font-size: 12px; font-weight: 700; color: var(--bg); background: var(--faint);
+    padding: 2px 8px; border-radius: 3px; letter-spacing: 0.04em;
+  }
+
+  .never li { color: var(--ink); }
+  .never li::marker { content: "\00d7  "; color: var(--warn); font-weight: 700; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+
+  .checklist { counter-reset: c; list-style: none; padding: 0; }
+  .checklist li { counter-increment: c; padding-left: 34px; position: relative; margin-bottom: 10px; }
+  .checklist li::before {
+    content: counter(c); position: absolute; left: 0; top: 2px;
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    border: 1.5px solid var(--accent); border-radius: 3px;
+    width: 20px; height: 20px; display: grid; place-items: center;
+  }
+
+  .note { color: var(--muted); font-size: 15px; }
+  hr { border: 0; border-top: 1px solid var(--line); margin: 56px 0; }
+  .foot { color: var(--muted); font-size: 15px; }
+  .foot b { color: var(--ink); }
+</style>
+
+<main>
+
+<p class="eyebrow">Project Astra · Gurukul Hub</p>
+<h1>Hub Authoring Requirements</h1>
+<p class="lede">What building and maintaining the Gurukul Hub must feel like from the designer's
+chair. This describes the experience, not the tooling — the architecture comes next, and is
+deliberately not decided here.</p>
+
+<div class="bar">
+  <p><b>The bar:</b> a designer who has never opened the codebase can take the Gurukul Hub, build it,
+  populate it, configure it, change it, preview any visit, and test any part of it — without asking a
+  programmer.</p>
+</div>
+
+<h2>What the Hub is</h2>
+<p>Stated plainly, because several requirements only make sense against it.</p>
+<ul>
+  <li><b>Free-roam, not tile-based.</b> She walks in continuous space. No grid movement, no per-tile
+  gameplay, no Tilemap anywhere in the authoring model.</li>
+  <li><b>One large painted map, with props on top.</b> Pixel art at 32&nbsp;px to the world unit. Some
+  props are animated; an animated prop is placed exactly like a still one.</li>
+  <li><b>Four visits over largely the same space.</b> What differs between them is the cast and where
+  they stand, what each says, which doors are open, which objectives run, and which scripted moments
+  fire. The ground does not move.</li>
+  <li><b>One place on screen at a time</b> — the Gurukul exterior, plus the student-house interior,
+  the Guru's Quarters and the Library.</li>
+</ul>
+
+<h2>Five principles</h2>
+<ol class="principles">
+  <li><b>The scene is the truth for <em>where</em>. A dedicated surface is the truth for <em>what it means</em>.</b>
+  Position, size, facing, extent and reach are dragged in the scene, never typed. Which conversation,
+  which objective, which gate, which visit — edited in a real interface, never hunted for across loose
+  asset files.</li>
+
+  <li><b>A visit is a lens, not a copy.</b>
+  The designer picks “Visit 2” and the scene <em>becomes</em> Visit 2 — that cast, in those positions,
+  with those doors locked. Dragging a character in that mode edits Visit 2's data, not the scene.
+  There is never a second copy of the Gurukul to keep in sync.</li>
+
+  <li><b>Nothing that can be derived is ever typed.</b>
+  No ids, file paths, layer names, import numbers, sorting orders or cross-references typed by hand.
+  If two things must match, the designer picks one from a list of the other.</li>
+
+  <li><b>Prevent first, detect second, report last.</b>
+  The best error message is the one that could not happen. Lists instead of text fields. Palettes
+  instead of raw assets. Automatic layers and collision. Validation is the backstop, not the mechanism.</li>
+
+  <li><b>Anything can be tested in seconds.</b>
+  No change should require playing from the beginning to see. Any conversation, any objective, any
+  door, any visit — from where the designer is standing.</li>
+</ol>
+
+<hr>
+
+<h2>Part one · The designer's day</h2>
+<p>Seven journeys. Each is a promise about how the work should feel.</p>
+
+<div class="journey">
+  <h3><span>J1</span>Starting the Gurukul</h3>
+  <p>Opens the Hub scene. The Gurukul is <em>there</em> — the painted map, the trees, the houses, the
+  river — visible, selectable, editable. Not an empty transform. Not something that appears only on Play.</p>
+  <p>Drops the artist's folder of art into the project. The tool takes it from there: correct pixel
+  settings, correct scale, ready to use. The designer never opens an import inspector.</p>
+  <p>Drags the painted map into place. It lands at the right size and the right depth, first try.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J2</span>Placing decoration</h3>
+  <p>Wants twenty trees along the north edge. Opens a palette of hub objects — thumbnails, searchable,
+  grouped. Picks <em>Tree</em>. Clicks twenty times. Each lands on a whole pixel, sorts so she walks
+  behind it, and blocks at its trunk — without the designer thinking about any of that.</p>
+  <p>One is wrong. Selects it, drags it, deletes it, duplicates it, flips it. Normal handles, normal
+  shortcuts, normal undo.</p>
+  <p>Nothing about this asks whether a tree is a prefab.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J3</span>Making something interactable</h3>
+  <p>Wants a noticeboard she can read. Picks <em>Noticeboard</em> from the palette — it arrives already
+  interactable. A panel shows what it needs: what she sees, what happens, and when it is available.</p>
+  <p>Picks the conversation from a list of real conversations. If the right one does not exist yet,
+  creates it from that same list without leaving the panel.</p>
+  <p>In the scene the noticeboard now draws a soft circle showing where she must stand, and a label
+  showing the verb. Decoration draws nothing. At a glance, the designer sees what in the room is alive.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J4</span>Setting up Visit 2</h3>
+  <p>Switches the scene's visit to <em>Hub Visit 2</em>. The room repopulates: the cast stands where
+  Visit 2 puts them, the Library door shows a lock, the objective panel lists Visit 2's chain.</p>
+  <p>Drags Kaal from the courtyard into the Library. That writes Visit 2's placement. Visit 1 is
+  untouched, and the interface makes it obvious this is a per-visit change rather than a change to the
+  world.</p>
+  <p>A “what is different here” view lists everything Visit 2 changes relative to Visit 1 — so a visit
+  is reasoned about as a delta, not re-read from scratch.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J5</span>Writing a conversation and hooking it up</h3>
+  <p>Needs Madhavi to say something new. Writes it in a conversation editor — speaker, lines, choices,
+  branches — without touching an asset file or knowing where it is stored.</p>
+  <p>Assigns it to Madhavi for Visit 2 by picking her, picking the visit, picking the conversation.
+  Three choices from lists. No ids.</p>
+  <p>Presses one button and hears it: the game starts with Madhavi in front of her, mid-Visit-2.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J6</span>A door locked behind an objective</h3>
+  <p>Places the Library door. Sets <b>Locked until</b> → picks <em>Learn Weapon Theory</em> from that
+  visit's objectives. Sets <b>What she says when it's locked</b> → picks or writes the line.</p>
+  <p>The door now draws a lock in the scene while that visit is selected. Selecting the objective
+  highlights everything depending on it.</p>
+  <p>At no point does the designer invent a flag name, or remember one.</p>
+</div>
+
+<div class="journey">
+  <h3><span>J7</span>Something is wrong</h3>
+  <p>Presses Play and the prompt will not appear on the noticeboard. A live panel answers directly:
+  <em>“Noticeboard — not offered: she is facing away.”</em> Not a stack trace, not silence. The three
+  or four real reasons an interaction does not fire, named in the designer's language.</p>
+  <p>Separately, a problems list is always available: an objective nothing can complete, a marker over
+  someone not in that visit, a door leading nowhere, a character inside a wall. Each row selects the
+  thing at fault. Where a fix is unambiguous, a button applies it.</p>
+</div>
+
+<hr>
+
+<h2>Part two · Requirements</h2>
+
+<section class="req">
+<h3><span class="n">01</span>What the designer must be able to do</h3>
+<table class="wide">
+  <tr><td>Compose</td><td>Place, move, rotate, flip, scale, duplicate, group and delete any environmental object, directly in the scene</td></tr>
+  <tr><td>Import</td><td>Bring in the artist's art and use it immediately, including animated props</td></tr>
+  <tr><td>Build places</td><td>Create a room, set its extent, and connect it to others by doors</td></tr>
+  <tr><td>Make things live</td><td>Turn an object into something she can talk to, read, enter or use — and back again</td></tr>
+  <tr><td>Cast</td><td>Create characters, place them, and give them something to say</td></tr>
+  <tr><td>Vary by visit</td><td>Change placements, conversations, availability and world state per visit</td></tr>
+  <tr><td>Author progression</td><td>Create objectives, order them, define what completes them and what they change</td></tr>
+  <tr><td>Script moments</td><td>Author sequences — someone walks in, says a line, the camera moves, a door opens</td></tr>
+  <tr><td>Preview</td><td>See any visit, at any point in its progression, without playing to it</td></tr>
+  <tr><td>Test</td><td>Trigger any single conversation, objective, door or event on demand</td></tr>
+  <tr><td>Diagnose</td><td>Find out why something is not behaving, in plain language</td></tr>
+  <tr><td>Iterate</td><td>Do all of the above repeatedly and quickly, without a programmer</td></tr>
+</table>
+</section>
+
+<section class="req">
+<h3><span class="n">02</span>What the designer must never do by hand</h3>
+<ul class="never">
+  <li>Open a texture import inspector, or know what Pixels Per Unit is</li>
+  <li>Set a layer, a sorting layer, or a sorting order</li>
+  <li>Add a collider, or guess its size</li>
+  <li>Think about depth so she walks behind a tree</li>
+  <li>Type an id that has to match an id somewhere else</li>
+  <li>Know that ScriptableObjects exist, or where any asset file lives</li>
+  <li>Create an asset purely so something else can point at it</li>
+  <li>Keep two lists in agreement</li>
+  <li>Decide whether something should be a prefab</li>
+  <li>Nudge an object to sit on a whole pixel</li>
+  <li>Register a new room, visit or quest anywhere</li>
+  <li>Restart the game to see a change</li>
+  <li>Read or edit anything resembling code or serialised data</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">03</span>What the designer must be able to see</h3>
+<div class="split">
+  <div>
+    <h4>Always, in the scene</h4>
+    <ul>
+      <li>The actual environment, at edit time, without pressing Play</li>
+      <li>The room's extent — where the camera stops and she cannot walk</li>
+      <li>What blocks, drawn clearly, distinct from decoration</li>
+      <li>Which objects are interactive, with their verb and reach</li>
+      <li>Where the player starts</li>
+    </ul>
+    <h4>While playing</h4>
+    <ul>
+      <li>Current visit, active objective, progress</li>
+      <li>What is in reach, and what a press would do</li>
+      <li>For anything not offered: why not</li>
+    </ul>
+  </div>
+  <div>
+    <h4>When a visit is selected</h4>
+    <ul>
+      <li>That visit's cast, in that visit's positions</li>
+      <li>Which doors are locked, and by what</li>
+      <li>Which props are in a non-default state</li>
+      <li>That visit's objective chain, with the active one marked</li>
+      <li>What differs from the previous visit</li>
+    </ul>
+    <h4>Always, somewhere</h4>
+    <ul>
+      <li>Everything currently wrong, each row clickable</li>
+      <li>Where any conversation, objective or prop is used</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section class="req">
+<h3><span class="n">04</span>What must be visual and direct</h3>
+<p>Anything spatial. Without exception — position, rotation, flip, scale, grouping, room extent, what
+blocks and its shape, where a door is and which way she faces it, where she spawns, where a character
+stands in a given visit, how far an interaction reaches, and the route a scripted walk takes.</p>
+<p>All by dragging, with handles, with live feedback, with undo.</p>
+</section>
+
+<section class="req">
+<h3><span class="n">05</span>What must be automatic</h3>
+<ul>
+  <li>Art import settings, on drop</li>
+  <li>Placement on whole pixels</li>
+  <li>Depth sorting, from an object's base</li>
+  <li>Layers and collision on anything placed from the palette</li>
+  <li>Identifiers, generated from the name the designer typed</li>
+  <li>Where new assets are created, and their registration in whatever indexes them</li>
+  <li>Scene organisation — placed things land somewhere sensible and stay tidy</li>
+  <li>Keeping a room's camera bounds in step with its art</li>
+  <li>Reverse links: if A points at B, B knows about A without anyone maintaining it</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">06</span>What belongs in the scene</h3>
+<p>The world. Everything in&nbsp;04, plus: selecting an object shows its gameplay configuration
+<em>there</em>, without hunting for a matching asset.</p>
+</section>
+
+<section class="req">
+<h3><span class="n">07</span>What belongs in a dedicated interface</h3>
+<p>The relationships. These are lists, tables and graphs; a scene is a bad place for them.</p>
+<ul>
+  <li>The visits, and what each changes</li>
+  <li>The objective chain per visit, with its conditions and effects</li>
+  <li>Conversations, their branches, and who says what when</li>
+  <li>Scripted sequences, as ordered steps</li>
+  <li>Gates, and what opens them</li>
+  <li>The problems list, and search across everything</li>
+</ul>
+<p><b>The two must be linked in both directions.</b> Selecting in the scene reveals the row; selecting
+the row frames and highlights the object. Neither surface is ever a dead end.</p>
+</section>
+
+<section class="req">
+<h3><span class="n">08</span>How content is created</h3>
+<ul>
+  <li>New content is created <b>from the place where it is needed</b>. Assigning a conversation that
+  does not exist offers to create it, right there, and assigns it.</li>
+  <li>Creation asks only what a human must decide — a name, and a choice or two. The rest is filled in.</li>
+  <li>A new room, visit or quest starts from a working template, not from nothing.</li>
+  <li>New content is never created by a process that could overwrite existing content.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">09</span>How content is modified</h3>
+<ul>
+  <li>Everything is editable in place; nothing needs deleting and re-making.</li>
+  <li>Renaming is safe. References follow.</li>
+  <li>Deleting warns if anything points at the thing being deleted, and says what.</li>
+  <li>Undo works for every operation, including data edits, not only scene ones.</li>
+  <li>Multi-select and edit-many for the repetitive cases.</li>
+  <li>Nothing the designer authored is ever regenerated or overwritten by a tool.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">10</span>How reusable assets work</h3>
+<ul>
+  <li>Objects used in more than one place are reusable, and editing the original updates every copy.</li>
+  <li>The designer never decides this. The tool offers to make something reusable when it notices
+  repetition, and handles the conversion.</li>
+  <li>One-off objects stay one-offs. There is no ceremony for placing a single rock.</li>
+  <li>A reusable object carries its behaviour with it — a bench that blocks, blocks everywhere.</li>
+  <li>Reusable objects live in a browsable, searchable, thumbnailed palette, grouped by kind, with
+  recently-used to hand.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">11</span>How per-visit variation works</h3>
+<p class="note">This is the part most likely to become unmanageable, so it gets the strongest requirements.</p>
+<ul>
+  <li><b>The visit is a mode the designer is in</b>, chosen once and visible at all times. Everything
+  shown and everything edited is with respect to that visit.</li>
+  <li>Per-visit edits are visibly per-visit — the designer can always tell whether they are changing
+  the world or this visit's version of it.</li>
+  <li>A visit is authored as a <b>difference from the one before</b>, and can be read that way:
+  <em>“Visit 3 moves Kaal to the river, unlocks the Library, and swaps three conversations.”</em></li>
+  <li>Creating the next visit starts from a copy of the previous one.</li>
+  <li>Any visit can be previewed at any point in its progression, not only at its start.</li>
+  <li>Content shared by every visit is edited once and cannot be accidentally forked.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">12</span>How interaction and behaviour are authored</h3>
+<ul>
+  <li>Turning a decoration into something interactive is a single action, reversible.</li>
+  <li>What it does is chosen from a small, plain vocabulary — <em>talk, read, enter, leave, use</em> —
+  not from a type hierarchy.</li>
+  <li>Its condition and its result are chosen from lists of real things: this conversation, this
+  objective, this room.</li>
+  <li>The same applies to scripted moments: an ordered list of plain steps — <em>walk here, say this,
+  wait, open that, move the camera</em> — with the walk route draggable in the scene.</li>
+  <li>Adding a new <em>kind</em> of interaction is a programmer's job. Using every existing kind is not.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">13</span>How validation and prevention work</h3>
+<div class="split">
+  <div>
+    <h4>Prevented outright</h4>
+    <ul>
+      <li>Anything chosen from a list cannot be spelled wrong</li>
+      <li>Anything placed from the palette cannot be missing its setup</li>
+      <li>A door cannot point at a room that does not exist</li>
+      <li>An objective cannot be completed by something not on its list</li>
+    </ul>
+  </div>
+  <div>
+    <h4>Detected and shown</h4>
+    <ul>
+      <li>An objective nothing can finish, or with no next step</li>
+      <li>A marked target absent from that visit</li>
+      <li>A character or spawn inside something solid</li>
+      <li>Somewhere she cannot reach, or that takes too long to walk to</li>
+      <li>A conversation referenced but never authored, or authored but never used</li>
+      <li>A gate that can never open</li>
+    </ul>
+  </div>
+</div>
+<h4>How it is shown</h4>
+<ul>
+  <li>Live, not on demand — a persistent count, and a badge in the scene on the offending object</li>
+  <li>Every row selects the thing at fault</li>
+  <li>A fix button where the fix is unambiguous</li>
+  <li>Severity separated: <em>broken</em> versus <em>worth a look</em></li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">14</span>How previewing and testing work</h3>
+<ul>
+  <li><b>Preview without playing.</b> Choosing a visit shows it immediately in the editor.</li>
+  <li><b>Play from here.</b> Start at this visit, at this point in its progression, with her standing
+  where the designer is looking.</li>
+  <li><b>Play this one thing.</b> Select a conversation, objective, door or event, and run just it.</li>
+  <li><b>Jump within a visit.</b> Move to any objective in the chain without completing the earlier ones.</li>
+  <li><b>Return to where you were.</b> Leaving play does not lose the editing context.</li>
+</ul>
+<p>Everything above is reachable in one action from where the designer already is.</p>
+</section>
+
+<section class="req">
+<h3><span class="n">15</span>How debugging works</h3>
+<p>From the designer's chair, debugging is one question: <em>why is this not doing what I expect?</em>
+The tools must answer it directly.</p>
+<ul>
+  <li>A live panel during play: current visit, active objective and progress, what is in reach, and
+  what a press would do.</li>
+  <li><b>The “why not” answer.</b> When something is not offered, the reason is named: facing away,
+  too far, gate shut, nothing to say, already used, another thing has priority.</li>
+  <li>A running log in designer language: <em>“Talked to Kaal · objective 1 → 2/5”</em>.</li>
+  <li>The ability to force a state — open this gate, complete this objective, raise this flag — to
+  reach the case being tested.</li>
+  <li>No part of this requires reading a console.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">16</span>How fast common tasks must be</h3>
+<p class="note">Budgets from the designer's hands, on an already-open scene. These are what the
+tooling is measured against.</p>
+<table class="budget">
+  <tr><th>Task</th><th>Budget</th></tr>
+  <tr><td>Place a decorative prop</td><td>2 clicks · under 5 s</td></tr>
+  <tr><td>Place twenty of them</td><td>under 30 s</td></tr>
+  <tr><td>Move or delete something</td><td>immediate, with undo</td></tr>
+  <tr><td>Make an object interactive and give it a conversation</td><td>under 30 s · no typed ids</td></tr>
+  <tr><td>Change where a character stands in a visit</td><td>under 10 s · by dragging</td></tr>
+  <tr><td>Give a character a different conversation in a visit</td><td>under 15 s · three picks</td></tr>
+  <tr><td>Test one specific conversation</td><td>under 10 s</td></tr>
+  <tr><td>Add an objective to a visit</td><td>under 60 s</td></tr>
+  <tr><td>Create the next visit from the last</td><td>under 60 s</td></tr>
+  <tr><td>Add a room and connect it by a door</td><td>under 3 min</td></tr>
+  <tr><td>Find and reach the cause of a problem</td><td>under 15 s · one click</td></tr>
+</table>
+</section>
+
+<section class="req">
+<h3><span class="n">17</span>How this scales</h3>
+<p>Assume it gets four times bigger: a dozen visits, ten rooms, hundreds of props and conversations.</p>
+<ul>
+  <li>Every list is searchable and filterable. Nothing relies on scrolling.</li>
+  <li>The palette is categorised, with favourites and recents.</li>
+  <li>The scene stays navigable: rooms are isolated for editing, and the hierarchy is kept organised
+  without being asked.</li>
+  <li>Visits are read as differences, so understanding Visit 9 does not mean reading Visits 1–8.</li>
+  <li>Validation stays fast enough to run continuously as content grows.</li>
+  <li>“Where is this used?” works for every piece of content, and stays instant.</li>
+  <li>Two people can work on different rooms without colliding.</li>
+  <li>Bulk operations exist for the cases that would otherwise be a hundred manual edits.</li>
+</ul>
+</section>
+
+<section class="req">
+<h3><span class="n">18</span>Quality of life</h3>
+<p class="note">What separates a tool that works from one that feels professional.</p>
+<ul>
+  <li><b>Undo everywhere</b>, including data edits, never half-applied</li>
+  <li><b>Copy and paste</b> a configured object between rooms, configuration intact</li>
+  <li><b>Duplicate</b> anything — an object, a visit, an objective, a conversation — as a starting point</li>
+  <li><b>Search everything</b> from one box</li>
+  <li><b>Find usages</b> of any conversation, objective, character or prop</li>
+  <li><b>Pixel snapping</b> on by default, because this is pixel art and half-pixels shimmer</li>
+  <li><b>Keyboard shortcuts</b> for the palette and for switching visits</li>
+  <li><b>Toggleable overlays</b> — blocking, reach, markers, spawns — so the view can be made clean for
+  judging how the place looks</li>
+  <li><b>Non-destructive always.</b> No tool ever regenerates over hand-authored work</li>
+  <li><b>Clear state at all times</b> — which room, which visit, what is selected, what is unsaved</li>
+  <li><b>Sensible defaults</b>, so placing something and doing nothing else still works</li>
+  <li><b>Recoverable mistakes</b> — nothing possible in these tools should be unrecoverable</li>
+</ul>
+</section>
+
+<hr>
+
+<h2>Non-goals</h2>
+<p>Named so the tooling does not drift into them.</p>
+<ul>
+  <li>Not a general level editor. It serves the Gurukul Hub.</li>
+  <li>Not an art tool. Art is made elsewhere and imported.</li>
+  <li>Not a replacement for Unity's scene view — it builds on it.</li>
+  <li>Not a code-authoring surface. New <em>kinds</em> of behaviour remain a programmer's job.</li>
+  <li>Not tile-based. Nothing in this workflow uses a grid or a Tilemap.</li>
+  <li>It does not author the Gurukul map. The designer does that, with these tools.</li>
+</ul>
+
+<h2>How we will know it worked</h2>
+<p>Tested by the designer, not by the programmer.</p>
+<ol class="checklist">
+  <li>A designer opens the Hub scene and sees the Gurukul, without pressing Play.</li>
+  <li>They build a corner of it — ground, trees, a house, a path — without asking what a prefab is.</li>
+  <li>They add a readable noticeboard and hear it in the game inside a minute.</li>
+  <li>They set up Visit 2 differently from Visit 1 and flip between the two to compare.</li>
+  <li>They deliberately break something and the tools say what and where before Play is pressed.</li>
+  <li>They test one conversation, mid-Visit-3, without playing anything before it.</li>
+  <li>They do all of it without opening a script, an asset file, or the console.</li>
+  <li>They can explain the workflow to somebody else in five minutes.</li>
+</ol>
+
+<hr>
+<p class="foot"><b>Next:</b> design the tooling architecture that satisfies this — how much lives in
+the scene, how much in dedicated windows, what is one tool and what is several, and the phased plan to
+build it.</p>
+
+</main>
