@@ -1,0 +1,189 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Overlays;
+using UnityEngine;
+using UnityEngine.UIElements;
+using ProjectAstra.Core.Hub;
+
+namespace ProjectAstra.Core.Editor
+{
+    // The panel a designer builds the hub from: pick a room, pick a thing, click where it goes.
+    [Overlay(typeof(SceneView), "Hub", true)]
+    public sealed class HubSceneOverlay : Overlay
+    {
+        private const float ThumbnailSize = 54f;
+
+        private static HubPalette.Entry armed;
+        private string category;
+
+        public static HubPalette.Entry Armed => armed;
+        public static void Disarm() => armed = null;
+
+        public override VisualElement CreatePanelContent()
+        {
+            var body = new IMGUIContainer(Draw) { style = { width = 260, paddingBottom = 4 } };
+            HubEditing.Changed += body.MarkDirtyRepaint;
+            return body;
+        }
+
+        private void Draw()
+        {
+            HubRoom room = HubEditing.EditingRoom;
+
+            DrawRoomPicker(room);
+            EditorGUILayout.Space(2);
+            DrawOverlayToggles();
+
+            if (room == null)
+            {
+                EditorGUILayout.HelpBox("Pick a room to start placing things in it.", MessageType.None);
+                return;
+            }
+
+            EditorGUILayout.Space(4);
+            DrawPalette(room);
+        }
+
+        private void DrawRoomPicker(HubRoom current)
+        {
+            HubRoom[] rooms = HubRooms.InLoadedScenes().OrderBy(r => r.LocationId).ToArray();
+
+            if (rooms.Length == 0)
+            {
+                EditorGUILayout.HelpBox("Open the Hub scene to edit a room.", MessageType.Info);
+                return;
+            }
+
+            string[] names = rooms.Select(r => r.LocationId).Append("Show every room").ToArray();
+            int index = System.Array.IndexOf(rooms, current);
+            if (index < 0) index = rooms.Length;
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                EditorGUILayout.LabelField("Room", GUILayout.Width(38));
+
+                int picked = EditorGUILayout.Popup(index, names);
+                if (picked != index) HubEditing.Isolate(picked < rooms.Length ? rooms[picked] : null);
+
+                using (new EditorGUI.DisabledScope(current == null))
+                    if (GUILayout.Button("Frame", EditorStyles.miniButton, GUILayout.Width(48)))
+                        HubEditing.Frame(current);
+            }
+        }
+
+        private void DrawOverlayToggles()
+        {
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                Toggle(HubEditing.Overlay.Extent, "Edge");
+                Toggle(HubEditing.Overlay.Blocking, "Blocking");
+                Toggle(HubEditing.Overlay.Interaction, "Reach");
+            }
+        }
+
+        private static void Toggle(HubEditing.Overlay overlay, string label)
+        {
+            bool shown = HubEditing.Shows(overlay);
+            if (GUILayout.Toggle(shown, label, EditorStyles.miniButton) != shown)
+            {
+                HubEditing.Toggle(overlay);
+                SceneView.RepaintAll();
+            }
+        }
+
+        private void DrawPalette(HubRoom room)
+        {
+            HubPalette palette = HubPalette.Load();
+            string[] categories = palette.Categories.ToArray();
+
+            if (categories.Length == 0)
+            {
+                EditorGUILayout.HelpBox(
+                    $"Drop art into {HubArtImporter.ArtFolder} and it appears here.", MessageType.Info);
+                return;
+            }
+
+            DrawCategoryTabs(categories);
+            DrawEntries(palette.InCategory(category).ToArray(), room);
+            DrawArmedEntry(palette);
+        }
+
+        private void DrawCategoryTabs(string[] categories)
+        {
+            if (!categories.Contains(category)) category = categories[0];
+
+            int picked = GUILayout.Toolbar(System.Array.IndexOf(categories, category), categories,
+                EditorStyles.miniButton);
+            category = categories[picked];
+        }
+
+        private void DrawEntries(IReadOnlyList<HubPalette.Entry> entries, HubRoom room)
+        {
+            const int columns = 4;
+
+            for (int i = 0; i < entries.Count; i += columns)
+            {
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    for (int column = 0; column < columns && i + column < entries.Count; column++)
+                        DrawEntry(entries[i + column]);
+                }
+            }
+        }
+
+        private static void DrawEntry(HubPalette.Entry entry)
+        {
+            Texture preview = AssetPreview.GetAssetPreview(entry.Source) ??
+                              AssetPreview.GetMiniThumbnail(entry.Source);
+
+            var content = new GUIContent(preview, entry.label);
+            bool isArmed = armed == entry;
+
+            if (GUILayout.Toggle(isArmed, content, EditorStyles.miniButton,
+                    GUILayout.Width(ThumbnailSize), GUILayout.Height(ThumbnailSize)) != isArmed)
+                armed = isArmed ? null : entry;
+        }
+
+        // What the armed thing is, right where it was picked, so nobody opens the palette asset to
+        // say that a floor is a floor.
+        private static void DrawArmedEntry(HubPalette palette)
+        {
+            if (armed == null) return;
+
+            EditorGUILayout.Space(2);
+            EditorGUILayout.LabelField(armed.label, EditorStyles.boldLabel);
+
+            EditorGUI.BeginChangeCheck();
+
+            armed.kind = (HubPalette.Kind)EditorGUILayout.EnumPopup("Is", armed.kind);
+            if (armed.kind == HubPalette.Kind.Object)
+            {
+                armed.blocks = EditorGUILayout.Toggle("Stops her", armed.blocks);
+                if (armed.blocks)
+                    armed.footprint = EditorGUILayout.Vector2Field("Footprint", armed.footprint);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                if (armed.kind == HubPalette.Kind.Ground) armed.blocks = false;
+                palette.Save();
+                SceneView.RepaintAll();
+            }
+
+            EditorGUILayout.LabelField("Click in the scene to place it. Hold shift to keep placing.",
+                EditorStyles.miniLabel);
+
+            using (new EditorGUILayout.HorizontalScope())
+            {
+                if (GUILayout.Button("Done", EditorStyles.miniButton)) armed = null;
+
+                if (GUILayout.Button("Remove", EditorStyles.miniButton))
+                {
+                    palette.Forget(armed);
+                    armed = null;
+                }
+            }
+        }
+    }
+}

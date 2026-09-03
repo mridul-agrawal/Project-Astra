@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationData
   locationId: greybox_house
   displayName: Greybox House
-  roomPrefab: {fileID: 3807811650308399806, guid: b965d4fa0800814428943c473ee58b7c, type: 3}
   tileWidth: 16
   tileHeight: 10

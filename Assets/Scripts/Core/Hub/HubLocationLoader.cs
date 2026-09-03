@@ -82,7 +82,9 @@ namespace ProjectAstra.Core.Hub
         private void ApplyHouseIdentity()
         {
             string identity = HubVisitService.Instance?.Location.HouseIdentity;
-            foreach (HubHouseIdentity tagged in locationHost.GetComponentsInChildren<HubHouseIdentity>(true))
+            if (locationHost.ActiveRoom == null) return;
+
+            foreach (HubHouseIdentity tagged in locationHost.ActiveRoom.GetComponentsInChildren<HubHouseIdentity>(true))
                 tagged.ApplyIdentity(identity);
         }
 

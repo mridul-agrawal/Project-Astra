@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38d3b9df7c867be49a05982c13ab98c0, type: 3}
+  m_Name: Hub Palette
+  m_EditorClassIdentifier: ProjectAstra.Core.Editor::ProjectAstra.Core.Editor.HubPalette
+  entries:
+  - label: Greybox courtyard
+    category: Greybox
+    kind: 0
+    prefab: {fileID: 0}
+    sprite: {fileID: 21300000, guid: af13e7d42b594c94db2af6f5b935a715, type: 3}
+    blocks: 0
+    footprint: {x: 1, y: 0.5}
+  - label: Greybox house
+    category: Greybox
+    kind: 0
+    prefab: {fileID: 0}
+    sprite: {fileID: 21300000, guid: abee34c6e394bd84a878e9e462fa26b9, type: 3}
+    blocks: 0
+    footprint: {x: 1, y: 0.5}
+  - label: Greybox tree
+    category: Greybox
+    kind: 1
+    prefab: {fileID: 0}
+    sprite: {fileID: 21300000, guid: f0ca0d0f0ba4cc1458de435739087840, type: 3}
+    blocks: 1
+    footprint: {x: 1, y: 0.5}

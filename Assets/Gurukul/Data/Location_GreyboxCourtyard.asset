@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Gurukul.GurukulLocationData
   locationId: greybox_courtyard
   displayName: Greybox Courtyard
-  roomPrefab: {fileID: 4405141264398764798, guid: 5a121e5cbd084884980483d19e88651c, type: 3}
   tileWidth: 30
   tileHeight: 18

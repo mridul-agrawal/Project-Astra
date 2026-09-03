@@ -23,6 +23,10 @@ namespace ProjectAstra.Core.Hub
 
         private SpriteRenderer spriteRenderer;
 
+        // Set when something is placed, so sorting measures from the foot of the art whatever its
+        // pivot happens to be.
+        public void MeasureFrom(float localBaseline) => baselineOffset = localBaseline;
+
         private void Awake() => spriteRenderer = GetComponent<SpriteRenderer>();
 
         private void Start() => Apply();

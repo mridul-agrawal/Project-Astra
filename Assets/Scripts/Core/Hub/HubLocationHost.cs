@@ -2,49 +2,32 @@ using UnityEngine;
 
 namespace ProjectAstra.Core.Hub
 {
-    // Holds whichever room is currently loaded, one at a time.
+    // Decides which of the scene's rooms is the one she is standing in.
     public sealed class HubLocationHost : MonoBehaviour
     {
-        private GameObject current;
-
         public HubLocationData Current { get; private set; }
+        public HubRoom ActiveRoom { get; private set; }
 
-        // Whatever a designer left sitting here is a preview, so the scene shows a real room
-        // instead of an empty transform. The visit's own room replaces it the moment play starts.
-        //
-        // Immediate, because a deferred destroy would leave the preview's colliders in the world
-        // for the rest of the frame - long enough for her to spawn inside one.
-        private void Awake()
-        {
-            for (int i = transform.childCount - 1; i >= 0; i--)
-                DestroyImmediate(transform.GetChild(i).gameObject);
-        }
-
-        // What a room's contents hang off, so anything added to a room is torn down with it.
-        public Transform Room => current != null ? current.transform : transform;
+        // Every room is authored in the scene and sits there all the time; only one is ever awake.
+        public static HubRoom[] AllRooms() =>
+            FindObjectsByType<HubRoom>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         public void Show(HubLocationData location)
         {
-            Clear();
-            if (location == null) return;
-
             Current = location;
-            if (location.RoomPrefab == null)
+            ActiveRoom = null;
+
+            foreach (HubRoom room in AllRooms())
             {
-                Debug.LogError($"[HubLocationHost] '{location.LocationId}' has no room prefab.", this);
-                return;
+                bool isHere = location != null && room.Location == location;
+                room.gameObject.SetActive(isHere);
+                if (isHere) ActiveRoom = room;
             }
 
-            current = Instantiate(location.RoomPrefab, transform, false);
-            current.name = location.LocationId;
+            if (location != null && ActiveRoom == null)
+                Debug.LogError($"[HubLocationHost] No room in the scene is '{location.LocationId}'.", this);
         }
 
-        public void Clear()
-        {
-            if (current != null) Destroy(current);
-            current = null;
-            Current = null;
-        }
-
+        public void Clear() => Show(null);
     }
 }

@@ -33,6 +33,10 @@ namespace ProjectAstra.Core.Editor
         {
             var problems = new List<HubProblem>();
 
+            // Rooms are authored in the Hub scene, so checking them means reading it — borrowed once
+            // here rather than opened and closed for every lookup.
+            using System.IDisposable rooms = HubRooms.Read();
+
             foreach (HubLocationData location in LoadAll<HubLocationData>()) CheckLocation(location, problems);
             foreach (QuestObjective objective in LoadAll<QuestObjective>()) CheckObjective(objective, problems);
             foreach (HubEventData authored in LoadAll<HubEventData>()) CheckEvent(authored, problems);
@@ -47,8 +51,9 @@ namespace ProjectAstra.Core.Editor
         {
             if (string.IsNullOrEmpty(location.LocationId))
                 problems.Add(new HubProblem(location, $"{location.name}: empty locationId"));
-            if (location.RoomPrefab == null)
-                problems.Add(new HubProblem(location, $"{location.name}: no room prefab, so it cannot be shown"));
+            if (HubRooms.Find(location) == null)
+                problems.Add(new HubProblem(location,
+                    $"{location.name}: no room in the Hub scene is this place, so it cannot be shown"));
 
             CheckRoomIsBigEnough(location, problems);
             CheckDoors(location, problems);
@@ -67,13 +72,14 @@ namespace ProjectAstra.Core.Editor
                     $"{viewWide:0.#}x{viewHigh:0.#} the camera shows"));
         }
 
-        // Doors live in the room now, so they are read off the prefab rather than a list.
+        // Doors are authored in the room, so they are read out of the scene rather than a list.
         private static void CheckDoors(HubLocationData location, List<HubProblem> problems)
         {
-            if (location.RoomPrefab == null) return;
+            GameObject room = HubRooms.Find(location);
+            if (room == null) return;
 
             var seen = new HashSet<string>();
-            foreach (DoorInteractable door in location.RoomPrefab.GetComponentsInChildren<DoorInteractable>(true))
+            foreach (DoorInteractable door in room.GetComponentsInChildren<DoorInteractable>(true))
             {
                 if (string.IsNullOrEmpty(door.DoorId))
                     problems.Add(new HubProblem(location, $"{location.name}: a door has no id"));
@@ -272,13 +278,15 @@ namespace ProjectAstra.Core.Editor
 
             public RoomUnderTest(HubLocationData location)
             {
-                if (location == null || location.RoomPrefab == null) return;
+                GameObject source = HubRooms.Find(location);
+                if (source == null) return;
 
                 scene = EditorSceneManager.NewPreviewScene();
                 opened = true;
 
-                GameObject room = Object.Instantiate(location.RoomPrefab);
+                GameObject room = Object.Instantiate(source);
                 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(room, scene);
+                room.SetActive(true);
                 Physics2D.SyncTransforms();
 
                 Space = new PreviewSolidSpace(scene, location.Bounds);
