@@ -141,29 +141,40 @@ namespace ProjectAstra.Core.Editor
             HubVisitData[] visits = HubVisitLens.All().ToArray();
             if (visits.Length == 0) return;
 
+            HubVisitData showing = DrawVisitRow(visits, HubVisitLens.Visit);
+            DrawWhatChanged(visits, showing);
+        }
+
+        // Which visit is picked, and the button that plays it. Returns what the rest of the panel
+        // should be talking about, so the choice is read once rather than asked for again.
+        private static HubVisitData DrawVisitRow(HubVisitData[] visits, HubVisitData showing)
+        {
             string[] names = new[] { "the empty room" }.Concat(visits.Select(v => v.VisitId)).ToArray();
-            int current = System.Array.IndexOf(visits, HubVisitLens.Visit) + 1;
+            int current = System.Array.IndexOf(visits, showing) + 1;
 
             using (new EditorGUILayout.HorizontalScope())
             {
                 EditorGUILayout.LabelField("As", GUILayout.Width(38));
 
                 int picked = EditorGUILayout.Popup(current, names);
-                if (picked != current) HubVisitLens.Visit = picked == 0 ? null : visits[picked - 1];
+                if (picked != current)
+                {
+                    showing = picked == 0 ? null : visits[picked - 1];
+                    HubVisitLens.Visit = showing;
+                }
 
-                using (new EditorGUI.DisabledScope(!HubLaunch.CanLaunch || HubVisitLens.Visit == null))
+                using (new EditorGUI.DisabledScope(!HubLaunch.CanLaunch || showing == null))
                     if (GUILayout.Button("Play", EditorStyles.miniButton, GUILayout.Width(48)))
-                        HubLaunch.PlayFrom(HubVisitLens.Visit, 0, null);
+                        HubLaunch.PlayFrom(showing, 0, null);
             }
 
-            DrawWhatChanged(visits);
+            return showing;
         }
 
         // What this visit does differently from the one before it, so flipping between them says
         // what actually moved rather than leaving it to be spotted.
-        private static void DrawWhatChanged(HubVisitData[] visits)
+        private static void DrawWhatChanged(HubVisitData[] visits, HubVisitData visit)
         {
-            HubVisitData visit = HubVisitLens.Visit;
             if (visit == null) return;
 
             int index = System.Array.IndexOf(visits, visit);

@@ -33,6 +33,7 @@ namespace ProjectAstra.Core.Editor
             EditorSceneManager.sceneOpened += (_, __) => Clear();
             EditorSceneManager.sceneClosing += (_, __) => Clear();
             EditorApplication.playModeStateChanged += _ => Clear();
+            EditorApplication.projectChanged += Forget;
             HubEditing.Changed += Refresh;
 
             // Only when a drag ends. Every repaint would mean reading the whole cast back sixty
@@ -59,11 +60,32 @@ namespace ProjectAstra.Core.Editor
             }
         }
 
-        public static IEnumerable<HubVisitData> All() =>
+        // Searching the whole project for these is what made the Hub panel slow enough to stall the
+        // editor, because the panel reads them several times a frame. Held until the project changes.
+        private static HubVisitData[] visits;
+        private static UnitDefinition[] cast;
+
+        public static IEnumerable<HubVisitData> All()
+        {
+            if (Stale(visits)) visits = LoadVisits();
+            return visits;
+        }
+
+        public static void Forget()
+        {
+            visits = null;
+            cast = null;
+        }
+
+        // A deleted asset leaves a dead entry behind, so a list with a hole in it is read again.
+        private static bool Stale(Object[] held) => held == null || held.Any(one => one == null);
+
+        private static HubVisitData[] LoadVisits() =>
             AssetDatabase.FindAssets("t:HubVisitData")
                 .Select(guid => AssetDatabase.LoadAssetAtPath<HubVisitData>(AssetDatabase.GUIDToAssetPath(guid)))
                 .Where(visit => visit != null)
-                .OrderBy(visit => visit.VisitId, System.StringComparer.OrdinalIgnoreCase);
+                .OrderBy(visit => visit.VisitId, System.StringComparer.OrdinalIgnoreCase)
+                .ToArray();
 
         public static void Refresh()
         {
@@ -138,10 +160,17 @@ namespace ProjectAstra.Core.Editor
             actor.AddComponent<HubPreviewActor>().CharacterId = characterId;
         }
 
-        private static UnitDefinition Character(string characterId) =>
+        private static UnitDefinition Character(string characterId)
+        {
+            if (Stale(cast)) cast = LoadCast();
+            return cast.FirstOrDefault(unit => unit.UnitId == characterId);
+        }
+
+        private static UnitDefinition[] LoadCast() =>
             AssetDatabase.FindAssets("t:UnitDefinition")
                 .Select(guid => AssetDatabase.LoadAssetAtPath<UnitDefinition>(AssetDatabase.GUIDToAssetPath(guid)))
-                .FirstOrDefault(unit => unit != null && unit.UnitId == characterId);
+                .Where(unit => unit != null)
+                .ToArray();
 
         // --- Dragging one writes it down ---
 
