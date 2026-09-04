@@ -18,7 +18,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 60e6fbc88af715240bb36056f2d7100a, type: 2}
   - {fileID: 11400000, guid: 668aaf757cc8d5342b67ac4ff73b3ccd, type: 2}
   onStart: []
-  onComplete: []
+  onComplete:
+  - rid: 3947699838103847007
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 3947699838103847007
+      type: {class: PlayAuthoredEventEvent, ns: ProjectAstra.Core.Quests, asm: ProjectAstra.Core}
+      data:
+        eventId: depart
