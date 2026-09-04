@@ -27,4 +27,4 @@ MonoBehaviour:
       type: {class: InspectCondition, ns: ProjectAstra.Core.Quests, asm: ProjectAstra.Core}
       data:
         interactableIds:
-        - greybox_tree
+        - greybox_tree_2

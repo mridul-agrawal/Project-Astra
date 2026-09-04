@@ -13,13 +13,6 @@ MonoBehaviour:
   m_Name: Hub Palette
   m_EditorClassIdentifier: ProjectAstra.Core.Editor::ProjectAstra.Core.Editor.HubPalette
   entries:
-  - label: Greybox courtyard
-    category: Greybox
-    kind: 0
-    prefab: {fileID: 0}
-    sprite: {fileID: 21300000, guid: af13e7d42b594c94db2af6f5b935a715, type: 3}
-    blocks: 0
-    footprint: {x: 1, y: 0.5}
   - label: Greybox house
     category: Greybox
     kind: 0
@@ -33,4 +26,11 @@ MonoBehaviour:
     prefab: {fileID: 0}
     sprite: {fileID: 21300000, guid: f0ca0d0f0ba4cc1458de435739087840, type: 3}
     blocks: 1
+    footprint: {x: 1, y: 0.5}
+  - label: Gurukul ground
+    category: Ground
+    kind: 0
+    prefab: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 886ddfa9b28bf3741b23f1a5878122b6, type: 3}
+    blocks: 0
     footprint: {x: 1, y: 0.5}

@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5916365cbfdcb549a23fd2a12e57125, type: 3}
+  m_Name: new_conversation
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Dialogue.DialogueScript
+  scriptId: new_conversation
+  segments:
+  - background: {fileID: 0}
+    textSpeed: 0
+    autoAdvanceDelay: 0
+    lines:
+    - speakerId: 
+      expression: 0
+      portraitPosition: 0
+      portraitFacing: 0
+      text: 
+      kind: 0
+      label: 
+      options: []
+      allowCancel: 0
+      cancelTargetLabel: 
+      targetLabel: 
+      signalId: 
+  - background: {fileID: 0}
+    textSpeed: 0
+    autoAdvanceDelay: 0
+    lines: []
+  repeatEntryLabel: 

@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e61526db90c76f84289488e8a825fdfb, type: 3}
+  m_Name: visit_1
+  m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Hub.HubVisitData
+  visitId: visit_1
+  displayName: Visit 1
+  startLocationId: courtyard
+  playerSpawn: {x: 3, y: 6}
+  playerFacing: 0
+  openingEventId: 
+  characterPlacements:
+  - characterId: aryaman
+    locationId: courtyard
+    position: {x: 14.34375, y: 24.9375}
+    facing: 0
+    conversationId: hub1_talk_aryaman
+  - characterId: gajendra
+    locationId: courtyard
+    position: {x: 17.3125, y: 12.375}
+    facing: 0
+    conversationId: hub1_talk_gajendra
+  - characterId: kaal
+    locationId: courtyard
+    position: {x: 26.40625, y: 17.3125}
+    facing: 0
+    conversationId: hub1_talk_kaal
+  - characterId: madhavi
+    locationId: courtyard
+    position: {x: 14.625, y: 6.5625}
+    facing: 0
+    conversationId: hub1_talk_madhavi
+  - characterId: rudrani
+    locationId: courtyard
+    position: {x: 3.34375, y: 15.1875}
+    facing: 0
+    conversationId: hub1_talk_rudrani
+  interactableOverrides:
+  - interactableId: greybox_tree_2
+    state: 1
+    conversationId: radnom_tree
+  openGates: []
+  environmentSet: 
+  questId: quest_1
+  departure:
+    destinationMapId: tooltesting map
+    mode: 0
+    departureTargetId: 

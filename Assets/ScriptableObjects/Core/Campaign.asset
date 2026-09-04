@@ -20,12 +20,8 @@ MonoBehaviour:
   - kind: 2
     cutscene: 0
     mapId: 
-    visitId: hub1
+    visitId: visit_1
   - kind: 1
     cutscene: 0
     mapId: tooltesting map
-    visitId: 
-  - kind: 0
-    cutscene: 2
-    mapId: 
     visitId: 
