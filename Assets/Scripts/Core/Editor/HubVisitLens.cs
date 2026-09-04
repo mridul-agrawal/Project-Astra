@@ -100,12 +100,27 @@ namespace ProjectAstra.Core.Editor
         // that outlived its room would be a character nobody placed.
         public static void Clear()
         {
+            foreach (GameObject root in RootsInRooms()) Object.DestroyImmediate(root);
+
             foreach (HubPreviewActor stray in
                      Resources.FindObjectsOfTypeAll<HubPreviewActor>().Where(a => a != null))
             {
                 GameObject root = RootOf(stray.gameObject);
                 if (root != null) Object.DestroyImmediate(root);
             }
+        }
+
+        // A root with nobody in it has no stand-in to be found by, so the rooms are read directly.
+        // One was left behind every refresh whenever a visit had no cast for the room being edited.
+        private static List<GameObject> RootsInRooms()
+        {
+            var found = new List<GameObject>();
+
+            foreach (HubRoom room in HubRooms.InLoadedScenes())
+                foreach (Transform child in room.transform)
+                    if (child.name == PreviewRootName) found.Add(child.gameObject);
+
+            return found;
         }
 
         private static GameObject RootOf(GameObject actor)
@@ -120,11 +135,13 @@ namespace ProjectAstra.Core.Editor
             HubVisitData visit = Visit;
             if (room == null || visit == null) return;
 
-            Transform cast = MakeCastRoot(room);
+            Transform cast = null;
             foreach (HubCharacterPlacement placement in visit.CharacterPlacements)
-                if (placement.locationId == room.LocationId) Stand(placement, cast);
+                if (placement.locationId == room.LocationId) Stand(placement, cast ??= MakeCastRoot(room));
         }
 
+        // Made only once somebody is actually going to stand in it, so a room this visit leaves
+        // empty is left alone.
         private static Transform MakeCastRoot(HubRoom room)
         {
             var root = new GameObject(PreviewRootName) { hideFlags = HideFlags.DontSave };

@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
 
@@ -62,6 +64,32 @@ namespace ProjectAstra.Core.Editor
                 MarkTheSceneChanged(made);
                 Selection.activeGameObject = made;
             });
+
+        // A script that exists but was never registered can only mean one thing. An id no script
+        // answers to is not the same: it is as likely a typo, and inventing a conversation to match
+        // would only make the typo permanent.
+        public static HubFix PutInTheCatalog(DialogueScript script)
+        {
+            if (script == null) return null;
+
+            DialogueScriptCatalog catalog = TheCatalog();
+            if (catalog == null) return null;
+
+            return new HubFix("Add it to the Dialogue Script Catalog", () =>
+            {
+                if (catalog.Scripts.Contains(script)) return;
+
+                HubAssets.Register(catalog, "scripts", script);
+                AssetDatabase.SaveAssets();
+                HubProblems.Forget();
+            });
+        }
+
+        private static DialogueScriptCatalog TheCatalog() =>
+            AssetDatabase.FindAssets("t:DialogueScriptCatalog")
+                .Select(guid => AssetDatabase.LoadAssetAtPath<DialogueScriptCatalog>(
+                    AssetDatabase.GUIDToAssetPath(guid)))
+                .FirstOrDefault(found => found != null);
 
         private static void MarkTheSceneChanged(Object part)
         {

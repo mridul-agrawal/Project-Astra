@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using ProjectAstra.Core.Dialogue;
 using ProjectAstra.Core.Hub;
 using ProjectAstra.Core.Hub.Interaction;
 using ProjectAstra.Core.Quests;
@@ -112,6 +113,7 @@ namespace ProjectAstra.Core.Editor
 
             CheckRoomIsBigEnough(location, problems);
             CheckDoors(location, problems);
+            CheckThingsSheCanLookAt(location, problems);
         }
 
         // A room smaller than the screen leaves the camera with nothing to clamp to and shows the
@@ -157,6 +159,54 @@ namespace ProjectAstra.Core.Editor
 
         // --- Conversations ---
 
+        // What the props in a room say. Authored on the object rather than in an asset, so it is
+        // read out of the scene the way doors are.
+        private static void CheckThingsSheCanLookAt(HubLocationData location, List<HubProblem> problems)
+        {
+            GameObject room = HubRooms.Find(location);
+            if (room == null) return;
+
+            foreach (InspectableInteractable thing in room.GetComponentsInChildren<InspectableInteractable>(true))
+            {
+                string what = $"{location.name}: '{thing.InteractableId}'";
+
+                CheckConversation(thing, thing.ConversationId, what, problems,
+                    thing.InteractionPoint, location.LocationId);
+                CheckConversation(thing, thing.DeniedConversationId, $"{what}, while locked,", problems,
+                    thing.InteractionPoint, location.LocationId);
+            }
+        }
+
+        // The id dropdowns offer every script asset in the project, but the game only ever asks the
+        // catalog. Anything the catalog has not been told about fails the moment it is played.
+        private static void CheckConversation(Object owner, string conversationId, string what,
+            List<HubProblem> problems, Vector2? where = null, string locationId = null)
+        {
+            if (string.IsNullOrEmpty(conversationId) || Catalogued(conversationId)) return;
+
+            DialogueScript script = FindScript(conversationId);
+            string why = script != null
+                ? "which exists but is not in the Dialogue Script Catalog, so it cannot play"
+                : "which no script answers to";
+
+            problems.Add(new HubProblem(owner, $"{what} says '{conversationId}', {why}",
+                where, locationId, HubRepairs.PutInTheCatalog(script)));
+        }
+
+        private static bool Catalogued(string conversationId)
+        {
+            foreach (DialogueScriptCatalog catalog in LoadAll<DialogueScriptCatalog>())
+                foreach (DialogueScript listed in catalog.Scripts)
+                    if (listed != null && listed.ScriptId == conversationId) return true;
+            return false;
+        }
+
+        private static DialogueScript FindScript(string scriptId)
+        {
+            foreach (DialogueScript candidate in LoadAll<DialogueScript>())
+                if (candidate.ScriptId == scriptId) return candidate;
+            return null;
+        }
 
         // --- Objectives and events ---
 
@@ -175,6 +225,10 @@ namespace ProjectAstra.Core.Editor
             if (!objective.Completion.IsAuthoredCorrectly(out string problem))
                 problems.Add(new HubProblem(objective, $"{objective.name}: {problem}"));
 
+            if (objective.Completion is TalkCondition)
+                foreach (string conversationId in objective.Completion.Targets)
+                    CheckConversation(objective, conversationId, objective.name, problems);
+
             var seen = new HashSet<string>();
             foreach (string target in objective.Completion.Targets)
                 if (!seen.Add(target))
@@ -190,9 +244,26 @@ namespace ProjectAstra.Core.Editor
                 problems.Add(new HubProblem(authored, $"{authored.name}: the event does nothing"));
 
             foreach (HubEventAction action in authored.Actions)
+            {
                 if (action.kind == HubEventActionKind.WalkCharacter && (action.route == null || action.route.Length == 0))
                     problems.Add(new HubProblem(authored,
                         $"{authored.name}: a walk action for '{action.targetId}' has no route"));
+
+                CheckActionConversation(authored, action, problems);
+            }
+        }
+
+        // Which field holds a conversation depends on the kind, so the shape table is asked rather
+        // than the field guessed.
+        private static void CheckActionConversation(HubEventData authored, HubEventAction action,
+            List<HubProblem> problems)
+        {
+            HubEventActionShape shape = HubEventActionShape.Of(action.kind);
+
+            if (shape.UsesValue && shape.ValueKind == HubIdKind.Conversation)
+                CheckConversation(authored, action.valueId, authored.name, problems);
+            if (shape.UsesTarget && shape.TargetKind == HubIdKind.Conversation)
+                CheckConversation(authored, action.targetId, authored.name, problems);
         }
 
         // --- Visits ---
@@ -217,6 +288,7 @@ namespace ProjectAstra.Core.Editor
                 problems.Add(new HubProblem(visit, $"{visit.name}: quest '{quest.QuestId}' has no objectives, so it can never be finished"));
 
             CheckPlacements(visit, problems);
+            CheckOverrides(visit, problems);
             CheckMarkers(visit, problems);
 
             if (!thorough) return;
@@ -250,7 +322,19 @@ namespace ProjectAstra.Core.Editor
                 if (FindLocation(placement.locationId) == null)
                     problems.Add(new HubProblem(visit,
                         $"{visit.name}: '{placement.characterId}' is placed in '{placement.locationId}', which doesn't exist"));
+
+                CheckConversation(visit, placement.conversationId,
+                    $"{visit.name}: '{placement.characterId}'", problems,
+                    placement.position, placement.locationId);
             }
+        }
+
+        // What a visit makes an object say instead, which is a conversation like any other.
+        private static void CheckOverrides(HubVisitData visit, List<HubProblem> problems)
+        {
+            foreach (HubInteractableOverride change in visit.InteractableOverrides)
+                CheckConversation(visit, change.conversationId,
+                    $"{visit.name}: '{change.interactableId}'", problems);
         }
 
         // A marker over something the visit never places, or over an interactable nothing declares,

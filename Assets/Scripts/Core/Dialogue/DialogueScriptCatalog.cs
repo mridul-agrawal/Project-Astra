@@ -13,6 +13,10 @@ namespace ProjectAstra.Core.Dialogue
     {
         [SerializeField] private List<DialogueScript> scripts = new();
 
+        // Read by the editor's checks, which have to know what is registered rather than ask
+        // whether one particular id is.
+        public IReadOnlyList<DialogueScript> Scripts => scripts;
+
         private Dictionary<string, DialogueScript> byId;
 
         public DialogueScript Get(string scriptId)

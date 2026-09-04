@@ -32,6 +32,8 @@ namespace ProjectAstra.Core.Hub.Interaction
 
         public string InteractableId => interactableId;
         public string RequiredGate => requiredGate;
+        public string ConversationId => conversationId;
+        public string DeniedConversationId => deniedConversationId;
 
         // Listed by id as well as by trigger, so an objective marker can find this without knowing
         // where in the room it stands.
