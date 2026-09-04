@@ -2523,7 +2523,7 @@ MonoBehaviour:
   cameraRig: {fileID: 882913018}
   events: {fileID: 1708496283}
   playerRoot: {fileID: 1550008122}
-  protagonistUnitId: aranya
+  protagonistUnitId: stree
   fallbackVisit: {fileID: 11400000, guid: 3b9b1c158168f054f8f542bed99728f3, type: 2}
   scriptCatalog: {fileID: 11400000, guid: 9e5cef175b0b4b4428f91d64f01d39c6, type: 2}
 --- !u!114 &1708496281
