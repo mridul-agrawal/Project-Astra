@@ -1,0 +1,370 @@
+<title>Hub Units</title>
+<style>
+  :root {
+    --ground:#ffffff; --panel:#f6f7f8; --ink:#17191d; --ink-soft:#565b63;
+    --rule:#d6d9dd; --rule-strong:#9aa0a8; --code-bg:#eef0f2;
+    --accent:#1a5aa8; --accent-bg:#e8f0fc; --flag:#a3312f; --flag-bg:#fbeceb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+      --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+      --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+    --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+    --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+  }
+  body { background:var(--ground); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.5; margin:0; padding:32px 24px 80px; }
+  main { max-width:1060px; margin:0 auto; display:flex; flex-direction:column; gap:38px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:0 0 14px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em; }
+  .lede { color:var(--ink-soft); margin:0; font-size:15px; max-width:74ch; }
+  code { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.88em;
+    background:var(--code-bg); padding:1px 5px; border-radius:3px; }
+  figure { margin:0; overflow-x:auto; }
+  figure svg { max-width:100%; height:auto; display:block; }
+  figcaption { color:var(--ink-soft); font-size:13px; margin-top:10px; max-width:80ch; }
+  ul.notes { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px;
+    font-size:14.5px; }
+  ul.notes li { max-width:82ch; }
+  ul.notes b { font-weight:600; }
+  .legend { display:flex; flex-wrap:wrap; gap:18px; font-size:12.5px; color:var(--ink-soft); margin-top:12px; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .sw { width:24px; height:12px; border-radius:2px; display:inline-block; }
+  .sw.core { background:var(--panel); border:1px solid var(--rule-strong); }
+  .sw.acc { background:var(--accent-bg); border:1px solid var(--accent); }
+  .sw.amb { background:var(--flag-bg); border:1px solid var(--flag); }
+
+  figure svg .b { fill:var(--panel); stroke:var(--rule-strong); stroke-width:1; }
+  figure svg .b.acc { fill:var(--accent-bg); stroke:var(--accent); }
+  figure svg .b.amb { fill:var(--flag-bg); stroke:var(--flag); }
+  figure svg .b.ghost { fill:none; stroke:var(--rule); stroke-dasharray:4 3; }
+  figure svg .t { fill:var(--ink); font-size:12.5px; font-weight:600;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  figure svg .m { fill:var(--ink); font-size:11.5px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
+  figure svg .s { fill:var(--ink-soft); font-size:11px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  figure svg .ln { stroke:var(--rule-strong); stroke-width:1.4; fill:none; }
+  figure svg .ln.soft { stroke:var(--rule); stroke-dasharray:4 3; }
+  figure svg .ah { fill:var(--rule-strong); }
+</style>
+
+<main>
+  <header>
+    <h1>Hub Units</h1>
+    <p class="lede">Project Astra &middot; how a character comes to exist in the Gurukul, how the player one is driven, and what a press in front of her acts on. Read as of <code>hub.dev.master</code>, 2026-09-04.</p>
+    <div class="legend">
+      <span><i class="sw core"></i> scene object / component</span>
+      <span><i class="sw acc"></i> the actor itself</span>
+      <span><i class="sw amb"></i> read from anywhere (static or singleton)</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>1 &middot; Where a unit comes from</h2>
+    <figure>
+      <svg viewBox="0 0 940 316" role="img" aria-label="HubBootstrapper builds the protagonist first, then loads the room, which spawns the cast; both go through HubActorFactory.">
+        <defs>
+          <marker id="a1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b" x="16" y="118" width="168" height="56" rx="3" />
+        <text class="t" x="100" y="141" text-anchor="middle">HubBootstrapper</text>
+        <text class="s" x="100" y="158" text-anchor="middle">Start() &middot; order &minus;100</text>
+
+        <rect class="b ghost" x="228" y="20" width="212" height="276" rx="3" />
+        <text class="s" x="334" y="40" text-anchor="middle">HubLocationLoader</text>
+
+        <rect class="b" x="244" y="52" width="180" height="48" rx="3" />
+        <text class="m" x="334" y="81" text-anchor="middle">CreatePlayer()</text>
+
+        <rect class="b" x="244" y="124" width="180" height="48" rx="3" />
+        <text class="m" x="334" y="153" text-anchor="middle">Load(locationId)</text>
+
+        <rect class="b" x="244" y="216" width="180" height="48" rx="3" />
+        <text class="m" x="334" y="245" text-anchor="middle">SpawnCast()</text>
+
+        <rect class="b" x="502" y="124" width="176" height="56" rx="3" />
+        <text class="t" x="590" y="147" text-anchor="middle">HubActorFactory</text>
+        <text class="s" x="590" y="164" text-anchor="middle">Create(definition, &hellip;)</text>
+
+        <rect class="b acc" x="740" y="46" width="184" height="60" rx="3" />
+        <text class="t" x="832" y="70" text-anchor="middle">the protagonist</text>
+        <text class="s" x="832" y="87" text-anchor="middle">one, outlives every room</text>
+
+        <rect class="b acc" x="740" y="210" width="184" height="60" rx="3" />
+        <text class="t" x="832" y="234" text-anchor="middle">the cast</text>
+        <text class="s" x="832" y="251" text-anchor="middle">rebuilt per room</text>
+
+        <path class="ln" d="M184 136 H 214 V 76 H 240" marker-end="url(#a1)" />
+        <text class="s" x="196" y="66">1</text>
+        <path class="ln" d="M184 148 H 240" marker-end="url(#a1)" />
+        <text class="s" x="196" y="142">2</text>
+        <path class="ln" d="M334 172 V 212" marker-end="url(#a1)" />
+
+        <path class="ln" d="M424 76 H 470 V 140 H 498" marker-end="url(#a1)" />
+        <text class="s" x="432" y="68">solid: false</text>
+        <path class="ln" d="M424 240 H 470 V 166 H 498" marker-end="url(#a1)" />
+        <text class="s" x="432" y="256">solid: true</text>
+
+        <path class="ln" d="M678 140 H 710 V 76 H 736" marker-end="url(#a1)" />
+        <path class="ln" d="M678 166 H 710 V 240 H 736" marker-end="url(#a1)" />
+
+        <text class="s" x="832" y="120" text-anchor="middle">+ HubPlayerController</text>
+        <text class="s" x="832" y="136" text-anchor="middle">+ trigger probe</text>
+        <text class="s" x="832" y="288" text-anchor="middle">+ CharacterInteractable,</text>
+        <text class="s" x="832" y="303" text-anchor="middle">only if it has a conversation</text>
+      </svg>
+      <figcaption>Both kinds of unit are built by the same factory from the same <code>UnitDefinition</code>. Everything that differs between the player and an NPC is added afterwards, on top of an identical <code>HubActor</code>.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>2 &middot; What one unit is made of</h2>
+    <figure>
+      <svg viewBox="0 0 940 288" role="img" aria-label="The GameObject the factory builds: an actor root with a Sprite child and a Footprint child.">
+        <defs>
+          <marker id="a2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b acc" x="16" y="98" width="228" height="86" rx="3" />
+        <text class="t" x="130" y="124" text-anchor="middle">root &middot; the unit's name</text>
+        <text class="m" x="130" y="145" text-anchor="middle">HubActor</text>
+        <text class="s" x="130" y="164" text-anchor="middle">position in tiles, at the feet</text>
+
+        <rect class="b" x="316" y="20" width="272" height="96" rx="3" />
+        <text class="t" x="452" y="43" text-anchor="middle">child &middot; Sprite</text>
+        <text class="m" x="452" y="64" text-anchor="middle">SpriteRenderer &middot; YSortRenderer</text>
+        <text class="m" x="452" y="84" text-anchor="middle">Animator &middot; UnitAnimator</text>
+        <text class="s" x="452" y="103" text-anchor="middle">animator only if the unit has one</text>
+
+        <rect class="b" x="316" y="168" width="272" height="90" rx="3" />
+        <text class="t" x="452" y="191" text-anchor="middle">child &middot; Footprint</text>
+        <text class="m" x="452" y="212" text-anchor="middle">BoxCollider2D</text>
+        <text class="s" x="452" y="231" text-anchor="middle">layer HubSolid &middot; what stops other units</text>
+        <text class="s" x="452" y="247" text-anchor="middle">made on the first SetSolid(true)</text>
+
+        <path class="ln" d="M244 128 H 282 V 68 H 312" marker-end="url(#a2)" />
+        <path class="ln" d="M244 154 H 282 V 213 H 312" marker-end="url(#a2)" />
+
+        <rect class="b" x="664" y="20" width="260" height="96" rx="3" />
+        <text class="t" x="794" y="43" text-anchor="middle">added to the player only</text>
+        <text class="m" x="794" y="64" text-anchor="middle">HubPlayerController</text>
+        <text class="m" x="794" y="84" text-anchor="middle">Rigidbody2D + CircleCollider2D</text>
+        <text class="s" x="794" y="103" text-anchor="middle">kinematic; the collider is her probe</text>
+
+        <rect class="b" x="664" y="168" width="260" height="90" rx="3" />
+        <text class="t" x="794" y="191" text-anchor="middle">added to a talkable NPC</text>
+        <text class="m" x="794" y="212" text-anchor="middle">CharacterInteractable</text>
+        <text class="m" x="794" y="232" text-anchor="middle">CircleCollider2D (trigger)</text>
+        <text class="s" x="794" y="249" text-anchor="middle">her reach region</text>
+
+        <path class="ln soft" d="M244 120 H 660" marker-end="url(#a2)" />
+        <path class="ln soft" d="M244 162 H 660" marker-end="url(#a2)" />
+      </svg>
+      <figcaption>The factory always builds the two children. The right-hand boxes are bolted on afterwards &mdash; by <code>HubBootstrapper</code> for the player, by <code>HubLocationLoader</code> for anyone with something to say.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>3 &middot; One frame of the player</h2>
+    <figure>
+      <svg viewBox="0 0 940 330" role="img" aria-label="Each frame the player controller reads input, checks the control gate, sweeps movement against the solid space, then ticks interaction.">
+        <defs>
+          <marker id="a3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b" x="16" y="120" width="150" height="70" rx="3" />
+        <text class="t" x="91" y="146" text-anchor="middle">InputManager</text>
+        <text class="s" x="91" y="164" text-anchor="middle">IsActionHeld</text>
+        <text class="s" x="91" y="179" text-anchor="middle">4 directions + confirm</text>
+
+        <rect class="b acc" x="222" y="112" width="182" height="86" rx="3" />
+        <text class="t" x="313" y="138" text-anchor="middle">HubPlayerController</text>
+        <text class="m" x="313" y="159" text-anchor="middle">Update()</text>
+        <text class="s" x="313" y="178" text-anchor="middle">CardinalInputResolver</text>
+        <text class="s" x="313" y="192" text-anchor="middle">picks one cardinal</text>
+
+        <rect class="b amb" x="222" y="20" width="182" height="56" rx="3" />
+        <text class="t" x="313" y="43" text-anchor="middle">HubControlGate</text>
+        <text class="s" x="313" y="60" text-anchor="middle">AcceptsMovement?</text>
+
+        <rect class="b" x="458" y="34" width="184" height="86" rx="3" />
+        <text class="t" x="550" y="60" text-anchor="middle">HubMover</text>
+        <text class="s" x="550" y="78" text-anchor="middle">one axis at a time</text>
+        <text class="s" x="550" y="93" text-anchor="middle">sub-steps, then bisects</text>
+        <text class="s" x="550" y="108" text-anchor="middle">up snug to the wall</text>
+
+        <rect class="b amb" x="458" y="164" width="184" height="72" rx="3" />
+        <text class="t" x="550" y="189" text-anchor="middle">PhysicsSolidSpace</text>
+        <text class="s" x="550" y="207" text-anchor="middle">OverlapBox on HubSolid</text>
+        <text class="s" x="550" y="222" text-anchor="middle">+ the room's own edge</text>
+
+        <rect class="b acc" x="700" y="34" width="222" height="86" rx="3" />
+        <text class="t" x="811" y="60" text-anchor="middle">HubActor</text>
+        <text class="m" x="811" y="81" text-anchor="middle">SetPosition &middot; SetFacing</text>
+        <text class="s" x="811" y="100" text-anchor="middle">writes transform, tells UnitAnimator</text>
+
+        <rect class="b" x="700" y="238" width="222" height="72" rx="3" />
+        <text class="t" x="811" y="263" text-anchor="middle">PlayerInteractionController</text>
+        <text class="m" x="811" y="284" text-anchor="middle">Tick(pose, confirmHeld)</text>
+        <text class="s" x="811" y="301" text-anchor="middle">plain C#, owned by the controller</text>
+
+        <path class="ln" d="M166 155 H 218" marker-end="url(#a3)" />
+        <path class="ln" d="M313 112 V 80" marker-end="url(#a3)" />
+        <text class="s" x="322" y="100">may I?</text>
+
+        <path class="ln" d="M404 130 H 430 V 77 H 454" marker-end="url(#a3)" />
+        <text class="s" x="410" y="120">direction</text>
+        <path class="ln" d="M550 120 V 160" marker-end="url(#a3)" />
+        <text class="s" x="558" y="146">blocked?</text>
+        <path class="ln" d="M636 200 H 664 V 132 H 592" marker-end="url(#a3)" />
+
+        <path class="ln" d="M642 77 H 696" marker-end="url(#a3)" />
+        <text class="s" x="648" y="66">moved</text>
+
+        <path class="ln" d="M313 198 V 274 H 696" marker-end="url(#a3)" />
+        <text class="s" x="330" y="266">after the walk &middot; pose = where she ended up</text>
+
+        <path class="ln soft" d="M811 120 V 234" marker-end="url(#a3)" />
+      </svg>
+      <figcaption>Movement is swept against colliders, not stepped tile to tile &mdash; the position is a float in tiles measured at the feet. The gate is asked every frame, and directions are still resolved while it says no, so a held key keeps walking the instant control returns.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>4 &middot; What a press acts on</h2>
+    <figure>
+      <svg viewBox="0 0 940 340" role="img" aria-label="Overlap adds an interactable to the in-range list; each tick picks one target by priority, then a press interacts with it.">
+        <defs>
+          <marker id="a4" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <circle class="b acc" cx="78" cy="76" r="16" />
+        <text class="s" x="78" y="112" text-anchor="middle">her probe</text>
+        <circle class="b" cx="140" cy="76" r="42" />
+        <text class="s" x="176" y="40">reach region</text>
+
+        <rect class="b" x="252" y="42" width="212" height="68" rx="3" />
+        <text class="t" x="358" y="67" text-anchor="middle">InteractableBehaviour</text>
+        <text class="m" x="358" y="88" text-anchor="middle">OnTriggerEnter2D / Exit</text>
+        <text class="s" x="358" y="104" text-anchor="middle">finds the controller up the probe's parent</text>
+
+        <rect class="b" x="252" y="166" width="212" height="86" rx="3" />
+        <text class="t" x="358" y="191" text-anchor="middle">in range</text>
+        <text class="s" x="358" y="210" text-anchor="middle">a plain list, added and removed</text>
+        <text class="s" x="358" y="226" text-anchor="middle">by the triggers themselves</text>
+        <text class="s" x="358" y="242" text-anchor="middle">also cleared on OnDisable</text>
+
+        <rect class="b" x="524" y="150" width="196" height="118" rx="3" />
+        <text class="t" x="622" y="175" text-anchor="middle">ResolvePriority</text>
+        <text class="s" x="622" y="196" text-anchor="middle">1. is it available &amp; in reach</text>
+        <text class="s" x="622" y="213" text-anchor="middle">2. best priority rung</text>
+        <text class="s" x="622" y="230" text-anchor="middle">3. most directly in front</text>
+        <text class="s" x="622" y="247" text-anchor="middle">4. nearest</text>
+
+        <rect class="b" x="524" y="42" width="196" height="68" rx="3" />
+        <text class="t" x="622" y="67" text-anchor="middle">CanReach</text>
+        <text class="s" x="622" y="86" text-anchor="middle">facing &middot; line of sight</text>
+        <text class="s" x="622" y="102" text-anchor="middle">each can opt out</text>
+
+        <rect class="b acc" x="774" y="150" width="150" height="70" rx="3" />
+        <text class="t" x="849" y="177" text-anchor="middle">one target</text>
+        <text class="s" x="849" y="195" text-anchor="middle">or nothing &mdash; the</text>
+        <text class="s" x="849" y="210" text-anchor="middle">prompt follows it</text>
+
+        <rect class="b" x="524" y="288" width="400" height="44" rx="3" />
+        <text class="m" x="724" y="310" text-anchor="middle">Interact() &rarr; catalog &rarr; DialogueService</text>
+        <text class="s" x="724" y="326" text-anchor="middle">a character turns to face her first</text>
+
+        <path class="ln" d="M182 76 H 248" marker-end="url(#a4)" />
+        <path class="ln" d="M358 110 V 162" marker-end="url(#a4)" />
+        <text class="s" x="366" y="140">Add / Remove</text>
+        <path class="ln" d="M464 209 H 520" marker-end="url(#a4)" />
+        <path class="ln" d="M622 150 V 114" marker-end="url(#a4)" />
+        <path class="ln" d="M720 209 H 770" marker-end="url(#a4)" />
+        <path class="ln" d="M849 220 V 286" marker-end="url(#a4)" />
+        <text class="s" x="858" y="258">on confirm</text>
+      </svg>
+      <figcaption>Physics answers only &ldquo;close enough&rdquo;. Facing, line of sight and which one wins are decided in plain C# on top of it, once per frame, from the pose the player controller hands in.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>5 &middot; What everything reads</h2>
+    <figure>
+      <svg viewBox="0 0 940 250" role="img" aria-label="Four ambient services that hub units read without being wired to them.">
+        <defs>
+          <marker id="a5" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b amb" x="16" y="20" width="212" height="90" rx="3" />
+        <text class="t" x="122" y="45" text-anchor="middle">HubWorld</text>
+        <text class="s" x="122" y="64" text-anchor="middle">static lists of who is here</text>
+        <text class="s" x="122" y="80" text-anchor="middle">FindActor(characterId)</text>
+        <text class="s" x="122" y="96" text-anchor="middle">actors register in OnEnable</text>
+
+        <rect class="b amb" x="252" y="20" width="212" height="90" rx="3" />
+        <text class="t" x="358" y="45" text-anchor="middle">HubLocationService</text>
+        <text class="s" x="358" y="64" text-anchor="middle">which room, and what</text>
+        <text class="s" x="358" y="80" text-anchor="middle">blocks movement in it</text>
+        <text class="s" x="358" y="96" text-anchor="middle">replaced at every doorway</text>
+
+        <rect class="b amb" x="488" y="20" width="212" height="90" rx="3" />
+        <text class="t" x="594" y="45" text-anchor="middle">HubVisitService</text>
+        <text class="s" x="594" y="64" text-anchor="middle">the visit and its live state:</text>
+        <text class="s" x="594" y="80" text-anchor="middle">placements, gates, dialogue</text>
+        <text class="s" x="594" y="96" text-anchor="middle">memory, events run</text>
+
+        <rect class="b amb" x="724" y="20" width="200" height="90" rx="3" />
+        <text class="t" x="824" y="45" text-anchor="middle">HubControlGate</text>
+        <text class="s" x="824" y="64" text-anchor="middle">may anything act now</text>
+        <text class="s" x="824" y="80" text-anchor="middle">one handover at a time,</text>
+        <text class="s" x="824" y="96" text-anchor="middle">refused rather than nested</text>
+
+        <rect class="b acc" x="120" y="188" width="180" height="46" rx="3" />
+        <text class="t" x="210" y="216" text-anchor="middle">HubActor</text>
+
+        <rect class="b acc" x="360" y="188" width="222" height="46" rx="3" />
+        <text class="t" x="471" y="216" text-anchor="middle">HubPlayerController</text>
+
+        <rect class="b" x="642" y="188" width="222" height="46" rx="3" />
+        <text class="t" x="753" y="216" text-anchor="middle">HubLocationLoader</text>
+
+        <path class="ln" d="M186 188 V 114" marker-end="url(#a5)" />
+        <path class="ln" d="M440 188 V 150 H 358 V 114" marker-end="url(#a5)" />
+        <path class="ln" d="M500 188 V 150 H 824 V 114" marker-end="url(#a5)" />
+        <path class="ln" d="M700 188 V 150 H 594 V 114" marker-end="url(#a5)" />
+        <path class="ln" d="M790 188 V 160 H 122 V 114" marker-end="url(#a5)" />
+      </svg>
+      <figcaption>None of these are wired in the inspector. Each is a static or a single <code>Instance</code>, set once when a visit opens or a room changes, and read by name from wherever it is needed.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>6 &middot; Seams worth knowing</h2>
+    <ul class="notes">
+      <li><b>The player is an NPC with three things bolted on.</b> Same factory, same <code>HubActor</code>; then a controller added at runtime by the bootstrapper, a probe collider, and <code>solid: false</code>.</li>
+      <li><b>Nothing owns the player except the loader.</b> <code>HubLocationLoader.Player</code> is the only reference; she is built once and moved between rooms, while the cast is destroyed and rebuilt.</li>
+      <li><b>An interactable finds the player, not the other way round.</b> <code>GetComponentInParent&lt;HubPlayerController&gt;()</code> from whatever entered its trigger &mdash; so the interaction list is filled by the things being interacted with.</li>
+      <li><b>Two collision systems sit on one actor.</b> A trigger circle for reach on the root, a solid box on a child on the <code>HubSolid</code> layer, built lazily on the first <code>SetSolid(true)</code>.</li>
+      <li><b>Where a character stands is asked twice.</b> The visit's authored placement, then <code>HubVisitService.TryGetPlacement</code>, so anything that has since moved them wins.</li>
+      <li><b>The gate is a lock, not a state.</b> Movement and interaction both ask it every frame; a conversation or a doorway holds it, and a refused second handover is how two doors at once is prevented.</li>
+    </ul>
+  </section>
+</main>
