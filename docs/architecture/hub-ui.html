@@ -1,0 +1,284 @@
+<title>Hub UI</title>
+<style>
+  :root {
+    --ground:#ffffff; --panel:#f6f7f8; --ink:#17191d; --ink-soft:#565b63;
+    --rule:#d6d9dd; --rule-strong:#9aa0a8; --code-bg:#eef0f2;
+    --accent:#1a5aa8; --accent-bg:#e8f0fc; --flag:#a3312f; --flag-bg:#fbeceb;
+    --good:#1f6d43; --good-bg:#e4f2ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+      --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+      --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+      --good:#7fc9a0; --good-bg:#1c2f26;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#14161a; --panel:#1c1f24; --ink:#e6e8ec; --ink-soft:#a2a8b2;
+    --rule:#333840; --rule-strong:#5a626d; --code-bg:#23272e;
+    --accent:#79b0ee; --accent-bg:#1b2b3f; --flag:#ef8f8f; --flag-bg:#382322;
+    --good:#7fc9a0; --good-bg:#1c2f26;
+  }
+  body { background:var(--ground); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:16px; line-height:1.5; margin:0; padding:32px 24px 80px; }
+  main { max-width:1060px; margin:0 auto; display:flex; flex-direction:column; gap:38px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  h2 { font-size:15px; margin:0 0 14px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.08em; }
+  .lede { color:var(--ink-soft); margin:0; font-size:15px; max-width:76ch; }
+  code { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.88em;
+    background:var(--code-bg); padding:1px 5px; border-radius:3px; }
+  figure { margin:0; overflow-x:auto; }
+  figure svg { max-width:100%; height:auto; display:block; }
+  figcaption { color:var(--ink-soft); font-size:13px; margin-top:10px; max-width:82ch; }
+  table { border-collapse:collapse; font-size:14px; width:100%; }
+  th, td { text-align:left; padding:8px 12px; border-bottom:1px solid var(--rule); vertical-align:top; }
+  th { color:var(--ink-soft); font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:.06em; }
+  td.v { white-space:nowrap; font-weight:600; }
+  td.v.y { color:var(--good); }
+  td.v.n { color:var(--flag); }
+  ul.notes { margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; font-size:14.5px; }
+  ul.notes li { max-width:84ch; }
+  ul.notes b { font-weight:600; }
+  .legend { display:flex; flex-wrap:wrap; gap:18px; font-size:12.5px; color:var(--ink-soft); margin-top:12px; }
+  .legend span { display:inline-flex; align-items:center; gap:7px; }
+  .sw { width:24px; height:12px; border-radius:2px; display:inline-block; }
+  .sw.core { background:var(--panel); border:1px solid var(--rule-strong); }
+  .sw.acc { background:var(--accent-bg); border:1px solid var(--accent); }
+  .sw.amb { background:var(--flag-bg); border:1px solid var(--flag); }
+
+  figure svg .b { fill:var(--panel); stroke:var(--rule-strong); stroke-width:1; }
+  figure svg .b.acc { fill:var(--accent-bg); stroke:var(--accent); }
+  figure svg .b.amb { fill:var(--flag-bg); stroke:var(--flag); }
+  figure svg .b.ghost { fill:none; stroke:var(--rule); stroke-dasharray:4 3; }
+  figure svg .t { fill:var(--ink); font-size:12.5px; font-weight:600;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  figure svg .m { fill:var(--ink); font-size:11.5px; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
+  figure svg .s { fill:var(--ink-soft); font-size:11px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  figure svg .ln { stroke:var(--rule-strong); stroke-width:1.4; fill:none; }
+  figure svg .ln.soft { stroke:var(--rule); stroke-dasharray:4 3; }
+  figure svg .ah { fill:var(--rule-strong); }
+</style>
+
+<main>
+  <header>
+    <h1>Hub UI</h1>
+    <p class="lede">Project Astra &middot; every script that draws something in the Gurukul, who owns it, and how each one measures against the Battle HUD standard. Read as of <code>hub.dev.master</code>, 2026-09-06 &mdash; after the objective panel became the battle map's own.</p>
+    <div class="legend">
+      <span><i class="sw acc"></i> follows the standard</span>
+      <span><i class="sw core"></i> part of the standard shape</span>
+      <span><i class="sw amb"></i> outside the UI layer</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>1 &middot; Everything on the hub canvas</h2>
+    <figure>
+      <svg viewBox="0 0 940 300" role="img" aria-label="The hub canvas holds four surfaces; two are owned by the HUD controller, one by a gameplay script, one by the dialogue system.">
+        <defs>
+          <marker id="u1" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b ghost" x="300" y="16" width="330" height="268" rx="3" />
+        <text class="s" x="465" y="36" text-anchor="middle">the hub Canvas (1920&times;1080 reference)</text>
+
+        <rect class="b acc" x="320" y="50" width="290" height="44" rx="3" />
+        <text class="t" x="465" y="77" text-anchor="middle">InteractionPromptView</text>
+
+        <rect class="b acc" x="320" y="104" width="290" height="52" rx="3" />
+        <text class="t" x="465" y="126" text-anchor="middle">ObjectiveView</text>
+        <text class="s" x="465" y="144" text-anchor="middle">the battle map's, copied in</text>
+
+        <rect class="b" x="320" y="170" width="290" height="44" rx="3" />
+        <text class="t" x="465" y="197" text-anchor="middle">EdgeIndicatorView</text>
+
+        <rect class="b" x="320" y="230" width="290" height="44" rx="3" />
+        <text class="t" x="465" y="257" text-anchor="middle">ChoiceMenuView</text>
+
+        <rect class="b acc" x="20" y="66" width="230" height="72" rx="3" />
+        <text class="t" x="135" y="92" text-anchor="middle">HubHUDController</text>
+        <text class="s" x="135" y="110" text-anchor="middle">composition root</text>
+        <text class="s" x="135" y="126" text-anchor="middle">on the Canvas itself</text>
+
+        <rect class="b amb" x="20" y="166" width="230" height="72" rx="3" />
+        <text class="t" x="135" y="192" text-anchor="middle">HubMarkerManager</text>
+        <text class="s" x="135" y="210" text-anchor="middle">Core/Hub &mdash; gameplay layer</text>
+        <text class="s" x="135" y="226" text-anchor="middle">its own LateUpdate</text>
+
+        <rect class="b" x="690" y="230" width="230" height="44" rx="3" />
+        <text class="t" x="805" y="251" text-anchor="middle">DialogueView</text>
+        <text class="s" x="805" y="267" text-anchor="middle">shared with the whole game</text>
+
+        <path class="ln" d="M250 90 H 316" marker-end="url(#u1)" />
+        <path class="ln" d="M250 112 H 285 V 132 H 316" marker-end="url(#u1)" />
+        <path class="ln" d="M250 196 H 316" marker-end="url(#u1)" />
+        <path class="ln" d="M686 252 H 614" marker-end="url(#u1)" />
+
+        <text class="s" x="700" y="80">built by</text>
+        <text class="s" x="700" y="96">HubHudBuilder,</text>
+        <text class="s" x="700" y="112">an editor script &mdash;</text>
+        <text class="s" x="700" y="128">re-running it rebuilds</text>
+        <text class="s" x="700" y="144">all but the objective</text>
+        <text class="s" x="700" y="160">panel, which is copied</text>
+        <text class="s" x="700" y="176">from the battle scene</text>
+      </svg>
+      <figcaption>Four surfaces, three owners. The prompt and the objective panel are owned by the HUD's composition root; the off-screen markers are driven from the gameplay layer, and the choice menu belongs to the dialogue system and is merely parented here. The objective panel is a scene-local copy of the battle map's, not a prefab &mdash; there are only two of them in the game.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>2 &middot; Three different shapes, side by side</h2>
+    <figure>
+      <svg viewBox="0 0 940 340" role="img" aria-label="The prompt uses the full View-Controller-Model trio; the objective keeps its model in the view file; the edge indicators have no controller at all.">
+        <defs>
+          <marker id="u2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <text class="t" x="150" y="22" text-anchor="middle">Prompt &mdash; the standard</text>
+        <text class="t" x="470" y="22" text-anchor="middle">Objective &mdash; shared</text>
+        <text class="t" x="800" y="22" text-anchor="middle">Markers &mdash; no controller</text>
+
+        <rect class="b acc" x="36" y="42" width="230" height="42" rx="3" />
+        <text class="m" x="151" y="68" text-anchor="middle">HubHUDController</text>
+        <rect class="b" x="36" y="112" width="230" height="42" rx="3" />
+        <text class="m" x="151" y="138" text-anchor="middle">InteractionPromptController</text>
+        <rect class="b" x="36" y="182" width="230" height="42" rx="3" />
+        <text class="m" x="151" y="208" text-anchor="middle">InteractionPromptModel</text>
+        <rect class="b" x="36" y="252" width="230" height="42" rx="3" />
+        <text class="m" x="151" y="278" text-anchor="middle">InteractionPromptView</text>
+        <text class="s" x="151" y="314" text-anchor="middle">three files, one folder</text>
+
+        <path class="ln" d="M151 84 V 108" marker-end="url(#u2)" />
+        <path class="ln" d="M151 154 V 178" marker-end="url(#u2)" />
+        <path class="ln" d="M151 224 V 248" marker-end="url(#u2)" />
+
+        <rect class="b acc" x="356" y="42" width="230" height="42" rx="3" />
+        <text class="m" x="471" y="68" text-anchor="middle">HubHUDController</text>
+        <rect class="b" x="356" y="112" width="230" height="42" rx="3" />
+        <text class="m" x="471" y="138" text-anchor="middle">HubObjectiveController</text>
+        <rect class="b acc" x="356" y="182" width="230" height="42" rx="3" />
+        <text class="m" x="471" y="208" text-anchor="middle">ObjectiveModel</text>
+        <rect class="b acc" x="356" y="252" width="230" height="42" rx="3" />
+        <text class="m" x="471" y="278" text-anchor="middle">ObjectiveView</text>
+        <text class="s" x="471" y="314" text-anchor="middle">both are the battle map's, unchanged</text>
+
+        <path class="ln" d="M471 84 V 108" marker-end="url(#u2)" />
+        <path class="ln" d="M471 154 V 178" marker-end="url(#u2)" />
+        <path class="ln" d="M471 224 V 248" marker-end="url(#u2)" />
+
+        <rect class="b amb" x="676" y="42" width="248" height="42" rx="3" />
+        <text class="m" x="800" y="68" text-anchor="middle">HubMarkerManager</text>
+        <rect class="b ghost" x="676" y="112" width="248" height="42" rx="3" />
+        <text class="s" x="800" y="132" text-anchor="middle">no controller</text>
+        <text class="s" x="800" y="147" text-anchor="middle">the solving happens above</text>
+        <rect class="b ghost" x="676" y="182" width="248" height="42" rx="3" />
+        <text class="s" x="800" y="202" text-anchor="middle">no model</text>
+        <text class="s" x="800" y="217" text-anchor="middle">a struct passed per frame</text>
+        <rect class="b" x="676" y="252" width="248" height="42" rx="3" />
+        <text class="m" x="800" y="278" text-anchor="middle">EdgeIndicatorView</text>
+        <text class="s" x="800" y="314" text-anchor="middle">polled in LateUpdate, not evented</text>
+
+        <path class="ln" d="M800 84 V 248" marker-end="url(#u2)" />
+      </svg>
+      <figcaption>The prompt is exactly the Battle HUD trio. The objective now shares the battle map's View and Model outright and supplies only its own Controller &mdash; the same interface, different data behind it. The markers skip the pattern entirely: a gameplay MonoBehaviour holds the view and renders it from its own update loop.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>3 &middot; What feeds each one</h2>
+    <figure>
+      <svg viewBox="0 0 940 296" role="img" aria-label="Objectives arrive by events, the prompt by the player's target-changed event, the markers by per-frame polling.">
+        <defs>
+          <marker id="u3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <polygon class="ah" points="0,0 8,4 0,8" />
+          </marker>
+        </defs>
+
+        <rect class="b" x="16" y="26" width="238" height="82" rx="3" />
+        <text class="t" x="135" y="50" text-anchor="middle">EventService</text>
+        <text class="s" x="135" y="69" text-anchor="middle">objective activated / progressed /</text>
+        <text class="s" x="135" y="85" text-anchor="middle">completed, quest completed,</text>
+        <text class="s" x="135" y="101" text-anchor="middle">game state changed</text>
+
+        <rect class="b" x="16" y="128" width="238" height="62" rx="3" />
+        <text class="t" x="135" y="152" text-anchor="middle">HubPlayerController</text>
+        <text class="m" x="135" y="172" text-anchor="middle">Interaction.TargetChanged</text>
+
+        <rect class="b" x="16" y="210" width="238" height="62" rx="3" />
+        <text class="t" x="135" y="230" text-anchor="middle">InputManager</text>
+        <text class="m" x="135" y="248" text-anchor="middle">OnDeviceChanged</text>
+        <text class="m" x="135" y="264" text-anchor="middle">OnPeekObjective &mdash; hold O</text>
+
+        <rect class="b acc" x="352" y="86" width="236" height="82" rx="3" />
+        <text class="t" x="470" y="112" text-anchor="middle">HubHUDController</text>
+        <text class="s" x="470" y="131" text-anchor="middle">one Subscribe / Unsubscribe pair</text>
+        <text class="s" x="470" y="147" text-anchor="middle">Update() ticks the prompt's</text>
+        <text class="s" x="470" y="163" text-anchor="middle">hysteresis only</text>
+
+        <rect class="b" x="688" y="46" width="236" height="52" rx="3" />
+        <text class="m" x="806" y="70" text-anchor="middle">HubObjectiveController</text>
+        <text class="s" x="806" y="87" text-anchor="middle">every quest stage as a row</text>
+
+        <rect class="b" x="688" y="126" width="236" height="52" rx="3" />
+        <text class="m" x="806" y="150" text-anchor="middle">InteractionPromptController</text>
+        <text class="s" x="806" y="167" text-anchor="middle">settles before showing</text>
+
+        <rect class="b amb" x="352" y="206" width="236" height="66" rx="3" />
+        <text class="t" x="470" y="230" text-anchor="middle">HubMarkerManager</text>
+        <text class="s" x="470" y="249" text-anchor="middle">reads QuestManager + HubWorld</text>
+        <text class="s" x="470" y="265" text-anchor="middle">every LateUpdate</text>
+
+        <rect class="b" x="688" y="212" width="236" height="52" rx="3" />
+        <text class="m" x="806" y="236" text-anchor="middle">EdgeIndicatorView</text>
+        <text class="s" x="806" y="253" text-anchor="middle">world &rarr; canvas each frame</text>
+
+        <path class="ln" d="M254 67 H 310 V 118 H 348" marker-end="url(#u3)" />
+        <path class="ln" d="M254 159 H 310 V 130 H 348" marker-end="url(#u3)" />
+        <path class="ln" d="M254 241 H 292 V 142 H 348" marker-end="url(#u3)" />
+        <path class="ln" d="M588 108 H 640 V 72 H 684" marker-end="url(#u3)" />
+        <path class="ln" d="M588 146 H 640 V 152 H 684" marker-end="url(#u3)" />
+        <path class="ln" d="M588 239 H 684" marker-end="url(#u3)" />
+
+        <text class="s" x="266" y="122">events</text>
+        <text class="s" x="600" y="288">no events &mdash; polled</text>
+      </svg>
+      <figcaption>Two of the three run on the project's event service and render only when something changes. The markers run a full solve every frame, and nothing routes them through the composition root.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>4 &middot; Measured against the Battle HUD</h2>
+    <table>
+      <thead>
+        <tr><th>The standard says</th><th>Prompt</th><th>Objective</th><th>Markers</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>View is a MonoBehaviour that only renders</td><td class="v y">yes</td><td class="v y">yes</td><td class="v y">yes</td></tr>
+        <tr><td>Controller is plain C#, no Unity types</td><td class="v y">yes</td><td class="v y">yes</td><td class="v n">none</td></tr>
+        <tr><td>Model is a POCO in its own file</td><td class="v y">yes</td><td class="v y">yes</td><td class="v n">none</td></tr>
+        <tr><td>Owned by the screen's composition root</td><td class="v y">yes</td><td class="v y">yes</td><td class="v n">gameplay script</td></tr>
+        <tr><td>One subscription point, paired enable/disable</td><td class="v y">yes</td><td class="v y">yes</td><td class="v n">per-frame poll</td></tr>
+        <tr><td>Lives under <code>Core/UI</code></td><td class="v y">yes</td><td class="v y">yes</td><td class="v n">half of it</td></tr>
+        <tr><td>Reads the same as the battle map to a player</td><td class="v n">hub only</td><td class="v y">identical</td><td class="v n">hub only</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>5 &middot; What this actually says</h2>
+    <ul class="notes">
+      <li><b>The hub UI code mostly does follow your standard.</b> <code>HubHUDController</code> is a real composition root: it owns the views, news up the controllers, and has one paired subscribe/unsubscribe. The prompt is a textbook trio.</li>
+      <li><b>The markers are the one genuine break.</b> <code>HubMarkerManager</code> sits in <code>Core/Hub</code>, holds a UI view directly, solves screen positions, and renders from its own <code>LateUpdate</code> &mdash; gameplay driving presentation, outside the pattern and outside the root.</li>
+      <li><b>The objective panel is now literally the battle map's.</b> Same View, same Model, same hierarchy copied into the hub scene, same hold-<code>O</code>. The hub supplies a Controller that fills the checklist from the visit's quest, pins the panel to the top right, and switches the WIN/LOSE pair off &mdash; a visit has stages, not conditions.</li>
+      <li><b>The root has to hunt for the player.</b> <code>FindFirstObjectByType&lt;HubPlayerController&gt;()</code>, tried from both <code>OnEnable</code> and <code>Start</code>, because she is built mid-<code>Start</code> by the bootstrapper rather than being in the scene.</li>
+      <li><b>The real gap is coverage, not structure.</b> Four surfaces exist: a verb prompt, the objective panel, off-screen arrows, and the dialogue system's choice menu. Everything else the GDD asks of a hub has no UI at all yet.</li>
+      <li><b>The other three are generated.</b> <code>HubHudBuilder</code> builds them in code, so anything styled by hand on those objects is lost the next time it runs. The objective panel is exempt: it is copied from <code>BattleMap.unity</code> by its own menu item, which is also how a restyle of the battle one reaches the hub.</li>
+    </ul>
+  </section>
+</main>
