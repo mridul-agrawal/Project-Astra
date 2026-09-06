@@ -13,10 +13,6 @@ MonoBehaviour:
   m_Name: Campaign
   m_EditorClassIdentifier: ProjectAstra.Core::ProjectAstra.Core.Flow.Campaign
   steps:
-  - kind: 0
-    cutscene: 1
-    mapId: 
-    visitId: 
   - kind: 2
     cutscene: 0
     mapId: 
