@@ -30,6 +30,10 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
         public int EnemiesRemaining;
         public HudCorner Corner;
 
+        // A hub visit has no win or lose, only a list of stages. Off stands the pair down the way an
+        // empty objective list stands its section down.
+        public bool ShowConditions = true;
+
         // Empty on most maps, and that is the normal case: the banner then renders the win and
         // lose pairs alone.
         public List<ObjectiveRowVM> Objectives = new();

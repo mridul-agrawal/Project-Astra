@@ -27,81 +27,16 @@ namespace ProjectAstra.Core.Editor
         {
             GameObject canvasGo = CreateCanvas();
             InteractionPromptView prompt = CreateInteractionPrompt(canvasGo.transform);
-            HubObjectiveView objective = CreateObjectivePanel(canvasGo.transform);
             choiceMenu = CreateChoiceMenu(canvasGo.transform);
             edgeIndicators = CreateEdgeIndicators(canvasGo.transform);
 
             var controller = canvasGo.AddComponent<HubHUDController>();
             var serialized = new SerializedObject(controller);
             serialized.FindProperty("promptView").objectReferenceValue = prompt;
-            serialized.FindProperty("objectiveView").objectReferenceValue = objective;
             serialized.FindProperty("glyphData").objectReferenceValue = LoadOrCreateGlyphData();
             serialized.ApplyModifiedProperties();
 
             return controller;
-        }
-
-        // Top-left, where it stays out of the way of both her and the dialogue box.
-        private static HubObjectiveView CreateObjectivePanel(Transform parent)
-        {
-            var root = new GameObject("ObjectivePanel", typeof(RectTransform));
-            root.transform.SetParent(parent, false);
-
-            var content = new GameObject("Content", typeof(RectTransform), typeof(Image));
-            content.transform.SetParent(root.transform, false);
-
-            var rect = content.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(Sc(8f), -Sc(8f));
-            rect.sizeDelta = new Vector2(Sc(150f), Sc(16f));
-
-            var background = content.GetComponent<Image>();
-            background.color = new Color(0.06f, 0.07f, 0.10f, 0.8f);
-            background.raycastTarget = false;
-
-            TextMeshProUGUI objective = AddLabel(content.transform, "Objective", "Objective",
-                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(Sc(5f), 0f),
-                new Vector2(-Sc(38f), Sc(12f)), TextAlignmentOptions.Left);
-
-            TextMeshProUGUI counter = AddLabel(content.transform, "Counter", "0/0",
-                new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-Sc(32f), 0f),
-                new Vector2(Sc(28f), Sc(12f)), TextAlignmentOptions.Right);
-
-            var view = root.AddComponent<HubObjectiveView>();
-            view.content = content;
-            view.objectiveLabel = objective;
-            view.counterLabel = counter;
-            AddCompletionCue(root.transform, view);
-            content.SetActive(false);
-            return view;
-        }
-
-        // Its own box under the objective line, so the cue and the objective that replaced it can be
-        // read at the same time.
-        private static void AddCompletionCue(Transform parent, HubObjectiveView view)
-        {
-            var cue = new GameObject("Cue", typeof(RectTransform), typeof(Image));
-            cue.transform.SetParent(parent, false);
-
-            var rect = cue.GetComponent<RectTransform>();
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(Sc(8f), -Sc(26f));
-            rect.sizeDelta = new Vector2(Sc(150f), Sc(14f));
-
-            var background = cue.GetComponent<Image>();
-            background.color = new Color(0.18f, 0.30f, 0.18f, 0.85f);
-            background.raycastTarget = false;
-
-            view.cueContent = cue;
-            view.cueLabel = AddLabel(cue.transform, "CueLabel", "Done",
-                new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(Sc(5f), 0f),
-                new Vector2(-Sc(10f), Sc(11f)), TextAlignmentOptions.Left);
-
-            cue.SetActive(false);
         }
 
         // Anchored to the canvas corner with a zero pivot, so the solver's canvas coordinates can be

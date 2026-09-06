@@ -134,12 +134,30 @@ namespace ProjectAstra.Core.UI.BattleMap.HUD
 
         private void RenderConditions(ObjectiveModel model)
         {
+            ShowConditions(model.ShowConditions);
+            if (!model.ShowConditions) return;
+
             SetWrapped(WinText, model.WinText, EntryWidthCap);
             SetWrapped(LoseText, model.LoseText, EntryWidthCap);
 
             // §B3 fixes the header words; only the entry lines come from the map.
             if (WinHeader != null) WinHeader.text = "WIN";
             if (LoseHeader != null) LoseHeader.text = "LOSE";
+        }
+
+        // Switched off rather than blanked, so the plate closes up around what is left instead of
+        // holding two empty lines open.
+        private void ShowConditions(bool shown)
+        {
+            Show(WinHeader, shown);
+            Show(WinText, shown);
+            Show(LoseHeader, shown);
+            Show(LoseText, shown);
+        }
+
+        private static void Show(TextMeshProUGUI label, bool shown)
+        {
+            if (label != null) label.gameObject.SetActive(shown);
         }
 
         // §B2 makes the plate exactly as wide as its widest line, with 170px only as a ceiling. A
